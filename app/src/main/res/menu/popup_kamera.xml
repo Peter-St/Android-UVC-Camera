@@ -1,0 +1,46 @@
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/kamera1"
+        android:onClick="acer_1920x1080"
+        android:title="0 Acer / Active Prek 1920 4/4 / ARK / Mikrodia" />
+    <item
+        android:id="@+id/kamera1_1"
+        android:onClick="acer_1280x1024"
+        android:title="1 Acer 1280x1024 P/U = 4/4 / ARK / Mikrodia" />
+    <item
+        android:id="@+id/kamera1_2"
+        android:onClick="acer_1280x780"
+        android:title="2 Acer 1280x780 P/U = 4/4" />
+    <item
+        android:id="@+id/kamera1_3"
+        android:onClick="acer_1920x1080_16_128"
+        android:title="Acer 1920x1080 P/U = 16/128" />
+
+
+
+    <item
+        android:id="@+id/kamera2"
+        android:onClick="xGo_1920x1080"
+        android:title="XGo_1920x1080 P/U =128/128" />
+    <item
+        android:id="@+id/kamera2_1"
+        android:onClick="xGo_1280x1024"
+        android:title="XGo 1280x1024 P/U =128/128" />
+    <item
+        android:id="@+id/kamera2_2"
+        android:onClick="xGo_1280x780"
+        android:title="XGo 1280x780 P/U =128/128" />
+
+
+    <item
+        android:id="@+id/kamera3"
+        android:onClick="active_1280x780"
+        android:title="Act 1280x780 P/U = 4/4" />
+    <item
+        android:id="@+id/kamera3_1"
+        android:onClick="active_16_16"
+        android:title="Act 1280x780 P/U = 16/16" />
+
+</menu>

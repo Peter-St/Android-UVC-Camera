@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Main">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignEnd="@+id/stopKameraknopf"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/stopKameraknopf"
+        android:adjustViewBounds="false" />
+
+    <ImageButton
+        android:id="@+id/Bildaufnahme"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:adjustViewBounds="false"
+        android:contextClickable="false"
+        android:longClickable="true"
+        android:padding="2dp"
+        android:soundEffectsEnabled="true"
+        android:src="@drawable/jpg" />
+
+    <ToggleButton
+        android:id="@+id/stopKameraknopf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/button2"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/button2"
+        android:onClick="StopKameraButtonClickEvent"
+        android:text="ToggleButton2"
+        android:textOff="Kamera läuft"
+        android:textOn="Kamera gestoppt" />
+
+    <ToggleButton
+        android:id="@+id/MJPGYUV"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_above="@+id/button3"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:onClick="MjpegYuv"
+        android:text="MJPGYUV"
+        android:textOff="MJPEG"
+        android:textOn="YUV" />
+
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:text="Kamera" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:text="Einstellungen" />
+
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_above="@+id/stopKameraknopf"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:text="Fehlersuche" />
+
+
+
+
+
+</RelativeLayout>

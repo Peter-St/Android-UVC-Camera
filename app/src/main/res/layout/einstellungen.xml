@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rl"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:id="@+id/ll1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="0dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/Output"
+            android:layout_width="182dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/Altsetting"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="Altsetting"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/MaxPacketSize"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="MaxPacketSize"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/FormatIndex"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="FormatIndex"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/svideoformat"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="Videoformat"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/FrameIndex"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="FrameIndex"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/ImageWidth"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="ImageWidth"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/ImageHeight"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="ImageHeight"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/FrameInterval"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="FrameInterval"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/PacketsPerReq."
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="PacketsPerReq."
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/ActiveUrbs"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="ActiveUrbs"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/Input"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/alt"
+                android:layout_width="match_parent"
+                android:layout_height="55dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/altsetttext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="between 1 and 10 ?"
+                    android:inputType="number" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/maxP"
+                android:layout_width="match_parent"
+                android:layout_height="55dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/maxPtext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="3072 ? 3000 ? 64 ?"
+                    android:inputType="number" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/Format"
+                android:layout_width="match_parent"
+                android:layout_height="55dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/FormatText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="1 or 2 or 3 ?"
+                    android:inputType="number" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/Video"
+                android:layout_width="match_parent"
+                android:layout_height="55dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/VideoText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="0 = MJPEG;    1 = YUV"
+                    android:inputType="number" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/Frame"
+                android:layout_width="match_parent"
+                android:layout_height="55dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/FrameText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="between 1 and 10 ?"
+                    android:inputType="number" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/Imagewi"
+                android:layout_width="match_parent"
+                android:layout_height="55dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/ImageWiText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="640 or 1920"
+                    android:inputType="number" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/ImageHei"
+                android:layout_width="match_parent"
+                android:layout_height="55dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/ImageHeiText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="480 or 1080 or ..."
+                    android:inputType="number" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/frameInt"
+                android:layout_width="match_parent"
+                android:layout_height="55dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/frameIntText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="333333 = 30 fps"
+                    android:inputType="number" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/PacketsPer"
+                android:layout_width="match_parent"
+                android:layout_height="55dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/PacketsPerText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="4 or 8 or 64 ?"
+                    android:inputType="number" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/ActiveUr"
+                android:layout_width="match_parent"
+                android:layout_height="55dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/ActiveUrText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="1 or 8 or 124 ?"
+                    android:inputType="number" />
+            </android.support.design.widget.TextInputLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+</RelativeLayout>
+
