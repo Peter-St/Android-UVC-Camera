@@ -11,16 +11,24 @@ list with lsusb to get all connected devices
 Detail informations can be received with Vendor+Produkt ID: lsusb -v -d <vendor>:<product>
 Variant over: lsusb -v -s <bus>:<device>
 
-You can compile the peoject at ones and use it for your usb camera.
+You can compile the project at ones and use it for your usb camera.
+
+- you have to set up all camera settings for your device. The program then saves the values and you can restore them latet or overwrite them with other values.
+- Next you can connect to your camera and first you will send a controlltransfer to your camera
+- If the controlltransfer is successful, than you are ready to go.
+- Next try out the method Isoread and take a look at the frames.
+- When you receive identically and long frames, you can proceed to the method Isostream, where the frames were displayed on your screen.
 
 
-This step is, when you press in the menu "Isoread" the button "IsoRead1"
+
+IsoRead Button:
 Take a look at the camera frames you receive with your settings on STDOUT. To know how big be a Frame should be, you can look at the output of the controll transfer of the camera in the log: maxVideoFrameSize, This value is returned from the camera and should be the valid frame size (The value is calculated by Imagewidth x Imagehight x 2).
 
 The IsochronousRead1 class shows you how the frames are structered by the camera. Different camerasetting == Different Frame structers. Try it out with different setting and look at the output. The eof hint shows the framesize in the log. For valid camera settings the size should be the same as maxFrameSize value of the controlltransfer. You can use the search function in the log ...
 
 
-Output method Isoread:
+Output method Isoread: (Controltransfer)
+Thirst the program will send a controlltransfer to your camera device. The output of it looks as following:
 Initial streaming parms: hint=0x0 format=1 frame=1 frameInterval=2000000 keyFrameRate=0 pFrameRate=0 compQuality=0 compWindowSize=0 delay=0 maxVideoFrameSize=0 maxPayloadTransferSize=0
 Probed streaming parms: hint=0x0 format=1 frame=1 frameInterval=2000000 keyFrameRate=0 pFrameRate=0 compQuality=0 compWindowSize=0 delay=0 maxVideoFrameSize=614400 maxPayloadTransferSize=3000
 Final streaming parms: hint=0x0 format=1 frame=1 frameInterval=2000000 keyFrameRate=0 pFrameRate=0 compQuality=0 compWindowSize=0 delay=0 maxVideoFrameSize=614400 maxPayloadTransferSize=3000
