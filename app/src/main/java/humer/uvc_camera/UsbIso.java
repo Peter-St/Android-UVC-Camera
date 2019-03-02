@@ -13,6 +13,8 @@
 
 package humer.uvc_camera;
 
+import android.util.Log;
+
 import com.sun.jna.LastErrorException;
 import com.sun.jna.Library;
 import com.sun.jna.Memory;
@@ -141,6 +143,7 @@ public class UsbIso {
     public void preallocateRequests(int n) {
         while (requests.size() < n) {
             new Request();
+            Log.d ("USBISO","New Request created");
         }
     }
 

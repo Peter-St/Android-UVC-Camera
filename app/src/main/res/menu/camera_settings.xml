@@ -1,0 +1,64 @@
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/findTheCamera"
+        android:title="Find the camera?" >
+
+
+        <menu>
+            <item
+                android:id="@+id/kamera_angeschlossen"
+                android:onClick="searchTheCamera"
+                android:title="Search for a camera" />
+
+            <item
+                android:id="@+id/Kamera_Auflisten"
+                android:onClick="listDeviceButtonClickEvent"
+                android:title="List up the camera Details" />
+
+            <item
+                android:id="@+id/kamera_Öffnen"
+                android:onClick="openCamButtonClickEvent"
+                android:title="Open the camera (set camera values to the cam)" />
+
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/edit"
+        android:title="Save/Restore/Edit" >
+
+        <menu>
+            <item
+                android:id="@+id/editCameraValues"
+                android:onClick="editCameraSettings"
+                android:title="Edit the camera values" />
+
+            <item
+                android:id="@+id/restoreTheValues"
+                android:onClick="restoreCameraSettings"
+                android:title="RestoreTheValues" />
+
+        </menu>
+
+
+
+    </item>
+
+    <item
+        android:id="@+id/isoReadmethod"
+        android:onClick="isoRead"
+        android:title="IsoRead" />
+
+    <item
+        android:id="@+id/videoStream"
+        android:onClick="kamera_video"
+        android:title="videoStream" />
+
+    <item
+        android:id="@+id/beenden"
+        android:onClick="beenden"
+        android:title="Programm beenden" />
+
+</menu>

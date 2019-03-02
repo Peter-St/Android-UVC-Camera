@@ -16,8 +16,27 @@ package humer.uvc_camera;
  * limitations under the License.
  */
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Bundle;
 import android.os.Environment;
+import android.support.design.widget.TextInputLayout;
+import android.support.v7.widget.PopupMenu;
+import android.text.InputType;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -52,30 +71,174 @@ import java.io.PrintWriter;
 public class SaveToFile {
 
     public static int sALT_SETTING;
+    public static int smaxPacketSize ;
     public static int scamFormatIndex ;   // MJPEG // YUV // bFormatIndex: 1 = uncompressed
+    public static int svideoformat;
     public static int scamFrameIndex ; // bFrameIndex: 1 = 640 x 360;       2 = 176 x 144;     3 =    320 x 240;      4 = 352 x 288;     5 = 640 x 480;
     public static int simageWidth;
     public static int simageHeight;
     public static int scamFrameInterval ; // 333333 YUV = 30 fps // 666666 YUV = 15 fps
     public static int spacketsPerRequest ;
-    public static int smaxPacketSize ;
     public static int sactiveUrbs ;
-    public static int svideoformat;
-    private static String saveFilePath = "save/saveFile.sav";
+
+    private static String saveFilePathFolder = "UVC_Camera/save";
+    private TextInputLayout valueInput;
+
+
 
     Main uvc_camera;
+    Context mContext;
+    Activity activity;
+
+    TextView sALT_SETTING_text;
+    TextView smaxPacketSize_text;
+    TextView scamFormatIndex_text;
+    TextView svideoformat_text;
+    TextView scamFrameIndex_text;
+    TextView simageWidth_text;
+    TextView simageHeight_text;
+    TextView scamFrameInterval_text;
+    TextView spacketsPerRequest_text;
+    TextView sactiveUrbs_text;
+
+    StringBuilder stringBuilder;
+    String rootdirStr;
+
+    private enum OptionForSaveFile {savetofile, restorefromfile}
+    OptionForSaveFile optionForSaveFile;
+
 
     private boolean abfrage = true;
 
     static ArrayList<String> paths = new ArrayList<>(50);
     private static ArrayList<String> saveValues = new ArrayList<>(20);
 
-    public SaveToFile(Main main) {
+    TextView tv;
+    private Button settingsButton;
+
+    public SaveToFile(Main main, Context mContext) {
         this.uvc_camera = main;
+        this.mContext = mContext;
+        this.activity = (Activity)mContext;
+    }
+
+    private void returnToMainLayout(final String msg) {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.setContentView(R.layout.layout_main);
+                settingsButton = activity.findViewById(R.id.einstellungen);
+                settingsButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //Creating the instance of PopupMenu
+                        PopupMenu popup = new PopupMenu(mContext, settingsButton);
+                        //Inflating the Popup using xml file
+                        popup.getMenuInflater().inflate(R.menu.camera_settings, popup.getMenu());
+
+                        //registering popup with OnMenuItemClickListener
+                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            public boolean onMenuItemClick(MenuItem item) {
+                                //  Toast.makeText(Main.this,"Auswahl von: " + item.getTitle(),Toast.LENGTH_SHORT).show();
+                                return true; }
+                        });
+                        popup.show();//showing popup menu
+                    }
+                });//closing the setOnClickListener method
+                tv = activity.findViewById(R.id.textDarstellung);
+                tv.setText(msg);
+
+            }
+        });
 
     }
 
+    public void startEditSave() {
+        fetchTheValues();
+        activity.setContentView(R.layout.einstellungen);
+        sALT_SETTING_text = (TextView) activity.findViewById(R.id.Altsetting);
+        sALT_SETTING_text.setText( String.format("ALT_SETTING:  %s" , sALT_SETTING));
+        smaxPacketSize_text = (TextView) activity.findViewById(R.id.MaxPacketSize);
+        smaxPacketSize_text.setText( String.format("maxPacketSize:  %s" , smaxPacketSize));
+        scamFormatIndex_text = (TextView) activity.findViewById(R.id.FormatIndex);
+        scamFormatIndex_text.setText( String.format("FormatIndex:  %s" , scamFormatIndex));
+        svideoformat_text = (TextView) activity.findViewById(R.id.svideoformat);
+        svideoformat_text.setText( String.format("Videoformat:  %s" , svideoformat));
+        scamFrameIndex_text = (TextView) activity.findViewById(R.id.FrameIndex);
+        scamFrameIndex_text.setText( String.format("FrameIndex:  %s" , scamFrameIndex));
+        simageWidth_text = (TextView) activity.findViewById(R.id.ImageWidth);
+        simageWidth_text.setText( String.format("imageWidth:  %s" , simageWidth));
+        simageHeight_text = (TextView) activity.findViewById(R.id.ImageHeight);
+        simageHeight_text.setText( String.format("imageHeight:  %s" , simageHeight));
+        scamFrameInterval_text = (TextView) activity.findViewById(R.id.FrameInterval);
+        scamFrameInterval_text.setText( String.format("CAM_FRAME_INTERVAL:  %s" , scamFrameInterval));
+        spacketsPerRequest_text = (TextView) activity.findViewById(R.id.PacketsPerReq);
+        spacketsPerRequest_text.setText( String.format("PacketsPerRequest:  %s" , spacketsPerRequest));
+        sactiveUrbs_text = (TextView) activity.findViewById(R.id.ActiveUrbs);
+        sactiveUrbs_text.setText( String.format("ACTIVE_URBS:  %s" , sactiveUrbs));
 
+
+        Button button_cancle = (Button) activity.findViewById(R.id.button_cancel);
+        button_cancle.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                log("cancle");
+                returnToMainLayout("No values edited or saved");
+                return;
+            }
+        });
+        Button button_ok = (Button) activity.findViewById(R.id.button_ok);
+        button_ok.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                log("ok");
+
+                valueInput = (TextInputLayout) activity.findViewById(R.id.alt);
+                if (valueInput.getEditText().getText().toString().isEmpty() == false) sALT_SETTING = Integer.parseInt(valueInput.getEditText().getText().toString());
+                valueInput = (TextInputLayout) activity.findViewById(R.id.maxP);
+                if (valueInput.getEditText().getText().toString().isEmpty() == false) smaxPacketSize = Integer.parseInt(valueInput.getEditText().getText().toString());
+                valueInput = (TextInputLayout) activity.findViewById(R.id.Format);
+                if (valueInput.getEditText().getText().toString().isEmpty() == false) scamFormatIndex = Integer.parseInt(valueInput.getEditText().getText().toString());
+                valueInput = (TextInputLayout) activity.findViewById(R.id.Video);
+                if (valueInput.getEditText().getText().toString().isEmpty() == false) svideoformat = Integer.parseInt(valueInput.getEditText().getText().toString());
+                valueInput = (TextInputLayout) activity.findViewById(R.id.Frame);
+                if (valueInput.getEditText().getText().toString().isEmpty() == false) scamFrameIndex = Integer.parseInt(valueInput.getEditText().getText().toString());
+                valueInput = (TextInputLayout) activity.findViewById(R.id.Imagewi);
+                if (valueInput.getEditText().getText().toString().isEmpty() == false) simageWidth = Integer.parseInt(valueInput.getEditText().getText().toString());
+                valueInput = (TextInputLayout) activity.findViewById(R.id.ImageHei);
+                if (valueInput.getEditText().getText().toString().isEmpty() == false) simageHeight = Integer.parseInt(valueInput.getEditText().getText().toString());
+                valueInput = (TextInputLayout) activity.findViewById(R.id.frameInt);
+                if (valueInput.getEditText().getText().toString().isEmpty() == false) scamFrameInterval = Integer.parseInt(valueInput.getEditText().getText().toString());
+                valueInput = (TextInputLayout) activity.findViewById(R.id.PacketsPer);
+                if (valueInput.getEditText().getText().toString().isEmpty() == false) spacketsPerRequest = Integer.parseInt(valueInput.getEditText().getText().toString());
+                valueInput = (TextInputLayout) activity.findViewById(R.id.ActiveUr);
+                if (valueInput.getEditText().getText().toString().isEmpty() == false) sactiveUrbs = Integer.parseInt(valueInput.getEditText().getText().toString());
+
+
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+                            case DialogInterface.BUTTON_POSITIVE:
+                                //Yes button clicked
+                                writeTheValues();
+                                optionForSaveFile = OptionForSaveFile.savetofile;
+                                checkTheSaveFileName();
+                                break;
+
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                writeTheValues();
+                                returnToMainLayout("Values edited but not stored to a file");
+                                break;
+                        }
+                    }
+                };
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                builder.setMessage("Do you want to save the values to a file?").setPositiveButton("Yes, Save", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show();
+
+            }
+        });
+
+    }
 
     private void fetchTheValues(){
 
@@ -93,7 +256,6 @@ public class SaveToFile {
 
     private void writeTheValues(){
 
-
         uvc_camera.camStreamingAltSetting = sALT_SETTING;
         uvc_camera.videoformat = svideoformat;
         uvc_camera.camFormatIndex = scamFormatIndex;
@@ -109,168 +271,120 @@ public class SaveToFile {
 
 
 
-    public void startRestore() {
-        //initKamClass();
-        int option;
-        String name;
+    public void restoreValuesFromFile() {
+        optionForSaveFile = OptionForSaveFile.restorefromfile;
+        checkTheSaveFileName();
+        writeTheValues();
+    }
+
+
+
+    private void checkTheSaveFileName(){
+        rootdirStr = null;
+        stringBuilder = new StringBuilder();
         paths = new ArrayList<>(50);
-        StringBuilder stringBuilder = new StringBuilder();
-
-        File s = new File(saveFilePath).getAbsoluteFile();
-        s.getParentFile().mkdirs();
-        String filePath = s.getParent();
-
-
-
-        //String path = Environment.getExternalStorageDirectory().toString()+"/Pictures";
-        log("Path: " + filePath);
-        File directory = new File(filePath);
-        File[] files = directory.listFiles();
-        Log.d("Files", "Size: "+ files.length);
-        for (int i = 0; i < files.length; i++)
-        {
-            Log.d("Files", "FileName:" + files[i].getName());
-        }
-        filePath += "/";
-
-        for (int i = 0; i < paths.size(); i++) {
-            stringBuilder.append(String.format("%d   ->   ", (i+1)));
-            stringBuilder.append(paths.get(i));
-            stringBuilder.append("\n");
+        String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() ;
+        final File file = new File(rootPath, "/" + saveFilePathFolder);
+        if (!file.exists()) {
+            file.mkdirs();
         }
 
-        /*
-        name = JOptionPane.showInputDialog(String.format("Please type the name of the restore file.\nFollowing files are stored in the directory:\n \n%s\n\n   To select the first file type in 1, or for the secound file 2\n   Or type in a name (without the Directory) (for example: camera)" , stringBuilder.toString() ));
-        if (name == null) JOptionPane.showMessageDialog(null, "save canceled","Save Canceled", JOptionPane.INFORMATION_MESSAGE) ;
-        else if (name.isEmpty() == false) {
-            if (isInteger(name) == true) {
-                try { restorFromFile(paths.get((Integer.parseInt(name) - 1))); }
-                catch (Exception e) { Logger.getLogger(Kam.class.getName()).log(Level.SEVERE, null, e); JOptionPane.showMessageDialog(null, "Error restoring the file","Error while restoring the file", JOptionPane.ERROR_MESSAGE);}
-            } else {restorFromFile((filePath += name += ".sav"));      JOptionPane.showMessageDialog(null, "save complete","Save Complete", JOptionPane.INFORMATION_MESSAGE);}
-        }
-
-        System.out.println("Restore completed");
-        System.out.println("restore bus = " + sbus);
-        System.out.println("restore camFrameInterval  =  " + scamFrameInterval);
-        System.out.println("ALT_SETTING = " + sALT_SETTING);
-        System.out.println("camFormatIndex = " + scamFormatIndex);
-        System.out.println("camFrameIndex = " + scamFrameIndex);
-        System.out.println("camFrameInterval = " + scamFrameInterval);
-        System.out.println("imageWidth = " + simageWidth);
-        System.out.println("imageHeight = " + simageHeight);
-        System.out.println("devpath = " + sdevicePath);
-        System.out.println("videoformat = " + svideoformat);
-        */
-    }
-
-
-
-    public void startEditSave() {
-        /*
-        initKamClass();
-        fetchTheValues();
-
-
-        JTextField ALT_SETTING0 = new JTextField();
-        JTextField maxPacketSize0 = new JTextField();
-        JTextField camFormatIndex0 = new JTextField();
-        JTextField videoformat0 = new JTextField();
-        JTextField camFrameIndex0 = new JTextField();
-        JTextField imageWidth0 = new JTextField();
-        JTextField imageHeight0 = new JTextField();
-        JTextField camFrameInterval0 = new JTextField();
-        JTextField packetsPerRequest0 = new JTextField();
-        JTextField activeUrbs0 = new JTextField();
-
-        Object[] message = {
-                "ALT_SETTING:             Typ in the Camera ALT_SETTING: --> normaly from 0 to 10 ..." + String.format("\n    Stored Value: ALT_SETTING = %d", sALT_SETTING), ALT_SETTING0,
-                "MaxPacketSize:           Typ in the Camera MaxPacketSize: --> normaly from 1 to 2 ..."+ String.format("\n     Stored Value: maxPacketSize = %d", smaxPacketSize) , maxPacketSize0,
-                "CamFormatIndex:          Typ in the Camera CamFormatIndex: --> normaly from 1 to 5 ... (This represents the Resolution)"+ String.format("\n     Stored Value: camFormatIndex = %d", scamFormatIndex) , camFormatIndex0,
-                "MJPEG = 0   // YUV = 1:  Typ in the Camera Frameformat: MJPEG = 0 YUV = 1 (means uncompressed) Note: Uncompressed are at least 10 different formats.\n      So the picture could be displayed in a wrong color way ... This format is for YUY2" + String.format("\n     Stored Value: VideoSetting = %d", svideoformat), videoformat0,
-                "CamFrameIndex:           Typ in the Camera camFrameIndex: --> normaly from 1 to 5 ...(This represents the Resolution)" + String.format("\n     Stored Value: camFrameIndex = %d", scamFrameIndex), camFrameIndex0,
-                "ImageWidth:              Typ in the Camera imageWidth: --> Some formats are 640x480 or 1920x1240 ...(Only type in the Width --> 640 or 1920 .." + String.format("\n      Stored Value: imageWidth = %d", simageWidth), imageWidth0,
-                "ImageHeight:             Typ in the Camera imageHeight: --> (Only type in the Width --> 480 or 1240 .." + String.format("\n     Stored Value: imageHeight = %d", simageHeight), imageHeight0,
-                "CamFrameInterval         Typ in the Camera camFrameInterval:  333333 --> means 30 fps (Frames per secound)\n              666666 ---> means 15 fps 1000000 = 10 fps    2000000 = 5 fps:" + String.format("\n     Stored Value: camFrameInterval = %d", scamFrameInterval), camFrameInterval0,
-                "PacketsPerRequest:       Typ in the Camera packetsPerRequest:  (at least 1 packet up to 8 or 32 or 64 or 128 or ..." + String.format("\n     Stored Value: packetsPerRequest = %d", spacketsPerRequest), packetsPerRequest0,
-                "ActiveUrbs:              Typ in the Camera activeUrbs: At least 1 active URB (USB REQUEST BLOCK) up to 8, or 16, 64, or ..." + String.format("\n     Stored Value: activeUrbs = %d", sactiveUrbs), activeUrbs0,
-        };
-        // password.getText().equals("h")
-        int option = JOptionPane.showConfirmDialog(null, message, "Edit the Camera Values   --->  You can leave Fields blank. When you enter no value, the stored value will be kept.", JOptionPane.OK_CANCEL_OPTION);
-        if (option == JOptionPane.OK_OPTION) {
-            if (ALT_SETTING0.getText().isEmpty() == false)  sALT_SETTING = Integer.parseInt(ALT_SETTING0.getText());
-            if (maxPacketSize0.getText().isEmpty() == false)  smaxPacketSize = Integer.parseInt(maxPacketSize0.getText());
-            if (camFormatIndex0.getText().isEmpty() == false)  scamFormatIndex = Integer.parseInt(camFormatIndex0.getText());
-            if (videoformat0.getText().isEmpty() == false) svideoformat = Integer.parseInt(videoformat0.getText());
-            if (camFrameIndex0.getText().isEmpty() == false)  scamFrameIndex = Integer.parseInt(camFrameIndex0.getText());
-            if (imageWidth0.getText().isEmpty() == false)  simageWidth = Integer.parseInt(imageWidth0.getText());
-            if (imageHeight0.getText().isEmpty() == false)  simageHeight = Integer.parseInt(imageHeight0.getText());
-            if (camFrameInterval0.getText().isEmpty() == false)  scamFrameInterval = Integer.parseInt(camFrameInterval0.getText());
-            if (packetsPerRequest0.getText().isEmpty() == false)  spacketsPerRequest = Integer.parseInt(packetsPerRequest0.getText());
-            if (activeUrbs0.getText().isEmpty() == false)  sactiveUrbs = Integer.parseInt(activeUrbs0.getText());
-            System.out.println("Input saved");
-            //writeTheValues();
-
-            Object[] options = {"Save to a File", "Don't Save !"};
-            option = JOptionPane.showOptionDialog(null, "Would you like to save the settings to a file?" ,"Save the Settings ?", JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,null,options , options[0]);
-            if (option == JOptionPane.OK_OPTION) {
-                String name;
-                /*
-                Object[] options2 = {"Use the standard path", "Select new filepath"};
-                option = JOptionPane.showOptionDialog(null, String.format("Would you like to use the standard filepath?\nThe Filepath is:   %s" , rootPath ),"Filepath ...", JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,null,options2 , options2[0]);
-                if (option != JOptionPane.OK_OPTION){
-                    name = JOptionPane.showInputDialog("Please type in the Path:   (Example:    /home/user/camera/  )");
-                    rootPath = name;
-                }
-                *//*
-                paths = new ArrayList<>(50);
-
-                File s = new File(saveFilePath).getAbsoluteFile();
-                s.getParentFile().mkdirs();
-                String filePath = s.getParent();
-                filePath += "/";
-
-                recursiveFind(Paths.get(s.getParent()), System.out::println);
-                //recursiveFind(Paths.get(rootPath), p -> {if (p.toFile().getName().toString().equals("src")) { System.out.println(p); }});
-                System.out.println("Anzahl der Dateien: " + paths.size() + "\n");
-                for (int i = 0; i < paths.size(); i++) {
-                    System.out.println( paths.get(i) );
-                }
-                StringBuilder stringBuilder = new StringBuilder();
-                for (int i = 0; i < paths.size(); i++) {
-                    stringBuilder.append(String.format("%d   ->   ", (i+1)));
-                    stringBuilder.append(paths.get(i));
-                    stringBuilder.append("\n");
-                }
-                s = null;
-
-                name = JOptionPane.showInputDialog(String.format("Please type the name of the savefile.\n   Following Files were stored in the directory:\n \n%s\n\n To select the First File Type in 1, or for the secound File 2\nOr Type in a name (without the Directory) (for example: camera)" , stringBuilder.toString() ));
-                if (name == null) JOptionPane.showMessageDialog(null, "save canceld","Save canceld", JOptionPane.INFORMATION_MESSAGE);
-                else if (name.isEmpty() == false) {
-                    if (isInteger(name) == true) {
-                        try { saveValueToFile(paths.get((Integer.parseInt(name)) - 1)); }
-                        catch (Exception e) { Logger.getLogger(Kam.class.getName()).log(Level.SEVERE, null, e); JOptionPane.showMessageDialog(null, "Error saving the file","Error while saving the file", JOptionPane.ERROR_MESSAGE);}
-                    } else {saveValueToFile(filePath  += name += ".sav");      }
-                }
+        log("Path: " + rootPath.toString());
+        rootdirStr = file.toString();
+        rootdirStr += "/";
+        //final File folder = new File("/home/you/Desktop");
+        listFilesForFolder(file);
+        if (paths.isEmpty() == true && optionForSaveFile == OptionForSaveFile.restorefromfile) {
+            returnToMainLayout(String.format("No savefiles found in the save directory.\nDirectory: &s", rootdirStr ));
+        } else {
+            stringBuilder.append("Type the number of the file to select it, or type in the name (new or existing).\n");
+            for (int i = 0; i < paths.size(); i++) {
+                stringBuilder.append(String.format("%d   ->   ", (i+1)));
+                stringBuilder.append(paths.get(i));
+                stringBuilder.append("\n");
             }
-        } else  System.out.println("Input canceled");
-*/
+            log(stringBuilder.toString());
+
+            AlertDialog.Builder builder2 = new AlertDialog.Builder(mContext);
+            builder2.setTitle("Input a value");
+            builder2.setMessage(stringBuilder.toString());
+
+// Set up the input
+            final EditText input = new EditText(mContext);
+// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+            input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
+            builder2.setView(input);
+
+// Set up the buttons
+            builder2.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    log("OK");
+                    log("Die Eingabe war: " + input.getText().toString());
+                    String name = input.getText().toString();
+                    if (name.isEmpty() == true) {
+                        switch(optionForSaveFile) {
+                            case savetofile: saveValuesToFile(rootdirStr += "saveFile.sav");
+                                break;
+                            case restorefromfile: restorFromFile(rootdirStr += "saveFile.sav");
+                                break;
+                        }
+                    }
+                    else if (isInteger(name) == true) {
+                        switch(optionForSaveFile) {
+                            case savetofile:
+                                try { saveValuesToFile(paths.get((Integer.parseInt(name) - 1))); }
+                                catch (Exception e) { log("Save Failed ; Exception = " + e); e.printStackTrace();}
+                                break;
+                            case restorefromfile:
+                                restorFromFile(paths.get((Integer.parseInt(name) - 1)));
+                                break;
+                        }
+                    } else {
+                        switch(optionForSaveFile) {
+                            case savetofile:
+                                saveValuesToFile((rootdirStr += name += ".sav"));      log("Saving ...");
+                                break;
+                            case restorefromfile:
+                                restorFromFile((rootdirStr += name += ".sav"));      log("Saving ...");
+                                break;
+                        }
+                    }
+                    return;
+                }
+            });
+            builder2.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    returnToMainLayout("Values written but not saved.");
+                    return;
+                }
+            });
+            builder2.show();
+        }
+
+
+
+
     }
 
-    private void saveValueToFile (String savePath) {
 
-        System.out.println("savePath = " + savePath);
+
+    private void saveValuesToFile (String savePath) {
+
+        log("savePath = " + savePath);
         try {  // Catch errors in I/O if necessary.
             /*
         File dump = new File(DUMP_FILE).getAbsoluteFile();
         dump.getParentFile().mkdirs();
         */
-
-            File file = new File(savePath).getAbsoluteFile();
-            file.getParentFile().mkdirs();
+            File file = new File(savePath);
+            //file = new File(savePath).getAbsoluteFile();
+            log("AbsolutePath = " + file.getAbsolutePath());
+            //file.getParentFile().mkdirs();
             if (file.exists())  file.delete();
 
-            FileOutputStream saveFile=new FileOutputStream(savePath);
-
+            FileOutputStream saveFile=new FileOutputStream(file.toString());
             ObjectOutputStream save = new ObjectOutputStream(saveFile);
 
             save.writeObject(sALT_SETTING);
@@ -283,14 +397,40 @@ public class SaveToFile {
             save.writeObject(spacketsPerRequest);
             save.writeObject(smaxPacketSize);
             save.writeObject(sactiveUrbs);
-            save.writeObject(saveFilePath);
-
+            save.writeObject(saveFilePathFolder);
             // Close the file.
             save.close(); // This also closes saveFile.
-        } catch (Exception e) { log("Error");}
+        } catch (Exception e) { log("Error"); e.printStackTrace();}
 
-      //  JOptionPane.showMessageDialog(null, "save complete","Save Complete", JOptionPane.INFORMATION_MESSAGE);
+
+        returnToMainLayout(String.format("Values edited and saved\nSavefile = %s", savePath));
     }
+
+
+    public void restorFromFile(String pathToFile){
+        try{
+            FileInputStream saveFile = new FileInputStream(pathToFile);
+            ObjectInputStream save = new ObjectInputStream(saveFile);
+            sALT_SETTING = (Integer) save.readObject();
+            svideoformat = (Integer) save.readObject();
+            scamFormatIndex  = (Integer) save.readObject();
+            scamFrameIndex  = (Integer) save.readObject();
+            simageWidth = (Integer) save.readObject();
+            simageHeight = (Integer) save.readObject();
+            scamFrameInterval  = (Integer) save.readObject();
+            spacketsPerRequest  = (Integer) save.readObject();
+            smaxPacketSize  = (Integer) save.readObject();
+            sactiveUrbs  = (Integer) save.readObject();
+            saveFilePathFolder  = (String) save.readObject();
+            save.close();
+        }
+        catch(Exception exc){
+            exc.printStackTrace();
+        }
+
+        returnToMainLayout(String.format("Values restored from File\n%s", pathToFile));
+    }
+
 
 
 
@@ -311,27 +451,6 @@ public class SaveToFile {
         return true;
     }
 
-    public void restorFromFile(String pathToFile){
-        try{
-            FileInputStream saveFile = new FileInputStream(pathToFile);
-            ObjectInputStream save = new ObjectInputStream(saveFile);
-            sALT_SETTING = (Integer) save.readObject();
-            svideoformat = (Integer) save.readObject();
-            scamFormatIndex  = (Integer) save.readObject();
-            scamFrameIndex  = (Integer) save.readObject();
-            simageWidth = (Integer) save.readObject();
-            simageHeight = (Integer) save.readObject();
-            scamFrameInterval  = (Integer) save.readObject();
-            spacketsPerRequest  = (Integer) save.readObject();
-            smaxPacketSize  = (Integer) save.readObject();
-            sactiveUrbs  = (Integer) save.readObject();
-            saveFilePath  = (String) save.readObject();
-            save.close();
-        }
-        catch(Exception exc){
-            exc.printStackTrace();
-        }
-    }
 
 
     private void displayMessage(final String msg) {
@@ -346,7 +465,16 @@ public class SaveToFile {
         uvc_camera.displayErrorMessage(e);
     }
 
+    public void listFilesForFolder(final File folder) {
+        for (final File fileEntry : folder.listFiles()) {
+            if (fileEntry.isDirectory()) {
+                listFilesForFolder(fileEntry);
+            } else {
+                System.out.println(fileEntry.getName());
+                paths.add(fileEntry.toString());
 
-
+            }
+        }
+    }
 
 }

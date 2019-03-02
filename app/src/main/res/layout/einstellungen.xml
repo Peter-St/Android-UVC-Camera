@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+
     android:id="@+id/rl"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -32,6 +35,8 @@
                 android:layout_height="55dp"
                 android:text="Altsetting"
                 android:textSize="18sp" />
+
+
 
             <TextView
                 android:id="@+id/MaxPacketSize"
@@ -83,7 +88,7 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/PacketsPerReq."
+                android:id="@+id/PacketsPerReq"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:text="PacketsPerReq."
@@ -95,6 +100,12 @@
                 android:layout_height="55dp"
                 android:text="ActiveUrbs"
                 android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/button_cancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="cancel" />
         </LinearLayout>
 
         <LinearLayout
@@ -232,6 +243,12 @@
                     android:hint="1 or 8 or 124 ?"
                     android:inputType="number" />
             </android.support.design.widget.TextInputLayout>
+
+            <Button
+                android:id="@+id/button_ok"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ok" />
         </LinearLayout>
     </LinearLayout>
 
@@ -239,3 +256,4 @@
 
 </RelativeLayout>
 
+</ScrollView>

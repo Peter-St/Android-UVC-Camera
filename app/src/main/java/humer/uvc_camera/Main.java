@@ -7,6 +7,7 @@ package humer.uvc_camera;
 
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -73,12 +74,7 @@ public class Main extends Activity {
     private static final int VS_STILL_IMAGE_TRIGGER_CONTROL = 0x05;
 
 
-    private enum CameraType {arkmicro, arkmicro1, microdia, microdia_1, microdia_2, microdia2, microdia2_1, prehkeytec, prehkeytec_1, prehkeytec_2, prehkeytec_3, prehkeytec1, prehkeytec1_1, prehkeytec1_2, prehkeytec2, prehkeytec2_1, logitechC310, econ_5MP_USB2, econ_5MP_USB3, econ_8MP_USB3, delock, wellta}
-
-    ;
-
     private UsbManager usbManager;
-    private CameraType cameraType;
     private UsbDevice camDevice = null;
     private UsbDeviceConnection camDeviceConnection;
     private UsbInterface camControlInterface;
@@ -120,15 +116,18 @@ public class Main extends Activity {
     public Button button1;
     public Button button2;
     public Button button3;
+    public Button menu;
     ImageButton iB;
     TextView tv;
-    String[] mStringArray;
     Date date;
     SimpleDateFormat dateFormat;
     File file;
     String rootPath;
     String fileName;
+    SaveToFile  stf;
+    public StringBuilder stringBuilder;
 
+    private volatile IsochronousRead1 runningTransfer;
 
 
 
@@ -138,42 +137,79 @@ public class Main extends Activity {
         setContentView(R.layout.layout_main);
         //imageView = (ImageView) findViewById(R.id.imageView);
 
-        // Example of a call to a native method
         tv = (TextView) findViewById(R.id.textDarstellung);
         tv.setText("Hallo, Bitte Kamera anschließen");
+
+
+        button3 = (Button) findViewById(R.id.einstellungen);
+        button3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Creating the instance of PopupMenu
+                PopupMenu popup = new PopupMenu(Main.this, button3);
+                //Inflating the Popup using xml file
+                popup.getMenuInflater().inflate(R.menu.camera_settings, popup.getMenu());
+
+                //registering popup with OnMenuItemClickListener
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+                        //  Toast.makeText(Main.this,"Auswahl von: " + item.getTitle(),Toast.LENGTH_SHORT).show();
+                        return true; }
+                });
+                popup.show();//showing popup menu
+            }
+        });//closing the setOnClickListener method
+
+
+
+
         usbManager = (UsbManager) getSystemService(USB_SERVICE);
         handler = new Handler(); // This makes the handler attached to UI Thread
-        //SaveToFile  stf = new SaveToFile(this);
-
+        stf = new SaveToFile(this, this);
     }
 
-    public void Main(int i){
-
-
-    }
-
-
-    public void kameraEinstellungen ( View view) {
-
-
-        runOnUiThread(new Runnable() {
+    public void initSettingsButton(){
+        button3.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void run() {
+            public void onClick(View view) {
+                //Creating the instance of PopupMenu
+                PopupMenu popup = new PopupMenu(Main.this, button3);
+                //Inflating the Popup using xml file
+                popup.getMenuInflater().inflate(R.menu.camera_settings, popup.getMenu());
 
-                setContentView(R.layout.einstellungen);
-                imageView = (ImageView) findViewById(R.id.imageView_prehkeytec);
-                button1 = (Button) findViewById(R.id.button1);
-
+                //registering popup with OnMenuItemClickListener
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+                        //  Toast.makeText(Main.this,"Auswahl von: " + item.getTitle(),Toast.LENGTH_SHORT).show();
+                        return true; }
+                });
+                popup.show();//showing popup menu
             }
-        });
-
+        });//closing the setOnClickListener method
     }
 
 
-    public void kameraSuchenAktion(View view) {
+    public void editCameraSettings (MenuItem item) {
+        stf.startEditSave();
+    }
+
+    public void restoreCameraSettings (MenuItem item) {
+        stf.restoreValuesFromFile();
+    }
+
+
+    public void editCameraSettings ( View view) {
+        stf.startEditSave();
+    }
+    public void restoreCameraSettings ( View view) {
+        stf.restoreValuesFromFile();
+    }
 
 
 
+
+    public void searchTheCamera(MenuItem item) {
+        camDevice = null;
         try {
             findCam();
         } catch (Exception e) {
@@ -198,212 +234,22 @@ public class Main extends Activity {
             }
 
             if (usbManager.hasPermission(camDevice)) {
-                cameraType = detectCameraType(camDevice);
-                if (cameraType == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            tv.setText("Kameratyp nicht erkannt.");
-                        }
-                    });
-                } else {
-                    switch (cameraType) {
-                        case prehkeytec:
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    setContentView(R.layout.layout_prehkeytec);
-                                    imageView = (ImageView) findViewById(R.id.imageView_prehkeytec);
-                                    button1 = (Button) findViewById(R.id.button1);
-                                    button1.setOnClickListener(new View.OnClickListener() {
 
-                                        @Override
-                                        public void onClick(View view) {
-                                            //Creating the instance of PopupMenu
-                                            PopupMenu popup = new PopupMenu(Main.this, button1);
-                                            //Inflating the Popup using xml file
-                                            popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tv = (TextView) findViewById(R.id.textDarstellung);
+                                tv.setText("A camera has been found.");
+                            }
+                        });
 
-                                            //registering popup with OnMenuItemClickListener
-                                            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                                                public boolean onMenuItemClick(MenuItem item) {
-                                                    // Toast.makeText(Main.this,"Auswahl von: " + item.getTitle(),Toast.LENGTH_SHORT).show();
-                                                    return true;
-                                                }
-                                            });
-                                            popup.show();//showing popup menu
-                                        }
-                                    });//closing the setOnClickListener method
-                                    button2 = (Button) findViewById(R.id.button2);
-                                    button2.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            //Creating the instance of PopupMenu
-                                            PopupMenu popup = new PopupMenu(Main.this, button2);
-                                            //Inflating the Popup using xml file
-                                            popup.getMenuInflater().inflate(R.menu.popup_kamera_prehkeytec, popup.getMenu());
-
-                                            //registering popup with OnMenuItemClickListener
-                                            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                                                public boolean onMenuItemClick(MenuItem item) {
-                                                    //  Toast.makeText(Main.this,"Auswahl von: " + item.getTitle(),Toast.LENGTH_SHORT).show();
-                                                    return true;
-                                                }
-                                            });
-                                            popup.show();//showing popup menu
-                                        }
-                                    });//closing the setOnClickListener method
-                                    button3 = (Button) findViewById(R.id.button3);
-                                    button3.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            //Creating the instance of PopupMenu
-                                            PopupMenu popup = new PopupMenu(Main.this, button3);
-                                            //Inflating the Popup using xml file
-                                            popup.getMenuInflater().inflate(R.menu.fehlersuche_microdia, popup.getMenu());
-
-                                            //registering popup with OnMenuItemClickListener
-                                            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                                                public boolean onMenuItemClick(MenuItem item) {
-                                                    //  Toast.makeText(Main.this,"Auswahl von: " + item.getTitle(),Toast.LENGTH_SHORT).show();
-                                                    return true; }
-                                            });
-                                            popup.show();//showing popup menu
-                                        }
-                                    });//closing the setOnClickListener method
-                                    iB = (ImageButton) findViewById(R.id.Bildaufnahme);
-                                    final MediaPlayer mp2 = MediaPlayer.create(Main.this, R.raw.sound2);
-                                    final MediaPlayer mp1 = MediaPlayer.create(Main.this, R.raw.sound1);
-                                    iB.setOnLongClickListener(new View.OnLongClickListener() {
-                                        @Override
-                                        public boolean onLongClick(View view) {
-                                            mp2.start();
-                                            hoheAuflösung();
-                                            return true;
-                                        }
-                                    });
-                                    iB.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            mp1.start();
-                                            BildaufnahmeButtonClickEvent();
-                                        }
-                                    });
-                                }
-                            });
-                            break;
-
-                        case arkmicro:
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    setContentView(R.layout.layout_arkmicro);
-                                }
-                            });
-                            break;
-
-                        case microdia:
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    setContentView(R.layout.layout_microdia);
-                                    imageView = (ImageView) findViewById(R.id.imageView_microdia);
-                                    button1 = (Button) findViewById(R.id.button1);
-                                    button1.setOnClickListener(new View.OnClickListener() {
-
-                                        @Override
-                                        public void onClick(View view) {
-                                            //Creating the instance of PopupMenu
-                                            PopupMenu popup = new PopupMenu(Main.this, button1);
-                                            //Inflating the Popup using xml file
-                                            popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
-
-                                            //registering popup with OnMenuItemClickListener
-                                            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                                                public boolean onMenuItemClick(MenuItem item) {
-                                                    // Toast.makeText(Main.this,"Auswahl von: " + item.getTitle(),Toast.LENGTH_SHORT).show();
-                                                    return true;
-                                                }
-                                            });
-                                            popup.show();//showing popup menu
-                                        }
-                                    });//closing the setOnClickListener method
-                                    button2 = (Button) findViewById(R.id.button2);
-                                    button2.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            //Creating the instance of PopupMenu
-                                            PopupMenu popup = new PopupMenu(Main.this, button2);
-                                            //Inflating the Popup using xml file
-                                            popup.getMenuInflater().inflate(R.menu.popup_kamera_microdia, popup.getMenu());
-
-                                            //registering popup with OnMenuItemClickListener
-                                            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                                                public boolean onMenuItemClick(MenuItem item) {
-                                                    //  Toast.makeText(Main.this,"Auswahl von: " + item.getTitle(),Toast.LENGTH_SHORT).show();
-                                                    return true;
-                                                }
-                                            });
-                                            popup.show();//showing popup menu
-                                        }
-                                    });//closing the setOnClickListener method
-                                    button3 = (Button) findViewById(R.id.button3);
-                                    button3.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            //Creating the instance of PopupMenu
-                                            PopupMenu popup = new PopupMenu(Main.this, button3);
-                                            //Inflating the Popup using xml file
-                                            popup.getMenuInflater().inflate(R.menu.fehlersuche_microdia, popup.getMenu());
-
-                                            //registering popup with OnMenuItemClickListener
-                                            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                                                public boolean onMenuItemClick(MenuItem item) {
-                                                    //  Toast.makeText(Main.this,"Auswahl von: " + item.getTitle(),Toast.LENGTH_SHORT).show();
-                                                    return true; }
-                                            });
-                                            popup.show();//showing popup menu
-                                        }
-                                    });//closing the setOnClickListener method
-                                    iB = (ImageButton) findViewById(R.id.Bildaufnahme);
-                                    final MediaPlayer mp2 = MediaPlayer.create(Main.this, R.raw.sound2);
-                                    final MediaPlayer mp1 = MediaPlayer.create(Main.this, R.raw.sound1);
-                                    iB.setOnLongClickListener(new View.OnLongClickListener() {
-                                        @Override
-                                        public boolean onLongClick(View view) {
-                                            mp2.start();
-                                            hoheAuflösung();
-                                            return true;
-                                        }
-                                    });
-                                    iB.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            mp1.start();
-                                            BildaufnahmeButtonClickEvent();
-                                        }
-                                    });
-                                }
-                            });
-
-                            break;
-
-                        default:
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    tv.setText("Kameratyp erkannt, aber keine Kamera passt.");
-                                }
-                            });
-                            break;
-                    }
-                }
 
             } else {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        tv.setText("Es wurden keine Berechtigungen für die Kamera erteilt.");
+                        tv = (TextView) findViewById(R.id.textDarstellung);
+                        tv.setText("A camera has been found, but no permissions were granted");
                     }
                 });
             }
@@ -412,55 +258,190 @@ public class Main extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    tv.setText("Keine Kamera erkannt.");
+                    tv = (TextView) findViewById(R.id.textDarstellung);
+                    tv.setText("No camera found\nSolutions:\n- Connect a camera and try again ...");
                 }
             });
         }
     }
 
 
+    public void kamera_video(MenuItem item){
+
+        if (camDevice == null) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tv = (TextView) findViewById(R.id.textDarstellung);
+                    tv.setText("No camera connected.");
+                }
+            });
+        }
+        else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    setContentView(R.layout.layout_video);
+                    imageView = (ImageView) findViewById(R.id.imageView);
+                    button1 = (Button) findViewById(R.id.button1);
+                    button1.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View view) {
+                            //Creating the instance of PopupMenu
+                            PopupMenu popup = new PopupMenu(Main.this, button1);
+                            //Inflating the Popup using xml file
+                            popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
+
+                            //registering popup with OnMenuItemClickListener
+                            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                                public boolean onMenuItemClick(MenuItem item) {
+                                    // Toast.makeText(Main.this,"Auswahl von: " + item.getTitle(),Toast.LENGTH_SHORT).show();
+                                    return true;
+                                }
+                            });
+                            popup.show();//showing popup menu
+                        }
+                    });//closing the setOnClickListener method
+                    button2 = (Button) findViewById(R.id.button2);
+                    button2.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            //Creating the instance of PopupMenu
+                            PopupMenu popup = new PopupMenu(Main.this, button2);
+                            //Inflating the Popup using xml file
+                            popup.getMenuInflater().inflate(R.menu.popup_kamera_microdia, popup.getMenu());
+
+                            //registering popup with OnMenuItemClickListener
+                            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                                public boolean onMenuItemClick(MenuItem item) {
+                                    //  Toast.makeText(Main.this,"Auswahl von: " + item.getTitle(),Toast.LENGTH_SHORT).show();
+                                    return true;
+                                }
+                            });
+                            popup.show();//showing popup menu
+                        }
+                    });//closing the setOnClickListener method
+                    button3 = (Button) findViewById(R.id.button3);
+                    button3.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            //Creating the instance of PopupMenu
+                            PopupMenu popup = new PopupMenu(Main.this, button3);
+                            //Inflating the Popup using xml file
+                            popup.getMenuInflater().inflate(R.menu.camera_settings, popup.getMenu());
+
+                            //registering popup with OnMenuItemClickListener
+                            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                                public boolean onMenuItemClick(MenuItem item) {
+                                    //  Toast.makeText(Main.this,"Auswahl von: " + item.getTitle(),Toast.LENGTH_SHORT).show();
+                                    return true; }
+                            });
+                            popup.show();//showing popup menu
+                        }
+                    });//closing the setOnClickListener method
+                    iB = (ImageButton) findViewById(R.id.Bildaufnahme);
+                    final MediaPlayer mp2 = MediaPlayer.create(Main.this, R.raw.sound2);
+                    final MediaPlayer mp1 = MediaPlayer.create(Main.this, R.raw.sound1);
+                    iB.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View view) {
+                            mp2.start();
+                            hoheAuflösung();
+                            return true;
+                        }
+                    });
+                    iB.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            mp1.start();
+                            BildaufnahmeButtonClickEvent();
+                        }
+                    });
+                }
+            });
+        }
 
 
-
-
-
-    public void kameraMicrodia_0(MenuItem item) {   kamera =0 ;  }
-    public void kameraMicrodia_1(MenuItem item) {  kamera =1 ;   }
-    public void kameraMicrodia_2(MenuItem item) {   kamera =2 ;  }
-    public void kameraMicrodia_3(MenuItem item) {   kamera =3 ; }
-    public void kameraMicrodia_4(MenuItem item) {   kamera =4 ; }
-    public void kameraMicrodia_5(MenuItem item) {   kamera =5 ; }
-
-    public void kameraPrehkeytec_0(MenuItem item) {   kamera =0 ; }
-    public void kameraPrehkeytec_1(MenuItem item) {   kamera =1 ; }
-    public void kameraPrehkeytec_2(MenuItem item) {   kamera =2 ; }
-    public void kameraPrehkeytec_3(MenuItem item) {   kamera =3 ; }
-    public void kameraPrehkeytec_4(MenuItem item) {   kamera =4 ; }
-    public void kameraPrehkeytec_5(MenuItem item) {   kamera =5 ; }
-
-
-
-
-    public void xGo_1920x1080(MenuItem item) {
-        kamera = 4;
     }
-    public void xGo_1280x1024(MenuItem item) { kamera = 5; }
-    public void xGo_1280x780(MenuItem item) {
-        kamera = 6;
-    }
 
+    public void isoRead(MenuItem item) {
 
-    public void active_1280x780(MenuItem item) {
-        kamera = 7;
-    }
-    public void active_16_16(MenuItem item) {
-        kamera = 8;
+        if (camDevice == null) {
+            try {
+                findCam();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (camDevice == null) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tv = (TextView) findViewById(R.id.textDarstellung);
+                    tv.setText("No Camera connected.");  }
+            });
+        } else {
+            if (!usbManager.hasPermission(camDevice)) {
+                int a;
+                PendingIntent permissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
+                // IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
+                // registerReceiver(mUsbReceiver, filter);
+                usbManager.requestPermission(camDevice, permissionIntent);
+                while (!usbManager.hasPermission(camDevice)) {
+                    long time0 = System.currentTimeMillis();
+                    for (a = 0; a < 10; a++) {
+                        while (System.currentTimeMillis() - time0 < 1000) {
+                            if (usbManager.hasPermission(camDevice)) break;
+                        }
+                    }
+                    if (usbManager.hasPermission(camDevice)) break;
+                    if ( a >= 10) break;
+                }
+            }
+
+                try {
+                    openCam();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            if (camIsOpen) {
+                if (runningTransfer != null) {
+                    return;
+                }
+
+                usbIso.preallocateRequests(activeUrbs);
+
+                runningTransfer = new IsochronousRead1(this, this);
+                runningTransfer.start();
+            } else {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tv = (TextView) findViewById(R.id.textDarstellung);
+                        tv.setText("Failed to initialize the camera device.");
+                    }
+                });
+
+            }
+        }
     }
 
     public void beenden(MenuItem item) {
-        camDeviceConnection.releaseInterface(camControlInterface);
-        camDeviceConnection.releaseInterface(camStreamingInterface);
-        camDeviceConnection.close();
+        if (camIsOpen) {
+            try {
+                closeCameraDevice();
+            } catch (Exception e) {
+                displayErrorMessage(e);
+                return;
+            }
+        }
+        else if (camDeviceConnection != null) {
+            camDeviceConnection.releaseInterface(camControlInterface);
+            camDeviceConnection.releaseInterface(camStreamingInterface);
+            camDeviceConnection.close();
+        }
         finish();
     }
 
@@ -476,124 +457,7 @@ public class Main extends Activity {
         // listDeviceInterfaces(camDevice);
     }
 
-    public void findCamButtonClickEvent(View view) {
-        try {
-            findCam();
-        } catch (Exception e) {
-            displayErrorMessage(e);
-            return;
-        }
-        displayMessage("USB camera found: " + camDevice.getDeviceName());
-        // listDeviceInterfaces(camDevice);
-    }
 
-    private void listDevice(UsbDevice usbDevice) {
-        log("Interface count: " + usbDevice.getInterfaceCount());
-        int interfaces = usbDevice.getInterfaceCount();
-
-        ArrayList<String> logArray = new ArrayList<String>(512);
-
-        for (int i = 0; i < interfaces; i++) {
-
-            UsbInterface usbInterface = usbDevice.getInterface(i);
-            log("-Interface " + i + ": id=" + usbInterface.getId() + " class=" + usbInterface.getInterfaceClass() + " subclass=" + usbInterface.getInterfaceSubclass() + " protocol=" + usbInterface.getInterfaceProtocol());
-            // UsbInterface.getAlternateSetting() has been added in Android 5.
-            int endpoints = usbInterface.getEndpointCount();
-            StringBuilder logEntry = new StringBuilder("/ InterfaceID " + usbInterface.getId() + "/ Interfaceclass " + usbInterface.getInterfaceClass() + " / protocol=" + usbInterface.getInterfaceProtocol());
-            logArray.add(logEntry.toString());
-
-            for (int j = 0; j < endpoints; j++) {
-                UsbEndpoint usbEndpoint = usbInterface.getEndpoint(j);
-                log("- Endpoint " + j + ": addr=" + usbEndpoint.getAddress() + " [direction=" + usbEndpoint.getDirection() + " endpointNumber=" + usbEndpoint.getEndpointNumber() + "] " +
-                        " attrs=" + usbEndpoint.getAttributes() + " interval=" + usbEndpoint.getInterval() + " maxPacketSize=" + usbEndpoint.getMaxPacketSize() + " type=" + usbEndpoint.getType());
-
-                StringBuilder logEntry2 = new StringBuilder("Endpoint " + j + "/ addr 0x" + Integer.toHexString(usbEndpoint.getAddress()) + "/ direction " + usbEndpoint.getDirection() + " / endpointNumber=" + usbEndpoint.getEndpointNumber() +  "] " + " attrs=" + usbEndpoint.getAttributes() + " interval=" + usbEndpoint.getInterval() + " maxPacketSize=" + usbEndpoint.getMaxPacketSize() + " type=" + usbEndpoint.getType() );
-                logArray.add(logEntry2.toString());
-            }
-        }
-
-        mStringArray = new String[logArray.size()];
-        mStringArray = logArray.toArray(mStringArray);
-        log("logArray.size() =" + logArray.size() );
-
-        if (logArray.size() >= 15) {
-            log("logArray.size() >= 15");
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    setContentView(R.layout.layout_main);
-                    tv = (TextView) findViewById(R.id.textDarstellung);
-                    tv.setSingleLine(false);
-                    tv.setText(mStringArray[0] + "\n" + mStringArray[1] + "\n" + mStringArray[2] + "\n" + mStringArray[3] + "\n" + mStringArray[4] + "\n" + mStringArray[5] + "\n" + mStringArray[6] + "\n" + mStringArray[7] + "\n" + mStringArray[8] + "\n" + mStringArray[9]+"\n" + mStringArray[10]+"\n" + mStringArray[11]+"\n" + mStringArray[12]+ "\n" +mStringArray[13]+ "\n" +mStringArray[14]);
-                }
-            });
-        } else if (logArray.size() >= 10){
-            log("logArray.size() >= 10");
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    setContentView(R.layout.layout_main);
-                    tv = (TextView) findViewById(R.id.textDarstellung);
-                    tv.setSingleLine(false);
-                    tv.setText(mStringArray[0] +"\n"+ mStringArray[1]+"\n"+ mStringArray[2]+"\n"+ mStringArray[3]+"\n"+ mStringArray[4]+"\n"+ mStringArray[5]+"\n"+ mStringArray[6]+"\n"+ mStringArray[7]+"\n"+ mStringArray[8]+"\n"+ mStringArray[9]);
-                }
-            });
-        } else if (logArray.size() >= 5){
-            log("logArray.size() >= 5");
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    setContentView(R.layout.layout_main);
-                    tv.setSingleLine(false);
-                    tv.setText(mStringArray[0] +"\n"+ mStringArray[1]+"\n"+ mStringArray[2]+"\n"+ mStringArray[3]+"\n"+ mStringArray[4]);
-                }
-            });
-        }
-
-
-    }
-
-    private void findCam() throws Exception {
-        camDevice = findCameraDevice();
-        if (camDevice == null) {
-            throw new Exception("No USB camera device found.");
-        }
-    }
-
-    private UsbDevice findCameraDevice() {
-        HashMap<String, UsbDevice> deviceList = usbManager.getDeviceList();
-        log("USB devices count = " + deviceList.size());
-        for (UsbDevice usbDevice : deviceList.values()) {
-            log("USB device \"" + usbDevice.getDeviceName() + "\": " + usbDevice);
-            if (checkDeviceHasVideoStreamingInterface(usbDevice)) {
-                return usbDevice;
-            }
-        }
-        return null;
-    }
-
-    private boolean checkDeviceHasVideoStreamingInterface(UsbDevice usbDevice) {
-        return getVideoStreamingInterface(usbDevice) != null;
-    }
-
-    private UsbInterface getVideoControlInterface(UsbDevice usbDevice) {
-        return findInterface(usbDevice, UsbConstants.USB_CLASS_VIDEO, SC_VIDEOCONTROL, false);
-    }
-
-    private UsbInterface getVideoStreamingInterface(UsbDevice usbDevice) {
-        return findInterface(usbDevice, UsbConstants.USB_CLASS_VIDEO, SC_VIDEOSTREAMING, true);
-    }
-
-    private UsbInterface findInterface(UsbDevice usbDevice, int interfaceClass, int interfaceSubclass, boolean withEndpoint) {
-        int interfaces = usbDevice.getInterfaceCount();
-        for (int i = 0; i < interfaces; i++) {
-            UsbInterface usbInterface = usbDevice.getInterface(i);
-            if (usbInterface.getInterfaceClass() == interfaceClass && usbInterface.getInterfaceSubclass() == interfaceSubclass && (!withEndpoint || usbInterface.getEndpointCount() > 0)) {
-                return usbInterface;
-            }
-        }
-        return null;
-    }
 
 
 
@@ -612,220 +476,54 @@ public class Main extends Activity {
 
 
     public void listDeviceButtonClickEvent(MenuItem item) {
-        try {
-            findCam();
+        if (camDevice == null) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tv = (TextView) findViewById(R.id.textDarstellung);
+                    tv.setText("No Camera found.\nPlease connect first a camera and run 'Search for a camera' from the menu");  }
+            });
+        } else {
             listDevice(camDevice);
-        } catch (Exception e) {
-            displayErrorMessage(e);
-            return;
         }
     }
 
 
     public void openCamButtonClickEvent(MenuItem item) {
-        try {
-            closeCameraDevice();
-        } catch (Exception e) {
-            displayErrorMessage(e);
-            return;
-        }
-        try {
-            openCam();
-        } catch (Exception e) {
-            displayErrorMessage(e);
-            return;
-        }
-        // log("streamingInterfaceId=" + camStreamingInterface.getId() + " streamingEndpointAddr=0x" + Integer.toHexString(camStreamingEndpoint.getAddress()));
-        displayMessage("OK");
-    }
-
-
-    private void openCam() throws Exception {
-        findCam();
-        openCameraDevice();
-        initCamera();
-        camIsOpen = true;
-    }
-
-    private void openCameraDevice() throws Exception {
-        if (!usbManager.hasPermission(camDevice)) {
-            throw new Exception("Permission missing for camera device.");
-        }
-        cameraType = detectCameraType(camDevice);
-        if (cameraType == null) {
-            throw new Exception("Camera type not recognized.");
-        }
-        // (For transfer buffer sizes > 196608 the kernel file drivers/usb/core/devio.c must be patched.)
-        switch (cameraType) {                           // temporary solution
-            case prehkeytec: // für Acer
-
-                Prehkeytec prehkeytek = new Prehkeytec();
-                prehkeytek.kameraEinstellungen(kamera, mjpegYuv);
-
-                break;
-
-            case prehkeytec2_1:    // für Xperia Active
-                camStreamingAltSetting = 1;              // 1 = 3x1024 bytes packet size
-                maxPacketSize = 3 * 1024;
-                //camStreamingAltSetting = 2;              // 2 = 2x 1024 bytes packet size
-                //maxPacketSize = 2* 1024;
-                //camStreamingAltSetting = 3;              // 3 = 1x 1024 bytes packet size
-                //maxPacketSize = 1* 1024;
-                //camStreamingAltSetting = 4;              // 4 = 1x 512 bytes packet size
-                //maxPacketSize = 512;
-                camFormatIndex = 1;                       // bFormatIndex: 1 = MJPEG
-                camFrameIndex = 3;                        // bFrameIndex: 1 = 1920 x 1080, 2 = 1280 x 1024, 3 = 1280 x 720
-                camFrameInterval = 2000000;               // dwFrameInterval: 333333 =  30 fps // 400000 = 25 fps // 500000 = 20 fps   // 666666 = 15 fps // 1000000 = 10 fps   2000000 = 5 fps
-                packetsPerRequest = 4;             //4 für Acer A3A20
-                activeUrbs = 4;                     //4 für Acer A3A20
-                kameramodel = 'p';
-                break;
-
-
-            case arkmicro:
-                camStreamingAltSetting = 11;              // 11 = 3x1000 bytes packet size // 6 = 1x 960 bytes   5 = 1x 800 bytes
-                maxPacketSize = 3 * 1000;
-
-                //camStreamingAltSetting = 9;              // 9 = 2x 992 bytes packet size
-                //maxPacketSize = 2* 992;
-
-                //camStreamingAltSetting = 1;              // 1 = 1x 192 bytes packet size
-                //maxPacketSize = 1 * 192;
-
-                //camStreamingAltSetting = 2;              // 1 = 1x 384 bytes packet size
-                //maxPacketSize = 1* 384;
-
-                //camStreamingAltSetting = 7;              // 7 = 2x 640 bytes packet size
-                //maxPacketSize = 2* 640;
-
-                //camStreamingAltSetting = 4;              // 4 = 1x 640 bytes packet size
-                //maxPacketSize = 1* 640;
-                camFormatIndex = 1;                       // bFormatIndex: 1 = uncompressed YUY2
-                camFrameIndex = 1;                        // bFrameIndex: 1 = 640 x 480, 2 = 160 x 120, 3 = 176 x 144, 4 = 320 x 240, 5 = 352 x 288
-                imageWidth = 640;
-                imageHeight = 480;
-                camFrameInterval = 2000000;               // dwFrameInterval: 333333 =  30 fps   // 666666 = 15 fps // 1000000 = 10 fps   2000000 = 5 fps
-                // camFrameInterval = 2000000;
-                packetsPerRequest = 4;
-                activeUrbs = 4;
-                break;
-            case arkmicro1:
-                camStreamingAltSetting = 11;              // 7 = 2x 640 bytes packet size
-                maxPacketSize = 3* 1000;
-                camFormatIndex = 1;                       // bFormatIndex: 1 = uncompressed YUY2
-                camFrameIndex = 2;                        // bFrameIndex: 1 = 640 x 480, 2 = 160 x 120, 3 = 176 x 144, 4 = 320 x 240, 5 = 352 x 288
-                imageWidth = 160;
-                imageHeight = 120;
-                camFrameInterval = 2000000;               // dwFrameInterval: 333333 =  30 fps   // 666666 = 15 fps // 1000000 = 10 fps   2000000 = 5 fps
-                // camFrameInterval = 2000000;
-                packetsPerRequest = 4;
-                activeUrbs = 4;
-                break;
-
-
-            case microdia:
-
-                Microdia microdia = new Microdia();
-                microdia.kameraEinstellungen(kamera, mjpegYuv);
-
-                break;
-
-
-            default:
-                throw new AssertionError();
-        }
-        camControlInterface = getVideoControlInterface(camDevice);
-        camStreamingInterface = getVideoStreamingInterface(camDevice);
-        if (camStreamingInterface.getEndpointCount() < 1) {
-            throw new Exception("Streaming interface has no endpoint.");
-        }
-        camStreamingEndpoint = camStreamingInterface.getEndpoint(0);
-        bulkMode = camStreamingEndpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK;
-        camDeviceConnection = usbManager.openDevice(camDevice);
-        if (camDeviceConnection == null) {
-            throw new Exception("Unable to open camera device connection.");
-        }
-        if (!camDeviceConnection.claimInterface(camControlInterface, true)) {
-            throw new Exception("Unable to claim camera control interface.");
-        }
-        if (!camDeviceConnection.claimInterface(camStreamingInterface, true)) {
-            throw new Exception("Unable to claim camera streaming interface.");
-        }
-        usbIso = new UsbIso(camDeviceConnection.getFileDescriptor(), packetsPerRequest, maxPacketSize);
-        usbIso.preallocateRequests(activeUrbs);
-    }
-
-
-    private CameraType detectCameraType(UsbDevice dev) {
-
-        if (dev.getVendorId() == 0x0c45 && dev.getProductId() == 0x6366) {
-            return CameraType.microdia;
-        } else if (dev.getVendorId() == 0x18ec && dev.getProductId() == 0x3390) {
-            return CameraType.arkmicro;
-        } else if (dev.getVendorId() == 0x053a && dev.getProductId() == 0x9230) {
-            return CameraType.prehkeytec;
+        if (camDevice == null) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tv = (TextView) findViewById(R.id.textDarstellung);
+                    tv.setText("No Camera found.\nPlease connect a camera, or if allready connected run 'Search for a camera' from the menu");  }
+            });
         } else {
-            return null;
+            camIsOpen = false;
+            try {
+                closeCameraDevice();
+            } catch (Exception e) {
+                displayErrorMessage(e);
+                return;
+            }
+            try {
+                openCam();
+            } catch (Exception e) {
+                displayErrorMessage(e);
+                return;
+            }
+            displayMessage("OK");
+            if (camIsOpen) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tv = (TextView) findViewById(R.id.textDarstellung);
+                        tv.setText(stringBuilder.toString());
+                    }
+                });
+
+            }
         }
     }
-    private void closeCameraDevice() throws IOException {
-        if (usbIso != null) {
-            usbIso.dispose();
-            usbIso = null;
-        }
-        if (camDeviceConnection != null) {
-            camDeviceConnection.releaseInterface(camControlInterface);
-            camDeviceConnection.releaseInterface(camStreamingInterface);
-            camDeviceConnection.close();
-            camDeviceConnection = null;
-        }
-    }
-
-    private void initCamera() throws Exception {
-        try {
-            getVideoControlErrorCode();
-        }                // to reset previous error states
-        catch (Exception e) {
-            log("Warning: getVideoControlErrorCode() failed: " + e);
-        }   // ignore error, some cameras do not support the request
-        enableStreaming(false);
-        try {
-            getVideoStreamErrorCode();
-        }                // to reset previous error states
-        catch (Exception e) {
-            log("Warning: getVideoStreamErrorCode() failed: " + e);
-        }   // ignore error, some cameras do not support the request
-        initStreamingParms();
-
-        if (cameraType == CameraType.prehkeytec_1) {
-            initStillImageParms();
-        }
-        if (cameraType == CameraType.prehkeytec_2) {
-            initStillImageParms();
-        }
-        if (cameraType == CameraType.prehkeytec) {
-            initStillImageParms();
-        }
-
-
-        if (cameraType == CameraType.prehkeytec1_1) {
-            initStillImageParms();
-        }
-        if (cameraType == CameraType.prehkeytec1_2) {
-            initStillImageParms();
-        }
-        if (cameraType == CameraType.prehkeytec1) {
-            initStillImageParms();
-        }
-
-
-        //if (cameraType == CameraType.arkmicro) {
-        //    initStillImageParms(); }
-        //if (cameraType == CameraType.microdia) {
-        //    initStillImageParms(); }
-        //...
-    }
-
 
     public void test1ButtonClickEvent(MenuItem Item) {
         try {
@@ -929,6 +627,179 @@ public class Main extends Activity {
             // surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         }
     }
+
+
+    private void listDevice(UsbDevice usbDevice) {
+
+        log("Interface count: " + usbDevice.getInterfaceCount());
+        int interfaces = usbDevice.getInterfaceCount();
+
+        ArrayList<String> logArray = new ArrayList<String>(512);
+        stringBuilder = new StringBuilder();
+
+        for (int i = 0; i < interfaces; i++) {
+
+            UsbInterface usbInterface = usbDevice.getInterface(i);
+            log("-Interface " + i + ": id=" + usbInterface.getId() + " class=" + usbInterface.getInterfaceClass() + " subclass=" + usbInterface.getInterfaceSubclass() + " protocol=" + usbInterface.getInterfaceProtocol());
+            // UsbInterface.getAlternateSetting() has been added in Android 5.
+            int endpoints = usbInterface.getEndpointCount();
+            StringBuilder logEntry = new StringBuilder("/ InterfaceID " + usbInterface.getId() + " / Interfaceclass = " + usbInterface.getInterfaceClass() + " / protocol = " + usbInterface.getInterfaceProtocol());
+            stringBuilder.append(logEntry.toString());
+            stringBuilder.append("\n");
+            //logArray.add(logEntry.toString());
+
+            for (int j = 0; j < endpoints; j++) {
+                UsbEndpoint usbEndpoint = usbInterface.getEndpoint(j);
+                log("- Endpoint " + j + ": addr=" + usbEndpoint.getAddress() + " [direction=" + usbEndpoint.getDirection() + " endpointNumber=" + usbEndpoint.getEndpointNumber() + "] " +
+                        " attrs=" + usbEndpoint.getAttributes() + " interval=" + usbEndpoint.getInterval() + " maxPacketSize=" + usbEndpoint.getMaxPacketSize() + " type=" + usbEndpoint.getType());
+
+                StringBuilder logEntry2 = new StringBuilder("Endpoint " + j + " / addr 0x" + Integer.toHexString(usbEndpoint.getAddress()) + "/ direction " + usbEndpoint.getDirection() + " / endpointNumber=" + usbEndpoint.getEndpointNumber() +  "] " + " attrs=" + usbEndpoint.getAttributes() + " interval=" + usbEndpoint.getInterval() + " maxPacketSize=" + usbEndpoint.getMaxPacketSize() + " type=" + usbEndpoint.getType() );
+                stringBuilder.append(logEntry2.toString());
+                stringBuilder.append("\n");
+                //logArray.add(logEntry2.toString());
+            }
+        }
+
+
+        log("logArray.size() >= 15");
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                setContentView(R.layout.layout_main);
+                tv = (TextView) findViewById(R.id.textDarstellung);
+                tv.setSingleLine(false);
+                tv.setText(stringBuilder.toString());
+
+            }
+        });
+    }
+
+    private void findCam() throws Exception {
+        camDevice = findCameraDevice();
+        if (camDevice == null) {
+            throw new Exception("No USB camera device found.");
+        }
+        if (!usbManager.hasPermission(camDevice)) {
+            int a;
+            PendingIntent permissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
+            // IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
+            // registerReceiver(mUsbReceiver, filter);
+            usbManager.requestPermission(camDevice, permissionIntent);
+        }
+    }
+
+    private UsbDevice findCameraDevice() {
+        HashMap<String, UsbDevice> deviceList = usbManager.getDeviceList();
+        log("USB devices count = " + deviceList.size());
+        for (UsbDevice usbDevice : deviceList.values()) {
+            log("USB device \"" + usbDevice.getDeviceName() + "\": " + usbDevice);
+            if (checkDeviceHasVideoStreamingInterface(usbDevice)) {
+                return usbDevice;
+            }
+        }
+        return null;
+    }
+
+    private boolean checkDeviceHasVideoStreamingInterface(UsbDevice usbDevice) {
+        return getVideoStreamingInterface(usbDevice) != null;
+    }
+
+    private UsbInterface getVideoControlInterface(UsbDevice usbDevice) {
+        return findInterface(usbDevice, UsbConstants.USB_CLASS_VIDEO, SC_VIDEOCONTROL, false);
+    }
+
+    private UsbInterface getVideoStreamingInterface(UsbDevice usbDevice) {
+        return findInterface(usbDevice, UsbConstants.USB_CLASS_VIDEO, SC_VIDEOSTREAMING, true);
+    }
+
+    private UsbInterface findInterface(UsbDevice usbDevice, int interfaceClass, int interfaceSubclass, boolean withEndpoint) {
+        int interfaces = usbDevice.getInterfaceCount();
+        for (int i = 0; i < interfaces; i++) {
+            UsbInterface usbInterface = usbDevice.getInterface(i);
+            if (usbInterface.getInterfaceClass() == interfaceClass && usbInterface.getInterfaceSubclass() == interfaceSubclass && (!withEndpoint || usbInterface.getEndpointCount() > 0)) {
+                return usbInterface;
+            }
+        }
+        return null;
+    }
+
+
+    private void openCam() throws Exception {
+        openCameraDevice();
+        initCamera();
+        camIsOpen = true;
+        log("Camera opened sucessfully");
+    }
+
+    private void openCameraDevice() throws Exception {
+        if (!usbManager.hasPermission(camDevice)) {
+            throw new Exception("Permission missing for camera device.");
+        }
+        // (For transfer buffer sizes > 196608 the kernel file drivers/usb/core/devio.c must be patched.)
+        camControlInterface = getVideoControlInterface(camDevice);
+        camStreamingInterface = getVideoStreamingInterface(camDevice);
+        if (camStreamingInterface.getEndpointCount() < 1) {
+            throw new Exception("Streaming interface has no endpoint.");
+        }
+        camStreamingEndpoint = camStreamingInterface.getEndpoint(0);
+        bulkMode = camStreamingEndpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK;
+        camDeviceConnection = usbManager.openDevice(camDevice);
+        if (camDeviceConnection == null) {
+            throw new Exception("Unable to open camera device connection.");
+        }
+        if (!camDeviceConnection.claimInterface(camControlInterface, true)) {
+            throw new Exception("Unable to claim camera control interface.");
+        }
+        if (!camDeviceConnection.claimInterface(camStreamingInterface, true)) {
+            throw new Exception("Unable to claim camera streaming interface.");
+        }
+        usbIso = new UsbIso(camDeviceConnection.getFileDescriptor(), packetsPerRequest, maxPacketSize);
+        usbIso.preallocateRequests(activeUrbs);
+    }
+
+
+
+    private void closeCameraDevice() throws IOException {
+        if (usbIso != null) {
+            usbIso.dispose();
+            usbIso = null;
+        }
+        if (camDeviceConnection != null) {
+            camDeviceConnection.releaseInterface(camControlInterface);
+            camDeviceConnection.releaseInterface(camStreamingInterface);
+            camDeviceConnection.close();
+            camDeviceConnection = null;
+        }
+    }
+
+    private void initCamera() throws Exception {
+        try {
+            getVideoControlErrorCode();
+        }                // to reset previous error states
+        catch (Exception e) {
+            log("Warning: getVideoControlErrorCode() failed: " + e);
+        }   // ignore error, some cameras do not support the request
+        enableStreaming(false);
+        try {
+            getVideoStreamErrorCode();
+        }                // to reset previous error states
+        catch (Exception e) {
+            log("Warning: getVideoStreamErrorCode() failed: " + e);
+        }   // ignore error, some cameras do not support the request
+
+        initStreamingParms();
+
+
+
+        //if (cameraType == CameraType.arkmicro) {
+        //    initStillImageParms(); }
+        //if (cameraType == CameraType.microdia) {
+        //    initStillImageParms(); }
+        //...
+    }
+
+
+
 
 
 
@@ -1557,6 +1428,7 @@ public class Main extends Activity {
     }
 
     private void initStreamingParms() throws Exception {
+        stringBuilder = new StringBuilder();
         final int timeout = 5000;
         int usedStreamingParmsLen;
         int len;
@@ -1567,6 +1439,8 @@ public class Main extends Activity {
         streamingParms[3] = (byte) camFrameIndex;                 // bFrameIndex
         packUsbInt(camFrameInterval, streamingParms, 4);         // dwFrameInterval
         log("Initial streaming parms: " + dumpStreamingParms(streamingParms));
+        stringBuilder.append("Initial streaming parms: \n");
+        stringBuilder.append(dumpStreamingParms(streamingParms));
         len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, VS_PROBE_CONTROL << 8, camStreamingInterface.getId(), streamingParms, streamingParms.length, timeout);
         if (len != streamingParms.length) {
             throw new Exception("Camera initialization failed. Streaming parms probe set failed, len=" + len + ".");
@@ -1577,6 +1451,8 @@ public class Main extends Activity {
             throw new Exception("Camera initialization failed. Streaming parms probe get failed.");
         }
         log("Probed streaming parms: " + dumpStreamingParms(streamingParms));
+        stringBuilder.append("\nProbed streaming parms:  \n");
+        stringBuilder.append(dumpStreamingParms(streamingParms));
         usedStreamingParmsLen = len;
         // log("Streaming parms length: " + usedStreamingParmsLen);
         len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, VS_COMMIT_CONTROL << 8, camStreamingInterface.getId(), streamingParms, usedStreamingParmsLen, timeout);
@@ -1589,6 +1465,8 @@ public class Main extends Activity {
             throw new Exception("Camera initialization failed. Streaming parms commit get failed.");
         }
         log("Final streaming parms: " + dumpStreamingParms(streamingParms));
+        stringBuilder.append("\nFinal streaming parms: \n");
+        stringBuilder.append(dumpStreamingParms(streamingParms));
     }
 
     private String dumpStreamingParms(byte[] p) {
@@ -1848,5 +1726,141 @@ public class Main extends Activity {
             (byte) 0xc8, (byte) 0xc9, (byte) 0xca, (byte) 0xd2, (byte) 0xd3, (byte) 0xd4, (byte) 0xd5, (byte) 0xd6, (byte) 0xd7, (byte) 0xd8,
             (byte) 0xd9, (byte) 0xda, (byte) 0xe2, (byte) 0xe3, (byte) 0xe4, (byte) 0xe5, (byte) 0xe6, (byte) 0xe7, (byte) 0xe8, (byte) 0xe9,
             (byte) 0xea, (byte) 0xf2, (byte) 0xf3, (byte) 0xf4, (byte) 0xf5, (byte) 0xf6, (byte) 0xf7, (byte) 0xf8, (byte) 0xf9, (byte) 0xfa};
+
+    class IsochronousRead1 extends Thread {
+
+        Main uvc_camera;
+        Context mContext;
+        Activity activity;
+        StringBuilder stringBuilder;
+
+        public IsochronousRead1(Main main, Context mContext) {
+            setPriority(Thread.MAX_PRIORITY);
+            this.uvc_camera = main;
+            this.mContext = mContext;
+            activity = (Activity)mContext;
+        }
+
+        public void run() {
+            try {
+                stringBuilder = new StringBuilder();
+                stringBuilder.append("Output: Method IsoRead");
+                //Thread.sleep(500);
+                ArrayList<String> logArray = new ArrayList<>(512);
+                int packetCnt = 0;
+                int packet0Cnt = 0;
+                int packet12Cnt = 0;
+                int packetDataCnt = 0;
+                int packetHdr8Ccnt = 0;
+                int packetErrorCnt = 0;
+                int frameCnt = 0;
+                long time0 = System.currentTimeMillis();
+                int frameLen = 0;
+                int requestCnt = 0;
+                byte[] data = new byte[maxPacketSize];
+                try {
+                    enableStreaming(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                submitActiveUrbs();
+
+                while (System.currentTimeMillis() - time0 < 3000) {
+                    boolean stopReq = false;
+                    UsbIso.Request req = usbIso.reapRequest(true);
+                    for (int packetNo = 0; packetNo < req.getPacketCount(); packetNo++) {
+                        packetCnt++;
+                        int packetLen = req.getPacketActualLength(packetNo);
+                        if (packetLen == 0) {
+                            packet0Cnt++;
+                        }
+                        if (packetLen == 12) {
+                            packet12Cnt++;
+                        }
+                        if (packetLen == 0) {
+                            continue;
+                        }
+                        StringBuilder logEntry = new StringBuilder(requestCnt + "/" + packetNo + " len=" + packetLen);
+                        int packetStatus = req.getPacketStatus(packetNo);
+                        if (packetStatus != 0) {
+                            System.out.println("Packet status=" + packetStatus);
+                            stopReq = true;
+                            break;
+                        }
+                        if (packetLen > 0) {
+                            if (packetLen > maxPacketSize) {
+                                //throw new Exception("packetLen > maxPacketSize");
+                            }
+                            req.getPacketData(packetNo, data, packetLen);
+                            logEntry.append(" data=" + hexDump(data, Math.min(32, packetLen)));
+                            int headerLen = data[0] & 0xff;
+
+                            try {
+                                if (headerLen < 2 || headerLen > packetLen) {
+                                    //    skipFrames = 1;
+                                }
+                            } catch (Exception e) {
+                                System.out.println("Invalid payload header length.");
+                            }
+                            int headerFlags = data[1] & 0xff;
+                            if (headerFlags == 0x8c) {
+                                packetHdr8Ccnt++;
+                            }
+                            // logEntry.append(" hdrLen=" + headerLen + " hdr[1]=0x" + Integer.toHexString(headerFlags));
+                            int dataLen = packetLen - headerLen;
+                            if (dataLen > 0) {
+                                packetDataCnt++;
+                            }
+                            frameLen += dataLen;
+                            if ((headerFlags & 0x40) != 0) {
+                                logEntry.append(" *** Error ***");
+                                packetErrorCnt++;
+                            }
+                            if ((headerFlags & 2) != 0) {
+                                logEntry.append(" EOF frameLen=" + frameLen);
+                                frameCnt++;
+                                stringBuilder.append(String.format("EOF frameLen = %d\n", frameLen));
+                                frameLen = 0;
+                            }
+                        }
+                        logArray.add(logEntry.toString());
+                    }
+                    if (stopReq) {
+                        break;
+                    }
+                    requestCnt++;
+
+                    req.initialize(camStreamingEndpoint.getAddress());
+                    try {
+                        req.submit();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+
+                }
+
+
+                try {
+                    enableStreaming(false);
+                } catch (Exception e) {
+                    log("Exception during enableStreaming(false): " + e);
+                }
+                log("requests=" + requestCnt + " packetCnt=" + packetCnt + " packetErrorCnt=" + packetErrorCnt + " packet0Cnt=" + packet0Cnt + ", packet12Cnt=" + packet12Cnt + ", packetDataCnt=" + packetDataCnt + " packetHdr8cCnt=" + packetHdr8Ccnt + " frameCnt=" + frameCnt);
+                for (String s : logArray) {
+                    log(s);
+                }
+                activity.setContentView(R.layout.layout_main);
+                runningTransfer = null;
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+        }
+
+    }
+
 
 }
