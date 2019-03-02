@@ -2,7 +2,7 @@
 
 Still under development.... 
 
-This is a Android Studio Project. It connects to a usb camera from your Android Device.
+This is a Android Studio Project. It connects to a usb camera from your Android Device. (OTG cabel or OTG Hub needed)
 
 Explaination: (To know how the program works) (You can make all the main changes in the file: Kam.java)
 
