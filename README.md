@@ -13,7 +13,7 @@ Variant over: lsusb -v -s <bus>:<device>
 
 You can compile the project at ones and use it for your usb camera.
 
-- you have to set up all camera settings for your device. The program then saves the values and you can restore them latet or overwrite them with other values.
+- you have to set up all camera settings for your device. The program then saves the values and you can restore them latet or overwrite them with other values. Use the "Edit/Save/Restore" Button to adjust the values.
 - Next you can connect to your camera and first you will send a controlltransfer to your camera
 - If the controlltransfer is successful, than you are ready to go.
 - Next try out the method Isoread and take a look at the frames.
