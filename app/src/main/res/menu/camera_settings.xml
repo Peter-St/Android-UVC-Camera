@@ -18,9 +18,9 @@
                 android:title="List up the camera Details" />
 
             <item
-                android:id="@+id/kamera_Öffnen"
-                android:onClick="openCamButtonClickEvent"
-                android:title="Open the camera (set camera values to the cam)" />
+                android:id="@+id/setUpUvcSettings"
+                android:onClick="setUpWithUvcSettings"
+                android:title="Set Up the Camera with UVC Settings" />
 
         </menu>
     </item>

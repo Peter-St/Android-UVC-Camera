@@ -6,8 +6,10 @@ package humer.uvc_camera;
 // - Sauberen Close/Open programmieren. econ 5MP USB3 läuft nur nach re-open.
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -24,6 +26,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.MenuItem;
@@ -38,10 +41,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.LongBuffer;
+import java.nio.ShortBuffer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 
@@ -129,6 +140,9 @@ public class Main extends Activity {
 
     private volatile IsochronousRead1 runningTransfer;
 
+    UVC_Descriptor uvc_descriptor;
+    int [] convertedMaxPacketSize;
+
 
 
     @Override
@@ -166,28 +180,10 @@ public class Main extends Activity {
         usbManager = (UsbManager) getSystemService(USB_SERVICE);
         handler = new Handler(); // This makes the handler attached to UI Thread
         stf = new SaveToFile(this, this);
+
+        int[] a = null;
+        ByteBuffer byteBuffer = null;
     }
-
-    public void initSettingsButton(){
-        button3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Creating the instance of PopupMenu
-                PopupMenu popup = new PopupMenu(Main.this, button3);
-                //Inflating the Popup using xml file
-                popup.getMenuInflater().inflate(R.menu.camera_settings, popup.getMenu());
-
-                //registering popup with OnMenuItemClickListener
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    public boolean onMenuItemClick(MenuItem item) {
-                        //  Toast.makeText(Main.this,"Auswahl von: " + item.getTitle(),Toast.LENGTH_SHORT).show();
-                        return true; }
-                });
-                popup.show();//showing popup menu
-            }
-        });//closing the setOnClickListener method
-    }
-
 
     public void editCameraSettings (MenuItem item) {
         stf.startEditSave();
@@ -401,7 +397,7 @@ public class Main extends Activity {
             }
 
                 try {
-                    openCam();
+                    openCam(true);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -411,6 +407,7 @@ public class Main extends Activity {
                     return;
                 }
 
+                usbIso = new UsbIso(camDeviceConnection.getFileDescriptor(), packetsPerRequest, maxPacketSize);
                 usbIso.preallocateRequests(activeUrbs);
 
                 runningTransfer = new IsochronousRead1(this, this);
@@ -488,6 +485,44 @@ public class Main extends Activity {
         }
     }
 
+    public void setUpWithUvcSettings(MenuItem item) {
+        if (camDevice == null) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tv = (TextView) findViewById(R.id.textDarstellung);
+                    tv.setText("No Camera found.\nPlease connect a camera, or if allready connected run 'Search for a camera' from the menu");  }
+            });
+        } else {
+            camIsOpen = false;
+            try {
+                closeCameraDevice();
+            } catch (Exception e) {
+                displayErrorMessage(e);
+                return;
+            }
+            try {
+                openCam(false);
+
+
+            } catch (Exception e) {
+                displayErrorMessage(e);
+                return;
+            }
+            displayMessage("OK");
+            if (camIsOpen) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tv = (TextView) findViewById(R.id.textDarstellung);
+                        tv.setText(stringBuilder.toString());
+                    }
+                });
+
+            }
+        }
+    }
+
 
     public void openCamButtonClickEvent(MenuItem item) {
         if (camDevice == null) {
@@ -506,7 +541,7 @@ public class Main extends Activity {
                 return;
             }
             try {
-                openCam();
+                openCam(true);
             } catch (Exception e) {
                 displayErrorMessage(e);
                 return;
@@ -528,7 +563,7 @@ public class Main extends Activity {
     public void test1ButtonClickEvent(MenuItem Item) {
         try {
             if (!camIsOpen) {
-                openCam();
+                openCam(true);
             }
             startBackgroundJob(new Callable<Void>() {
                 @Override
@@ -555,8 +590,13 @@ public class Main extends Activity {
     public void test2ButtonClickEvent(MenuItem Item) {
         try {
             if (!camIsOpen) {
-                openCam();
+                openCam(true);
             }
+
+            usbIso = new UsbIso(camDeviceConnection.getFileDescriptor(), packetsPerRequest, maxPacketSize);
+            usbIso.preallocateRequests(activeUrbs);
+
+
             startBackgroundJob(new Callable<Void>() {
                 @Override
                 public Void call() throws Exception {
@@ -592,7 +632,7 @@ public class Main extends Activity {
                 return;
             }
             try {
-                openCam();
+                openCam(true);
             } catch (Exception e) {
                 displayErrorMessage(e);
                 return;
@@ -600,7 +640,7 @@ public class Main extends Activity {
 
             try {
                 if (!camIsOpen) {
-                    openCam();
+                    openCam(true);
                 }
                 startBackgroundJob(new Callable<Void>() {
                     @Override
@@ -630,38 +670,37 @@ public class Main extends Activity {
 
 
     private void listDevice(UsbDevice usbDevice) {
-
+        int a = 0;
+        convertedMaxPacketSize = new int [(usbDevice.getInterfaceCount()-2)];
+        log ("usbDevice.getInterfaceCount()-2 = " + (usbDevice.getInterfaceCount()-2) );
         log("Interface count: " + usbDevice.getInterfaceCount());
         int interfaces = usbDevice.getInterfaceCount();
-
         ArrayList<String> logArray = new ArrayList<String>(512);
         stringBuilder = new StringBuilder();
-
         for (int i = 0; i < interfaces; i++) {
-
             UsbInterface usbInterface = usbDevice.getInterface(i);
-            log("-Interface " + i + ": id=" + usbInterface.getId() + " class=" + usbInterface.getInterfaceClass() + " subclass=" + usbInterface.getInterfaceSubclass() + " protocol=" + usbInterface.getInterfaceProtocol());
+            log("[ - Interface: " + usbInterface.getId()  + " class=" + usbInterface.getInterfaceClass() + " subclass=" + usbInterface.getInterfaceSubclass() );
             // UsbInterface.getAlternateSetting() has been added in Android 5.
             int endpoints = usbInterface.getEndpointCount();
-            StringBuilder logEntry = new StringBuilder("/ InterfaceID " + usbInterface.getId() + " / Interfaceclass = " + usbInterface.getInterfaceClass() + " / protocol = " + usbInterface.getInterfaceProtocol());
+            StringBuilder logEntry = new StringBuilder("[ InterfaceID " + usbInterface.getId() + " / Interfaceclass = " + usbInterface.getInterfaceClass() + " / InterfaceSubclass = " + usbInterface.getInterfaceSubclass());
             stringBuilder.append(logEntry.toString());
             stringBuilder.append("\n");
             //logArray.add(logEntry.toString());
 
             for (int j = 0; j < endpoints; j++) {
                 UsbEndpoint usbEndpoint = usbInterface.getEndpoint(j);
-                log("- Endpoint " + j + ": addr=" + usbEndpoint.getAddress() + " [direction=" + usbEndpoint.getDirection() + " endpointNumber=" + usbEndpoint.getEndpointNumber() + "] " +
-                        " attrs=" + usbEndpoint.getAttributes() + " interval=" + usbEndpoint.getInterval() + " maxPacketSize=" + usbEndpoint.getMaxPacketSize() + " type=" + usbEndpoint.getType());
+                log("- Endpoint: addr=" + String.format("0x%02x ", usbEndpoint.getAddress()).toString() + " maxPacketSize=" + returnConvertedValue(usbEndpoint.getMaxPacketSize()) + " type=" + usbEndpoint.getType() + " ]");
 
-                StringBuilder logEntry2 = new StringBuilder("Endpoint " + j + " / addr 0x" + Integer.toHexString(usbEndpoint.getAddress()) + "/ direction " + usbEndpoint.getDirection() + " / endpointNumber=" + usbEndpoint.getEndpointNumber() +  "] " + " attrs=" + usbEndpoint.getAttributes() + " interval=" + usbEndpoint.getInterval() + " maxPacketSize=" + usbEndpoint.getMaxPacketSize() + " type=" + usbEndpoint.getType() );
+                StringBuilder logEntry2 = new StringBuilder("/ addr " + String.format("0x%02x ", usbEndpoint.getAddress()).toString() + " maxPacketSize=" + returnConvertedValue(usbEndpoint.getMaxPacketSize()) + " ]");
                 stringBuilder.append(logEntry2.toString());
                 stringBuilder.append("\n");
-                //logArray.add(logEntry2.toString());
+                if (usbInterface.getId() == 1) {
+                    convertedMaxPacketSize[a] = returnConvertedValue(usbEndpoint.getMaxPacketSize());
+                    a++;
+                }
             }
         }
 
-
-        log("logArray.size() >= 15");
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -669,10 +708,55 @@ public class Main extends Activity {
                 tv = (TextView) findViewById(R.id.textDarstellung);
                 tv.setSingleLine(false);
                 tv.setText(stringBuilder.toString());
+                button3 = (Button) findViewById(R.id.einstellungen);
+                button3.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //Creating the instance of PopupMenu
+                        PopupMenu popup = new PopupMenu(Main.this, button3);
+                        //Inflating the Popup using xml file
+                        popup.getMenuInflater().inflate(R.menu.camera_settings, popup.getMenu());
 
+                        //registering popup with OnMenuItemClickListener
+                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            public boolean onMenuItemClick(MenuItem item) {
+                                //  Toast.makeText(Main.this,"Auswahl von: " + item.getTitle(),Toast.LENGTH_SHORT).show();
+                                return true; }
+                        });
+                        popup.show();//showing popup menu
+                    }
+                });//closing the setOnClickListener method
             }
         });
+
+
     }
+
+
+
+    private int returnConvertedValue(int wSize){
+        String st = Integer.toBinaryString(wSize);
+        StringBuilder result = new StringBuilder();
+        result.append(st);
+        if (result.length()<12) return Integer.parseInt(result.toString(), 2);
+        else if (result.length() == 12) {
+            String a = result.substring(0, 1);
+            String b = result.substring(1, 12);
+            int c = Integer.parseInt(a, 2);
+            int d = Integer.parseInt(b, 2);
+            return (c+1)*d;
+        } else {
+            String a = result.substring(0, 2);
+            String b = result.substring(2,13);
+            int c = Integer.parseInt(a, 2);
+            int d = Integer.parseInt(b, 2);
+            return (c+1)*d;
+        }
+    }
+
+
+
+
 
     private void findCam() throws Exception {
         camDevice = findCameraDevice();
@@ -724,14 +808,18 @@ public class Main extends Activity {
     }
 
 
-    private void openCam() throws Exception {
-        openCameraDevice();
-        initCamera();
-        camIsOpen = true;
+    private void openCam(boolean init) throws Exception {
+        openCameraDevice(init);
+        if (init) {
+            initCamera();
+            camIsOpen = true;
+        }
+
+
         log("Camera opened sucessfully");
     }
 
-    private void openCameraDevice() throws Exception {
+    private void openCameraDevice(boolean init) throws Exception {
         if (!usbManager.hasPermission(camDevice)) {
             throw new Exception("Permission missing for camera device.");
         }
@@ -753,8 +841,41 @@ public class Main extends Activity {
         if (!camDeviceConnection.claimInterface(camStreamingInterface, true)) {
             throw new Exception("Unable to claim camera streaming interface.");
         }
-        usbIso = new UsbIso(camDeviceConnection.getFileDescriptor(), packetsPerRequest, maxPacketSize);
-        usbIso.preallocateRequests(activeUrbs);
+
+        if (!init) {
+            byte[] a = camDeviceConnection.getRawDescriptors();
+            ByteBuffer uvcData = ByteBuffer.wrap(a);
+            uvc_descriptor = new UVC_Descriptor(uvcData);
+
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which){
+                        case DialogInterface.BUTTON_POSITIVE:
+                            int a = uvc_descriptor.phraseUvcData();
+                            if (a == 0) {
+                                if (convertedMaxPacketSize == null) listDevice(camDevice);
+                                stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize);
+                            }
+
+
+                            //Yes button clicked
+                            break;
+
+                        case DialogInterface.BUTTON_NEGATIVE:
+
+                            break;
+                    }
+                }
+            };
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Do you want to set up from UVC values ?").setPositiveButton("Yes, set up from UVC", dialogClickListener)
+                    .setNegativeButton("No", dialogClickListener).show();
+
+        }
+
+
     }
 
 

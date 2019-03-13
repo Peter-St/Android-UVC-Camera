@@ -31,6 +31,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -86,9 +87,9 @@ public class SaveToFile {
 
 
 
-    Main uvc_camera;
-    Context mContext;
-    Activity activity;
+    private Main uvc_camera;
+    private Context mContext;
+    private Activity activity;
 
     TextView sALT_SETTING_text;
     TextView smaxPacketSize_text;
@@ -115,6 +116,8 @@ public class SaveToFile {
 
     TextView tv;
     private Button settingsButton;
+
+    private UVC_Descriptor uvc_descriptor;
 
     public SaveToFile(Main main, Context mContext) {
         this.uvc_camera = main;
@@ -350,6 +353,7 @@ public class SaveToFile {
                                 break;
                         }
                     }
+                    returnToMainLayout("Values written and saved");
                     return;
                 }
             });
@@ -477,4 +481,358 @@ public class SaveToFile {
         }
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public void setUpWithUvcValues(UVC_Descriptor uvc_desc, int[] maxPacketSizeArray) {
+
+        this.uvc_descriptor = uvc_desc;
+        for (int a=0; a<maxPacketSizeArray.length; a++) {
+            log ("maxPacketSizeArray[" + a + "] = " + maxPacketSizeArray[a]);
+        }
+
+        UVC_Descriptor.FormatIndex formatIndex;
+        int [] arrayFormatFrameIndexes = new int [uvc_descriptor.formatIndex.size()];
+        for (int i=0; i<uvc_descriptor.formatIndex.size(); i++) {
+            formatIndex = uvc_descriptor.getFormatIndex(i);
+            arrayFormatFrameIndexes[i] = formatIndex.frameIndex.size();
+        }
+
+        String [] textmsg = new String [maxPacketSizeArray.length];
+        for (int a =0; a<maxPacketSizeArray.length; a++) {
+            textmsg[a] = Integer.toString(maxPacketSizeArray[a]);
+        }
+        selectMaxPacketSize(textmsg);
+
+    }
+
+    private int returnConvertedValue(int wSize){
+        String st = Integer.toBinaryString(wSize);
+        StringBuilder result = new StringBuilder();
+        result.append(st);
+        if (result.length()<12) return Integer.parseInt(result.toString(), 2);
+        else if (result.length() == 12) {
+            String a = result.substring(0, 1);
+            String b = result.substring(1, 12);
+            int c = Integer.parseInt(a, 2);
+            int d = Integer.parseInt(b, 2);
+            return (c+1)*d;
+        } else {
+            String a = result.substring(0, 2);
+            String b = result.substring(2,13);
+            int c = Integer.parseInt(a, 2);
+            int d = Integer.parseInt(b, 2);
+            return (c+1)*d;
+        }
+    }
+
+
+
+
+    private void selectMaxPacketSize(String [] options){
+
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
+        builderSingle.setIcon(R.drawable.ic_menu_camera);
+        builderSingle.setTitle("Select the maximal size of the Packets, which where sent to the camera device!! Important for Mediathek Devices !!");
+
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
+        for (int i = 0; i<options.length; i++){
+            arrayAdapter.add(options[i]);
+        }
+
+        builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String strName = arrayAdapter.getItem(which);
+                smaxPacketSize = Integer.parseInt(strName.toString());
+                AlertDialog.Builder builderInner = new AlertDialog.Builder(mContext);
+                builderInner.setMessage(strName);
+                builderInner.setTitle("Your Selected Item is");
+                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog,int which) {
+                        dialog.dismiss();
+                        selectPackets();
+                    }
+                });
+                builderInner.show();
+            }
+        });
+        builderSingle.show();
+
+    }
+
+
+
+
+    public void selectPackets() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle(String.format("Select the Packets per Request: (Number of Packet with a size of: %d per Request)", smaxPacketSize));
+
+// Set up the input
+        final EditText input = new EditText(mContext);
+// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+        builder.setView(input);
+
+// Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (input.getText().toString().isEmpty() == false)  spacketsPerRequest = Integer.parseInt(input.getText().toString());
+                selectUrbs();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+
+    }
+
+    public void selectUrbs() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle("Select the URBs: (Select the number of Packet Blocks running in paralell order.");
+
+// Set up the input
+        final EditText input = new EditText(mContext);
+// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+        builder.setView(input);
+
+// Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (input.getText().toString().isEmpty() == false)  sactiveUrbs = Integer.parseInt(input.getText().toString());
+                selectFormatIndex();
+
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+
+    }
+
+    private void selectFormatIndex (){
+
+        UVC_Descriptor.FormatIndex formatIndex;
+        UVC_Descriptor.FormatIndex.FrameIndex frameIndex;
+        int [] numberFormatIndexes = new int [uvc_descriptor.formatIndex.size()];
+        final String[] textmsg = new String [uvc_descriptor.formatIndex.size()];
+        for (int a =0; a<uvc_descriptor.formatIndex.size(); a++) {
+            formatIndex = uvc_descriptor.getFormatIndex(a);
+            System.out.println("formatIndex.videoformat = " + formatIndex.videoformat);
+            if (formatIndex.videoformat == UVC_Descriptor.FormatIndex.Videoformat.yuy2) System.out.println("PhraseUvcDescriptor.FormatIndex.Videoformat.yuy2 = " + UVC_Descriptor.FormatIndex.Videoformat.yuy2);
+            else System.out.println(" ............");
+
+            numberFormatIndexes[a] = formatIndex.formatIndexNumber;
+            System.out.println("numberFormatIndexes[a] = " + numberFormatIndexes[a]);
+            textmsg[a] = formatIndex.videoformat.toString();
+        }
+
+
+        final AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
+        builderSingle.setIcon(R.drawable.ic_menu_camera);
+        builderSingle.setTitle("Select the camera Format (This video Formats were supportet)");
+
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
+
+        for (int i = 0; i<textmsg.length; i++){
+            arrayAdapter.add(textmsg[i]);
+        }
+
+        builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+            }
+        });
+
+        /*
+
+        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String strName = arrayAdapter.getItem(which);
+                for (int i=0; i<textmsg.length; i++) {
+                    if (strName.matches(textmsg[i]) ) {
+                        scamFormatIndex = numberFormatIndexes[i];
+                        formatIndex = uvc_descriptor.getFormatIndex(i);
+                        String[] textmessage = new String [formatIndex.numberOfFrameDescriptors];
+                        String inp;
+                        for (int j=0; j<formatIndex.numberOfFrameDescriptors; j++) {
+
+
+
+                }
+
+
+
+
+                AlertDialog.Builder builderInner = new AlertDialog.Builder(mContext);
+                builderInner.setMessage(strName);
+                builderInner.setTitle("Your Selected Item is");
+                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog,int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builderInner.show();
+            }
+        });
+        builderSingle.show();
+
+
+
+
+
+
+
+
+
+
+        String input = (String) JOptionPane.showInputDialog(null, "             Select the FormatIndex              ", "This Videoformats are supported of your camera", JOptionPane.QUESTION_MESSAGE, null,  textmsg, textmsg[textmsg.length-1]);
+        if (input != null) {
+            svideoformat = (input.toString());
+            for (int i=0; i<textmsg.length; i++) {
+                if (input.matches(textmsg[i]) ) {
+                    scamFormatIndex = numberFormatIndexes[i];
+                    formatIndex = phrasedUvcDescriptor.getFormatIndex(i);
+                    String[] textmessage = new String [formatIndex.numberOfFrameDescriptors];
+                    String inp;
+                    for (int j=0; j<formatIndex.numberOfFrameDescriptors; j++) {
+                        frameIndex = formatIndex.getFrameIndex(j);
+                        StringBuilder stringb = new StringBuilder();
+                        stringb.append(Integer.toString(frameIndex.wWidth));
+                        stringb.append(" x ");
+                        stringb.append(Integer.toString(frameIndex.wHeight));
+                        textmessage[j] = stringb.toString();
+                    }
+                    inp = (String) JOptionPane.showInputDialog(null, "Select the camera Resolution", "Following Resolutions are supported:", JOptionPane.QUESTION_MESSAGE, null,  textmessage, textmessage[textmessage.length-1]);
+                    if (inp != null) {
+                        for (int j=0; j<formatIndex.numberOfFrameDescriptors; j++) {
+                            if (inp.equals(textmessage[j])) {
+                                frameIndex = formatIndex.getFrameIndex(j);
+
+                                scamFrameIndex = frameIndex.frameIndex;
+                                System.out.println("scamFrameIndex = " + scamFrameIndex);
+                                simageWidth = frameIndex.wWidth;
+                                simageHeight = frameIndex.wHeight;
+
+                                String [] text = new String [frameIndex.dwFrameInterval.length];
+                                for (int k=0; k<text.length; k++) {
+                                    text[k] = Integer.toString(frameIndex.dwFrameInterval[k]);
+                                }
+                                String textInput = (String) JOptionPane.showInputDialog(null, String.format("Example: 333333 = 30 fps (Frames per Secound);   666666 = 15 fps\nA higher value means less Pictures per Secound\nOne Frame is one Picture."), "Select the FrameIntervall", JOptionPane.QUESTION_MESSAGE, null,  text, text[text.length-1]);
+                                if (textInput != null) {
+                                    scamFrameInterval = Integer.parseInt(textInput);
+                                    System.out.println("scamFrameInterval = " + scamFrameInterval);
+                                }
+                            }
+                        }
+                    }
+
+
+
+
+
+
+                }
+            }
+
+        }
+
+
+        */
+    }
+
+
 }
+
+/*
+public void displayDialog(){
+
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
+        builderSingle.setIcon(R.drawable.ic_menu_camera);
+        builderSingle.setTitle("Select One Name:-");
+
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
+
+        arrayAdapter.add("Hardik");
+        arrayAdapter.add("Archit");
+        arrayAdapter.add("Jignesh");
+        arrayAdapter.add("Umang");
+        arrayAdapter.add("Gatti");
+
+        builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+            }
+        });
+
+        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String strName = arrayAdapter.getItem(which);
+                AlertDialog.Builder builderInner = new AlertDialog.Builder(mContext);
+                builderInner.setMessage(strName);
+                builderInner.setTitle("Your Selected Item is");
+                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog,int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builderInner.show();
+            }
+        });
+        builderSingle.show();
+
+    }
+ */
