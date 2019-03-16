@@ -139,7 +139,7 @@ public class UVC_Descriptor {
         public final ArrayList<byte []> frameData;
         public int formatIndexNumber;
         public int numberOfFrameDescriptors;
-        public enum Videoformat {yuy2, mjpeg}
+        public enum Videoformat {yuv, mjpeg}
         public Videoformat videoformat;
         public String guidFormat = new String();
 
@@ -167,7 +167,7 @@ public class UVC_Descriptor {
                 guidFormat = formatter.toString();
                 System.out.println("guidFormat = " + guidFormat);
                 if (guidFormat.equals("5955593200001000800000aa00389b71") ) {
-                    videoformat = Videoformat.yuy2;
+                    videoformat = Videoformat.yuv;
                     System.out.println("videoformat = Videoformat.yuy2");
                 }
                 else guidFormat = "unknown";

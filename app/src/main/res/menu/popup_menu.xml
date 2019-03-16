@@ -4,8 +4,8 @@
 
     <item
         android:id="@+id/kamera_staten"
-        android:onClick="StartKameraButtonClickEvent"
-        android:title="Kamera Starten" />
+        android:onClick="isoStream"
+        android:title="Start the camera" />
 
 </menu>
 

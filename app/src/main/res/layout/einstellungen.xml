@@ -162,8 +162,8 @@
                     android:id="@+id/VideoText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="0 = MJPEG;    1 = YUV"
-                    android:inputType="number" />
+                    android:hint="mjpeg or yuv"
+                    />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout

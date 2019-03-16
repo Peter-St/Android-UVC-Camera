@@ -49,16 +49,22 @@
     <item
         android:id="@+id/isoReadmethod"
         android:onClick="isoRead"
-        android:title="IsoRead" />
+        android:title="Testrun - Reads out the camera frames" />
 
     <item
         android:id="@+id/videoStream"
         android:onClick="kamera_video"
-        android:title="videoStream" />
+        android:title="Start the camera stream" />
+
+    <item
+        android:id="@+id/viewReadme"
+        android:onClick="viewReadme"
+        android:title="View the Readme" />
+
 
     <item
         android:id="@+id/beenden"
         android:onClick="beenden"
-        android:title="Programm beenden" />
+        android:title="Exit Program" />
 
 </menu>

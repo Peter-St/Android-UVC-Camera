@@ -74,7 +74,7 @@ public class SaveToFile {
     public static int sALT_SETTING;
     public static int smaxPacketSize ;
     public static int scamFormatIndex ;   // MJPEG // YUV // bFormatIndex: 1 = uncompressed
-    public static int svideoformat;
+    public static String svideoformat;
     public static int scamFrameIndex ; // bFrameIndex: 1 = 640 x 360;       2 = 176 x 144;     3 =    320 x 240;      4 = 352 x 288;     5 = 640 x 480;
     public static int simageWidth;
     public static int simageHeight;
@@ -108,7 +108,6 @@ public class SaveToFile {
     private enum OptionForSaveFile {savetofile, restorefromfile}
     OptionForSaveFile optionForSaveFile;
 
-
     private boolean abfrage = true;
 
     static ArrayList<String> paths = new ArrayList<>(50);
@@ -118,6 +117,15 @@ public class SaveToFile {
     private Button settingsButton;
 
     private UVC_Descriptor uvc_descriptor;
+    private static int [] numberFormatIndexes;
+    private UVC_Descriptor.FormatIndex formatIndex;
+    private UVC_Descriptor.FormatIndex.FrameIndex frameIndex;
+    private static String[] frameDescriptorsResolutionArray;
+    private static String [] dwFrameIntervalArray;
+    private static String [] maxPacketSizeStr;
+
+
+
 
     public SaveToFile(Main main, Context mContext) {
         this.uvc_camera = main;
@@ -201,8 +209,8 @@ public class SaveToFile {
                 valueInput = (TextInputLayout) activity.findViewById(R.id.Format);
                 if (valueInput.getEditText().getText().toString().isEmpty() == false) scamFormatIndex = Integer.parseInt(valueInput.getEditText().getText().toString());
                 valueInput = (TextInputLayout) activity.findViewById(R.id.Video);
-                if (valueInput.getEditText().getText().toString().isEmpty() == false) svideoformat = Integer.parseInt(valueInput.getEditText().getText().toString());
-                valueInput = (TextInputLayout) activity.findViewById(R.id.Frame);
+                if (valueInput.getEditText().getText().toString().isEmpty() == false) svideoformat = valueInput.getEditText().getText().toString();
+                valueInput = (TextInputLayout) activity.findViewById(R.id.Imagewi);
                 if (valueInput.getEditText().getText().toString().isEmpty() == false) scamFrameIndex = Integer.parseInt(valueInput.getEditText().getText().toString());
                 valueInput = (TextInputLayout) activity.findViewById(R.id.Imagewi);
                 if (valueInput.getEditText().getText().toString().isEmpty() == false) simageWidth = Integer.parseInt(valueInput.getEditText().getText().toString());
@@ -223,8 +231,8 @@ public class SaveToFile {
                             case DialogInterface.BUTTON_POSITIVE:
                                 //Yes button clicked
                                 writeTheValues();
-                                optionForSaveFile = OptionForSaveFile.savetofile;
-                                checkTheSaveFileName();
+                                //optionForSaveFile = OptionForSaveFile.savetofile;
+                                checkTheSaveFileName(OptionForSaveFile.savetofile);
                                 break;
 
                             case DialogInterface.BUTTON_NEGATIVE:
@@ -275,18 +283,18 @@ public class SaveToFile {
 
 
     public void restoreValuesFromFile() {
-        optionForSaveFile = OptionForSaveFile.restorefromfile;
-        checkTheSaveFileName();
-        writeTheValues();
+        //optionForSaveFile = OptionForSaveFile.restorefromfile;
+        checkTheSaveFileName(OptionForSaveFile.restorefromfile);
+
     }
 
 
 
-    private void checkTheSaveFileName(){
+    private void checkTheSaveFileName(final OptionForSaveFile option){
         rootdirStr = null;
         stringBuilder = new StringBuilder();
         paths = new ArrayList<>(50);
-        String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() ;
+        final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() ;
         final File file = new File(rootPath, "/" + saveFilePathFolder);
         if (!file.exists()) {
             file.mkdirs();
@@ -308,68 +316,125 @@ public class SaveToFile {
             }
             log(stringBuilder.toString());
 
-            AlertDialog.Builder builder2 = new AlertDialog.Builder(mContext);
-            builder2.setTitle("Input a value");
-            builder2.setMessage(stringBuilder.toString());
 
+            if (option == OptionForSaveFile.restorefromfile) {
+
+
+
+
+                AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
+                builderSingle.setIcon(R.drawable.ic_menu_camera);
+                builderSingle.setTitle("Please select the file to restore");
+
+                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
+
+                for (int i = 0; i < paths.size(); i++) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(paths.get(i));
+                    int end = rootdirStr.length();
+                    sb.delete(0, end);
+                    arrayAdapter.add(sb.toString());
+                }
+                builderSingle.setNegativeButton("cancel restore", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String strName = arrayAdapter.getItem(which);
+                        String path = rootdirStr;
+                        path += strName;
+                        restorFromFile(path);
+                    }
+
+                });
+                builderSingle.show();
+
+            } else {
+                AlertDialog.Builder builder2 = new AlertDialog.Builder(mContext);
+                builder2.setTitle("Input a value");
+                builder2.setMessage(stringBuilder.toString());
 // Set up the input
-            final EditText input = new EditText(mContext);
+                final EditText input = new EditText(mContext);
 // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-            input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
-            builder2.setView(input);
-
+                input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
+                builder2.setView(input);
 // Set up the buttons
-            builder2.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    log("OK");
-                    log("Die Eingabe war: " + input.getText().toString());
-                    String name = input.getText().toString();
-                    if (name.isEmpty() == true) {
-                        switch(optionForSaveFile) {
-                            case savetofile: saveValuesToFile(rootdirStr += "saveFile.sav");
-                                break;
-                            case restorefromfile: restorFromFile(rootdirStr += "saveFile.sav");
-                                break;
+                builder2.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        log("OK");
+                        log("Die Eingabe war: " + input.getText().toString());
+                        String name = input.getText().toString();
+                        if (name.isEmpty() == true) {
+                            switch(optionForSaveFile) {
+                                case savetofile: saveValuesToFile(rootdirStr += "saveFile.sav");
+                                    break;
+                                case restorefromfile: restorFromFile(rootdirStr += "saveFile.sav");
+                                    break;
+                            }
                         }
-                    }
-                    else if (isInteger(name) == true) {
-                        switch(optionForSaveFile) {
+                        else if (isInteger(name) == true) {
+                            switch(option) {
+                                case savetofile:
+                                    try { saveValuesToFile(paths.get((Integer.parseInt(name) - 1))); }
+                                    catch (Exception e) { log("Save Failed ; Exception = " + e); e.printStackTrace();}
+                                    break;
+                                case restorefromfile:
+                                    restorFromFile(paths.get((Integer.parseInt(name) - 1)));
+                                    break;
+                            }
+                        } else {
+                            switch(option) {
+                                case savetofile:
+                                    saveValuesToFile((rootdirStr += name += ".sav"));      log("Saving ...");
+                                    break;
+                                case restorefromfile:
+                                    restorFromFile((rootdirStr += name += ".sav"));      log("Saving ...");
+                                    break;
+                            }
+                        }
+
+                        switch(option) {
                             case savetofile:
-                                try { saveValuesToFile(paths.get((Integer.parseInt(name) - 1))); }
-                                catch (Exception e) { log("Save Failed ; Exception = " + e); e.printStackTrace();}
+                                returnToMainLayout("Values written and saved");
                                 break;
                             case restorefromfile:
-                                restorFromFile(paths.get((Integer.parseInt(name) - 1)));
+                                returnToMainLayout(String.format("Values sucessfully restored"));
                                 break;
                         }
-                    } else {
-                        switch(optionForSaveFile) {
+
+
+                        return;
+                    }
+                });
+                builder2.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch(option) {
                             case savetofile:
-                                saveValuesToFile((rootdirStr += name += ".sav"));      log("Saving ...");
+                                returnToMainLayout("Values written but not saved.");
                                 break;
                             case restorefromfile:
-                                restorFromFile((rootdirStr += name += ".sav"));      log("Saving ...");
+                                returnToMainLayout(String.format("No values restored"));
                                 break;
                         }
+                        return;
                     }
-                    returnToMainLayout("Values written and saved");
-                    return;
-                }
-            });
-            builder2.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    returnToMainLayout("Values written but not saved.");
-                    return;
-                }
-            });
-            builder2.show();
+                });
+                builder2.show();
+
+            }
+
+
+
+
+
         }
-
-
-
-
     }
 
 
@@ -416,7 +481,7 @@ public class SaveToFile {
             FileInputStream saveFile = new FileInputStream(pathToFile);
             ObjectInputStream save = new ObjectInputStream(saveFile);
             sALT_SETTING = (Integer) save.readObject();
-            svideoformat = (Integer) save.readObject();
+            svideoformat = (String) save.readObject();
             scamFormatIndex  = (Integer) save.readObject();
             scamFrameIndex  = (Integer) save.readObject();
             simageWidth = (Integer) save.readObject();
@@ -432,7 +497,14 @@ public class SaveToFile {
             exc.printStackTrace();
         }
 
-        returnToMainLayout(String.format("Values restored from File\n%s", pathToFile));
+        log("sALT_SETTING = " + sALT_SETTING + "  /  svideoformat = " + svideoformat + "  /  scamFormatIndex = " + scamFormatIndex + "  /  scamFrameIndex = " + scamFrameIndex);
+        writeTheValues();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("Restored Values:\n"));
+        sb.append(String.format("Altsetting = %d\nVideoFormat = %s\nImageWidth = %d\nImageHeight = %d\nFrameInterval = %d\nPacketsPerRequest = %d\nActiveUrbs = %d", sALT_SETTING, svideoformat, simageWidth, simageHeight, scamFrameInterval, spacketsPerRequest, sactiveUrbs));
+        writeMsgMain(sb.toString());
+
     }
 
 
@@ -465,9 +537,6 @@ public class SaveToFile {
         Log.i("SaveToFile", msg);
     }
 
-    private void displayErrorMessage(Throwable e) {
-        uvc_camera.displayErrorMessage(e);
-    }
 
     public void listFilesForFolder(final File folder) {
         for (final File fileEntry : folder.listFiles()) {
@@ -483,37 +552,12 @@ public class SaveToFile {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public void setUpWithUvcValues(UVC_Descriptor uvc_desc, int[] maxPacketSizeArray) {
 
         this.uvc_descriptor = uvc_desc;
         for (int a=0; a<maxPacketSizeArray.length; a++) {
             log ("maxPacketSizeArray[" + a + "] = " + maxPacketSizeArray[a]);
         }
-
         UVC_Descriptor.FormatIndex formatIndex;
         int [] arrayFormatFrameIndexes = new int [uvc_descriptor.formatIndex.size()];
         for (int i=0; i<uvc_descriptor.formatIndex.size(); i++) {
@@ -521,13 +565,14 @@ public class SaveToFile {
             arrayFormatFrameIndexes[i] = formatIndex.frameIndex.size();
         }
 
-        String [] textmsg = new String [maxPacketSizeArray.length];
+        maxPacketSizeStr = new String [maxPacketSizeArray.length];
         for (int a =0; a<maxPacketSizeArray.length; a++) {
-            textmsg[a] = Integer.toString(maxPacketSizeArray[a]);
+            maxPacketSizeStr[a] = Integer.toString(maxPacketSizeArray[a]);
         }
-        selectMaxPacketSize(textmsg);
-
+        selectMaxPacketSize();
     }
+
+
 
     private int returnConvertedValue(int wSize){
         String st = Integer.toBinaryString(wSize);
@@ -552,20 +597,21 @@ public class SaveToFile {
 
 
 
-    private void selectMaxPacketSize(String [] options){
+    private void selectMaxPacketSize(){
 
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
         builderSingle.setIcon(R.drawable.ic_menu_camera);
         builderSingle.setTitle("Select the maximal size of the Packets, which where sent to the camera device!! Important for Mediathek Devices !!");
 
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
-        for (int i = 0; i<options.length; i++){
-            arrayAdapter.add(options[i]);
+        for (int i = 0; i<maxPacketSizeStr.length; i++){
+            arrayAdapter.add(maxPacketSizeStr[i]);
         }
 
         builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                writeMsgMain("UVC values canceled");
                 dialog.dismiss();
             }
         });
@@ -573,19 +619,16 @@ public class SaveToFile {
         builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String strName = arrayAdapter.getItem(which);
-                smaxPacketSize = Integer.parseInt(strName.toString());
-                AlertDialog.Builder builderInner = new AlertDialog.Builder(mContext);
-                builderInner.setMessage(strName);
-                builderInner.setTitle("Your Selected Item is");
-                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog,int which) {
-                        dialog.dismiss();
-                        selectPackets();
+                String input = arrayAdapter.getItem(which);
+                smaxPacketSize = Integer.parseInt(input.toString());
+                for (int i=1; i<(maxPacketSizeStr.length +1); i++) {
+                    if (input.matches(maxPacketSizeStr[i-1]) ) {
+                        sALT_SETTING = i;
                     }
-                });
-                builderInner.show();
+                }
+                System.out.println("sALT_SETTING = " + sALT_SETTING);
+                System.out.println("smaxPacketSize = " + smaxPacketSize);
+                selectPackets();
             }
         });
         builderSingle.show();
@@ -598,7 +641,7 @@ public class SaveToFile {
     public void selectPackets() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle(String.format("Select the Packets per Request: (Number of Packet with a size of: %d per Request)", smaxPacketSize));
+        builder.setTitle(String.format("Select the Packets per Request: (Number of Packet with a size of: %d)", smaxPacketSize));
 
 // Set up the input
         final EditText input = new EditText(mContext);
@@ -617,6 +660,7 @@ public class SaveToFile {
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                writeMsgMain("UVC values canceled");
                 dialog.cancel();
             }
         });
@@ -647,6 +691,7 @@ public class SaveToFile {
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                writeMsgMain("UVC values canceled");
                 dialog.cancel();
             }
         });
@@ -655,20 +700,17 @@ public class SaveToFile {
 
     }
 
-    private void selectFormatIndex (){
 
-        UVC_Descriptor.FormatIndex formatIndex;
-        UVC_Descriptor.FormatIndex.FrameIndex frameIndex;
-        int [] numberFormatIndexes = new int [uvc_descriptor.formatIndex.size()];
-        final String[] textmsg = new String [uvc_descriptor.formatIndex.size()];
-        for (int a =0; a<uvc_descriptor.formatIndex.size(); a++) {
+    private void selectFormatIndex () {
+
+
+        numberFormatIndexes = new int[uvc_descriptor.formatIndex.size()];
+        final String[] textmsg = new String[uvc_descriptor.formatIndex.size()];
+        for (int a = 0; a < uvc_descriptor.formatIndex.size(); a++) {
             formatIndex = uvc_descriptor.getFormatIndex(a);
             System.out.println("formatIndex.videoformat = " + formatIndex.videoformat);
-            if (formatIndex.videoformat == UVC_Descriptor.FormatIndex.Videoformat.yuy2) System.out.println("PhraseUvcDescriptor.FormatIndex.Videoformat.yuy2 = " + UVC_Descriptor.FormatIndex.Videoformat.yuy2);
-            else System.out.println(" ............");
-
             numberFormatIndexes[a] = formatIndex.formatIndexNumber;
-            System.out.println("numberFormatIndexes[a] = " + numberFormatIndexes[a]);
+            System.out.println("numberFormatIndexes[" + a + "] = " + numberFormatIndexes[a]);
             textmsg[a] = formatIndex.videoformat.toString();
         }
 
@@ -679,121 +721,165 @@ public class SaveToFile {
 
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
 
-        for (int i = 0; i<textmsg.length; i++){
+        for (int i = 0; i < textmsg.length; i++) {
             arrayAdapter.add(textmsg[i]);
         }
 
         builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
+                writeMsgMain("UVC values canceled");
                 dialog.dismiss();
             }
         });
-
-        /*
-
         builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String strName = arrayAdapter.getItem(which);
-                for (int i=0; i<textmsg.length; i++) {
-                    if (strName.matches(textmsg[i]) ) {
+                for (int i = 0; i < textmsg.length; i++) {
+                    if (strName.matches(textmsg[i])) {
                         scamFormatIndex = numberFormatIndexes[i];
                         formatIndex = uvc_descriptor.getFormatIndex(i);
-                        String[] textmessage = new String [formatIndex.numberOfFrameDescriptors];
+                        svideoformat = formatIndex.videoformat.toString();
+                        String[] textmessage = new String[formatIndex.numberOfFrameDescriptors];
                         String inp;
-                        for (int j=0; j<formatIndex.numberOfFrameDescriptors; j++) {
+                        for (int j = 0; j < formatIndex.numberOfFrameDescriptors; j++) {
 
 
-
-                }
-
-
-
-
-                AlertDialog.Builder builderInner = new AlertDialog.Builder(mContext);
-                builderInner.setMessage(strName);
-                builderInner.setTitle("Your Selected Item is");
-                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog,int which) {
-                        dialog.dismiss();
-                    }
-                });
-                builderInner.show();
-            }
-        });
-        builderSingle.show();
-
-
-
-
-
-
-
-
-
-
-        String input = (String) JOptionPane.showInputDialog(null, "             Select the FormatIndex              ", "This Videoformats are supported of your camera", JOptionPane.QUESTION_MESSAGE, null,  textmsg, textmsg[textmsg.length-1]);
-        if (input != null) {
-            svideoformat = (input.toString());
-            for (int i=0; i<textmsg.length; i++) {
-                if (input.matches(textmsg[i]) ) {
-                    scamFormatIndex = numberFormatIndexes[i];
-                    formatIndex = phrasedUvcDescriptor.getFormatIndex(i);
-                    String[] textmessage = new String [formatIndex.numberOfFrameDescriptors];
-                    String inp;
-                    for (int j=0; j<formatIndex.numberOfFrameDescriptors; j++) {
-                        frameIndex = formatIndex.getFrameIndex(j);
-                        StringBuilder stringb = new StringBuilder();
-                        stringb.append(Integer.toString(frameIndex.wWidth));
-                        stringb.append(" x ");
-                        stringb.append(Integer.toString(frameIndex.wHeight));
-                        textmessage[j] = stringb.toString();
-                    }
-                    inp = (String) JOptionPane.showInputDialog(null, "Select the camera Resolution", "Following Resolutions are supported:", JOptionPane.QUESTION_MESSAGE, null,  textmessage, textmessage[textmessage.length-1]);
-                    if (inp != null) {
-                        for (int j=0; j<formatIndex.numberOfFrameDescriptors; j++) {
-                            if (inp.equals(textmessage[j])) {
-                                frameIndex = formatIndex.getFrameIndex(j);
-
-                                scamFrameIndex = frameIndex.frameIndex;
-                                System.out.println("scamFrameIndex = " + scamFrameIndex);
-                                simageWidth = frameIndex.wWidth;
-                                simageHeight = frameIndex.wHeight;
-
-                                String [] text = new String [frameIndex.dwFrameInterval.length];
-                                for (int k=0; k<text.length; k++) {
-                                    text[k] = Integer.toString(frameIndex.dwFrameInterval[k]);
-                                }
-                                String textInput = (String) JOptionPane.showInputDialog(null, String.format("Example: 333333 = 30 fps (Frames per Secound);   666666 = 15 fps\nA higher value means less Pictures per Secound\nOne Frame is one Picture."), "Select the FrameIntervall", JOptionPane.QUESTION_MESSAGE, null,  text, text[text.length-1]);
-                                if (textInput != null) {
-                                    scamFrameInterval = Integer.parseInt(textInput);
-                                    System.out.println("scamFrameInterval = " + scamFrameInterval);
-                                }
-                            }
                         }
                     }
 
+                }
+                selectFrameIndex();
+            }
+        });
+
+
+        builderSingle.show();
+    }
 
 
 
+    private void selectFrameIndex () {
 
+     frameDescriptorsResolutionArray = new String[formatIndex.numberOfFrameDescriptors];
+        String inp;
+
+        for (int j = 0; j < formatIndex.numberOfFrameDescriptors; j++) {
+            frameIndex = formatIndex.getFrameIndex(j);
+            StringBuilder stringb = new StringBuilder();
+            stringb.append(Integer.toString(frameIndex.wWidth));
+            stringb.append(" x ");
+            stringb.append(Integer.toString(frameIndex.wHeight));
+            frameDescriptorsResolutionArray[j] = stringb.toString();
+        }
+        final AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
+        builderSingle.setIcon(R.drawable.ic_menu_camera);
+        builderSingle.setTitle("Select the camera Frame Format (Represents the Resolution)");
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
+
+        for (int i = 0; i < frameDescriptorsResolutionArray.length; i++) {
+            arrayAdapter.add(frameDescriptorsResolutionArray[i]);
+        }
+
+        builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                writeMsgMain("UVC values canceled");
+                dialog.dismiss();
+            }
+        });
+        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String input = arrayAdapter.getItem(which);
+                for (int i = 0; i < frameDescriptorsResolutionArray.length; i++) {
+                    for (int j = 0; j < formatIndex.numberOfFrameDescriptors; j++) {
+                        if (input.equals(frameDescriptorsResolutionArray[j])) {
+                            frameIndex = formatIndex.getFrameIndex(j);
+                            scamFrameIndex = frameIndex.frameIndex;
+                            System.out.println("scamFrameIndex = " + scamFrameIndex);
+                            simageWidth = frameIndex.wWidth;
+                            simageHeight = frameIndex.wHeight;
+                        }
+                    }
 
                 }
-            }
+                selectDWFrameIntervall();
 
+
+            }
+        });
+
+
+        builderSingle.show();
+
+
+    }
+
+
+
+
+    private void selectDWFrameIntervall(){
+
+        dwFrameIntervalArray = new String [frameIndex.dwFrameInterval.length];
+        for (int k=0; k<dwFrameIntervalArray.length; k++) {
+            dwFrameIntervalArray[k] = Integer.toString(frameIndex.dwFrameInterval[k]);
         }
 
 
-        */
+        final AlertDialog.Builder dwFrameIntervalArraybuilder = new AlertDialog.Builder(mContext);
+        dwFrameIntervalArraybuilder.setIcon(R.drawable.ic_menu_camera);
+        dwFrameIntervalArraybuilder.setTitle("Select the camera Frame Format (Represents the Resolution)");
+        final ArrayAdapter<String> dwFrameIntervalArrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
+
+        for (int i = 0; i < dwFrameIntervalArray.length; i++) {
+            dwFrameIntervalArrayAdapter.add(dwFrameIntervalArray[i]);
+        }
+
+        dwFrameIntervalArraybuilder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                writeMsgMain("UVC values canceled");
+                dialog.dismiss();
+            }
+        });
+        dwFrameIntervalArraybuilder.setAdapter(dwFrameIntervalArrayAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String textInput = dwFrameIntervalArrayAdapter.getItem(which);
+                if (textInput != null) {
+                    scamFrameInterval = Integer.parseInt(textInput);
+                    System.out.println("scamFrameInterval = " + scamFrameInterval);
+                }
+                writeTheValues();
+                writeMsgMain("Sucessfully changed to UVC values");
+
+            }
+        });
+
+        dwFrameIntervalArraybuilder.show();
+    }
+
+    public void writeMsgMain(final String msg) {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tv = activity.findViewById(R.id.textDarstellung);
+                tv.setText(msg);
+
+            }
+        });
+
     }
 
 
 }
 
+
+
 /*
+
 public void displayDialog(){
 
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
@@ -820,6 +906,9 @@ public void displayDialog(){
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String strName = arrayAdapter.getItem(which);
+
+
+
                 AlertDialog.Builder builderInner = new AlertDialog.Builder(mContext);
                 builderInner.setMessage(strName);
                 builderInner.setTitle("Your Selected Item is");
@@ -830,7 +919,10 @@ public void displayDialog(){
                     }
                 });
                 builderInner.show();
+
+
             }
+
         });
         builderSingle.show();
 

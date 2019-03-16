@@ -1,0 +1,31 @@
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/returnToConfigScreen"
+        android:onClick="returnToConfigScreen"
+        android:title="Return To Configuration Sreen" />
+
+
+
+    <item
+        android:id="@+id/changeThePacketsPerRequest"
+        android:onClick="changePackets"
+        android:title="Edit the PacketsPerRequest" />
+
+
+    <item
+        android:id="@+id/changeTheActiveUrbs"
+        android:onClick="changeUrbs"
+        android:title="Edit the ActiveURBs" />
+
+
+
+
+
+    <item
+        android:id="@+id/beenden"
+        android:onClick="beenden"
+        android:title="Exit Program" />
+
+</menu>

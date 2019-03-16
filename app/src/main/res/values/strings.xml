@@ -1,3 +1,27 @@
 <resources>
     <string name="app_name">UVC_Camera</string>
+    <string name="readme"><![CDATA[
+       
+Camera stream over Usb.\n
+Explaination:\n
+First you have to find your Camera.\n
+Use the "Camera Settings" --> "Find the camera" --> Search for a camera" Button to find your camera.\n
+Next you can list your camera with the next entry in the same menue\n
+Next you have to set up your camera with UVC settings (you need a UVC compliance camera) --> click the last point in the menu.\n
+If you want to save your settings, than click "Save/Edit/Restore" and than click the "Edit the camera values" Button.\n
+When you click in the next menu on ok, than you can save your settings to a file.\n
+If you leave in this menu some lines without an entry, than no value for this variable will be edited.\n\n
+Next important part is the Testrun for your camera.\n
+Click "Testrun - Reads out the camera frames" Button, to get the camera frames for 3 secounds. The frames will be displayed on your camera screen.\n
+Have a look at your frames: If they are all identically and big enougth, than you can click the last button "Start the camera stream".\n\n
+Otherwise you have to edit some values for your camera: Perhaps -PacketsPerRequest- or -ActiveUrbs-, or something else.\n
+On the last Button you can open the camera stream view. Here you can watch the video of your camera.\n
+Click the "Transmission Start" --> "Start the Camera" Button to start the transmission.\n
+If everything works, you can watch the video of your camera.\n\n
+Finally if you want to read this reamMe again you can click on "View the Readme" to see this Readme again.\n
+This program is on GitHub on following link:\n
+https://github.com/Peter-St/Linux_Jna_Kamera
+
+
+    ]]></string>
 </resources>

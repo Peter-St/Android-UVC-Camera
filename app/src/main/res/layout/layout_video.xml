@@ -31,67 +31,37 @@
         android:soundEffectsEnabled="true"
         android:src="@drawable/jpg" />
 
-    <ToggleButton
+    <Button
         android:id="@+id/stopKameraknopf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/button2"
+        android:layout_alignEnd="@+id/settingsButton"
+        android:layout_alignRight="@+id/settingsButton"
         android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/button2"
-        android:onClick="StopKameraButtonClickEvent"
-        android:text="ToggleButton2"
-        android:textOff="Kamera läuft"
-        android:textOn="Kamera gestoppt" />
-
-    <ToggleButton
-        android:id="@+id/MJPGYUV"
-        android:layout_width="wrap_content"
-        android:layout_height="35dp"
-        android:layout_above="@+id/button3"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginEnd="0dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginBottom="4dp"
-        android:background="@color/colorPrimaryDark"
-        android:onClick="MjpegYuv"
-        android:text="MJPGYUV"
-        android:textOff="MJPEG"
-        android:textOn="YUV" />
-
+        android:background="@color/colorPrimary"
+        android:onClick="stopTheCameraStream"
+        android:text="Stop !" />
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/startStream"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:background="@color/colorAccent"
-        android:text="Übertragung Starten" />
+        android:text="Transmission start" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/settingsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:text="Einstellungen" />
-
-
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="wrap_content"
-        android:layout_height="36dp"
-        android:layout_above="@+id/stopKameraknopf"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginEnd="2dp"
-        android:layout_marginRight="2dp"
-        android:layout_marginBottom="5dp"
-        android:background="@color/colorPrimary"
-        android:text="Fehlersuche" />
+        android:background="@color/colorPrimaryDark"
+        android:text="Settings" />
+
 
     <TextView
         android:id="@+id/microdiaText"
