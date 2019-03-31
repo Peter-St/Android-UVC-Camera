@@ -4,6 +4,8 @@ Still under development....
 
 This is a Android Studio Project. It connects to a usb camera from your Android Device. (OTG cabel or OTG Hub needed)
 
+# This Project was built to perform from all Devices (Mediathek Devices too) an Isochronous Video Stream.
+
 The program uses the usb device driver to perform an isochronous transfer with your camera device.
 
 - First you have to set up all camera settings for your device. The program then saves the values and you can restore them later or overwrite them with other values. Use the "Edit/Save/Restore" Button to adjust the values.
