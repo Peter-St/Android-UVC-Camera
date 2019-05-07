@@ -112,15 +112,12 @@ public class Main extends Activity {
 
     public boolean bildaufnahme = false;
     public boolean stopKamera = false;
-    public int kamera = 0;
     public int stillImageFrame = 0;
     public int stillImageFrameBeenden = 0;
     public boolean stillImageAufnahme = false;
     public int stillImage = 0;
-    public static char kameramodel ='m';
 
     public int exit = 0;
-    public int frameZähler = 0;
     public Handler handler;
     public Button startStream;
     public Button settingsButton;
@@ -132,8 +129,6 @@ public class Main extends Activity {
     Date date;
     SimpleDateFormat dateFormat;
     File file;
-    String rootPath;
-    String fileName;
     SaveToFile  stf;
     public StringBuilder stringBuilder;
 
@@ -142,6 +137,7 @@ public class Main extends Activity {
 
     UVC_Descriptor uvc_descriptor;
     int [] convertedMaxPacketSize;
+    String controlltransfer;
 
 
 
@@ -176,9 +172,6 @@ public class Main extends Activity {
         usbManager = (UsbManager) getSystemService(USB_SERVICE);
         handler = new Handler(); // This makes the handler attached to UI Thread
         stf = new SaveToFile(this, this);
-
-        int[] a = null;
-        ByteBuffer byteBuffer = null;
     }
 
     public void editCameraSettings (MenuItem item) {
@@ -548,6 +541,12 @@ public class Main extends Activity {
             }
 
             try {
+                closeCameraDevice();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            try {
                 openCam(true);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -838,6 +837,8 @@ public class Main extends Activity {
             camDeviceConnection.close();
             camDeviceConnection = null;
         }
+        runningTransfer = null;
+        runningStream = null;
     }
 
     private void initCamera() throws Exception {
@@ -924,10 +925,6 @@ public class Main extends Activity {
         }
     }
 
-    private void processReceivedVideoFrame1(byte[] frameData) throws IOException {
-        String fileName = new File(Environment.getExternalStorageDirectory(), "temp_usbcamtest1.frame").getPath();
-        writeBytesToFile(fileName, frameData);
-    }
 
     private void writeBytesToFile(String fileName, byte[] data) throws IOException {
         FileOutputStream fileOutputStream = null;
@@ -942,9 +939,19 @@ public class Main extends Activity {
 
     private void processReceivedVideoFrameYuv(byte[] frameData) throws IOException {
         YuvImage yuvImage = new YuvImage(frameData, ImageFormat.YUY2, imageWidth, imageHeight, null);
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        yuvImage.compressToJpeg(new Rect(0, 0, imageWidth, imageHeight), 100, os);
+        byte[] jpegByteArray = os.toByteArray();
+        final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                imageView.setImageBitmap(bitmap);
+            }
+        });
 
 
-
+/*
         Date date = new Date();
         String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
         String fileName = new File(rootPath + String.valueOf(date.getTime()) + ".jpg").getPath();
@@ -952,6 +959,8 @@ public class Main extends Activity {
         if (!file.exists()) {
             file.mkdirs();
         }
+
+        /*
      //   writeBytesToFile(fileName, jpegFrameData);
      //   File file = new File(Environment.getExternalStorageDirectory(), "temp_usbcamtest1.jpg");
         FileOutputStream fileOutputStream = null;
@@ -963,6 +972,8 @@ public class Main extends Activity {
         } finally {
             fileOutputStream.close();
         }
+
+        */
     }
 
 
@@ -1174,6 +1185,7 @@ public class Main extends Activity {
         log("Final streaming parms: " + dumpStreamingParms(streamingParms));
         stringBuilder.append("\nFinal streaming parms: \n");
         stringBuilder.append(dumpStreamingParms(streamingParms));
+        controlltransfer = new String(dumpStreamingParms(streamingParms));
     }
 
     private String dumpStreamingParms(byte[] p) {
@@ -1476,8 +1488,9 @@ public class Main extends Activity {
                 final int time = 3000;
                 int cnt = 0;
                 stringBuilder = new StringBuilder();
-                stringBuilder.append(String.format("CountedFrames in a Time of %d seconds:\n", (time/1000)));
-
+                stringBuilder.append("Controlltransfer:\n");
+                stringBuilder.append(controlltransfer);
+                stringBuilder.append(String.format("\n\nCountedFrames in a Time of %d seconds:\n", (time/1000)));
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

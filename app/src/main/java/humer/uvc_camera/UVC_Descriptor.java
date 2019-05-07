@@ -11,7 +11,6 @@ import java.util.Formatter;
 
 public class UVC_Descriptor {
 
-
     //Video Interface Class Code
     private final static byte CC_VIDEO = 0x0E;
 
@@ -20,8 +19,6 @@ public class UVC_Descriptor {
     private final static byte SC_VIDEOCONTROL               = 0x01;
     private final static byte SC_VIDEOSTREAMING             = 0x02;
     private final static byte SC_VIDEO_INTERFACE_COLLECTION = 0x03;
-
-
 
     // VS Interface Descriptor Subtypes
     private final static byte VS_UNDEFINED = 0x00;
@@ -32,15 +29,10 @@ public class UVC_Descriptor {
     private final static byte VS_format_mjpeg = 0x06;
     private final static byte VS_frame_mjpeg = 0x07;
     private final static byte VS_colour_format = 0x0D;
+
     public final ArrayList<UVC_Descriptor.FormatIndex> formatIndex = new ArrayList<>();
+    private static ByteBuffer uvcData;
 
-    private Main uvc_camera;
-    private Context mContext;
-    private Activity activity;
-    private ByteBuffer uvcData;
-
-    private TextView tv;
-    private Button settingsButton;
 
 
 
