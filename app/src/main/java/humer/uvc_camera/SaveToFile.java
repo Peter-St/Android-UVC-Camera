@@ -601,12 +601,14 @@ public class SaveToFile {
 
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
         builderSingle.setIcon(R.drawable.ic_menu_camera);
-        builderSingle.setTitle("Select the maximal size of the Packets, which where sent to the camera device!! Important for Mediathek Devices !!");
+        builderSingle.setTitle("Select the maximal Packet Size:");
+        //builderSingle.setMessage("Select the maximal size of the Packets, which where sent to the camera device!! Important for Mediathek Devices !!");
 
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
         for (int i = 0; i<maxPacketSizeStr.length; i++){
             arrayAdapter.add(maxPacketSizeStr[i]);
         }
+
 
         builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -641,7 +643,8 @@ public class SaveToFile {
     public void selectPackets() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle(String.format("Select the Packets per Request: (Number of Packet with a size of: %d)", smaxPacketSize));
+        builder.setTitle("Packets per Request");
+        builder.setMessage(String.format("Select the Packets per Request: (Number of Packet with a size of: %d)", smaxPacketSize));
 
 // Set up the input
         final EditText input = new EditText(mContext);
@@ -671,7 +674,8 @@ public class SaveToFile {
 
     public void selectUrbs() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle("Select the URBs: (Select the number of Packet Blocks running in paralell order.");
+        builder.setTitle("USB Request Block");
+        builder.setMessage(String.format("Select the URBs: (Select the number of Packet Blocks running in paralell order.)\nOne Block is %d x %d Bytes",smaxPacketSize,  spacketsPerRequest ));
 
 // Set up the input
         final EditText input = new EditText(mContext);
@@ -717,7 +721,8 @@ public class SaveToFile {
 
         final AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
         builderSingle.setIcon(R.drawable.ic_menu_camera);
-        builderSingle.setTitle("Select the camera Format (This video Formats were supportet)");
+        builderSingle.setTitle("Camera Format (MJPEG / YUV / ...");
+        //builderSingle.setMessage("Select the camera format (This video formats were supportet)");
 
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
 
@@ -775,7 +780,8 @@ public class SaveToFile {
         }
         final AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
         builderSingle.setIcon(R.drawable.ic_menu_camera);
-        builderSingle.setTitle("Select the camera Frame Format (Represents the Resolution)");
+        builderSingle.setTitle("Camera Resolution (Frame Format)");
+        //builderSingle.setMessage("Select the camera Frame Format (Represents the Resolution)");
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
 
         for (int i = 0; i < frameDescriptorsResolutionArray.length; i++) {
@@ -830,7 +836,8 @@ public class SaveToFile {
 
         final AlertDialog.Builder dwFrameIntervalArraybuilder = new AlertDialog.Builder(mContext);
         dwFrameIntervalArraybuilder.setIcon(R.drawable.ic_menu_camera);
-        dwFrameIntervalArraybuilder.setTitle("Select the camera Frame Format (Represents the Resolution)");
+        dwFrameIntervalArraybuilder.setTitle("Frameintervall");
+        //dwFrameIntervalArraybuilder.setMessage("Select the camera Frame Intervall\n333333 means 30 Frames per Second\n666666 means 15 Frames per Second\nThe number is in Nano Secounds and every amount of nanao secounds a Frame is sent.");
         final ArrayAdapter<String> dwFrameIntervalArrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
 
         for (int i = 0; i < dwFrameIntervalArray.length; i++) {

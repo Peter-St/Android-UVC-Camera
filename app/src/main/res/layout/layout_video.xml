@@ -38,7 +38,7 @@
         android:layout_alignEnd="@+id/settingsButton"
         android:layout_alignRight="@+id/settingsButton"
         android:layout_alignParentBottom="true"
-        android:background="@color/colorPrimary"
+        android:background="@android:color/holo_red_light"
         android:onClick="stopTheCameraStream"
         android:text="Stop !" />
 
@@ -49,18 +49,21 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:background="@color/colorAccent"
+        android:background="@android:color/holo_green_dark"
         android:text="Transmission start" />
 
     <Button
         android:id="@+id/settingsButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="142dp"
+        android:layout_height="56dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:background="@color/colorPrimaryDark"
-        android:text="Settings" />
+        android:background="@drawable/settings"
+        android:text="Settings"
+        android:textColor="@android:color/holo_blue_bright"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
 
     <TextView

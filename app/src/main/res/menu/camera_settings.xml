@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/findTheCamera"
-        android:title="Find the camera?" >
+        android:title="Camera Connection" >
 
 
         <menu>
@@ -27,18 +27,24 @@
 
     <item
         android:id="@+id/edit"
-        android:title="Save/Restore/Edit" >
+        android:title="Restor Or Save Settings" >
 
         <menu>
+
+            <item
+                android:id="@+id/setUpUvcSettings2"
+                android:onClick="setUpWithUvcSettings"
+                android:title="Set Up the Camera with UVC Settings" />
+
             <item
                 android:id="@+id/editCameraValues"
                 android:onClick="editCameraSettings"
-                android:title="Edit the camera values" />
+                android:title="Check And Edit The Camera Values" />
 
             <item
                 android:id="@+id/restoreTheValues"
                 android:onClick="restoreCameraSettings"
-                android:title="RestoreTheValues" />
+                android:title="Restore Camera Values" />
 
         </menu>
 
