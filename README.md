@@ -1,5 +1,3 @@
--- inactive at the moment --
-
 # Android-UVC-Camera
 
 Still under development.... 
