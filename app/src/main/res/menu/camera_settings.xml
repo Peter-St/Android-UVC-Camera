@@ -67,6 +67,11 @@
         android:onClick="viewReadme"
         android:title="View the Readme" />
 
+    <item
+        android:id="@+id/viewPrivatePolicy"
+        android:onClick="viewPrivatePolicy"
+        android:title="View the Private Policy" />
+
 
     <item
         android:id="@+id/beenden"

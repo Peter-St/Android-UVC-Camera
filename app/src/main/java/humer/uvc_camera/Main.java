@@ -177,7 +177,17 @@ public class Main extends Activity {
         usbManager = (UsbManager) getSystemService(USB_SERVICE);
         handler = new Handler(); // This makes the handler attached to UI Thread
         stf = new SaveToFile(this, this);
+
+
     }
+
+    public void viewPrivatePolicy(MenuItem item) {
+        // TODO Auto-generated method stub
+        Intent intent = new Intent(getApplicationContext(),
+                PrivacyPolicyActivity.class);
+        startActivity(intent);
+    }
+
 
     public void editCameraSettings (MenuItem item) {
         stf.startEditSave();
