@@ -2,7 +2,8 @@
 
 Still under development.... 
 
-Link on Play Store: 
+Link on Play Store:
+https://play.google.com/store/apps/details?id=humer.uvc_camera&hl=de
 
 This is a Android Studio Project. It connects to a usb camera from your Android Device. (OTG cabel or OTG Hub needed)
 
