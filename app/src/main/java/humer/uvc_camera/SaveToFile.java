@@ -137,7 +137,7 @@ public class SaveToFile {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                activity.setContentView(R.layout.layout_main);
+                activity.setContentView(R.layout.new_layout_main);
                 settingsButton = activity.findViewById(R.id.einstellungen);
                 settingsButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -872,8 +872,11 @@ public class SaveToFile {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                tv = activity.findViewById(R.id.textDarstellung);
-                tv.setText(msg);
+
+                displayMessage(msg);
+                //tv = (TextView) findViewById(R.id.textDarstellung);
+                //tv.setText("msg");
+
 
             }
         });

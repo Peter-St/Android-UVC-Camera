@@ -2,44 +2,24 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/findTheCamera"
-        android:title="Camera Connection" >
+        android:id="@+id/setUpUvcSettings"
+        android:onClick="setUpWithUvcSettings"
+        android:title="Set Up the Camera with UVC Settings" />
 
 
-        <menu>
-            <item
-                android:id="@+id/kamera_angeschlossen"
-                android:onClick="searchTheCamera"
-                android:title="Search for a camera" />
 
-            <item
-                android:id="@+id/Kamera_Auflisten"
-                android:onClick="listDeviceButtonClickEvent"
-                android:title="List up the camera Details" />
 
-            <item
-                android:id="@+id/setUpUvcSettings"
-                android:onClick="setUpWithUvcSettings"
-                android:title="Set Up the Camera with UVC Settings" />
-
-        </menu>
-    </item>
 
     <item
         android:id="@+id/edit"
-        android:title="Restor Or Save Settings" >
+        android:title="Edit / Save / Restore" >
 
         <menu>
-
-            <item
-                android:id="@+id/setUpUvcSettings2"
-                android:onClick="setUpWithUvcSettings"
-                android:title="Set Up the Camera with UVC Settings" />
 
             <item
                 android:id="@+id/editCameraValues"
                 android:onClick="editCameraSettings"
-                android:title="Check And Edit The Camera Values" />
+                android:title="Edit / Save The Camera Values" />
 
             <item
                 android:id="@+id/restoreTheValues"
@@ -53,24 +33,9 @@
     </item>
 
     <item
-        android:id="@+id/isoReadmethod"
-        android:onClick="isoRead"
-        android:title="Testrun - Reads out the camera frames" />
-
-    <item
-        android:id="@+id/videoStream"
-        android:onClick="kamera_video"
-        android:title="Start the camera stream" />
-
-    <item
-        android:id="@+id/viewReadme"
-        android:onClick="viewReadme"
-        android:title="View the Readme" />
-
-    <item
-        android:id="@+id/viewPrivatePolicy"
-        android:onClick="viewPrivatePolicy"
-        android:title="View the Private Policy" />
+        android:id="@+id/Kamera_Auflisten"
+        android:onClick="listDeviceButtonClickEvent"
+        android:title="List up the camera Details" />
 
 
     <item

@@ -22,6 +22,10 @@
         </activity>
         <activity android:name="humer.uvc_camera.PrivacyPolicyActivity" >
         </activity>
+        <activity android:name="humer.uvc_camera.ReadMeActivity" >
+        </activity>
+        <activity android:name="humer.uvc_camera.StartTheStreamActivity" >
+        </activity>
     </application>
 
 </manifest>
