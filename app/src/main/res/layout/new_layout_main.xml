@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:text="Load Values"
         android:onClick="restoreCameraSettings"
+        android:background="@drawable/bg_button"
 
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintRight_toRightOf="parent"
@@ -46,14 +47,13 @@
         android:layout_height="wrap_content"
         android:text="Find the Camera"
         android:onClick="searchTheCamera"
+        android:background="@drawable/bg_button"
 
-
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.2"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"  />
+        app:layout_constraintTop_toTopOf="@id/guidelinehor1"
+        app:layout_constraintBottom_toBottomOf="@id/guidelinehor1"
+        app:layout_constraintLeft_toLeftOf="@id/guideline"
+        app:layout_constraintRight_toRightOf="@id/guideline"
+        />
 
 
 
@@ -64,13 +64,12 @@
         android:text="Settings"
         tools:layout_editor_absoluteX="43dp"
         tools:layout_editor_absoluteY="259dp"
+        android:background="@drawable/bg_button"
 
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintLeft_toRightOf="@+id/findTheCamera"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guidelinehor1"
+        app:layout_constraintBottom_toBottomOf="@id/guidelinehor1"
+        app:layout_constraintLeft_toLeftOf="@id/guideline2"
+        app:layout_constraintRight_toRightOf="@id/guideline2"
 
         />
 
@@ -80,13 +79,12 @@
         android:layout_height="wrap_content"
         android:text="Testrun"
         android:onClick="isoRead"
+        android:background="@drawable/bg_button"
 
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.2"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.4"
+        app:layout_constraintTop_toTopOf="@id/guidelinehor2"
+        app:layout_constraintBottom_toBottomOf="@id/guidelinehor2"
+        app:layout_constraintLeft_toLeftOf="@id/guideline"
+        app:layout_constraintRight_toRightOf="@id/guideline"
 
         />
 
@@ -95,14 +93,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Start the Camera Stream"
-        android:onClick="kamera_video"
+        android:onClick="isoStream"
+        android:background="@drawable/bg_button"
 
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintLeft_toRightOf="@+id/testRunButton"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.4"
+        app:layout_constraintTop_toTopOf="@id/guidelinehor2"
+        app:layout_constraintBottom_toBottomOf="@id/guidelinehor2"
+        app:layout_constraintLeft_toLeftOf="@id/guideline2"
+        app:layout_constraintRight_toRightOf="@id/guideline2"
 
         />
 
@@ -112,15 +109,12 @@
         android:layout_height="wrap_content"
         android:text="View the Read_Me"
         android:onClick="viewReadme"
-        app:layout_constraintHorizontal_weight="1"
+        android:background="@drawable/bg_button"
 
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.6"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.2"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-
+        app:layout_constraintTop_toTopOf="@id/guidelinehor3"
+        app:layout_constraintBottom_toBottomOf="@id/guidelinehor3"
+        app:layout_constraintLeft_toLeftOf="@id/guideline"
+        app:layout_constraintRight_toRightOf="@id/guideline"
         />
 
     <Button
@@ -129,15 +123,49 @@
         android:layout_height="wrap_content"
         android:text="View Privacy Policy"
         android:onClick="viewPrivatePolicy"
+        android:background="@drawable/bg_button"
 
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintLeft_toRightOf="@+id/readMeButton"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.6"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guidelinehor3"
+        app:layout_constraintBottom_toBottomOf="@id/guidelinehor3"
+        app:layout_constraintLeft_toLeftOf="@id/guideline2"
+        app:layout_constraintRight_toRightOf="@id/guideline2"
 
         />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.25" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.75" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelinehor1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.2" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelinehor2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.4" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelinehor3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.6" />
 
 
 

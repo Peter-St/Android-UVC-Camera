@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
@@ -48,7 +49,6 @@ public class StartTheStreamActivity extends Activity {
 
     private static final String ACTION_USB_PERMISSION = "humer.uvc_camera.USB_PERMISSION";
 
-
     protected ImageView imageView;
     protected Button startStream;
     protected Button settingsButton;
@@ -90,10 +90,10 @@ public class StartTheStreamActivity extends Activity {
     private UsbDeviceConnection camDeviceConnection;
     private UsbInterface camControlInterface;
     private UsbInterface camStreamingInterface;
-    public static int camStreamingAltSetting;
     private UsbEndpoint camStreamingEndpoint;
     public boolean bulkMode;
 
+    public static int camStreamingAltSetting;
     public static int camFormatIndex;
     public static int camFrameIndex;
     public static int camFrameInterval;
@@ -198,7 +198,7 @@ public class StartTheStreamActivity extends Activity {
             @Override
             public boolean onLongClick(View view) {
                     mp2.start();
-                    //hoheAuflösung();
+                    hoheAuflösung();
                     return true;
                 }
             });
@@ -207,7 +207,7 @@ public class StartTheStreamActivity extends Activity {
             @Override
                 public void onClick(View view) {
                     mp1.start();
-                    //BildaufnahmeButtonClickEvent();
+                    BildaufnahmeButtonClickEvent();
                 }
         });
         iB.setEnabled(false);
@@ -720,20 +720,19 @@ public class StartTheStreamActivity extends Activity {
 
 
 
-
     public void BildaufnahmeButtonClickEvent() {
 
         bildaufnahme = true;
-        displayMessage("Bild gespeichert");
-        log("Bildaufnahme");
+        displayMessage("Image saved");
+        log("Saving the Image ...");
 
     }
 
     public void hoheAuflösung() {
 
         stillImageFrame++;
-        displayMessage("Bild gespeichert");
-        log("Bildaufnahme");
+        displayMessage("Still Image Frame saved");
+        log("Saving the Image ....  " + "");
     }
 
 
@@ -848,14 +847,21 @@ public class StartTheStreamActivity extends Activity {
             bildaufnahme = false ;
             date = new Date() ;
             dateFormat = new SimpleDateFormat("dd.MM.yyyy_HH:mm:ss") ;
-            String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
-            file = new File(rootPath);
-            if (!file.exists()) {
-                file.mkdirs();
-            }
-            //String fileName = new File(rootPath + String.valueOf(date.getTime()) + ".jpg").getPath();
-            String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getPath() ;
-            writeBytesToFile(fileName, jpegFrameData);
+            Context mContext = this;
+            int code = mContext.getPackageManager().checkPermission(
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    mContext.getPackageName());
+            if (code == PackageManager.PERMISSION_GRANTED) {
+                String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
+                file = new File(rootPath);
+                if (!file.exists()) {
+                    file.mkdirs();
+                }
+                //String fileName = new File(rootPath + String.valueOf(date.getTime()) + ".jpg").getPath();
+                String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getPath() ;
+                writeBytesToFile(fileName, jpegFrameData);
+            } else displayMessage ("Storage Permission for the app were missing" );
+
         }
 
         if (stillImageAufnahme) {

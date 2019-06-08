@@ -22,6 +22,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.TextInputLayout;
@@ -294,147 +295,155 @@ public class SaveToFile {
         rootdirStr = null;
         stringBuilder = new StringBuilder();
         paths = new ArrayList<>(50);
-        final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() ;
-        final File file = new File(rootPath, "/" + saveFilePathFolder);
-        if (!file.exists()) {
-            file.mkdirs();
-        }
 
-        log("Path: " + rootPath.toString());
-        rootdirStr = file.toString();
-        rootdirStr += "/";
-        //final File folder = new File("/home/you/Desktop");
-        listFilesForFolder(file);
-        if (paths.isEmpty() == true && optionForSaveFile == OptionForSaveFile.restorefromfile) {
-            returnToMainLayout(String.format("No savefiles found in the save directory.\nDirectory: &s", rootdirStr ));
-        } else {
-            stringBuilder.append("Type the number of the file to select it, or type in the name (new or existing).\n");
-            for (int i = 0; i < paths.size(); i++) {
-                stringBuilder.append(String.format("%d   ->   ", (i+1)));
-                stringBuilder.append(paths.get(i));
-                stringBuilder.append("\n");
+        int code = mContext.getPackageManager().checkPermission(
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                mContext.getPackageName());
+        if (code == PackageManager.PERMISSION_GRANTED) {
+            final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() ;
+            final File file = new File(rootPath, "/" + saveFilePathFolder);
+            if (!file.exists()) {
+                file.mkdirs();
             }
-            log(stringBuilder.toString());
 
-
-            if (option == OptionForSaveFile.restorefromfile) {
-
-
-
-
-                AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
-                builderSingle.setIcon(R.drawable.ic_menu_camera);
-                builderSingle.setTitle("Please select the file to restore");
-
-                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
-
-                for (int i = 0; i < paths.size(); i++) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(paths.get(i));
-                    int end = rootdirStr.length();
-                    sb.delete(0, end);
-                    arrayAdapter.add(sb.toString());
-                }
-                builderSingle.setNegativeButton("cancel restore", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String strName = arrayAdapter.getItem(which);
-                        String path = rootdirStr;
-                        path += strName;
-                        restorFromFile(path);
-                    }
-
-                });
-                builderSingle.show();
-
+            log("Path: " + rootPath.toString());
+            rootdirStr = file.toString();
+            rootdirStr += "/";
+            //final File folder = new File("/home/you/Desktop");
+            listFilesForFolder(file);
+            if (paths.isEmpty() == true && optionForSaveFile == OptionForSaveFile.restorefromfile) {
+                returnToMainLayout(String.format("No savefiles found in the save directory.\nDirectory: &s", rootdirStr ));
             } else {
-                AlertDialog.Builder builder2 = new AlertDialog.Builder(mContext);
-                builder2.setTitle("Input a value");
-                builder2.setMessage(stringBuilder.toString());
+                stringBuilder.append("Type the number of the file to select it, or type in the name (new or existing).\n");
+                for (int i = 0; i < paths.size(); i++) {
+                    stringBuilder.append(String.format("%d   ->   ", (i+1)));
+                    stringBuilder.append(paths.get(i));
+                    stringBuilder.append("\n");
+                }
+                log(stringBuilder.toString());
+
+
+                if (option == OptionForSaveFile.restorefromfile) {
+
+
+
+
+                    AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
+                    builderSingle.setIcon(R.drawable.ic_menu_camera);
+                    builderSingle.setTitle("Please select the file to restore");
+
+                    final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
+
+                    for (int i = 0; i < paths.size(); i++) {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append(paths.get(i));
+                        int end = rootdirStr.length();
+                        sb.delete(0, end);
+                        arrayAdapter.add(sb.toString());
+                    }
+                    builderSingle.setNegativeButton("cancel restore", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String strName = arrayAdapter.getItem(which);
+                            String path = rootdirStr;
+                            path += strName;
+                            restorFromFile(path);
+                        }
+
+                    });
+                    builderSingle.show();
+
+                } else {
+                    AlertDialog.Builder builder2 = new AlertDialog.Builder(mContext);
+                    builder2.setTitle("Input a value");
+                    builder2.setMessage(stringBuilder.toString());
 // Set up the input
-                final EditText input = new EditText(mContext);
+                    final EditText input = new EditText(mContext);
 // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-                input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
-                builder2.setView(input);
+                    input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
+                    builder2.setView(input);
 // Set up the buttons
-                builder2.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        log("OK");
-                        log("Die Eingabe war: " + input.getText().toString());
-                        String name = input.getText().toString();
-                        if (name.isEmpty() == true) {
-                            switch(optionForSaveFile) {
-                                case savetofile: saveValuesToFile(rootdirStr += "saveFile.sav");
-                                    break;
-                                case restorefromfile: restorFromFile(rootdirStr += "saveFile.sav");
-                                    break;
+                    builder2.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            log("OK");
+                            log("Die Eingabe war: " + input.getText().toString());
+                            String name = input.getText().toString();
+                            if (name.isEmpty() == true) {
+                                switch(optionForSaveFile) {
+                                    case savetofile: saveValuesToFile(rootdirStr += "saveFile.sav");
+                                        break;
+                                    case restorefromfile: restorFromFile(rootdirStr += "saveFile.sav");
+                                        break;
+                                }
                             }
-                        }
-                        else if (isInteger(name) == true) {
+                            else if (isInteger(name) == true) {
+                                switch(option) {
+                                    case savetofile:
+                                        try { saveValuesToFile(paths.get((Integer.parseInt(name) - 1))); }
+                                        catch (Exception e) { log("Save Failed ; Exception = " + e); e.printStackTrace();}
+                                        break;
+                                    case restorefromfile:
+                                        restorFromFile(paths.get((Integer.parseInt(name) - 1)));
+                                        break;
+                                }
+                            } else {
+                                switch(option) {
+                                    case savetofile:
+                                        saveValuesToFile((rootdirStr += name += ".sav"));      log("Saving ...");
+                                        break;
+                                    case restorefromfile:
+                                        restorFromFile((rootdirStr += name += ".sav"));      log("Saving ...");
+                                        break;
+                                }
+                            }
+
                             switch(option) {
                                 case savetofile:
-                                    try { saveValuesToFile(paths.get((Integer.parseInt(name) - 1))); }
-                                    catch (Exception e) { log("Save Failed ; Exception = " + e); e.printStackTrace();}
+                                    returnToMainLayout("Values written and saved");
                                     break;
                                 case restorefromfile:
-                                    restorFromFile(paths.get((Integer.parseInt(name) - 1)));
+                                    returnToMainLayout(String.format("Values sucessfully restored"));
                                     break;
                             }
-                        } else {
+
+
+                            return;
+                        }
+                    });
+                    builder2.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
                             switch(option) {
                                 case savetofile:
-                                    saveValuesToFile((rootdirStr += name += ".sav"));      log("Saving ...");
+                                    returnToMainLayout("Values written but not saved.");
                                     break;
                                 case restorefromfile:
-                                    restorFromFile((rootdirStr += name += ".sav"));      log("Saving ...");
+                                    returnToMainLayout(String.format("No values restored"));
                                     break;
                             }
+                            return;
                         }
+                    });
+                    builder2.show();
 
-                        switch(option) {
-                            case savetofile:
-                                returnToMainLayout("Values written and saved");
-                                break;
-                            case restorefromfile:
-                                returnToMainLayout(String.format("Values sucessfully restored"));
-                                break;
-                        }
+                }
 
 
-                        return;
-                    }
-                });
-                builder2.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch(option) {
-                            case savetofile:
-                                returnToMainLayout("Values written but not saved.");
-                                break;
-                            case restorefromfile:
-                                returnToMainLayout(String.format("No values restored"));
-                                break;
-                        }
-                        return;
-                    }
-                });
-                builder2.show();
+
+
 
             }
+        } else returnToMainLayout(String.format("No Permissions were granted to the app !!\nSolution:\nGo to Settings --> Apps --> UVC_Camera\nClick on Permissions and then grant the storage permission!"));
 
 
-
-
-
-        }
     }
 
 

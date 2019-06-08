@@ -29,6 +29,7 @@
         android:longClickable="true"
         android:padding="2dp"
         android:soundEffectsEnabled="true"
+        android:background="@drawable/bg_button_bildaufnahme"
         android:src="@drawable/jpg" />
 
     <Button
@@ -38,7 +39,7 @@
         android:layout_alignEnd="@+id/settingsButton"
         android:layout_alignRight="@+id/settingsButton"
         android:layout_alignParentBottom="true"
-        android:background="@android:color/holo_red_light"
+        android:background="@drawable/bg_button_stop"
         android:onClick="stopTheCameraStream"
         android:text="Stop !" />
 
@@ -49,7 +50,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:background="@android:color/holo_green_dark"
+        android:background="@drawable/bg_button_start_stream"
         android:text="Transmission start" />
 
     <Button
@@ -59,9 +60,9 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:background="@drawable/settings"
+        android:background="@drawable/bg_button_settings"
         android:text="Settings"
-        android:textColor="@android:color/holo_blue_bright"
+        android:textColor="@android:color/holo_blue_light"
         android:textSize="20sp"
         android:textStyle="bold" />
 

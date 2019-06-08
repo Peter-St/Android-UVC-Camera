@@ -90,10 +90,10 @@ public class Main extends Activity {
     private UsbDeviceConnection camDeviceConnection;
     private UsbInterface camControlInterface;
     private UsbInterface camStreamingInterface;
-    public static int camStreamingAltSetting;
     private UsbEndpoint camStreamingEndpoint;
     public boolean bulkMode;
 
+    public static int camStreamingAltSetting;5.,,löä,ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppplllllllllllllllllllllllllllllllll>>>>>>>>>>>>><>lll<
     public static int camFormatIndex;
     public static int camFrameIndex;
     public static int camFrameInterval;
@@ -344,7 +344,7 @@ public class Main extends Activity {
 
 
 
-    public void kamera_video(View view){
+    public void isoStream(View view){
 
 
         if (camFormatIndex == 0 || camFrameIndex == 0 ||camFrameInterval == 0 ||packetsPerRequest == 0 ||maxPacketSize == 0 ||imageWidth == 0 || activeUrbs == 0 ) {
@@ -371,6 +371,14 @@ public class Main extends Activity {
             bundle.putInt("packetsPerRequest",packetsPerRequest);
             bundle.putInt("maxPacketSize",maxPacketSize);
             bundle.putInt("activeUrbs",activeUrbs);
+            usbManager = null;
+            usbIso = null;
+            camDeviceConnection = null;
+            camDevice = null;
+            camControlInterface = null;
+            camStreamingInterface = null;
+            camStreamingEndpoint = null;
+
 
             intent.putExtra("bun",bundle);
             startActivity(intent);
