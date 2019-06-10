@@ -2,9 +2,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/lowerRes"
-        android:title="Lower Resolution"
-        android:onClick="lowerResolutionClickButtonEvent"
+        android:id="@+id/checkable_menu"
+        android:title="Normal Resolution"
+        android:onClick="NormalResolutionClickButtonEvent"
         />
 
 

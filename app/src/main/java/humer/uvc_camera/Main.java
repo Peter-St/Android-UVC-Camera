@@ -292,8 +292,6 @@ public class Main extends Activity {
         if (camDevice != null) {
             int a;
             PendingIntent permissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
-            // IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
-            // registerReceiver(mUsbReceiver, filter);
             usbManager.requestPermission(camDevice, permissionIntent);
             while (!usbManager.hasPermission(camDevice)) {
                 long time0 = System.currentTimeMillis();

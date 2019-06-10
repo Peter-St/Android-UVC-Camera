@@ -161,12 +161,11 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="2dp"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        >
+        app:layout_constraintTop_toBottomOf="@+id/testRunButton">
 
         <TextView
             android:id="@+id/textDarstellung"
@@ -174,10 +173,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:gravity="fill_vertical"
-            android:paddingTop="10dp"
             android:paddingLeft="3dp"
-            android:paddingRight="1dp"
-            />
+            android:paddingTop="10dp"
+            android:paddingRight="1dp" />
 
     </ScrollView>
 

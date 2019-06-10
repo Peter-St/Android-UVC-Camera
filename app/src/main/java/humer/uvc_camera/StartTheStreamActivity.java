@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
@@ -19,11 +20,14 @@ import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.widget.PopupMenu;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -41,6 +45,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,6 +53,8 @@ import java.util.Date;
 import java.util.HashMap;
 
 import com.sample.timelapse.MJPEGGenerator ;
+
+import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class StartTheStreamActivity extends Activity {
 
@@ -105,19 +112,21 @@ public class StartTheStreamActivity extends Activity {
     private UsbIso usbIso;
     private static boolean camIsOpen;
 
-    private Bitmap bmp = null;
+    //private Bitmap bmp = null;
 
     private boolean bildaufnahme = false;
     private boolean videorecord = false;
+    private boolean videorecordApiJellyBean = false;
     private boolean stopKamera = false;
     private boolean pauseCamera = false;
+    private boolean longclickVideoRecord = false;
     private int stillImageFrame = 0;
     private int stillImageFrameBeenden = 0;
     private boolean stillImageAufnahme = false;
     private int stillImage = 0;
     private String controlltransfer;
 
-    public int exit = 0;
+    private boolean exit = false;
     protected Button settingsButtonOverview;
     protected ToggleButton videoButton;
     private TextView tv;
@@ -133,6 +142,12 @@ public class StartTheStreamActivity extends Activity {
     int lastVideo = 0; // Current video file counter
     long startTime;
     long currentTime;
+
+
+    private BitmapToVideoEncoder bitmapToVideoEncoder;
+    private boolean lowerResolution = false;
+
+    private boolean isChecked = false;
 
 
 
@@ -160,6 +175,8 @@ public class StartTheStreamActivity extends Activity {
                         return true;
                     }
                 });
+
+
                 popup.show();//showing popup menu
             }
 
@@ -176,8 +193,8 @@ public class StartTheStreamActivity extends Activity {
                     //Creating the instance of PopupMenu
                     PopupMenu popup = new PopupMenu(StartTheStreamActivity.this, settingsButton);
                     //Inflating the Popup using xml file
-                    popup.getMenuInflater().inflate(R.menu.camera_setting_stream, popup.getMenu());
-
+                    if (lowerResolution) popup.getMenuInflater().inflate(R.menu.camera_setting_stream_lower_resolution, popup.getMenu());
+                    else popup.getMenuInflater().inflate(R.menu.camera_setting_stream, popup.getMenu());
                     //registering popup with OnMenuItemClickListener
                     popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         public boolean onMenuItemClick(MenuItem item) {
@@ -188,6 +205,8 @@ public class StartTheStreamActivity extends Activity {
                 }
             });//closing the setOnClickListener method
                     settingsButton.getBackground().setAlpha(150);  // 60% transparent
+
+
 
 
 
@@ -219,10 +238,202 @@ public class StartTheStreamActivity extends Activity {
         videoButton = (ToggleButton) findViewById(R.id.videoaufnahme);
         videoButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-
                 if (isChecked) {
-                    // The toggle is enabled
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                        videorecordApiJellyBean = true;
+                        lastVideo++;
+
+
+                        bitmapToVideoEncoder = new BitmapToVideoEncoder(new BitmapToVideoEncoder.IBitmapToVideoEncoderCallback() {
+                            @Override
+                            public void onEncodingComplete(File outputFile) {
+                                displayMessage("Encoding complete!");
+                            }
+                        });
+                        bitmapToVideoEncoder.setFrameRate((10000000 / camFrameInterval )/ 2);
+                        log("Framerate = "+ ((10000000 / camFrameInterval )/ 2));
+                        date = new Date() ;
+                        dateFormat = new SimpleDateFormat("dd.MM.yyyy_HH..mm..ss") ;
+                        String sdPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Video/";
+                        bitmapToVideoEncoder.startEncoding(imageWidth, imageHeight, new File(sdPath + "output-" + lastVideo +"-" + dateFormat.format(date) + ".mp4"));
+
+                    } else {
+                        // The toggle is enabled
+                        lastPicture = 0;
+                        videorecord = true;
+                        String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Video/";
+                        file = new File(rootPath);
+                        if (!file.exists()) {
+                            file.mkdirs();
+                        }
+
+                        File saveDir = new File(rootPath + "rec/");
+                        if (saveDir.isDirectory()) {
+                            String[] children = saveDir.list();
+                            for (int i = 0; i < children.length; i++) {
+                                if (children[i].endsWith(".jpg"))
+                                    new File(saveDir, children[i]).delete();
+                            }}
+                        saveDir.delete();
+
+                        displayMessage("Record started");
+                        startTime = System.currentTimeMillis();
+                        currentTime = System.currentTimeMillis();
+                    }
+                } else {
+                    if (longclickVideoRecord) {
+                        longclickVideoRecord = false;
+                        // The toggle is disabled
+                        pauseCamera = true;
+                        videorecord = false;
+                        lastVideo ++;
+
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+
+                        String sdPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Video/";
+                        file = new File(sdPath);
+                        long videotime = (System.currentTimeMillis() - startTime) / 1000;
+
+                        log ("long videotime = " + videotime);
+                        double a = (double) ( lastPicture / (double) videotime);
+                        log ("Double a = " + a);
+                        int fps = round(a);
+                        log("fps ( Frame per Secound ) = " + fps);
+                        log ( "lastPicture = " + lastPicture);
+
+
+                        date = new Date() ;
+                        dateFormat = new SimpleDateFormat("dd.MM.yyyy_HH..mm..ss") ;
+
+                        File fileVideo = new File(sdPath + "output-" + lastVideo +"-" + dateFormat.format(date) + ".avi");
+                        try {
+                            generator = new MJPEGGenerator(fileVideo, imageWidth, imageHeight, fps, lastPicture);
+                            for (int addpic = 1; addpic <= lastPicture; addpic++) {
+                                String curjpg = sdPath + "rec/" + addpic + ".jpg";
+                                final Bitmap bitmap = BitmapFactory.decodeFile(curjpg);
+                                generator.addImage(bitmap);
+                            }
+                            generator.finishAVI();
+                        } catch (Exception e) {
+                            displayMessage("Error: " + e);
+                            e.printStackTrace();
+                        }
+                        File saveDir = new File(sdPath + "rec/");
+                        if (saveDir.isDirectory()) {
+                            String[] children = saveDir.list();
+                            for (int i = 0; i < children.length; i++) {
+                                if (children[i].endsWith(".jpg"))
+                                    new File(saveDir, children[i]).delete();
+                            }}
+                        saveDir.delete();
+                        displayMessage("Record stopped");
+
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        pauseCamera = false;
+                        generator = null;
+                    } else {
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                            pauseCamera = true;
+                            try {
+                                Thread.sleep(200);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            videorecordApiJellyBean = false;
+                            bitmapToVideoEncoder.stopEncoding();
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            bitmapToVideoEncoder = null;
+                            try {
+                                Thread.sleep(200);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            pauseCamera = false;
+
+                        } else {
+                            // The toggle is disabled
+                            pauseCamera = true;
+                            videorecord = false;
+                            lastVideo ++;
+                            String sdPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Video/";
+                            file = new File(sdPath);
+                            long videotime = (System.currentTimeMillis() - startTime) / 1000;
+
+                            log ("long videotime = " + videotime);
+                            double a = (double) ( lastPicture / (double) videotime);
+                            log ("Double a = " + a);
+                            int fps = round(a);
+                            log("fps ( Frame per Secound ) = " + fps);
+                            log ( "lastPicture = " + lastPicture);
+
+
+                            date = new Date() ;
+                            dateFormat = new SimpleDateFormat("dd.MM.yyyy_HH..mm..ss") ;
+
+                            File fileVideo = new File(sdPath + "output-" + lastVideo +"-" + dateFormat.format(date) + ".avi");
+                            try {
+                                generator = new MJPEGGenerator(fileVideo, imageWidth, imageHeight, fps, lastPicture);
+                                for (int addpic = 1; addpic <= lastPicture; addpic++) {
+                                    String curjpg = sdPath + "rec/" + addpic + ".jpg";
+                                    final Bitmap bitmap = BitmapFactory.decodeFile(curjpg);
+                                    generator.addImage(bitmap);
+                                }
+                                generator.finishAVI();
+                            } catch (Exception e) {
+                                displayMessage("Error: " + e);
+                                e.printStackTrace();
+                            }
+                            File saveDir = new File(sdPath + "rec/");
+                            if (saveDir.isDirectory()) {
+                                String[] children = saveDir.list();
+                                for (int i = 0; i < children.length; i++) {
+                                    if (children[i].endsWith(".jpg"))
+                                        new File(saveDir, children[i]).delete();
+                                }}
+                            saveDir.delete();
+                            displayMessage("Record stopped");
+
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            pauseCamera = false;
+                            generator = null;
+                        }
+                    }
+
+                }
+            }
+        });
+
+
+        videoButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                // TODO Auto-generated method stub
+
+
+                if (videoButton.isChecked()==(false))
+                {
+                    displayMessage("Long Click - Video starts");
+                    // button is unchecked
+                    videoButton.setChecked(true);
+                    longclickVideoRecord = true;
+
                     lastPicture = 0;
                     videorecord = true;
                     String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Video/";
@@ -244,63 +455,14 @@ public class StartTheStreamActivity extends Activity {
                     startTime = System.currentTimeMillis();
                     currentTime = System.currentTimeMillis();
 
-
-
-                } else {
-                    // The toggle is disabled
-                    pauseCamera = true;
-                    videorecord = false;
-                    lastVideo ++;
-                    String sdPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Video/";
-                    file = new File(sdPath);
-                    long videotime = (System.currentTimeMillis() - startTime) / 1000;
-
-                    log ("long videotime = " + videotime);
-                    double a = (double) ( lastPicture / (double) videotime);
-                    log ("Double a = " + a);
-                    int fps = round(a);
-                    log("fps ( Frame per Secound ) = " + fps);
-                    log ( "lastPicture = " + lastPicture);
-
-
-                    date = new Date() ;
-                    dateFormat = new SimpleDateFormat("dd.MM.yyyy_HH:mm:ss") ;
-
-                    File fileVideo = new File(sdPath + "output-" + lastVideo +"-" + dateFormat.format(date) + ".avi");
-                    try {
-                        generator = new MJPEGGenerator(fileVideo, imageWidth, imageHeight, fps, lastPicture);
-                        for (int addpic = 1; addpic <= lastPicture; addpic++) {
-                            String curjpg = sdPath + "rec/" + addpic + ".jpg";
-                            Bitmap bmp = BitmapFactory.decodeFile(curjpg);
-                            generator.addImage(bmp);
-                        }
-                        generator.finishAVI();
-                    } catch (Exception e) {
-                        displayMessage("Error: " + e);
-                        e.printStackTrace();
-                    }
-                    File saveDir = new File(sdPath + "rec/");
-                    if (saveDir.isDirectory()) {
-                        String[] children = saveDir.list();
-                        for (int i = 0; i < children.length; i++) {
-                            if (children[i].endsWith(".jpg"))
-                                new File(saveDir, children[i]).delete();
-                        }}
-                    saveDir.delete();
-                    displayMessage("Record stopped");
-
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    pauseCamera = false;
-                    generator = null;
-
-
                 }
+
+                return true;
             }
         });
+
+
+
 
         videoButton.setEnabled(false);
         videoButton.setAlpha(0); // 100% transparent
@@ -317,6 +479,17 @@ public class StartTheStreamActivity extends Activity {
         }
 
 
+    }
+
+    public void lowerResolutionClickButtonEvent (MenuItem item) {
+        lowerResolution = true;
+
+    }
+
+
+
+    public void NormalResolutionClickButtonEvent (MenuItem item) {
+        lowerResolution = false;
     }
 
     public void returnToConfigScreen(MenuItem item) {
@@ -838,6 +1011,9 @@ public class StartTheStreamActivity extends Activity {
                 imageView.setImageBitmap(bitmap);
             }
         });
+        if (videorecordApiJellyBean) {
+            bitmapToVideoEncoder.queueFrame(bitmap);
+        }
 
     }
 
@@ -849,7 +1025,7 @@ public class StartTheStreamActivity extends Activity {
         if (bildaufnahme) {
             bildaufnahme = false ;
             date = new Date() ;
-            dateFormat = new SimpleDateFormat("dd.MM.yyyy_HH:mm:ss") ;
+            dateFormat = new SimpleDateFormat("dd.MM.yyyy_HH..mm..ss") ;
             Context mContext = this;
             int code = mContext.getPackageManager().checkPermission(
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -870,7 +1046,7 @@ public class StartTheStreamActivity extends Activity {
         if (stillImageAufnahme) {
             if (stillImage == 1) {
                 date = new Date();
-                dateFormat = new SimpleDateFormat("\"dd.MM.yyyy_HH:mm:ss") ;
+                dateFormat = new SimpleDateFormat("\"dd.MM.yyyy_HH..mm..ss") ;
                 String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
                 file = new File(rootPath);
                 if (!file.exists()) {
@@ -904,14 +1080,40 @@ public class StartTheStreamActivity extends Activity {
         }
 
 
-        if (exit == 0) {
-            bmp = BitmapFactory.decodeByteArray(jpegFrameData, 0, jpegFrameData.length);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    imageView.setImageBitmap(bmp);
+        if (exit == false) {
+
+            if (lowerResolution) {
+
+                BitmapFactory.Options opts = new BitmapFactory.Options();
+                opts.inSampleSize = 4;
+                final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegFrameData, 0, jpegFrameData.length, opts);
+
+                //Bitmap bitmap = decodeSampledBitmapFromByteArray(jpegFrameData);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        imageView.setImageBitmap(bitmap);
+                    }
+                });
+                if (videorecordApiJellyBean) {
+                    bitmapToVideoEncoder.queueFrame(bitmap);
                 }
-            });
+
+            } else {
+                final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegFrameData, 0, jpegFrameData.length);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        imageView.setImageBitmap(bitmap);
+                    }
+                });
+                if (videorecordApiJellyBean) {
+                    bitmapToVideoEncoder.queueFrame(bitmap);
+                }
+
+            }
+
+
         }
     }
 
@@ -925,7 +1127,7 @@ public class StartTheStreamActivity extends Activity {
         //        throw new Exception("Invalid MJPEG frame structure, length=" + frameData.length);
         //  }
         boolean hasHuffmanTable = findJpegSegment(frameData, frameLen, 0xC4) != -1;
-        exit = 0;
+        exit = false;
         if (hasHuffmanTable) {
             if (frameData.length == frameLen) {
                 return frameData;
@@ -935,12 +1137,12 @@ public class StartTheStreamActivity extends Activity {
             int segmentDaPos = findJpegSegment(frameData, frameLen, 0xDA);
 
             try {if (segmentDaPos == -1) {
-                exit = 1;
+                exit = true;
             }
             } catch (Exception e) {
                 log("Segment 0xDA not found in MJPEG frame data.");}
             //          throw new Exception("Segment 0xDA not found in MJPEG frame data.");
-            if (exit ==0) {
+            if (exit ==false) {
                 byte[] a = new byte[frameLen + mjpgHuffmanTable.length];
                 System.arraycopy(frameData, 0, a, 0, segmentDaPos);
                 System.arraycopy(mjpgHuffmanTable, 0, a, segmentDaPos, mjpgHuffmanTable.length);
@@ -1435,6 +1637,53 @@ public class StartTheStreamActivity extends Activity {
             return d<0 ? -(i+1) : i+1;
         }
     }
+
+
+    public static Bitmap decodeSampledBitmapFromByteArray(byte[] data) {
+
+
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeByteArray(data, 0, data.length, options);
+
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, imageWidth / 2, imageHeight / 2);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeByteArray(data, 0, data.length, options);
+    }
+
+
+
+    public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) >= reqHeight
+                    && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
+    }
+
+
+
 
 
 }
