@@ -48,7 +48,6 @@
         android:text="Start the\nCamera Stream"
         android:onClick="isoStream"
         android:background="@drawable/bg_button"
-        android:alpha="0.75"
 
         app:layout_constraintTop_toTopOf="@id/guidelinehor1"
         app:layout_constraintBottom_toBottomOf="@id/guidelinehor1"
@@ -63,7 +62,7 @@
         android:layout_height="wrap_content"
         android:text="View the Read_Me"
         android:onClick="viewReadme"
-        android:background="@drawable/bg_button"
+        android:background="@drawable/bg_button_yellow"
 
         app:layout_constraintTop_toTopOf="@id/guidelinehor2"
         app:layout_constraintBottom_toBottomOf="@id/guidelinehor2"
@@ -78,7 +77,7 @@
         android:layout_height="wrap_content"
         android:text="View Privacy Policy"
         android:onClick="viewPrivatePolicy"
-        android:background="@drawable/bg_button"
+        android:background="@drawable/bg_button_yellow"
 
         app:layout_constraintTop_toTopOf="@id/guidelinehor2"
         app:layout_constraintBottom_toBottomOf="@id/guidelinehor2"

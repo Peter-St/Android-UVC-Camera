@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:text="Return to\nMain Screen"
         android:onClick="returnToConfigScreen"
-        android:background="@drawable/bg_button"
+        android:background="@drawable/bg_button_yellow"
 
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintRight_toRightOf="parent"
@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:text=" - Testrun - \nto test the camera"
         android:onClick="isoRead"
-        android:background="@drawable/bg_button"
+        android:background="@drawable/bg_button_green"
 
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintLeft_toLeftOf="parent"
