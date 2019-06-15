@@ -92,7 +92,8 @@
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:gravity="center" />
+        android:gravity="center"
+        android:layout_alignParentLeft="true" />
 
 
 </RelativeLayout>

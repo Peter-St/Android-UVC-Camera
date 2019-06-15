@@ -1,10 +1,7 @@
 package humer.uvc_camera;
 
-import android.app.Activity;
-import android.content.Context;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.TextView;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Formatter;

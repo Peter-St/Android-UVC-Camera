@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
@@ -20,14 +19,11 @@ import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v7.widget.PopupMenu;
 import android.text.InputType;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -45,7 +41,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,8 +48,6 @@ import java.util.Date;
 import java.util.HashMap;
 
 import com.sample.timelapse.MJPEGGenerator ;
-
-import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class StartTheStreamActivity extends Activity {
 
@@ -126,6 +119,7 @@ public class StartTheStreamActivity extends Activity {
     private int stillImage = 0;
     private String controlltransfer;
 
+
     private boolean exit = false;
     protected Button settingsButtonOverview;
     protected ToggleButton videoButton;
@@ -134,7 +128,7 @@ public class StartTheStreamActivity extends Activity {
     private SimpleDateFormat dateFormat;
     private File file;
     public StringBuilder stringBuilder;
-    private volatile StartTheStreamActivity.IsochronousStream runningStream;
+
     int [] convertedMaxPacketSize;
 
     private MJPEGGenerator generator;
@@ -145,6 +139,12 @@ public class StartTheStreamActivity extends Activity {
 
 
     private BitmapToVideoEncoder bitmapToVideoEncoder;
+    private volatile StartTheStreamActivity.IsochronousStream runningStream;
+
+
+
+
+
     private boolean lowerResolution = false;
 
     private boolean isChecked = false;
@@ -496,14 +496,14 @@ public class StartTheStreamActivity extends Activity {
 
         stopKamera = true;
         runningStream = null;
-        setContentView(R.layout.new_layout_main);
+        setContentView(R.layout.layout_main);
         //imageView = (ImageView) findViewById(R.id.imageView);
 
         tv = (TextView) findViewById(R.id.textDarstellung);
         tv.setText("Hallo, Bitte Kamera anschließen");
 
 
-        settingsButtonOverview = (Button) findViewById(R.id.einstellungen);
+        settingsButtonOverview = (Button) findViewById(R.id.settingsButton);
         settingsButtonOverview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -750,11 +750,11 @@ public class StartTheStreamActivity extends Activity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                setContentView(R.layout.new_layout_main);
+                setContentView(R.layout.layout_main);
                 tv = (TextView) findViewById(R.id.textDarstellung);
                 tv.setSingleLine(false);
                 tv.setText(stringBuilder.toString());
-                settingsButtonOverview = (Button) findViewById(R.id.einstellungen);
+                settingsButtonOverview = (Button) findViewById(R.id.settingsButton);
                 settingsButtonOverview.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -1625,7 +1625,9 @@ public class StartTheStreamActivity extends Activity {
         maxPacketSize=bundle.getInt("maxPacketSize",0);
         activeUrbs=bundle.getInt("activeUrbs",0);
 
+
     }
+
 
     private int round(double d){
         double dAbs = Math.abs(d);

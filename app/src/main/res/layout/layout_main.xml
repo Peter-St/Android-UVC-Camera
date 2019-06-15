@@ -1,51 +1,196 @@
 <?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main_background">
 
-
-
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-    tools:context=".Main">
-
-
-        <ScrollView
-        xmlns:tools="http://schemas.android.com/tools"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:fillViewport="true">
-
-
-
-        <TextView
-            android:id="@+id/textDarstellung"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="0dp"
-            android:gravity="center"
-            android:lineSpacingExtra="10sp"
-            android:text="@string/readme"
-            android:textAppearance="@style/TextAppearance.AppCompat"
-            android:textSize="18sp"
-            android:textStyle="italic" />
-
-
-
-    </ScrollView>
 
     <Button
-        android:id="@+id/einstellungen"
-        android:layout_width="207dp"
-        android:layout_height="72dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:background="@drawable/settings"
-        android:text="Camera Settings"
-        android:textStyle="bold"
-        android:textColor="@android:color/holo_green_dark" />
+        android:id="@+id/restoreValues"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Load Values"
+        android:onClick="restoreCameraSettings"
+        android:background="@drawable/bg_button"
+
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0"
+
+        />
 
 
-</RelativeLayout>
+
+
+    <Button
+        android:id="@+id/setUpTheCameraButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Set Up The\nCamera Device"
+        android:onClick="setUpTheUsbDevice"
+        android:background="@drawable/bg_button"
+
+        app:layout_constraintTop_toTopOf="@id/guidelinehor1"
+        app:layout_constraintBottom_toBottomOf="@id/guidelinehor1"
+        app:layout_constraintLeft_toLeftOf="@id/guideline"
+        app:layout_constraintRight_toRightOf="@id/guideline"
+        />
+
+
+
+    <Button
+        android:id="@+id/startTheStream"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start the\nCamera Stream"
+        android:onClick="isoStream"
+        android:background="@drawable/bg_button"
+        android:alpha="0.75"
+
+        app:layout_constraintTop_toTopOf="@id/guidelinehor1"
+        app:layout_constraintBottom_toBottomOf="@id/guidelinehor1"
+        app:layout_constraintLeft_toLeftOf="@id/guideline2"
+        app:layout_constraintRight_toRightOf="@id/guideline2"
+
+        />
+
+    <Button
+        android:id="@+id/readMeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View the Read_Me"
+        android:onClick="viewReadme"
+        android:background="@drawable/bg_button"
+
+        app:layout_constraintTop_toTopOf="@id/guidelinehor2"
+        app:layout_constraintBottom_toBottomOf="@id/guidelinehor2"
+        app:layout_constraintLeft_toLeftOf="@id/guideline"
+        app:layout_constraintRight_toRightOf="@id/guideline"
+
+        />
+
+    <Button
+        android:id="@+id/viewPrivatePolicyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View Privacy Policy"
+        android:onClick="viewPrivatePolicy"
+        android:background="@drawable/bg_button"
+
+        app:layout_constraintTop_toTopOf="@id/guidelinehor2"
+        app:layout_constraintBottom_toBottomOf="@id/guidelinehor2"
+        app:layout_constraintLeft_toLeftOf="@id/guideline2"
+        app:layout_constraintRight_toRightOf="@id/guideline2"
+
+        />
+
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.25" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.75" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelinehor1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.2" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelinehor2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.4" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelinehor3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.6" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelinehor4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.8" />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="10">
+
+        <LinearLayout
+
+            android:id="@+id/show_contact_bottomArea"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_weight="7"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/show_contact_middleArea"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_above="@+id/show_contact_bottomArea"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/show_contact_headerArea"
+            android:layout_weight="3"
+            android:orientation="vertical">
+
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/guidelinehor3"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
+
+                android:gravity="center"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="@id/guidelinehor3">
+
+                <TextView
+                    android:id="@+id/textDarstellung"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="fill_vertical"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginBottom="3dp"
+
+                    />
+            </ScrollView>
+
+        </LinearLayout>
+
+
+
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

@@ -18,59 +18,38 @@ package humer.uvc_camera;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.PopupMenu;
 import android.text.InputType;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 
 
-
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-import humer.uvc_camera.Main;
-import java.io.PrintWriter;
 
 
 /**
  *
  * @author peter
  */
-public class SaveToFile {
+
+
+public class SaveToFile  {
 
     public static int sALT_SETTING;
     public static int smaxPacketSize ;
@@ -82,15 +61,20 @@ public class SaveToFile {
     public static int scamFrameInterval ; // 333333 YUV = 30 fps // 666666 YUV = 15 fps
     public static int spacketsPerRequest ;
     public static int sactiveUrbs ;
+    public static String sdeviceName;
+
 
     private static String saveFilePathFolder = "UVC_Camera/save";
     private TextInputLayout valueInput;
+    private boolean init = false;
 
 
-
-    private Main uvc_camera;
+    private SetUpTheUsbDevice setUpTheUsbDevice;
+    private Main uvc_camera = null;
     private Context mContext;
     private Activity activity;
+
+
 
     TextView sALT_SETTING_text;
     TextView smaxPacketSize_text;
@@ -124,6 +108,8 @@ public class SaveToFile {
     private static String[] frameDescriptorsResolutionArray;
     private static String [] dwFrameIntervalArray;
     private static String [] maxPacketSizeStr;
+    private String name;
+    private String fileName;
 
 
 
@@ -134,29 +120,21 @@ public class SaveToFile {
         this.activity = (Activity)mContext;
     }
 
+    public SaveToFile (SetUpTheUsbDevice setUpTheUsbDevice, Context mContext) {
+        this.setUpTheUsbDevice = setUpTheUsbDevice;
+        this.mContext = mContext;
+        this.activity = (Activity)mContext;
+        this.init = true;
+    }
+
+
+
+
     private void returnToMainLayout(final String msg) {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                activity.setContentView(R.layout.new_layout_main);
-                settingsButton = activity.findViewById(R.id.einstellungen);
-                settingsButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //Creating the instance of PopupMenu
-                        PopupMenu popup = new PopupMenu(mContext, settingsButton);
-                        //Inflating the Popup using xml file
-                        popup.getMenuInflater().inflate(R.menu.camera_settings, popup.getMenu());
-
-                        //registering popup with OnMenuItemClickListener
-                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                            public boolean onMenuItemClick(MenuItem item) {
-                                //  Toast.makeText(Main.this,"Auswahl von: " + item.getTitle(),Toast.LENGTH_SHORT).show();
-                                return true; }
-                        });
-                        popup.show();//showing popup menu
-                    }
-                });//closing the setOnClickListener method
+                activity.setContentView(R.layout.set_up_the_device_layout_main);
                 tv = activity.findViewById(R.id.textDarstellung);
                 tv.setText(msg);
 
@@ -253,45 +231,58 @@ public class SaveToFile {
     }
 
     private void fetchTheValues(){
-
-        sALT_SETTING = uvc_camera.camStreamingAltSetting;
-        svideoformat = uvc_camera.videoformat;
-        scamFormatIndex = uvc_camera.camFormatIndex;
-        simageWidth = uvc_camera.imageWidth;
-        simageHeight = uvc_camera.imageHeight;
-        scamFrameIndex = uvc_camera.camFrameIndex;
-        scamFrameInterval = uvc_camera.camFrameInterval;
-        spacketsPerRequest = uvc_camera.packetsPerRequest;
-        smaxPacketSize = uvc_camera.maxPacketSize;
-        sactiveUrbs = uvc_camera.activeUrbs;
+        sALT_SETTING = setUpTheUsbDevice.camStreamingAltSetting;
+        svideoformat = setUpTheUsbDevice.videoformat;
+        scamFormatIndex = setUpTheUsbDevice.camFormatIndex;
+        simageWidth = setUpTheUsbDevice.imageWidth;
+        simageHeight = setUpTheUsbDevice.imageHeight;
+        scamFrameIndex = setUpTheUsbDevice.camFrameIndex;
+        scamFrameInterval = setUpTheUsbDevice.camFrameInterval;
+        spacketsPerRequest = setUpTheUsbDevice.packetsPerRequest;
+        smaxPacketSize = setUpTheUsbDevice.maxPacketSize;
+        sactiveUrbs = setUpTheUsbDevice.activeUrbs;
+        sdeviceName = setUpTheUsbDevice.deviceName;
     }
 
     private void writeTheValues(){
-
-        uvc_camera.camStreamingAltSetting = sALT_SETTING;
-        uvc_camera.videoformat = svideoformat;
-        uvc_camera.camFormatIndex = scamFormatIndex;
-        uvc_camera.imageWidth = simageWidth;
-        uvc_camera.imageHeight = simageHeight;
-        uvc_camera.camFrameIndex = scamFrameIndex;
-        uvc_camera.camFrameInterval = scamFrameInterval;
-        uvc_camera.packetsPerRequest = spacketsPerRequest;
-        uvc_camera.maxPacketSize = smaxPacketSize;
-        uvc_camera.activeUrbs = sactiveUrbs;
+        if (uvc_camera != null) {
+            uvc_camera.camStreamingAltSetting = sALT_SETTING;
+            uvc_camera.videoformat = svideoformat;
+            uvc_camera.camFormatIndex = scamFormatIndex;
+            uvc_camera.imageWidth = simageWidth;
+            uvc_camera.imageHeight = simageHeight;
+            uvc_camera.camFrameIndex = scamFrameIndex;
+            uvc_camera.camFrameInterval = scamFrameInterval;
+            uvc_camera.packetsPerRequest = spacketsPerRequest;
+            uvc_camera.maxPacketSize = smaxPacketSize;
+            uvc_camera.activeUrbs = sactiveUrbs;
+            uvc_camera.deviceName = sdeviceName;
+        } else {
+            setUpTheUsbDevice.camStreamingAltSetting = sALT_SETTING;
+            setUpTheUsbDevice.videoformat = svideoformat;
+            setUpTheUsbDevice.camFormatIndex = scamFormatIndex;
+            setUpTheUsbDevice.imageWidth = simageWidth;
+            setUpTheUsbDevice.imageHeight = simageHeight;
+            setUpTheUsbDevice.camFrameIndex = scamFrameIndex;
+            setUpTheUsbDevice.camFrameInterval = scamFrameInterval;
+            setUpTheUsbDevice.packetsPerRequest = spacketsPerRequest;
+            setUpTheUsbDevice.maxPacketSize = smaxPacketSize;
+            setUpTheUsbDevice.activeUrbs = sactiveUrbs;
+            setUpTheUsbDevice.deviceName = sdeviceName;
+        }
 
     }
 
 
-
     public void restoreValuesFromFile() {
-        //optionForSaveFile = OptionForSaveFile.restorefromfile;
         checkTheSaveFileName(OptionForSaveFile.restorefromfile);
-
     }
 
 
 
     private void checkTheSaveFileName(final OptionForSaveFile option){
+        fileName = null;
+        name = null;
         rootdirStr = null;
         stringBuilder = new StringBuilder();
         paths = new ArrayList<>(50);
@@ -321,12 +312,7 @@ public class SaveToFile {
                     stringBuilder.append("\n");
                 }
                 log(stringBuilder.toString());
-
-
                 if (option == OptionForSaveFile.restorefromfile) {
-
-
-
 
                     AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
                     builderSingle.setIcon(R.drawable.ic_menu_camera);
@@ -374,20 +360,26 @@ public class SaveToFile {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             log("OK");
-                            log("Die Eingabe war: " + input.getText().toString());
-                            String name = input.getText().toString();
+                            if (input.getText().equals(null))  {
+                                name = sdeviceName;
+                            } else {
+                                log("Die Eingabe war: " + input.getText().toString());
+                                name = input.getText().toString();
+                            }
                             if (name.isEmpty() == true) {
-                                switch(optionForSaveFile) {
-                                    case savetofile: saveValuesToFile(rootdirStr += "saveFile.sav");
+                                switch(option) {
+                                    case savetofile: saveValuesToFile(rootdirStr += sdeviceName += ".sav");
+                                    log("sdeviceName = " + sdeviceName);
                                         break;
-                                    case restorefromfile: restorFromFile(rootdirStr += "saveFile.sav");
+                                    case restorefromfile: restorFromFile(rootdirStr += sdeviceName += ".sav");
                                         break;
                                 }
                             }
                             else if (isInteger(name) == true) {
                                 switch(option) {
                                     case savetofile:
-                                        try { saveValuesToFile(paths.get((Integer.parseInt(name) - 1))); }
+                                        fileName = paths.get((Integer.parseInt(name) - 1));
+                                        try { saveValuesToFile(fileName); }
                                         catch (Exception e) { log("Save Failed ; Exception = " + e); e.printStackTrace();}
                                         break;
                                     case restorefromfile:
@@ -407,14 +399,22 @@ public class SaveToFile {
 
                             switch(option) {
                                 case savetofile:
-                                    returnToMainLayout("Values written and saved");
+                                    String rootdirString = file.toString();
+                                    rootdirString += "/";
+                                    String fileN;
+                                    if (fileName != null) {
+                                        int index = fileName.length()- (fileName.length() - rootdirString.length());
+                                        fileN = fileName.substring(index, fileName.length());
+                                    } else {
+                                        int index = rootdirStr.length()- (rootdirStr.length() - rootdirString.length());
+                                        fileN = rootdirStr.substring(index, rootdirStr.length());
+                                    }
+                                    returnToMainLayout("Values written and saved:\n\nName of the savefile:\n" + fileN + "\n\nFolder of the savefile:\n" + rootdirString );
                                     break;
                                 case restorefromfile:
                                     returnToMainLayout(String.format("Values sucessfully restored"));
                                     break;
                             }
-
-
                             return;
                         }
                     });
@@ -476,6 +476,7 @@ public class SaveToFile {
             save.writeObject(smaxPacketSize);
             save.writeObject(sactiveUrbs);
             save.writeObject(saveFilePathFolder);
+            save.writeObject(sdeviceName);
             // Close the file.
             save.close(); // This also closes saveFile.
         } catch (Exception e) { log("Error"); e.printStackTrace();}
@@ -500,6 +501,7 @@ public class SaveToFile {
             smaxPacketSize  = (Integer) save.readObject();
             sactiveUrbs  = (Integer) save.readObject();
             saveFilePathFolder  = (String) save.readObject();
+            sdeviceName = (String) save.readObject();
             save.close();
         }
         catch(Exception exc){
@@ -539,7 +541,8 @@ public class SaveToFile {
 
 
     private void displayMessage(final String msg) {
-        uvc_camera.displayMessage(msg);
+        if (uvc_camera != null)  uvc_camera.displayMessage(msg);
+        else setUpTheUsbDevice.displayMessage(msg);
     }
 
     private void log(String msg) {
@@ -563,6 +566,7 @@ public class SaveToFile {
 
     public void setUpWithUvcValues(UVC_Descriptor uvc_desc, int[] maxPacketSizeArray) {
 
+        fetchTheValues();
         this.uvc_descriptor = uvc_desc;
         for (int a=0; a<maxPacketSizeArray.length; a++) {
             log ("maxPacketSizeArray[" + a + "] = " + maxPacketSizeArray[a]);
@@ -579,6 +583,7 @@ public class SaveToFile {
             maxPacketSizeStr[a] = Integer.toString(maxPacketSizeArray[a]);
         }
         selectMaxPacketSize();
+
     }
 
 
@@ -818,21 +823,12 @@ public class SaveToFile {
                             simageHeight = frameIndex.wHeight;
                         }
                     }
-
                 }
                 selectDWFrameIntervall();
-
-
             }
         });
-
-
         builderSingle.show();
-
-
     }
-
-
 
 
     private void selectDWFrameIntervall(){
@@ -869,7 +865,7 @@ public class SaveToFile {
                     System.out.println("scamFrameInterval = " + scamFrameInterval);
                 }
                 writeTheValues();
-                writeMsgMain("Sucessfully changed to UVC values");
+                saveYesNo();
 
             }
         });
@@ -877,13 +873,39 @@ public class SaveToFile {
         dwFrameIntervalArraybuilder.show();
     }
 
+
+    private void saveYesNo() {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        //Yes button clicked
+                        writeTheValues();
+                        //optionForSaveFile = OptionForSaveFile.savetofile;
+                        checkTheSaveFileName(OptionForSaveFile.savetofile);
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        writeTheValues();
+                        returnToMainLayout("Values setted up with UVC-configuration but not stored to a file");
+                        break;
+                }
+            }
+        };
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setMessage("Do you want to save the values to a file?").setPositiveButton("Yes, Save", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
+    }
+
+
     public void writeMsgMain(final String msg) {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
 
                 displayMessage(msg);
-                //tv = (TextView) findViewById(R.id.textDarstellung);
+                //
                 //tv.setText("msg");
 
 

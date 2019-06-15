@@ -27,6 +27,8 @@
         </activity>
         <activity android:name="humer.uvc_camera.StartTheStreamActivity" >
         </activity>
+        <activity android:name="humer.uvc_camera.SetUpTheUsbDevice" >
+        </activity>
     </application>
 
 </manifest>
