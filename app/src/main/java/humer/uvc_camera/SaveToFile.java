@@ -136,7 +136,11 @@ public class SaveToFile  {
             public void run() {
                 activity.setContentView(R.layout.set_up_the_device_layout_main);
                 tv = activity.findViewById(R.id.textDarstellung);
-                tv.setText(msg);
+                tv.setText(msg + "\n\nYour current Values are:\n\nPackets Per Request = " + spacketsPerRequest +"\nActive Urbs = " + sactiveUrbs +
+                        "\nAltSetting = " + sALT_SETTING + "\nMaximal Packet Size = " + smaxPacketSize + "\nVideoformat = " + svideoformat + "\nCamera Format Index = " + scamFormatIndex + "\n" +
+                        "Camera FrameIndex = " + scamFrameIndex + "\nImage Width = "+ simageWidth + "\nImage Height = " + simageHeight + "\nCamera Frame Interval = " + scamFrameInterval );
+
+
 
             }
         });
@@ -483,6 +487,8 @@ public class SaveToFile  {
 
 
         returnToMainLayout(String.format("Values edited and saved\nSavefile = %s", savePath));
+
+
     }
 
 
@@ -514,6 +520,7 @@ public class SaveToFile  {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("Restored Values:\n"));
         sb.append(String.format("Altsetting = %d\nVideoFormat = %s\nImageWidth = %d\nImageHeight = %d\nFrameInterval = %d\nPacketsPerRequest = %d\nActiveUrbs = %d", sALT_SETTING, svideoformat, simageWidth, simageHeight, scamFrameInterval, spacketsPerRequest, sactiveUrbs));
+        setTextViewMain();
         writeMsgMain(sb.toString());
 
     }
@@ -911,6 +918,11 @@ public class SaveToFile  {
 
             }
         });
+
+    }
+
+    public void setTextViewMain() {
+        uvc_camera.setTextTextView();
 
     }
 

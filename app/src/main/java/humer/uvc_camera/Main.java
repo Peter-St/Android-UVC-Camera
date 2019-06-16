@@ -10,6 +10,7 @@ package humer.uvc_camera;
 import android.app.Activity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -47,6 +48,10 @@ public class Main extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
         tv = (TextView) findViewById(R.id.textDarstellung);
+        tv.setText("Your current Values are:\n\n( - this is a sroll field - )\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
+                "\nAltSetting = " + camStreamingAltSetting + "\nMaxPacketSize = " + maxPacketSize + "\nVideoformat = " + videoformat + "\ncamFormatIndex = " + camFormatIndex + "\n" +
+                "camFrameIndex = " + camFrameIndex + "\nimageWidth = "+ imageWidth + "\nimageHeight = " + imageHeight + "\ncamFrameInterval = " + camFrameInterval + "" +
+                "\n\nYou can edit these Settings by clicking on (Set Up The Camera Device).\nYou can then save the values and later restore them.");
 
     }
 
@@ -67,6 +72,10 @@ public class Main extends Activity {
             activeUrbs=data.getIntExtra("activeUrbs",0);
             deviceName=data.getStringExtra("deviceName");
 
+            tv.setText("Your current Values are:\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
+                    "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat + "\nCamera Format Index = " + camFormatIndex + "\n" +
+                    "Camera FrameIndex = " + camFrameIndex + "\nImage Width = "+ imageWidth + "\nImage Height = " + imageHeight + "\nCamera Frame Interval = " + camFrameInterval)          ;
+            tv.setTextColor(Color.BLACK);
 
         }
     }
@@ -114,6 +123,7 @@ public class Main extends Activity {
         stf = new SaveToFile(this, this);
         stf.restoreValuesFromFile();
         stf = null;
+
     }
 
 
@@ -156,6 +166,14 @@ public class Main extends Activity {
                 Toast.makeText(Main.this, msg, Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    public void setTextTextView () {
+        tv.setText("Your current Values are:\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
+                "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat + "\nCamera Format Index = " + camFormatIndex + "\n" +
+                "Camera FrameIndex = " + camFrameIndex + "\nImage Width = "+ imageWidth + "\nImage Height = " + imageHeight + "\nCamera Frame Interval = " + camFrameInterval)          ;
+        tv.setTextColor(Color.GREEN);
+
     }
 
 
