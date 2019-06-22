@@ -27,6 +27,7 @@ import android.support.v7.widget.PopupMenu;
 import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -112,6 +113,13 @@ public class SaveToFile  {
     private String fileName;
 
 
+    //////////////////////////   Zoom View          ///////////////
+
+    final static float STEP = 200;
+    float mRatio = 1.0f;
+    int mBaseDist;
+    float mBaseRatio;
+
 
 
     public SaveToFile(Main main, Context mContext) {
@@ -139,7 +147,34 @@ public class SaveToFile  {
                 tv.setText(msg + "\n\nYour current Values are:\n\nPackets Per Request = " + spacketsPerRequest +"\nActive Urbs = " + sactiveUrbs +
                         "\nAltSetting = " + sALT_SETTING + "\nMaximal Packet Size = " + smaxPacketSize + "\nVideoformat = " + svideoformat + "\nCamera Format Index = " + scamFormatIndex + "\n" +
                         "Camera FrameIndex = " + scamFrameIndex + "\nImage Width = "+ simageWidth + "\nImage Height = " + simageHeight + "\nCamera Frame Interval = " + scamFrameInterval );
+                tv.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View view, MotionEvent event) {
+                        if (event.getPointerCount() == 2) {
+                            int action = event.getAction();
+                            int pureaction = action & MotionEvent.ACTION_MASK;
+                            if (pureaction == MotionEvent.ACTION_POINTER_DOWN) {
+                                mBaseDist = getDistance(event);
+                                mBaseRatio = mRatio;
+                            } else {
+                                float delta = (getDistance(event) - mBaseDist) / STEP;
+                                float multi = (float) Math.pow(2, delta);
+                                mRatio = Math.min(1024.0f, Math.max(0.1f, mBaseRatio * multi));
+                                tv.setTextSize(mRatio + 13);
+                            }
+                        }
+                        return true;
+                    }
 
+
+                });
+                Button testrun  = activity.findViewById(R.id.testrun);
+                testrun.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        setUpTheUsbDevice.showTestRunMenu(view);
+                    }
+                });
 
 
             }
@@ -926,58 +961,11 @@ public class SaveToFile  {
 
     }
 
+    int getDistance(MotionEvent event) {
+        int dx = (int) (event.getX(0) - event.getX(1));
+        int dy = (int) (event.getY(0) - event.getY(1));
+        return (int) (Math.sqrt(dx * dx + dy * dy));
+    }
+
 
 }
-
-
-
-/*
-
-public void displayDialog(){
-
-        AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
-        builderSingle.setIcon(R.drawable.ic_menu_camera);
-        builderSingle.setTitle("Select One Name:-");
-
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
-
-        arrayAdapter.add("Hardik");
-        arrayAdapter.add("Archit");
-        arrayAdapter.add("Jignesh");
-        arrayAdapter.add("Umang");
-        arrayAdapter.add("Gatti");
-
-        builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                dialog.dismiss();
-            }
-        });
-
-        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String strName = arrayAdapter.getItem(which);
-
-
-
-                AlertDialog.Builder builderInner = new AlertDialog.Builder(mContext);
-                builderInner.setMessage(strName);
-                builderInner.setTitle("Your Selected Item is");
-                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog,int which) {
-                        dialog.dismiss();
-                    }
-                });
-                builderInner.show();
-
-
-            }
-
-        });
-        builderSingle.show();
-
-    }
- */

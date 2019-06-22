@@ -59,7 +59,7 @@
         android:layout_alignRight="@+id/settingsButton"
         android:layout_alignParentBottom="true"
         android:background="@drawable/bg_button_stop"
-        android:onClick="stopTheCameraStream"
+        android:onClick="stopTheCameraStreamClickEvent"
         android:text="Stop !" />
 
     <Button
@@ -94,6 +94,12 @@
         android:layout_alignParentTop="true"
         android:gravity="center"
         android:layout_alignParentLeft="true" />
+
+    <SeekBar
+        android:id="@+id/simpleSeekBar"
+        android:paddingTop="60dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
 
 
 </RelativeLayout>

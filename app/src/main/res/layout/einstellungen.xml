@@ -49,6 +49,7 @@
                 android:id="@+id/FormatIndex"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
+                android:background="?attr/colorButtonNormal"
                 android:text="FormatIndex"
                 android:textSize="18sp" />
 
@@ -63,6 +64,7 @@
                 android:id="@+id/FrameIndex"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
+                android:background="?attr/colorButtonNormal"
                 android:text="FrameIndex"
                 android:textSize="18sp" />
 
@@ -84,6 +86,7 @@
                 android:id="@+id/FrameInterval"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
+                android:background="?attr/colorButtonNormal"
                 android:text="FrameInterval"
                 android:textSize="18sp" />
 

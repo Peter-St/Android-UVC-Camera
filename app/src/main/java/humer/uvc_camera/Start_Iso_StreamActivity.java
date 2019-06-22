@@ -21,9 +21,11 @@ import android.hardware.usb.UsbManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v7.widget.PopupMenu;
 import android.text.InputType;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -31,6 +33,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -49,7 +52,7 @@ import java.util.HashMap;
 
 import com.sample.timelapse.MJPEGGenerator ;
 
-public class StartTheStreamActivity extends Activity {
+public class Start_Iso_StreamActivity extends Activity {
 
     private static final String ACTION_USB_PERMISSION = "humer.uvc_camera.USB_PERMISSION";
 
@@ -73,17 +76,22 @@ public class StartTheStreamActivity extends Activity {
     // Video class-specific request codes:
     private static final int SET_CUR = 0x01;
     private static final int GET_CUR = 0x81;
+    private static final int GET_MIN = 0x82;
+    private static final int GET_MAX = 0x83;
+    private static final int GET_RES = 0x84;
     // VideoControl interface control selectors (CS):
     private static final int VC_REQUEST_ERROR_CODE_CONTROL = 0x02;
     // VideoStreaming interface control selectors (CS):
     private static final int VS_PROBE_CONTROL = 0x01;
     private static final int VS_COMMIT_CONTROL = 0x02;
+    private static final int PU_BRIGHTNESS_CONTROL = 0x02;
+
     private static final int VS_STILL_PROBE_CONTROL = 0x03;
     private static final int VS_STILL_COMMIT_CONTROL = 0x04;
     private static final int VS_STREAM_ERROR_CODE_CONTROL = 0x06;
     private static final int VS_STILL_IMAGE_TRIGGER_CONTROL = 0x05;
 
-
+    // Android USB Classes
     private UsbManager usbManager;
     private UsbDevice camDevice = null;
     private UsbDeviceConnection camDeviceConnection;
@@ -92,6 +100,7 @@ public class StartTheStreamActivity extends Activity {
     private UsbEndpoint camStreamingEndpoint;
     private boolean bulkMode;
 
+    // Camera Values
     private static int camStreamingAltSetting;
     private static int camFormatIndex;
     private static int camFrameIndex;
@@ -105,8 +114,7 @@ public class StartTheStreamActivity extends Activity {
     private UsbIso usbIso;
     private static boolean camIsOpen;
 
-    //private Bitmap bmp = null;
-
+    // Vales for debuging the camera
     private boolean bildaufnahme = false;
     private boolean videorecord = false;
     private boolean videorecordApiJellyBean = false;
@@ -118,44 +126,51 @@ public class StartTheStreamActivity extends Activity {
     private boolean stillImageAufnahme = false;
     private int stillImage = 0;
     private String controlltransfer;
-
-
     private boolean exit = false;
+    public StringBuilder stringBuilder;
+    private int [] convertedMaxPacketSize;
+    private boolean lowerResolution;
+
+    // Buttons & Views
     protected Button settingsButtonOverview;
     protected ToggleButton videoButton;
     private TextView tv;
     private Date date;
     private SimpleDateFormat dateFormat;
     private File file;
-    public StringBuilder stringBuilder;
 
-    int [] convertedMaxPacketSize;
-
-    private MJPEGGenerator generator;
+    // Time Values
     int lastPicture = 0; // Current picture counter
     int lastVideo = 0; // Current video file counter
     long startTime;
     long currentTime;
 
-
+    // Other Classes
+    private MJPEGGenerator generator;
     private BitmapToVideoEncoder bitmapToVideoEncoder;
-    private volatile StartTheStreamActivity.IsochronousStream runningStream;
+    private volatile Start_Iso_StreamActivity.IsochronousStream runningStream;
+    private SeekBar simpleSeekBar;
 
 
-
-
-
-    private boolean lowerResolution = false;
-
-    private boolean isChecked = false;
-
+    // Brightness Values
+    private static int brightnessMax;
+    private static int brightnessMin;
+    private int currentBrightness;
+    private boolean changeBrightness;
+    private boolean lowerbright;
+    private boolean brightnessChanged;
+    float discrete=0;
+    float start=0;
+    float end=100;
+    float start_pos=0;
+    int start_position=0;
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_video);
+        setContentView(R.layout.iso_stream_layout);
         imageView = (ImageView) findViewById(R.id.imageView);
         // Start onClick Listener method
         startStream = (Button) findViewById(R.id.startStream);
@@ -164,7 +179,7 @@ public class StartTheStreamActivity extends Activity {
             @Override
             public void onClick(View view) {
                 //Creating the instance of PopupMenu
-                PopupMenu popup = new PopupMenu(StartTheStreamActivity.this, startStream);
+                PopupMenu popup = new PopupMenu(Start_Iso_StreamActivity.this, startStream);
                 //Inflating the Popup using xml file
                 popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
 
@@ -175,44 +190,20 @@ public class StartTheStreamActivity extends Activity {
                         return true;
                     }
                 });
-
-
                 popup.show();//showing popup menu
             }
-
         });//closing the setOnClickListener method
-
-
         startStream.getBackground().setAlpha(180);  // 25% transparent
-
-
-        settingsButton = (Button) findViewById(R.id.settingsButton);
-                    settingsButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //Creating the instance of PopupMenu
-                    PopupMenu popup = new PopupMenu(StartTheStreamActivity.this, settingsButton);
-                    //Inflating the Popup using xml file
-                    if (lowerResolution) popup.getMenuInflater().inflate(R.menu.camera_setting_stream_lower_resolution, popup.getMenu());
-                    else popup.getMenuInflater().inflate(R.menu.camera_setting_stream, popup.getMenu());
-                    //registering popup with OnMenuItemClickListener
-                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                        public boolean onMenuItemClick(MenuItem item) {
-                            //  Toast.makeText(Main.this,"Auswahl von: " + item.getTitle(),Toast.LENGTH_SHORT).show();
-                            return true; }
-                    });
-                    popup.show();//showing popup menu
-                }
-            });//closing the setOnClickListener method
-                    settingsButton.getBackground().setAlpha(150);  // 60% transparent
-
-
-
-
-
+        settingsButton = findViewById(R.id.settingsButton);
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showMenu(view);
+            }
+        });
         iB = (ImageButton) findViewById(R.id.Bildaufnahme);
-        final MediaPlayer mp2 = MediaPlayer.create(StartTheStreamActivity.this, R.raw.sound2);
-        final MediaPlayer mp1 = MediaPlayer.create(StartTheStreamActivity.this, R.raw.sound1);
+        final MediaPlayer mp2 = MediaPlayer.create(Start_Iso_StreamActivity.this, R.raw.sound2);
+        final MediaPlayer mp1 = MediaPlayer.create(Start_Iso_StreamActivity.this, R.raw.sound1);
         iB.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -233,7 +224,7 @@ public class StartTheStreamActivity extends Activity {
         iB.setAlpha(20); // 95% transparent
         stopStreamButton = (Button) findViewById(R.id.stopKameraknopf);
         stopStreamButton.getBackground().setAlpha(20);  // 95% transparent
-        ((Button)findViewById(R.id.stopKameraknopf)).setEnabled(false);
+        stopStreamButton.setEnabled(false);
 
         videoButton = (ToggleButton) findViewById(R.id.videoaufnahme);
         videoButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -242,8 +233,6 @@ public class StartTheStreamActivity extends Activity {
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
                         videorecordApiJellyBean = true;
                         lastVideo++;
-
-
                         bitmapToVideoEncoder = new BitmapToVideoEncoder(new BitmapToVideoEncoder.IBitmapToVideoEncoderCallback() {
                             @Override
                             public void onEncodingComplete(File outputFile) {
@@ -413,14 +402,7 @@ public class StartTheStreamActivity extends Activity {
                             }
                             pauseCamera = false;
                             generator = null;
-                        }
-                    }
-
-                }
-            }
-        });
-
-
+                        } } } }});
         videoButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -450,84 +432,144 @@ public class StartTheStreamActivity extends Activity {
                                 new File(saveDir, children[i]).delete();
                         }}
                     saveDir.delete();
-
                     displayMessage("Record started");
                     startTime = System.currentTimeMillis();
                     currentTime = System.currentTimeMillis();
-
                 }
-
                 return true;
-            }
-        });
-
-
-
-
+            }});
         videoButton.setEnabled(false);
         videoButton.setAlpha(0); // 100% transparent
-
         fetchTheValues();
-
         log("packetsPerRequest = " + packetsPerRequest);
         log("activeUrbs = " + activeUrbs);
-
         try {
             findCam();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
+        simpleSeekBar = (SeekBar) findViewById(R.id.simpleSeekBar); // initiate the Seek bar
+        simpleSeekBar.setEnabled(false);
+        simpleSeekBar.setAlpha(0);
+        simpleSeekBar = null;
     }
 
-    public void lowerResolutionClickButtonEvent (MenuItem item) {
-        lowerResolution = true;
+    public void showMenu(View v) {
+        Context wrapper = new ContextThemeWrapper(this, R.style.YOURSTYLE);
+        PopupMenu popup = new PopupMenu(wrapper, v);
+        // This activity implements OnMenuItemClickListener
+        popup.inflate(R.menu.iso_stream_settings_button);
 
+
+        if (lowerResolution) popup.getMenu().findItem(R.id.lowerRes).setChecked(true);
+        else popup.getMenu().findItem(R.id.lowerRes).setChecked(false);
+
+
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.lowerRes:
+                        lowerResolutionClickButtonEvent();
+                        return true;
+                    case R.id.changeBrightness:
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Runnable myRunnable = new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        simpleSeekBar.setEnabled(false);
+                                        simpleSeekBar.setAlpha(0);
+                                        simpleSeekBar = null;
+                                    }
+                                };
+                                Handler myHandler = new Handler();
+                                final int TIME_TO_WAIT = 3500;
+
+
+                                start = -128;
+                                end = 127;
+                                start_pos = currentBrightness;
+                                start_position=(int) (((start_pos-start)/(end-start))*100);
+                                discrete=start_pos;
+
+                                simpleSeekBar = (SeekBar) findViewById(R.id.simpleSeekBar); // initiate the Seek bar
+                                simpleSeekBar.setEnabled(true);
+                                simpleSeekBar.setAlpha(1);
+                                simpleSeekBar.setProgress(start_position);
+                                simpleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                                    int progressChangedValue = 0;
+                                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                                        float temp=progress;
+                                        float dis=end-start;
+                                        discrete=(start+((temp/100)*dis));
+                                    }
+                                    public void onStartTrackingTouch(SeekBar seekBar) {
+                                        // TODO Auto-generated method stub
+                                    }
+                                    public void onStopTrackingTouch(SeekBar seekBar) {
+                                        myHandler.removeCallbacks(myRunnable);
+                                        myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                                        currentBrightness = Math.round(discrete);
+                                        changeBrightness = true;
+                                        Toast.makeText(getBaseContext(), "Brightness is : "+String.valueOf(currentBrightness), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                                myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                            }
+                        });
+                        return true;
+                    case R.id.returnToConfigScreen:
+                        returnToConfigScreen();
+                        return true;
+                    case R.id.beenden:
+                        beenden();
+                        return true;
+                    default:
+                        break;
+                }
+                return false;
+            }
+        });
+        popup.show();
+    }
+
+    public void lowerResolutionClickButtonEvent () {
+        if (lowerResolution) lowerResolution = false;
+        else lowerResolution = true;
+    }
+
+    public void changeBrightnessClickButtonEvent () {
+
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        //Yes button clicked
+                        changeBrightness = true;
+                        lowerbright = false;
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        changeBrightness = true;
+                        lowerbright = true;
+                        break;
+                }
+            }
+        };
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Brightness").setPositiveButton(" + ", dialogClickListener)
+                .setNegativeButton(" - ", dialogClickListener).show();
     }
 
 
-
-    public void NormalResolutionClickButtonEvent (MenuItem item) {
-        lowerResolution = false;
-    }
-
-    public void returnToConfigScreen(MenuItem item) {
-
+    public void returnToConfigScreen() {
         stopKamera = true;
         runningStream = null;
-        setContentView(R.layout.layout_main);
         //imageView = (ImageView) findViewById(R.id.imageView);
-
-        tv = (TextView) findViewById(R.id.textDarstellung);
-        tv.setText("Hallo, Bitte Kamera anschließen");
-
-
-        settingsButtonOverview = (Button) findViewById(R.id.settingsButton);
-        settingsButtonOverview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Creating the instance of PopupMenu
-                PopupMenu popup = new PopupMenu(StartTheStreamActivity.this, settingsButtonOverview);
-                //Inflating the Popup using xml file
-                popup.getMenuInflater().inflate(R.menu.camera_settings, popup.getMenu());
-
-                //registering popup with OnMenuItemClickListener
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    public boolean onMenuItemClick(MenuItem item) {
-                        //  Toast.makeText(Main.this,"Auswahl von: " + item.getTitle(),Toast.LENGTH_SHORT).show();
-                        return true; }
-                });
-                popup.show();//showing popup menu
-            }
-        });//closing the setOnClickListener method
-
         onBackPressed();
-
-
-
-
-
     }
 
 
@@ -596,7 +638,7 @@ public class StartTheStreamActivity extends Activity {
 
 
 
-    public void beenden(MenuItem item) {
+    public void beenden() {
         if (camIsOpen) {
             try {
                 closeCameraDevice();
@@ -613,56 +655,7 @@ public class StartTheStreamActivity extends Activity {
         finish();
     }
 
-    public void listDeviceButtonClickEvent(MenuItem item) {
-        if (camDevice == null) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    tv = (TextView) findViewById(R.id.textDarstellung);
-                    tv.setText("No Camera found.\nPlease connect first a camera and run 'Search for a camera' from the menu");  }
-            });
-        } else {
-            listDevice(camDevice);
-        }
-    }
 
-    public void setUpWithUvcSettings(MenuItem item) {
-        if (camDevice == null) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    tv = (TextView) findViewById(R.id.textDarstellung);
-                    tv.setText("No Camera found.\nPlease connect a camera, or if allready connected run 'Search for a camera' from the menu");  }
-            });
-        } else {
-            camIsOpen = false;
-            try {
-                closeCameraDevice();
-            } catch (Exception e) {
-                displayErrorMessage(e);
-                return;
-            }
-            try {
-                openCam(false);
-
-
-            } catch (Exception e) {
-                displayErrorMessage(e);
-                return;
-            }
-            displayMessage("OK");
-            if (camIsOpen) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        tv = (TextView) findViewById(R.id.textDarstellung);
-                        tv.setText(stringBuilder.toString());
-                    }
-                });
-
-            }
-        }
-    }
 
 
 
@@ -697,7 +690,7 @@ public class StartTheStreamActivity extends Activity {
                 if (runningStream != null) {
                     return;
                 }
-                runningStream = new StartTheStreamActivity.IsochronousStream(this);
+                runningStream = new Start_Iso_StreamActivity.IsochronousStream(this);
                 runningStream.start();
             } else {
                 runOnUiThread(new Runnable() {
@@ -759,7 +752,7 @@ public class StartTheStreamActivity extends Activity {
                     @Override
                     public void onClick(View view) {
                         //Creating the instance of PopupMenu
-                        PopupMenu popup = new PopupMenu(StartTheStreamActivity.this, settingsButtonOverview);
+                        PopupMenu popup = new PopupMenu(Start_Iso_StreamActivity.this, settingsButtonOverview);
                         //Inflating the Popup using xml file
                         popup.getMenuInflater().inflate(R.menu.camera_settings, popup.getMenu());
 
@@ -929,8 +922,8 @@ public class StartTheStreamActivity extends Activity {
         catch (Exception e) {
             log("Warning: getVideoStreamErrorCode() failed: " + e);
         }   // ignore error, some cameras do not support the request
-
         initStreamingParms();
+        initBrightnessParms();
     }
 
 
@@ -952,7 +945,7 @@ public class StartTheStreamActivity extends Activity {
         log("Saving the Image ....  " + "");
     }
 
-    public void stopTheCameraStream(View view) {
+    public void stopTheCameraStreamClickEvent(View view) {
         startStream.getBackground().setAlpha(180);  // 25% transparent
         stopStreamButton.getBackground().setAlpha(20);  // 100% transparent
         ((Button)findViewById(R.id.stopKameraknopf)).setEnabled(false);
@@ -1251,6 +1244,41 @@ public class StartTheStreamActivity extends Activity {
         controlltransfer = new String(dumpStreamingParms(streamingParms));
     }
 
+    private void initBrightnessParms() throws Exception {
+        final int timeout = 5000;
+        int len;
+        byte[] brightnessParms = new byte[2];
+        // PU_BRIGHTNESS_CONTROL(0x02), GET_MIN(0x82) [UVC1.5, p. 160, 158, 96]
+        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_MIN, PU_BRIGHTNESS_CONTROL << 8, 0x0200, brightnessParms, brightnessParms.length, timeout);
+        if (len != brightnessParms.length) {
+            displayMessage("Error: Durning PU_BRIGHTNESS_CONTROL");
+            throw new Exception("Camera PU_BRIGHTNESS_CONTROL GET_MIN failed. len= " + len + ".");
+        }
+        log( "brightness min: " + unpackIntBrightness(brightnessParms));
+        brightnessMin = unpackIntBrightness(brightnessParms);
+        // PU_BRIGHTNESS_CONTROL(0x02), GET_MAX(0x83) [UVC1.5, p. 160, 158, 96]
+        camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_MAX, PU_BRIGHTNESS_CONTROL << 8, 0x0200, brightnessParms, brightnessParms.length, timeout);
+        log( "brightness max: " + unpackIntBrightness(brightnessParms));
+        brightnessMax = unpackIntBrightness(brightnessParms);
+        // PU_BRIGHTNESS_CONTROL(0x02), GET_RES(0x84) [UVC1.5, p. 160, 158, 96]
+        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_RES, PU_BRIGHTNESS_CONTROL << 8, 0x0200, brightnessParms, brightnessParms.length, timeout);
+        log( "brightness res: " + unpackIntBrightness(brightnessParms));
+        // PU_BRIGHTNESS_CONTROL(0x02), GET_CUR(0x81) [UVC1.5, p. 160, 158, 96]
+        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, PU_BRIGHTNESS_CONTROL << 8, 0x0200, brightnessParms, brightnessParms.length, timeout);
+        log( "brightness cur: " + unpackIntBrightness(brightnessParms));
+        currentBrightness = unpackIntBrightness(brightnessParms);
+    }
+
+    private static void packIntBrightness(int i, byte[] buf) {
+        buf[0] = (byte) (i & 0xFF);
+        buf[0 + 1] = (byte) ((i >>> 8) & 0xFF);
+    }
+
+    private static int unpackIntBrightness(byte[] buf) {
+        return (((buf[1] ) << 8) | (buf[0] & 0xFF));
+
+    }
+
     private String dumpStreamingParms(byte[] p) {
         StringBuilder s = new StringBuilder(128);
         s.append("hint=0x" + Integer.toHexString(unpackUsbUInt2(p, 0)));
@@ -1430,7 +1458,7 @@ public class StartTheStreamActivity extends Activity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(StartTheStreamActivity.this, msg, Toast.LENGTH_LONG).show();
+                Toast.makeText(Start_Iso_StreamActivity.this, msg, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -1592,9 +1620,8 @@ public class StartTheStreamActivity extends Activity {
                         if (stopKamera == true) {
                             break;
                         }
-
                     }
-
+                    if (changeBrightness) changebright(30);
                 }
                 //enableStreaming(false);
                 //processReceivedMJpegVideoFrame(frameData.toByteArray());
@@ -1684,8 +1711,34 @@ public class StartTheStreamActivity extends Activity {
         return inSampleSize;
     }
 
+    public void changebright (int value) {
+        final int timeout = 5000;
+        int len;
+        int newBrightness;
+        if (lowerbright) newBrightness = currentBrightness - value;
+        else newBrightness = currentBrightness + value;
 
+        if (newBrightness < brightnessMin ) newBrightness = brightnessMin;
+         else if ( newBrightness > brightnessMax) newBrightness = brightnessMax;
+        byte[] brightnessParms = new byte[2];
+        packIntBrightness(newBrightness, brightnessParms);
 
+        // PU_BRIGHTNESS_CONTROL(0x02), SET_CUR(0x01) [UVC1.5, p. 160, 158, 96]
+        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, PU_BRIGHTNESS_CONTROL << 8, 0x0200, brightnessParms, brightnessParms.length, timeout);
+        if (len != brightnessParms.length) {
+            displayMessage("Error: Durning PU_BRIGHTNESS_CONTROL");
+        }
+        // PU_BRIGHTNESS_CONTROL(0x02), GET_CUR(0x81) [UVC1.5, p. 160, 158, 96]
+        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, PU_BRIGHTNESS_CONTROL << 8, 0x0200, brightnessParms, brightnessParms.length, timeout);
+        if (len != brightnessParms.length) {
+            displayMessage("Error: Durning PU_BRIGHTNESS_CONTROL");
+        } else {
+            currentBrightness = unpackIntBrightness(brightnessParms);
+            log( "currentBrightness: " + currentBrightness);
+        }
+        changeBrightness = false;
+        if (currentBrightness != 0) brightnessChanged = true;
+    }
 
 
 }

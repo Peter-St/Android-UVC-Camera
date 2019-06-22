@@ -13,6 +13,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -43,17 +45,57 @@ public class Main extends Activity {
 
     private int ActivitySetUpTheUsbDeviceRequestCode = 1;
 
+    final static float STEP = 200;
+    float mRatio = 1.0f;
+    int mBaseDist;
+    float mBaseRatio;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
         tv = (TextView) findViewById(R.id.textDarstellung);
-        tv.setText("Your current Values are:\n\n( - this is a sroll field - )\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
+        tv.setText("Your current Values are:\n\n( - this is a sroll and zoom field - )\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
                 "\nAltSetting = " + camStreamingAltSetting + "\nMaxPacketSize = " + maxPacketSize + "\nVideoformat = " + videoformat + "\ncamFormatIndex = " + camFormatIndex + "\n" +
                 "camFrameIndex = " + camFrameIndex + "\nimageWidth = "+ imageWidth + "\nimageHeight = " + imageHeight + "\ncamFrameInterval = " + camFrameInterval + "" +
                 "\n\nYou can edit these Settings by clicking on (Set Up The Camera Device).\nYou can then save the values and later restore them.");
 
+        tv.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                if (event.getPointerCount() == 2) {
+                    int action = event.getAction();
+                    int pureaction = action & MotionEvent.ACTION_MASK;
+                    if (pureaction == MotionEvent.ACTION_POINTER_DOWN) {
+                        mBaseDist = getDistance(event);
+                        mBaseRatio = mRatio;
+                    } else {
+                        float delta = (getDistance(event) - mBaseDist) / STEP;
+                        float multi = (float) Math.pow(2, delta);
+                        mRatio = Math.min(1024.0f, Math.max(0.1f, mBaseRatio * multi));
+                        tv.setTextSize(mRatio + 13);
+                    }
+                }
+                return true;
+            }
+
+
+        });
+
     }
+
+
+    int getDistance(MotionEvent event) {
+        int dx = (int) (event.getX(0) - event.getX(1));
+        int dy = (int) (event.getY(0) - event.getY(1));
+        return (int) (Math.sqrt(dx * dx + dy * dy));
+    }
+
+
+
+
+
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -142,7 +184,7 @@ public class Main extends Activity {
         } else {
 
             // TODO Auto-generated method stub
-            Intent intent = new Intent(getApplicationContext(), StartTheStreamActivity.class);
+            Intent intent = new Intent(getApplicationContext(), Start_Iso_StreamActivity.class);
             Bundle bundle=new Bundle();
             bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
             bundle.putString("videoformat",videoformat);

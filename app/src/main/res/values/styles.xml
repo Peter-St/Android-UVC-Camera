@@ -11,4 +11,11 @@
         <item name="android:background">#303F9F</item>
     </style>
 
+    <style name="YOURSTYLE" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:itemBackground">@android:color/holo_blue_bright</item>
+    </style>
+
+
+
 </resources>

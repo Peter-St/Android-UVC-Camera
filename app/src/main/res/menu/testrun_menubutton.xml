@@ -1,0 +1,46 @@
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+
+    <item
+        android:id="@+id/controltransfer"
+        android:title="Control Transfer" >
+        <menu>
+
+            <item
+                android:id="@+id/videoProbeCommit"
+                android:title="Video Probe-Commit Controls" />
+
+            <item
+                android:id="@+id/brightness_control"
+                android:title="PU_BRIGHTNESS_CONTROL" />
+
+        </menu>
+
+    </item>
+
+
+    <item
+        android:id="@+id/testrun"
+        android:title="Testrun" >
+        <menu>
+
+            <item
+                android:id="@+id/testrun1frame"
+                android:title="One Frame" />
+
+            <item
+                android:id="@+id/testrun5sec"
+                android:title="Frames for 5 secounds" />
+
+        </menu>
+
+    </item>
+
+
+
+
+
+
+</menu>
