@@ -51,6 +51,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import com.sample.timelapse.MJPEGGenerator ;
+import biz.source_code.usb.UsbIso;
 
 public class Start_Iso_StreamActivity extends Activity {
 
@@ -157,12 +158,11 @@ public class Start_Iso_StreamActivity extends Activity {
     private static int brightnessMin;
     private int currentBrightness;
     private boolean changeBrightness;
-    private boolean lowerbright;
     private boolean brightnessChanged;
     float discrete=0;
-    float start=0;
-    float end=100;
-    float start_pos=0;
+    static float start;
+    static float end;
+    float start_pos;
     int start_position=0;
 
 
@@ -485,11 +485,11 @@ public class Start_Iso_StreamActivity extends Activity {
                                     }
                                 };
                                 Handler myHandler = new Handler();
-                                final int TIME_TO_WAIT = 3500;
+                                final int TIME_TO_WAIT = 2500;
 
 
-                                start = -128;
-                                end = 127;
+                                start = brightnessMin;
+                                end = brightnessMax;
                                 start_pos = currentBrightness;
                                 start_position=(int) (((start_pos-start)/(end-start))*100);
                                 discrete=start_pos;
@@ -539,31 +539,6 @@ public class Start_Iso_StreamActivity extends Activity {
         if (lowerResolution) lowerResolution = false;
         else lowerResolution = true;
     }
-
-    public void changeBrightnessClickButtonEvent () {
-
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which){
-                    case DialogInterface.BUTTON_POSITIVE:
-                        //Yes button clicked
-                        changeBrightness = true;
-                        lowerbright = false;
-                        break;
-
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        changeBrightness = true;
-                        lowerbright = true;
-                        break;
-                }
-            }
-        };
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Brightness").setPositiveButton(" + ", dialogClickListener)
-                .setNegativeButton(" - ", dialogClickListener).show();
-    }
-
 
     public void returnToConfigScreen() {
         stopKamera = true;
@@ -1621,7 +1596,7 @@ public class Start_Iso_StreamActivity extends Activity {
                             break;
                         }
                     }
-                    if (changeBrightness) changebright(30);
+                    if (changeBrightness) changebright();
                 }
                 //enableStreaming(false);
                 //processReceivedMJpegVideoFrame(frameData.toByteArray());
@@ -1711,17 +1686,11 @@ public class Start_Iso_StreamActivity extends Activity {
         return inSampleSize;
     }
 
-    public void changebright (int value) {
-        final int timeout = 5000;
+    public void changebright () {
+        final int timeout = 500;
         int len;
-        int newBrightness;
-        if (lowerbright) newBrightness = currentBrightness - value;
-        else newBrightness = currentBrightness + value;
-
-        if (newBrightness < brightnessMin ) newBrightness = brightnessMin;
-         else if ( newBrightness > brightnessMax) newBrightness = brightnessMax;
         byte[] brightnessParms = new byte[2];
-        packIntBrightness(newBrightness, brightnessParms);
+        packIntBrightness(currentBrightness, brightnessParms);
 
         // PU_BRIGHTNESS_CONTROL(0x02), SET_CUR(0x01) [UVC1.5, p. 160, 158, 96]
         len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, PU_BRIGHTNESS_CONTROL << 8, 0x0200, brightnessParms, brightnessParms.length, timeout);
@@ -1739,6 +1708,5 @@ public class Start_Iso_StreamActivity extends Activity {
         changeBrightness = false;
         if (currentBrightness != 0) brightnessChanged = true;
     }
-
 
 }

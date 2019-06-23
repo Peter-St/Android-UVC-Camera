@@ -35,6 +35,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 
+import biz.source_code.usb.UsbIso;
+
+
 public class SetUpTheUsbDevice extends Activity {
 
     private static final String ACTION_USB_PERMISSION = "humer.uvc_camera.USB_PERMISSION";
