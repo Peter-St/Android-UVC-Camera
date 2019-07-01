@@ -360,8 +360,7 @@ public class SetUpTheUsbDevice extends Activity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            //tv = (TextView) findViewById(R.id.textDarstellung);
-                            //tv.setText("A camera has been found.");
+                            tv.setText("A camera has been found.\n\nThe Permissions to the Camera have been granted");
                             displayMessage("A camera has been found.");
                         }
                     });
