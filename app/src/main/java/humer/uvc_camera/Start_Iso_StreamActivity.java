@@ -3,9 +3,11 @@ package humer.uvc_camera;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -100,6 +102,7 @@ public class Start_Iso_StreamActivity extends Activity {
     private UsbInterface camStreamingInterface;
     private UsbEndpoint camStreamingEndpoint;
     private boolean bulkMode;
+    private PendingIntent mPermissionIntent;
 
     // Camera Values
     private static int camStreamingAltSetting;
@@ -164,6 +167,26 @@ public class Start_Iso_StreamActivity extends Activity {
     static float end;
     float start_pos;
     int start_position=0;
+
+    private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (ACTION_USB_PERMISSION.equals(action)) {
+                synchronized (this) {
+                    camDevice = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                        if(camDevice != null){
+                            log("camDevice from BraudcastReceiver");
+                        }
+                    }
+                    else {
+                        log( "permission denied for device " + camDevice);
+                        displayMessage("permission denied for device " + camDevice);
+                    }
+                }
+            }
+        }
+    };
 
 
 
@@ -443,15 +466,20 @@ public class Start_Iso_StreamActivity extends Activity {
         fetchTheValues();
         log("packetsPerRequest = " + packetsPerRequest);
         log("activeUrbs = " + activeUrbs);
+        simpleSeekBar = (SeekBar) findViewById(R.id.simpleSeekBar); // initiate the Seek bar
+        simpleSeekBar.setEnabled(false);
+        simpleSeekBar.setAlpha(0);
+        simpleSeekBar = null;
+        usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+        mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
+        IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
+        registerReceiver(mUsbReceiver, filter);
         try {
             findCam();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        simpleSeekBar = (SeekBar) findViewById(R.id.simpleSeekBar); // initiate the Seek bar
-        simpleSeekBar.setEnabled(false);
-        simpleSeekBar.setAlpha(0);
-        simpleSeekBar = null;
+
     }
 
     public void showMenu(View v) {
@@ -779,17 +807,13 @@ public class Start_Iso_StreamActivity extends Activity {
             throw new Exception("No USB camera device found.");
         }
         if (!usbManager.hasPermission(camDevice)) {
-            int a;
-            PendingIntent permissionIntent2 = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
-            // IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
-            // registerReceiver(mUsbReceiver, filter);
-            usbManager.requestPermission(camDevice, permissionIntent2);
-        }
+            log("Asking for Permissions");
+            usbManager.requestPermission(camDevice, mPermissionIntent);
+        } else usbManager.requestPermission(camDevice, mPermissionIntent);
+
     }
 
     private UsbDevice findCameraDevice() {
-        usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
-
         HashMap<String, UsbDevice> deviceList = usbManager.getDeviceList();
         log("USB devices count = " + deviceList.size());
         for (UsbDevice usbDevice : deviceList.values()) {

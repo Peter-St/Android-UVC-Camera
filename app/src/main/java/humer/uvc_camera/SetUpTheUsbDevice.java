@@ -125,7 +125,8 @@ public class SetUpTheUsbDevice extends Activity {
     int [] convertedMaxPacketSize;
     public static boolean camIsOpen;
     private boolean bulkMode;
-
+    private enum Options { searchTheCamera, testrun, listdevice, showTestRunMenu, setUpWithUvcSettings };
+    private Options  options;
 
 
 
@@ -150,90 +151,27 @@ public class SetUpTheUsbDevice extends Activity {
     private static int brightnessMax;
     private static int brightnessMin;
 
-    private final BroadcastReceiver mUsbReceiver =   new BroadcastReceiver() {
 
-        @Override
+    private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (ACTION_USB_PERMISSION.equals(action)) {
-
-                Toast.makeText(SetUpTheUsbDevice.this,
-                        "ACTION_USB_PERMISSION",
-                        Toast.LENGTH_LONG).show();
-                tv.setText("ACTION_USB_PERMISSION");
-                log(ACTION_USB_PERMISSION);
-
                 synchronized (this) {
                     camDevice = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-
                     if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                         if(camDevice != null){
-                            //call method to set up device communication
-                            log("Permission Granted");
-                            displayMessage("Permisson Granted");
-                            listDevice(camDevice);
-                            camControlInterface = getVideoControlInterface(camDevice);
-                            camStreamingInterface = getVideoStreamingInterface(camDevice);
-                            camDeviceConnection = usbManager.openDevice(camDevice);
-                            if (camDeviceConnection == null) {
-                                displayMessage("Failed to open the device - Retry");
-                                log("Failed to open the device - Retry");
-                                //throw new Exception("Unable to open camera device connection.");
-                            } else {
-                                displayMessage("Camera opened sucessful");
-                                log("Camera opend sucessful");
-
-                                if (!camDeviceConnection.claimInterface(camControlInterface, true)) {
-                                    log("Failed to claim camControlInterface");
-                                    displayMessage("Unable to claim camera control interface.");
-                                }
-                                if (!camDeviceConnection.claimInterface(camStreamingInterface, true)) {
-                                    log("Failed to claim camStreamingInterface");
-                                    displayMessage("Unable to claim camera streaming interface.");
-                                }
-
-                                byte[] a = camDeviceConnection.getRawDescriptors();
-                                ByteBuffer uvcData = ByteBuffer.wrap(a);
-                                uvc_descriptor = new UVC_Descriptor(uvcData);
-
-                                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        switch (which){
-                                            case DialogInterface.BUTTON_POSITIVE:
-                                                int a = uvc_descriptor.phraseUvcData();
-                                                if (a == 0) {
-                                                    if (convertedMaxPacketSize == null) listDevice(camDevice);
-                                                    stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize);
-                                                }
-                                                //Yes button clicked
-                                                break;
-
-                                            case DialogInterface.BUTTON_NEGATIVE:
-
-                                                break;
-                                        }
-                                    }
-                                };
-                                AlertDialog.Builder builder = new AlertDialog.Builder(SetUpTheUsbDevice.this);
-                                builder.setMessage("Do you want to set up from UVC values ?").setPositiveButton("Yes, set up from UVC", dialogClickListener)
-                                        .setNegativeButton("No", dialogClickListener).show();
-
-
-
-
-                            }
+                            log("camDevice from BraudcastReceiver");
                         }
                     }
                     else {
-                        log("permission denied for device " + camDevice);
+                        log( "permission denied for device " + camDevice);
                         displayMessage("permission denied for device " + camDevice);
-                        tv.setText("permission denied for device " + camDevice);
                     }
                 }
             }
         }
     };
+
 
     private final BroadcastReceiver mUsbDeviceReceiver =
             new BroadcastReceiver() {
@@ -242,87 +180,24 @@ public class SetUpTheUsbDevice extends Activity {
                 public void onReceive(Context context, Intent intent) {
                     String action = intent.getAction();
                     if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
-
                         camDevice = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                        Toast.makeText(SetUpTheUsbDevice.this,
-                                "ACTION_USB_DEVICE_ATTACHED: \n" +
-                                        camDevice.toString(),
-                                Toast.LENGTH_LONG).show();
-                        tv.setText("ACTION_USB_DEVICE_ATTACHED: \n" +
-                                camDevice.toString());
-
+                        displayMessage("ACTION_USB_DEVICE_ATTACHED:");
+                        tv.setText("ACTION_USB_DEVICE_ATTACHED: \n");
                         if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                            if(camDevice != null){
-                                //call method to set up device communication
-                                listDevice(camDevice);
-                                camControlInterface = getVideoControlInterface(camDevice);
-                                camStreamingInterface = getVideoStreamingInterface(camDevice);
-                                camDeviceConnection = usbManager.openDevice(camDevice);
-                                if (camDeviceConnection == null) {
-                                    displayMessage("Failed to open the device - Retry failed");
-                                    log("Failed to open the device - Retry failed");
-                                } else {
-                                    displayMessage("Camera opened sucessful");
-                                    log("Camera opend sucessful");
-
-                                    if (!camDeviceConnection.claimInterface(camControlInterface, true)) {
-                                        log("Failed to claim camControlInterface");
-                                        displayMessage("Unable to claim camera control interface.");
-                                    }
-                                    if (!camDeviceConnection.claimInterface(camStreamingInterface, true)) {
-                                        log("Failed to claim camStreamingInterface");
-                                        displayMessage("Unable to claim camera streaming interface.");
-                                    }
-
-                                    byte[] a = camDeviceConnection.getRawDescriptors();
-                                    ByteBuffer uvcData = ByteBuffer.wrap(a);
-                                    uvc_descriptor = new UVC_Descriptor(uvcData);
-
-                                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            switch (which){
-                                                case DialogInterface.BUTTON_POSITIVE:
-                                                    int a = uvc_descriptor.phraseUvcData();
-                                                    if (a == 0) {
-                                                        if (convertedMaxPacketSize == null) listDevice(camDevice);
-                                                        stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize);
-                                                    }
-                                                    //Yes button clicked
-                                                    break;
-
-                                                case DialogInterface.BUTTON_NEGATIVE:
-
-                                                    break;
-                                            }
-                                        }
-                                    };
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(SetUpTheUsbDevice.this);
-                                    builder.setMessage("Do you want to set up from UVC values ?").setPositiveButton("Yes, set up from UVC", dialogClickListener)
-                                            .setNegativeButton("No", dialogClickListener).show();
-
-
-
-
-                                }
-                            }
+                            displayMessage("Permissions Granted to Usb Device");
                         }
                         else {
                             log( "permission denied for device " + camDevice);
                         }
-
-
-
                     }else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
-
-                        UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-
-                        Toast.makeText(SetUpTheUsbDevice.this,
-                                "ACTION_USB_DEVICE_DETACHED: \n" +
-                                        device.toString(),
-                                Toast.LENGTH_LONG).show();
-                        tv.setText("ACTION_USB_DEVICE_DETACHED: \n" +
-                                device.toString());
+                        camDevice = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                        displayMessage("ACTION_USB_DEVICE_DETACHED: \n");
+                        tv.setText("ACTION_USB_DEVICE_DETACHED: \n");
+                        if (camDeviceConnection != null) {
+                            if (camControlInterface != null) camDeviceConnection.releaseInterface(camControlInterface);
+                            if (camStreamingInterface != null) camDeviceConnection.releaseInterface(camStreamingInterface);
+                            camDeviceConnection.close();
+                        }
                     }
                 }
 
@@ -333,7 +208,6 @@ public class SetUpTheUsbDevice extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.set_up_the_device_layout_main);
-        // Start onClick Listener method
         usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         fetchTheValues();
         stf = new SaveToFile(this, this);
@@ -345,13 +219,6 @@ public class SetUpTheUsbDevice extends Activity {
                 showTestRunMenu(view);
             }
         });
-
-
-        try {
-            //findCam();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         tv = (TextView) findViewById(R.id.textDarstellung);
         tv.setText("Explanation:\n\n-(this is a scrollable and zoomable Text)\n\nFirst you have to set values for your camera.\nYou can use the button (Set up with UVC Settings) to automatically set " +
@@ -401,12 +268,21 @@ public class SetUpTheUsbDevice extends Activity {
         registerReceiver(mUsbReceiver, filter);
         registerReceiver(mUsbDeviceReceiver, new IntentFilter(UsbManager.ACTION_USB_DEVICE_ATTACHED));
         registerReceiver(mUsbDeviceReceiver, new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED));
+
+        try {
+            findCam();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
     @Override
     public void onBackPressed()
     {
+        mPermissionIntent = null;
+        unregisterReceiver(mUsbReceiver);
+        unregisterReceiver(mUsbDeviceReceiver);
         writeTheValues();
     }
 
@@ -472,88 +348,46 @@ public class SetUpTheUsbDevice extends Activity {
 
 
     public void searchTheCamera (View view) {
+        if (camDevice == null) {
+            try {
+                findCam();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-        if (camDevice != null) {
-            usbManager.requestPermission(camDevice, mPermissionIntent);
-            int a;
-            while (!usbManager.hasPermission(camDevice)) {
-                long time0 = System.currentTimeMillis();
-                for ( a = 0; a < 10; a++) {
-                    while (System.currentTimeMillis() - time0 < 1000) {
-                        if (usbManager.hasPermission(camDevice)) break;
-                    }
+            if (camDevice != null) {
+                if (usbManager.hasPermission(camDevice)) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //tv = (TextView) findViewById(R.id.textDarstellung);
+                            //tv.setText("A camera has been found.");
+                            displayMessage("A camera has been found.");
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tv = (TextView) findViewById(R.id.textDarstellung);
+                            tv.setText("A camera is connected to your Android Device");
+                            displayMessage("A camera is connected to your Android Device");
+                        }
+                    });
                 }
-                if (usbManager.hasPermission(camDevice)) break;
-                if ( a >= 10) break;
-            }
-
-            if (usbManager.hasPermission(camDevice)) {
-
-            }
-        }
-
-
-
-
-        //throw new Exception("Unable to open camera device connection.");
-        //register the broadcast receiver
-
-
-        /*
-        camDevice = null;
-        try {
-            findCam();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (camDevice != null) {
-            int a;
-            PendingIntent permissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
-            usbManager.requestPermission(camDevice, permissionIntent);
-            while (!usbManager.hasPermission(camDevice)) {
-                long time0 = System.currentTimeMillis();
-                for (a = 0; a < 10; a++) {
-                    while (System.currentTimeMillis() - time0 < 1000) {
-                        if (usbManager.hasPermission(camDevice)) break;
-                    }
-                }
-                if (usbManager.hasPermission(camDevice)) break;
-                if ( a >= 10) break;
-            }
-            if (usbManager.hasPermission(camDevice)) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        //tv = (TextView) findViewById(R.id.textDarstellung);
-                        //tv.setText("A camera has been found.");
-                        displayMessage("A camera has been found.");
-                    }
-                });
             } else {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         tv = (TextView) findViewById(R.id.textDarstellung);
-                        tv.setText("A camera is connected to your Android Device");
-                        displayMessage("A camera is connected to your Android Device");
+                        tv.setText("No camera found\nSolutions:\n- Connect a camera and try again ...");
+                        displayMessage("No camera found\nSolutions:\n- Connect a camera and try again ...");
                     }
                 });
             }
-        } else {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    tv = (TextView) findViewById(R.id.textDarstellung);
-                    tv.setText("No camera found\nSolutions:\n- Connect a camera and try again ...");
-                    displayMessage("No camera found\nSolutions:\n- Connect a camera and try again ...");
-                }
-            });
         }
-        */
+
     }
-
-
 
 
     public void listDeviceButtonClickEvent(View view) {
@@ -593,13 +427,6 @@ public class SetUpTheUsbDevice extends Activity {
                 return;
             }
             displayMessage("OK");
-
-
-
-
-
-
-
             if (camIsOpen) {
                 runOnUiThread(new Runnable() {
                     @Override
@@ -637,17 +464,7 @@ public class SetUpTheUsbDevice extends Activity {
             index ++;
         }
         log("deviceName = " + deviceName);
-
-
-
-
-        if (!usbManager.hasPermission(camDevice)) {
-            int a;
-            PendingIntent permissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
-            // IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
-            // registerReceiver(mUsbReceiver, filter);
-            usbManager.requestPermission(camDevice, permissionIntent);
-        }
+        usbManager.requestPermission(camDevice, mPermissionIntent);
     }
 
 
@@ -1743,6 +1560,9 @@ public class SetUpTheUsbDevice extends Activity {
     public void returnToConfigScreen(View view) {
 
         stopKamera = true;
+        mPermissionIntent = null;
+        unregisterReceiver(mUsbReceiver);
+        unregisterReceiver(mUsbDeviceReceiver);
         writeTheValues();
 
 
@@ -1752,7 +1572,6 @@ public class SetUpTheUsbDevice extends Activity {
 
         Intent intent=getIntent();
         Bundle bundle=intent.getBundleExtra("bun");
-
 
         if (bundle.getBoolean("edit") == true) {
             camStreamingAltSetting=bundle.getInt("camStreamingAltSetting",0);
@@ -1769,12 +1588,11 @@ public class SetUpTheUsbDevice extends Activity {
         } else {
             stf = new SaveToFile(this, this);
             stf.restoreValuesFromFile();
+            mPermissionIntent = null;
+            unregisterReceiver(mUsbReceiver);
+            unregisterReceiver(mUsbDeviceReceiver);
             writeTheValues();
         }
-
-
-
-
     }
 
 
@@ -1793,14 +1611,12 @@ public class SetUpTheUsbDevice extends Activity {
         resultIntent.putExtra("maxPacketSize", maxPacketSize);
         resultIntent.putExtra("activeUrbs", activeUrbs);
         resultIntent.putExtra("deviceName", deviceName);
-
         setResult(Activity.RESULT_OK, resultIntent);
+        if (camDeviceConnection != null) {
+            if (camControlInterface != null)           camDeviceConnection.releaseInterface(camControlInterface);
+            if (camStreamingInterface != null)         camDeviceConnection.releaseInterface(camStreamingInterface);
+            camDeviceConnection.close();
+        }
         finish();
     }
-
-
-
-
-
-
 }
