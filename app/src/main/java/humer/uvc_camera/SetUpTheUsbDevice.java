@@ -86,6 +86,7 @@ public class SetUpTheUsbDevice extends Activity {
     private UsbDeviceConnection camDeviceConnection;
     private UsbInterface camControlInterface;
     private UsbInterface camStreamingInterface;
+    private UsbEndpoint camControlEndpoint;
     private UsbEndpoint camStreamingEndpoint;
     private PendingIntent mPermissionIntent;
 
@@ -648,6 +649,7 @@ public class SetUpTheUsbDevice extends Activity {
             throw new Exception("Streaming interface has no endpoint.");
         }
         camStreamingEndpoint = camStreamingInterface.getEndpoint(0);
+        camControlEndpoint = camControlInterface.getEndpoint(0);
         bulkMode = camStreamingEndpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK;
         camDeviceConnection = usbManager.openDevice(camDevice);
         if (camDeviceConnection == null) {
