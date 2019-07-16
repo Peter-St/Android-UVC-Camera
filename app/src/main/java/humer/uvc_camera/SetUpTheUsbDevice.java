@@ -156,7 +156,10 @@ public class SetUpTheUsbDevice extends Activity {
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (ACTION_USB_PERMISSION.equals(action)) {
+            
+                        log( "(on receive) String action = " +   action  );
+
+if (ACTION_USB_PERMISSION.equals(action)) {
                 synchronized (this) {
                     camDevice = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                     if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
