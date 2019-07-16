@@ -361,6 +361,7 @@ public class SetUpTheUsbDevice extends Activity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+log ("Camera has permissions = ");
                             tv.setText("A camera has been found.\n\nThe Permissions to the Camera have been granted");
                             displayMessage("A camera has been found.");
                         }
@@ -369,6 +370,7 @@ public class SetUpTheUsbDevice extends Activity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+log ("Camera has no permissions ");
                             tv = (TextView) findViewById(R.id.textDarstellung);
                             tv.setText("A camera is connected to your Android Device");
                             displayMessage("A camera is connected to your Android Device");
@@ -385,7 +387,18 @@ public class SetUpTheUsbDevice extends Activity {
                     }
                 });
             }
-        }
+        } else {
+if (usbManager.hasPermission(camDevice)) {
+log ("Camera has permissions ");
+
+} else {
+log ("Camera has no permissions, try to request... ");
+usbManager.requestPermission(camDevice, mPermissionIntent);
+
+}
+
+
+}
 
     }
 
