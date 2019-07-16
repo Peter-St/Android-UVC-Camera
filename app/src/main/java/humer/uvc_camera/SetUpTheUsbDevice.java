@@ -165,8 +165,8 @@ public class SetUpTheUsbDevice extends Activity {
                         }
                     }
                     else {
-                        log( "permission denied for device " + camDevice);
-                        displayMessage("permission denied for device " + camDevice);
+                        log( "(On receive) permission denied for device ");
+                        displayMessage("permission denied for device " );
                     }
                 }
             }
@@ -188,7 +188,7 @@ public class SetUpTheUsbDevice extends Activity {
                             displayMessage("Permissions Granted to Usb Device");
                         }
                         else {
-                            log( "permission denied for device " + camDevice);
+                            log( "(Device attached) permission denied for device ");
                         }
                     }else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
                         camDevice = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
