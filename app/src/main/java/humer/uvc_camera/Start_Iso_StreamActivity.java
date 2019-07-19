@@ -809,7 +809,7 @@ public class Start_Iso_StreamActivity extends Activity {
         if (!usbManager.hasPermission(camDevice)) {
             log("Asking for Permissions");
             usbManager.requestPermission(camDevice, mPermissionIntent);
-        } else usbManager.requestPermission(camDevice, mPermissionIntent);
+        } else usbManager.requestPermission (camDevice, mPermissionIntent);
 
     }
 
