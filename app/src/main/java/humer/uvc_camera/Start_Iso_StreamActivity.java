@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
@@ -1018,20 +1017,13 @@ public class Start_Iso_StreamActivity extends Activity {
             bildaufnahme = false ;
             date = new Date() ;
             dateFormat = new SimpleDateFormat("dd.MM.yyyy_HH..mm..ss") ;
-            Context mContext = this;
-            int code = mContext.getPackageManager().checkPermission(
-                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    mContext.getPackageName());
-            if (code == PackageManager.PERMISSION_GRANTED) {
-                String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
-                file = new File(rootPath);
-                if (!file.exists()) {
-                    file.mkdirs();
-                }
-
+            String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
+            file = new File(rootPath);
+            if (!file.exists()) {
+                file.mkdirs();
                 String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getPath() ;
                 writeBytesToFile(fileName, jpegFrameData);
-            } else displayMessage ("Storage Permission for the app were missing" );
+            }
 
         }
 

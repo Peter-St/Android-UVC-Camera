@@ -7,12 +7,18 @@ package humer.uvc_camera;
 
 
 
+import android.Manifest;
 import android.app.Activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -43,6 +49,7 @@ public class Main extends Activity {
     public Button menu;
     private TextView tv;
 
+    private final int REQUEST_PERMISSION_STORAGE=1;
     private int ActivitySetUpTheUsbDeviceRequestCode = 1;
 
     final static float STEP = 200;
@@ -82,6 +89,22 @@ public class Main extends Activity {
 
         });
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode,
+            String permissions[],
+            int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_PERMISSION_STORAGE:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(Main.this, "Permission Granted!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(Main.this, "Permission Denied!", Toast.LENGTH_SHORT).show();
+                }
+        }
     }
 
 
@@ -139,53 +162,10 @@ public class Main extends Activity {
 
 
     public void setUpTheUsbDevice(View view){
-
-        Intent intent = new Intent(this, SetUpTheUsbDevice.class);
-        Bundle bundle=new Bundle();
-        bundle.putBoolean("edit", true);
-        bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
-        bundle.putString("videoformat",videoformat);
-        bundle.putInt("camFormatIndex",camFormatIndex);
-        bundle.putInt("imageWidth",imageWidth);
-        bundle.putInt("imageHeight",imageHeight);
-        bundle.putInt("camFrameIndex",camFrameIndex);
-        bundle.putInt("camFrameInterval",camFrameInterval);
-        bundle.putInt("packetsPerRequest",packetsPerRequest);
-        bundle.putInt("maxPacketSize",maxPacketSize);
-        bundle.putInt("activeUrbs",activeUrbs);
-        bundle.putString("deviceName",deviceName);
-        intent.putExtra("bun",bundle);
-        super.onResume();
-        startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
-    }
-
-
-    public void restoreCameraSettings (View view) {
-        SaveToFile  stf;
-        stf = new SaveToFile(this, this);
-        stf.restoreValuesFromFile();
-        stf = null;
-
-    }
-
-
-
-
-    public void isoStream(View view){
-
-
-        if (camFormatIndex == 0 || camFrameIndex == 0 ||camFrameInterval == 0 ||packetsPerRequest == 0 ||maxPacketSize == 0 ||imageWidth == 0 || activeUrbs == 0 ) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    tv = (TextView) findViewById(R.id.textDarstellung);
-                    tv.setText("Values for the camera not correctly setted !!\nPlease set up the values for the Camera first.\nTo Set Up the Values press the Settings Button and click on 'Set up with Uvc Values' or 'Edit / Save / Restor' and 'Edit Save'");  }
-            });
-        } else {
-
-            // TODO Auto-generated method stub
-            Intent intent = new Intent(getApplicationContext(), Start_Iso_StreamActivity.class);
+        if (showStoragePermission()) {
+            Intent intent = new Intent(this, SetUpTheUsbDevice.class);
             Bundle bundle=new Bundle();
+            bundle.putBoolean("edit", true);
             bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
             bundle.putString("videoformat",videoformat);
             bundle.putInt("camFormatIndex",camFormatIndex);
@@ -196,9 +176,58 @@ public class Main extends Activity {
             bundle.putInt("packetsPerRequest",packetsPerRequest);
             bundle.putInt("maxPacketSize",maxPacketSize);
             bundle.putInt("activeUrbs",activeUrbs);
+            bundle.putString("deviceName",deviceName);
             intent.putExtra("bun",bundle);
-            startActivity(intent);
+            super.onResume();
+            startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
         }
+
+    }
+
+
+    public void restoreCameraSettings (View view) {
+        if (showStoragePermission()) {
+            SaveToFile  stf;
+            stf = new SaveToFile(this, this);
+            stf.restoreValuesFromFile();
+            stf = null;
+        }
+
+
+    }
+
+
+
+
+    public void isoStream(View view){
+        if (showStoragePermission()) {
+            if (camFormatIndex == 0 || camFrameIndex == 0 ||camFrameInterval == 0 ||packetsPerRequest == 0 ||maxPacketSize == 0 ||imageWidth == 0 || activeUrbs == 0 ) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tv = (TextView) findViewById(R.id.textDarstellung);
+                        tv.setText("Values for the camera not correctly setted !!\nPlease set up the values for the Camera first.\nTo Set Up the Values press the Settings Button and click on 'Set up with Uvc Values' or 'Edit / Save / Restor' and 'Edit Save'");  }
+                });
+            } else {
+
+                // TODO Auto-generated method stub
+                Intent intent = new Intent(getApplicationContext(), Start_Iso_StreamActivity.class);
+                Bundle bundle=new Bundle();
+                bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
+                bundle.putString("videoformat",videoformat);
+                bundle.putInt("camFormatIndex",camFormatIndex);
+                bundle.putInt("imageWidth",imageWidth);
+                bundle.putInt("imageHeight",imageHeight);
+                bundle.putInt("camFrameIndex",camFrameIndex);
+                bundle.putInt("camFrameInterval",camFrameInterval);
+                bundle.putInt("packetsPerRequest",packetsPerRequest);
+                bundle.putInt("maxPacketSize",maxPacketSize);
+                bundle.putInt("activeUrbs",activeUrbs);
+                intent.putExtra("bun",bundle);
+                startActivity(intent);
+            }
+        }
+
     }
 
     public void displayMessage(final String msg) {
@@ -216,6 +245,44 @@ public class Main extends Activity {
                 "Camera FrameIndex = " + camFrameIndex + "\nImage Width = "+ imageWidth + "\nImage Height = " + imageHeight + "\nCamera Frame Interval = " + camFrameInterval)          ;
         tv.setTextColor(Color.GREEN);
 
+    }
+
+    private boolean showStoragePermission() {
+        int permissionCheck = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                showExplanation("Permission Needed:", "Storage", Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_PERMISSION_STORAGE);
+                return false;
+            } else {
+                requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_PERMISSION_STORAGE);
+                return false;
+            }
+        } else {
+            //Toast.makeText(Main.this, "Permission (already) Granted!", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+    }
+
+    private void showExplanation(String title,
+                                 String message,
+                                 final String permission,
+                                 final int permissionRequestCode) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        requestPermission(permission, permissionRequestCode);
+                    }
+                });
+        builder.create().show();
+    }
+
+    private void requestPermission(String permissionName, int permissionRequestCode) {
+        ActivityCompat.requestPermissions(this,
+                new String[]{permissionName}, permissionRequestCode);
     }
 
 
