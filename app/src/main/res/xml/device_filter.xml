@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <usb-device class="14" subclass="2" />
     <usb-device class="239" subclass="2" />
 </resources>
