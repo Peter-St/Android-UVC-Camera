@@ -162,7 +162,7 @@ public class Main extends Activity {
 
 
     public void setUpTheUsbDevice(View view){
-        if (showStoragePermission()) {
+        if (showStoragePermissionRead() && showStoragePermissionWrite()) {
             Intent intent = new Intent(this, SetUpTheUsbDevice.class);
             Bundle bundle=new Bundle();
             bundle.putBoolean("edit", true);
@@ -186,7 +186,7 @@ public class Main extends Activity {
 
 
     public void restoreCameraSettings (View view) {
-        if (showStoragePermission()) {
+        if (showStoragePermissionRead() && showStoragePermissionWrite()) {
             SaveToFile  stf;
             stf = new SaveToFile(this, this);
             stf.restoreValuesFromFile();
@@ -200,7 +200,7 @@ public class Main extends Activity {
 
 
     public void isoStream(View view){
-        if (showStoragePermission()) {
+        if (showStoragePermissionRead() && showStoragePermissionWrite()) {
             if (camFormatIndex == 0 || camFrameIndex == 0 ||camFrameInterval == 0 ||packetsPerRequest == 0 ||maxPacketSize == 0 ||imageWidth == 0 || activeUrbs == 0 ) {
                 runOnUiThread(new Runnable() {
                     @Override
@@ -247,7 +247,7 @@ public class Main extends Activity {
 
     }
 
-    private boolean showStoragePermission() {
+    private boolean showStoragePermissionRead() {
         int permissionCheck = ContextCompat.checkSelfPermission(
                 this, Manifest.permission.READ_EXTERNAL_STORAGE);
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
@@ -257,6 +257,25 @@ public class Main extends Activity {
                 return false;
             } else {
                 requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_PERMISSION_STORAGE);
+                return false;
+            }
+        } else {
+            //Toast.makeText(Main.this, "Permission (already) Granted!", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+    }
+
+
+    private boolean showStoragePermissionWrite() {
+        int permissionCheck = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                showExplanation("Permission Needed:", "Storage", Manifest.permission.WRITE_EXTERNAL_STORAGE, REQUEST_PERMISSION_STORAGE);
+                return false;
+            } else {
+                requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, REQUEST_PERMISSION_STORAGE);
                 return false;
             }
         } else {

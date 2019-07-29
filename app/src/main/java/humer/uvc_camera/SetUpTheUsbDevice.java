@@ -360,7 +360,7 @@ if (ACTION_USB_PERMISSION.equals(action)) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-log ("Camera has permissions = ");
+                            log ("Camera has Usb permissions = ");
                             tv.setText("A camera has been found.\n\nThe Permissions to the Camera have been granted");
                             displayMessage("A camera has been found.");
                         }
@@ -369,9 +369,9 @@ log ("Camera has permissions = ");
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-log ("Camera has no permissions ");
+                            log ("Camera has no USB permissions ");
                             tv = (TextView) findViewById(R.id.textDarstellung);
-                            tv.setText("A camera is connected to your Android Device");
+                            tv.setText("A camera is connected to your Android Device\nNo Usb Permissions for the Camera");
                             displayMessage("A camera is connected to your Android Device");
                         }
                     });
@@ -387,18 +387,28 @@ log ("Camera has no permissions ");
                 });
             }
         } else {
-if (usbManager.hasPermission(camDevice)) {
-log ("Camera has permissions ");
+            if (usbManager.hasPermission(camDevice)) {
+                log ("Camera has USB permissions ");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tv = (TextView) findViewById(R.id.textDarstellung);
+                        tv.setText("A camera was found\n\n- The camera has Usb Permissions");
+                    }
+                });
 
-} else {
-log ("Camera has no permissions, try to request... ");
-usbManager.requestPermission(camDevice, mPermissionIntent);
-
-}
-
-
-}
-
+            } else {
+                log ("Camera has no Usb permissions, try to request... ");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tv = (TextView) findViewById(R.id.textDarstellung);
+                        tv.setText("A camera was found\n\n- NO USB CAMERA PERMISSIOMS");
+                    }
+                });
+                usbManager.requestPermission(camDevice, mPermissionIntent);
+            }
+        }
     }
 
 

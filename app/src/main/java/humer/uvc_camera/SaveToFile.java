@@ -327,6 +327,11 @@ public class SaveToFile  {
         final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() ;
         final File file = new File(rootPath, "/" + saveFilePathFolder);
         if (!file.exists()) {
+            log("creating directory");
+            if (!file.mkdirs()) {
+                Log.e("TravellerLog :: ", "Problem creating Image folder");
+            }
+
             file.mkdirs();
         }
 
