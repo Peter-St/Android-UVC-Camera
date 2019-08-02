@@ -15,16 +15,20 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import static humer.uvc_camera.UVC_Descriptor.log;
 
 
 public class Main extends Activity {
@@ -56,6 +60,8 @@ public class Main extends Activity {
     float mRatio = 1.0f;
     int mBaseDist;
     float mBaseRatio;
+
+    private boolean sixtyfourbit;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -163,8 +169,23 @@ public class Main extends Activity {
 
     public void setUpTheUsbDevice(View view){
         if (showStoragePermissionRead() && showStoragePermissionWrite()) {
+
+
+            String bits;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                bits = TextUtils.join(", ", Build.SUPPORTED_ABIS).contains("64") ? "64-Bit" : "32-Bit";
+                sixtyfourbit = TextUtils.join(", ", Build.SUPPORTED_ABIS).contains("64");
+            } else {
+                bits = "32-Bit";
+                sixtyfourbit = false;
+            }
+            log("bits = " + bits);
+            log("sixtyfourbit = " + sixtyfourbit);
+
+
             Intent intent = new Intent(this, SetUpTheUsbDevice.class);
             Bundle bundle=new Bundle();
+            bundle.putBoolean("sixtyfourbit", sixtyfourbit);
             bundle.putBoolean("edit", true);
             bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
             bundle.putString("videoformat",videoformat);
@@ -213,6 +234,7 @@ public class Main extends Activity {
                 // TODO Auto-generated method stub
                 Intent intent = new Intent(getApplicationContext(), Start_Iso_StreamActivity.class);
                 Bundle bundle=new Bundle();
+                bundle.putBoolean("sixtyfourbit", sixtyfourbit);
                 bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
                 bundle.putString("videoformat",videoformat);
                 bundle.putInt("camFormatIndex",camFormatIndex);

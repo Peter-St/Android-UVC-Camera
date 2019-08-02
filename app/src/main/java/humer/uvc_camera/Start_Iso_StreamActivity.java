@@ -53,6 +53,8 @@ import java.util.HashMap;
 
 import com.sample.timelapse.MJPEGGenerator ;
 import biz.source_code.usb.UsbIso;
+import humer.uvc_camera.UsbIso64.USBIso;
+import humer.uvc_camera.UsbIso64.usbdevice_fs_util;
 
 public class Start_Iso_StreamActivity extends Activity {
 
@@ -114,7 +116,7 @@ public class Start_Iso_StreamActivity extends Activity {
     private static int imageHeight;
     private static int activeUrbs;
     private static String videoformat;
-    private UsbIso usbIso;
+    private UsbIso usbIso = null;
     private static boolean camIsOpen;
 
     // Vales for debuging the camera
@@ -166,6 +168,10 @@ public class Start_Iso_StreamActivity extends Activity {
     static float end;
     float start_pos;
     int start_position=0;
+
+    // 64 bit support
+    private boolean sixtyfourbit;
+    private volatile Start_Iso_StreamActivity.IsochronousStream64 runningStream64;
 
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -570,6 +576,7 @@ public class Start_Iso_StreamActivity extends Activity {
     public void returnToConfigScreen() {
         stopKamera = true;
         runningStream = null;
+        runningStream64 = null;
         //imageView = (ImageView) findViewById(R.id.imageView);
         onBackPressed();
     }
@@ -578,6 +585,7 @@ public class Start_Iso_StreamActivity extends Activity {
     public void changePackets(MenuItem item) {
         stopKamera = true;
         runningStream = null;
+        runningStream64 = null;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(String.format("PacketsPerRequest = %d (Select the number of Packets in each Request Block.", packetsPerRequest));
 
@@ -608,6 +616,7 @@ public class Start_Iso_StreamActivity extends Activity {
     public void changeUrbs(MenuItem item) {
         stopKamera = true;
         runningStream = null;
+        runningStream64 = null;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(String.format("activeURBs = %d (Select the number of Requests running in paralell order.", activeUrbs));
 
@@ -689,16 +698,25 @@ public class Start_Iso_StreamActivity extends Activity {
                 e.printStackTrace();
             }
             if (camIsOpen) {
-                if (runningStream != null) {
-                    return;
+                if (sixtyfourbit) {
+                    if (runningStream64 != null) {
+                        return;
+                    }
+                    runningStream64 = new Start_Iso_StreamActivity.IsochronousStream64(this);
+                    runningStream64.start();
+                } else {
+                    if (runningStream != null) {
+                        return;
+                    }
+                    runningStream = new Start_Iso_StreamActivity.IsochronousStream(this);
+                    runningStream.start();
                 }
-                runningStream = new Start_Iso_StreamActivity.IsochronousStream(this);
-                runningStream.start();
+
             } else {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        displayMessage("Failed to initialize the camera device.");
+                        displayMessage("Failed to start the Camera Stream");
                         //tv = (TextView) findViewById(R.id.textDarstellung);
                         //tv.setText("Failed to initialize the camera device.");
                     }
@@ -904,6 +922,7 @@ public class Start_Iso_StreamActivity extends Activity {
             camDeviceConnection = null;
         }
         runningStream = null;
+        runningStream64 = null;
     }
 
     private void initCamera() throws Exception {
@@ -967,6 +986,7 @@ public class Start_Iso_StreamActivity extends Activity {
         displayMessage("Stopped ");
         log("Stopped");
         runningStream = null;
+        runningStream64 = null;
     }
 
 
@@ -1368,10 +1388,21 @@ public class Start_Iso_StreamActivity extends Activity {
         log("setAltSetting");
         log("usbIso.setInterface(camStreamingInterface.getId(), altSetting);     =    InterfaceID = "  + camStreamingInterface.getId() + "  /  altsetting ="+   altSetting);
         usbIso.setInterface(camStreamingInterface.getId(), altSetting);
-        if (!enabled) {
-            usbIso.flushRequests();
-            if (bulkMode) {
-                // clearHalt(camStreamingEndpoint.getAddress());
+        if (sixtyfourbit) {
+            usbdevice_fs_util.setInterface(camDeviceConnection.getFileDescriptor(), camStreamingInterface.getId(), altSetting);
+            if (!enabled) {
+                //usbIso64.flushRequests();
+                if (bulkMode) {
+                    // clearHalt(camStreamingEndpoint.getAddress());
+                }
+            }
+        } else {
+            usbIso.setInterface(camStreamingInterface.getId(), altSetting);
+            if (!enabled) {
+                usbIso.flushRequests();
+                if (bulkMode) {
+                    // clearHalt(camStreamingEndpoint.getAddress());
+                }
             }
         }
     }
@@ -1626,12 +1657,128 @@ public class Start_Iso_StreamActivity extends Activity {
         }
     }
 
+    class IsochronousStream64 extends Thread {
+
+        Main uvc_camera;
+        Context mContext;
+        Activity activity;
+        StringBuilder stringBuilder;
+
+        public IsochronousStream64(Context mContext) {
+            setPriority(Thread.MAX_PRIORITY);
+            activity = (Activity) mContext;
+        }
+
+        public void run() {
+            try {
+                USBIso usbIso64 = new USBIso(camDeviceConnection.getFileDescriptor(), packetsPerRequest, maxPacketSize, (byte) camStreamingEndpoint.getAddress());
+                usbIso64.preallocateRequests(activeUrbs);
+                ByteArrayOutputStream frameData = new ByteArrayOutputStream(0x20000);
+                int skipFrames = 0;
+                // if (cameraType == CameraType.wellta) {
+                //    skipFrames = 1; }                                // first frame may look intact but it is not always intact
+                boolean frameComplete = false;
+                byte[] data = new byte[maxPacketSize];
+                enableStreaming(true);
+                usbIso64.submitUrbs();
+                while (true) {
+                    if (pauseCamera) {
+                        Thread.sleep(200);
+                    } else {
+                        USBIso.Request req = usbIso64.reapRequest(true);
+                        for (int packetNo = 0; packetNo < req.getNumberOfPackets(); packetNo++) {
+                            int packetStatus = req.getPacketStatus(packetNo);
+                            try {if (packetStatus != 0) {
+                                skipFrames = 1;}
+
+                                //    throw new IOException("Camera read error, packet status=" + packetStatus);
+                            } catch (Exception e){
+                                log("Camera read error, packet status=" + packetStatus);
+                            }
+                            int packetLen = req.getPacketActualLength(packetNo);
+                            if (packetLen == 0) {
+                                continue;
+                            }
+                            if (packetLen > maxPacketSize) {
+                                throw new Exception("packetLen > maxPacketSize");
+                            }
+                            req.getPacketData(packetNo, data, packetLen);
+                            int headerLen = data[0] & 0xff;
+
+                            try { if (headerLen < 2 || headerLen > packetLen) {
+                                skipFrames = 1;
+                            }
+                            } catch (Exception e) {
+                                log("Invalid payload header length.");
+                            }
+                            int headerFlags = data[1] & 0xff;
+                            int dataLen = packetLen - headerLen;
+                            boolean error = (headerFlags & 0x40) != 0;
+                            if (error && skipFrames == 0) {
+                                // throw new IOException("Error flag set in payload header.");
+//                    log("Error flag detected, ignoring frame.");
+                                skipFrames = 1;
+                            }
+                            if (dataLen > 0 && skipFrames == 0) {
+                                frameData.write(data, headerLen, dataLen);
+                            }
+                            if ((headerFlags & 2) != 0) {
+                                if (skipFrames > 0) {
+                                    log("Skipping frame, len= " + frameData.size());
+                                    frameData.reset();
+                                    skipFrames--;
+                                }
+                                else {
+                                    if (stillImageFrame > stillImageFrameBeenden ) {
+                                        try {
+                                            sendStillImageTrigger();
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                        stillImageAufnahme = true;
+                                    }
+
+                                    stillImageFrameBeenden = stillImageFrame;
+                                    frameData.write(data, headerLen, dataLen);
+                                    if (videoformat.equals("mjpeg") ) {
+                                        try {
+                                            processReceivedMJpegVideoFrameKamera(frameData.toByteArray());
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }else if (videoformat.equals("yuv")){
+                                        processReceivedVideoFrameYuv(frameData.toByteArray());
+                                    }
+                                    frameData.reset();
+                                }
+                            }
+                        }
+                        req.initialize();
+                        req.submit();
+                        if (stopKamera == true) {
+                            break;
+                        }
+                    }
+                    if (changeBrightness) changebright();
+                }
+                //enableStreaming(false);
+                //processReceivedMJpegVideoFrame(frameData.toByteArray());
+                //saveReceivedVideoFrame(frameData.toByteArray());
+                log("OK");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+        }
+    }
+
     private void fetchTheValues(){
 
 
         Intent intent=getIntent();
         Bundle bundle=intent.getBundleExtra("bun");
-
+        sixtyfourbit = bundle.getBoolean("sixtyfourbit");
         camStreamingAltSetting=bundle.getInt("camStreamingAltSetting",0);
         videoformat=bundle.getString("videoformat");
         camFormatIndex=bundle.getInt("camFormatIndex",0);

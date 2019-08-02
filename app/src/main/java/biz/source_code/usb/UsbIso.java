@@ -76,8 +76,8 @@ public class UsbIso {
     private static final int USBDEVFS_SETINTERFACE  = (2 << 30) | (usbSetIntSize   << 16) | (0x55 << 8) |  4;
     private static final int USBDEVFS_SUBMITURB     = (2 << 30) | (Urb.urbBaseSize << 16) | (0x55 << 8) | 10;
     private static final int USBDEVFS_DISCARDURB    = (0 << 30) | (0               << 16) | (0x55 << 8) | 11;
-    private static final int USBDEVFS_REAPURB       = (1 << 30) | (Pointer.SIZE    << 16) | (0x55 << 8) | 12;
-    private static final int USBDEVFS_REAPURBNDELAY = (1 << 30) | (Pointer.SIZE    << 16) | (0x55 << 8) | 13;
+    private static final int USBDEVFS_REAPURB       = (1 << 30) | (Native.POINTER_SIZE    << 16) | (0x55 << 8) | 12;
+    private static final int USBDEVFS_REAPURBNDELAY = (1 << 30) | (Native.POINTER_SIZE    << 16) | (0x55 << 8) | 13;
     private static final int USBDEVFS_CLEAR_HALT    = (2 << 30) | (4               << 16) | (0x55 << 8) | 21;
 
 //--- Native data structures ---------------------------------------------------
