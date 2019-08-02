@@ -5,8 +5,6 @@ Still under development....
 Link on Play Store:
 https://play.google.com/store/apps/details?id=humer.uvc_camera&hl=de
 
-For now only 32 bit Devices are supported.
-
 
 
 
