@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import biz.source_code.usb.UsbIso;
 import humer.uvc_camera.UsbIso64.USBIso;
 import humer.uvc_camera.UsbIso64.usbdevice_fs_util;
 
@@ -102,7 +101,6 @@ public class SetUpTheUsbDevice extends Activity {
     public static String deviceName;
 
     // Vales for debuging the camera
-    private boolean sixtyfourbit;
     private boolean bildaufnahme = false;
     private boolean videorecord = false;
     private boolean videorecordApiJellyBean = false;
@@ -141,13 +139,10 @@ public class SetUpTheUsbDevice extends Activity {
     float mBaseRatio;
 
     //  Other Classes as Objects
-    private UsbIso usbIso = null;
     private UVC_Descriptor uvc_descriptor;
     private SaveToFile  stf;
     private volatile IsochronousRead runningTransfer;
-    private volatile IsochronousRead64 runningTransfer64;
     private volatile IsochronousRead1Frame runningTransfer1Frame;
-    private volatile IsochronousRead1Frame64 runningTransfer1Frame64;
 
 
     // Brightness Values
@@ -596,10 +591,6 @@ public class SetUpTheUsbDevice extends Activity {
     }
 
     private void closeCameraDevice() throws IOException {
-        if (usbIso != null) {
-            usbIso.dispose();
-            usbIso = null;
-        }
         if (camDeviceConnection != null) {
             camDeviceConnection.releaseInterface(camControlInterface);
             camDeviceConnection.releaseInterface(camStreamingInterface);
@@ -724,15 +715,6 @@ public class SetUpTheUsbDevice extends Activity {
             builder.setMessage("Do you want to set up from UVC values ?").setPositiveButton("Yes, set up from UVC", dialogClickListener)
                     .setNegativeButton("No", dialogClickListener).show();
         }
-        if (init) {
-            if (!sixtyfourbit) {
-                usbIso = new UsbIso(camDeviceConnection.getFileDescriptor(), packetsPerRequest, maxPacketSize);
-                usbIso.preallocateRequests(activeUrbs);
-            }
-
-        }
-
-
     }
 
     private void initCamera() throws Exception {
@@ -914,25 +896,8 @@ public class SetUpTheUsbDevice extends Activity {
         int altSetting = enabled ? camStreamingAltSetting : 0;
         // For bulk endpoints, altSetting is always 0.
         log("setAltSetting");
-        log("usbIso.setInterface(camStreamingInterface.getId(), altSetting);     =    InterfaceID = "  + camStreamingInterface.getId() + "  /  altsetting ="+   altSetting);
-        if (sixtyfourbit) {
-            usbdevice_fs_util.setInterface(camDeviceConnection.getFileDescriptor(), camStreamingInterface.getId(), altSetting);
-            if (!enabled) {
-                //usbIso64.flushRequests();
-                if (bulkMode) {
-                    // clearHalt(camStreamingEndpoint.getAddress());
-                }
-            }
-        } else {
-            usbIso.setInterface(camStreamingInterface.getId(), altSetting);
-            if (!enabled) {
-                usbIso.flushRequests();
-                if (bulkMode) {
-                    // clearHalt(camStreamingEndpoint.getAddress());
-                }
-            }
-        }
-
+        log("usbIso.setInterface(camDeviceConnection.getFileDescriptor(), altSetting);     =    InterfaceID = "  + camStreamingInterface.getId() + "  /  altsetting ="+   altSetting);
+        usbdevice_fs_util.setInterface(camDeviceConnection.getFileDescriptor(), camStreamingInterface.getId(), altSetting);
     }
 
 // public void clearHalt (int endpointAddr) throws IOException {
@@ -1004,6 +969,8 @@ public class SetUpTheUsbDevice extends Activity {
 
 
 
+
+
     class IsochronousRead extends Thread {
 
         SetUpTheUsbDevice setUpTheUsbDevice;
@@ -1012,177 +979,6 @@ public class SetUpTheUsbDevice extends Activity {
         StringBuilder stringBuilder;
 
         public IsochronousRead(SetUpTheUsbDevice setUpTheUsbDevice, Context mContext) {
-            setPriority(Thread.MAX_PRIORITY);
-            this.setUpTheUsbDevice = setUpTheUsbDevice;
-            this.mContext = mContext;
-            activity = (Activity)mContext;
-        }
-
-        public void run() {
-            try {
-
-                //Thread.sleep(500);
-                //ArrayList<String> logArray = new ArrayList<>(512);
-                int packetCnt = 0;
-                int packet0Cnt = 0;
-                int packet12Cnt = 0;
-                int packetDataCnt = 0;
-                int packetHdr8Ccnt = 0;
-                int packetErrorCnt = 0;
-                int frameCnt = 0;
-                final long time0 = System.currentTimeMillis();
-                int frameLen = 0;
-                int requestCnt = 0;
-                byte[] data = new byte[maxPacketSize];
-                try {
-                    enableStreaming(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                submitActiveUrbs();
-
-                final int time = 5000;
-                int cnt = 0;
-                stringBuilder = new StringBuilder();
-                stringBuilder.append("Controlltransfer:\n");
-                stringBuilder.append(controlltransfer);
-                stringBuilder.append(String.format("\n\nCountedFrames in a Time of %d seconds:\n", (time/1000)));
-
-                Thread th = new Thread(new Runnable() {
-                    private long startTime = System.currentTimeMillis();
-                    public void run() {
-                        while ((time0+time) > System.currentTimeMillis()) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    tv = (TextView) findViewById(R.id.textDarstellung);
-                                    tv.setText(String.format("The camera stream will be read out for %d Seconds\nLasting seconds: ",(time/1000), (time/1000))+((System.currentTimeMillis()-startTime)/1000));
-                                    //displayMessage(String.format("The camera stream will be read out for %d Seconds\nLasting seconds: ",(time/1000), (time/1000))+((System.currentTimeMillis()-startTime)/1000));
-                                }
-                            });
-                            try {
-                                Thread.sleep(1000);
-                            }
-                            catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                });
-                th.start();
-
-                while (System.currentTimeMillis() - time0 < time) {
-                    boolean stopReq = false;
-                    UsbIso.Request req = usbIso.reapRequest(true);
-                    for (int packetNo = 0; packetNo < req.getPacketCount(); packetNo++) {
-                        packetCnt++;
-                        int packetLen = req.getPacketActualLength(packetNo);
-                        if (packetLen == 0) {
-                            packet0Cnt++;
-                        }
-                        if (packetLen == 12) {
-                            packet12Cnt++;
-                        }
-                        if (packetLen == 0) {
-                            continue;
-                        }
-                        StringBuilder logEntry = new StringBuilder(requestCnt + "/" + packetNo + " len=" + packetLen);
-                        int packetStatus = req.getPacketStatus(packetNo);
-                        if (packetStatus != 0) {
-                            System.out.println("Packet status=" + packetStatus);
-                            stopReq = true;
-                            break;
-                        }
-                        if (packetLen > 0) {
-                            if (packetLen > maxPacketSize) {
-                                //throw new Exception("packetLen > maxPacketSize");
-                            }
-                            req.getPacketData(packetNo, data, packetLen);
-                            logEntry.append(" data=" + hexDump(data, Math.min(32, packetLen)));
-                            int headerLen = data[0] & 0xff;
-
-                            try {
-                                if (headerLen < 2 || headerLen > packetLen) {
-                                    //    skipFrames = 1;
-                                }
-                            } catch (Exception e) {
-                                System.out.println("Invalid payload header length.");
-                            }
-                            int headerFlags = data[1] & 0xff;
-                            if (headerFlags == 0x8c) {
-                                packetHdr8Ccnt++;
-                            }
-                            // logEntry.append(" hdrLen=" + headerLen + " hdr[1]=0x" + Integer.toHexString(headerFlags));
-                            int dataLen = packetLen - headerLen;
-                            if (dataLen > 0) {
-                                packetDataCnt++;
-                            }
-                            frameLen += dataLen;
-                            if ((headerFlags & 0x40) != 0) {
-                                logEntry.append(" *** Error ***");
-                                packetErrorCnt++;
-                            }
-                            if ((headerFlags & 2) != 0) {
-                                logEntry.append(" EOF frameLen=" + frameLen);
-                                frameCnt++;
-                                stringBuilder.append(String.format("Frame %d frameLen = %d\n", ++cnt, frameLen));
-                                frameLen = 0;
-                            }
-                        }
-                        //logArray.add(logEntry.toString());
-                    }
-                    if (stopReq) {
-                        break;
-                    }
-                    requestCnt++;
-
-                    req.initialize(camStreamingEndpoint.getAddress());
-                    try {
-                        req.submit();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-
-                }
-
-
-                try {
-                    enableStreaming(false);
-                } catch (Exception e) {
-                    log("Exception during enableStreaming(false): " + e);
-                }
-                log("requests=" + requestCnt + " packetCnt=" + packetCnt + " packetErrorCnt=" + packetErrorCnt + " packet0Cnt=" + packet0Cnt + ", packet12Cnt=" + packet12Cnt + ", packetDataCnt=" + packetDataCnt + " packetHdr8cCnt=" + packetHdr8Ccnt + " frameCnt=" + frameCnt);
-                //for (String s : logArray) {
-                //    log(s);
-                //}
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        tv = (TextView) findViewById(R.id.textDarstellung);
-                        tv.setText(stringBuilder.toString());
-
-                    }
-                });
-                runningTransfer = null;
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
-        }
-
-    }
-
-    class IsochronousRead64 extends Thread {
-
-        SetUpTheUsbDevice setUpTheUsbDevice;
-        Context mContext;
-        Activity activity;
-        StringBuilder stringBuilder;
-
-        public IsochronousRead64(SetUpTheUsbDevice setUpTheUsbDevice, Context mContext) {
             setPriority(Thread.MAX_PRIORITY);
             this.setUpTheUsbDevice = setUpTheUsbDevice;
             this.mContext = mContext;
@@ -1336,7 +1132,7 @@ public class SetUpTheUsbDevice extends Activity {
 
                     }
                 });
-                runningTransfer64 = null;
+                runningTransfer = null;
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -1346,6 +1142,8 @@ public class SetUpTheUsbDevice extends Activity {
         }
 
     }
+
+
 
     class IsochronousRead1Frame extends Thread {
 
@@ -1363,7 +1161,8 @@ public class SetUpTheUsbDevice extends Activity {
 
         public void run() {
             try {
-
+                USBIso usbIso64 = new USBIso(camDeviceConnection.getFileDescriptor(), packetsPerRequest, maxPacketSize, (byte) camStreamingEndpoint.getAddress());
+                usbIso64.preallocateRequests(activeUrbs);
                 //Thread.sleep(500);
                 ArrayList<String> logArray = new ArrayList<>(512);
                 int packetCnt = 0;
@@ -1382,7 +1181,7 @@ public class SetUpTheUsbDevice extends Activity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                submitActiveUrbs();
+                usbIso64.submitUrbs();
 
                 int cnt = 0;
                 stringBuilder = new StringBuilder();
@@ -1390,8 +1189,8 @@ public class SetUpTheUsbDevice extends Activity {
 
                 while (frameCnt < 1) {
                     boolean stopReq = false;
-                    UsbIso.Request req = usbIso.reapRequest(true);
-                    for (int packetNo = 0; packetNo < req.getPacketCount(); packetNo++) {
+                    USBIso.Request req = usbIso64.reapRequest(true);
+                    for (int packetNo = 0; packetNo < req.getNumberOfPackets(); packetNo++) {
                         packetCnt++;
                         int packetLen = req.getPacketActualLength(packetNo);
                         if (packetLen == 0) {
@@ -1454,7 +1253,7 @@ public class SetUpTheUsbDevice extends Activity {
                     }
                     requestCnt++;
 
-                    req.initialize(camStreamingEndpoint.getAddress());
+                    req.initialize();
                     try {
                         req.submit();
                     } catch (IOException e) {
@@ -1502,170 +1301,6 @@ public class SetUpTheUsbDevice extends Activity {
 
     }
 
-    class IsochronousRead1Frame64 extends Thread {
-
-        SetUpTheUsbDevice setUpTheUsbDevice;
-        Context mContext;
-        Activity activity;
-        StringBuilder stringBuilder;
-
-        public IsochronousRead1Frame64(SetUpTheUsbDevice setUpTheUsbDevice, Context mContext) {
-            setPriority(Thread.MAX_PRIORITY);
-            this.setUpTheUsbDevice = setUpTheUsbDevice;
-            this.mContext = mContext;
-            activity = (Activity)mContext;
-        }
-
-        public void run() {
-            try {
-                USBIso usbIso64 = new USBIso(camDeviceConnection.getFileDescriptor(), packetsPerRequest, maxPacketSize, (byte) camStreamingEndpoint.getAddress());
-                usbIso64.preallocateRequests(activeUrbs);
-                //Thread.sleep(500);
-                ArrayList<String> logArray = new ArrayList<>(512);
-                int packetCnt = 0;
-                int packet0Cnt = 0;
-                int packet12Cnt = 0;
-                int packetDataCnt = 0;
-                int packetHdr8Ccnt = 0;
-                int packetErrorCnt = 0;
-                int frameCnt = 0;
-                final long time0 = System.currentTimeMillis();
-                int frameLen = 0;
-                int requestCnt = 0;
-                byte[] data = new byte[maxPacketSize];
-                try {
-                    enableStreaming(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                usbIso64.submitUrbs();
-
-                int cnt = 0;
-                stringBuilder = new StringBuilder();
-                stringBuilder.append("One Frame received:\n\n");
-
-                while (frameCnt < 1) {
-                    boolean stopReq = false;
-                    USBIso.Request req = usbIso64.reapRequest(true);
-                    for (int packetNo = 0; packetNo < req.getNumberOfPackets(); packetNo++) {
-                        packetCnt++;
-                        int packetLen = req.getPacketActualLength(packetNo);
-                        if (packetLen == 0) {
-                            packet0Cnt++;
-                        }
-                        if (packetLen == 12) {
-                            packet12Cnt++;
-                        }
-                        if (packetLen == 0) {
-                            continue;
-                        }
-                        StringBuilder logEntry = new StringBuilder(requestCnt + "/" + packetNo + " len=" + packetLen);
-                        int packetStatus = req.getPacketStatus(packetNo);
-                        if (packetStatus != 0) {
-                            System.out.println("Packet status=" + packetStatus);
-                            stopReq = true;
-                            break;
-                        }
-                        if (packetLen > 0) {
-                            if (packetLen > maxPacketSize) {
-                                //throw new Exception("packetLen > maxPacketSize");
-                            }
-                            req.getPacketData(packetNo, data, packetLen);
-                            logEntry.append("bytes // data = " + hexDump(data, Math.min(32, packetLen)));
-                            int headerLen = data[0] & 0xff;
-
-                            try {
-                                if (headerLen < 2 || headerLen > packetLen) {
-                                    //    skipFrames = 1;
-                                }
-                            } catch (Exception e) {
-                                System.out.println("Invalid payload header length.");
-                            }
-                            int headerFlags = data[1] & 0xff;
-                            if (headerFlags == 0x8c) {
-                                packetHdr8Ccnt++;
-                            }
-                            // logEntry.append(" hdrLen=" + headerLen + " hdr[1]=0x" + Integer.toHexString(headerFlags));
-                            int dataLen = packetLen - headerLen;
-                            if (dataLen > 0) {
-                                packetDataCnt++;
-                            }
-                            frameLen += dataLen;
-                            if ((headerFlags & 0x40) != 0) {
-                                logEntry.append(" *** Error ***");
-                                packetErrorCnt++;
-                            }
-                            if ((headerFlags & 2) != 0) {
-                                logEntry.append(" EOF frameLen=" + frameLen);
-                                frameCnt++;
-                                stringBuilder.append("  -  " + frameLen + "  bytes  - \n\n");
-                                stringBuilder.append(String.format("The first Frame is %d byte long\n", frameLen));
-                                break;
-                            }
-                        }
-                        logArray.add(logEntry.toString());
-                    }
-                    if (frameCnt > 0) {
-                        break;
-                    }
-                    requestCnt++;
-
-                    req.initialize();
-                    try {
-                        req.submit();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-
-                }
-
-
-                try {
-                    enableStreaming(false);
-                } catch (Exception e) {
-                    log("Exception during enableStreaming(false): " + e);
-                }
-                log("requests=" + requestCnt + " packetCnt=" + packetCnt + " packetErrorCnt=" + packetErrorCnt + " packet0Cnt=" + packet0Cnt + ", packet12Cnt=" + packet12Cnt + ", packetDataCnt=" + packetDataCnt + " packetHdr8cCnt=" + packetHdr8Ccnt + " frameCnt=" + frameCnt);
-                stringBuilder.append("\n\nrequests= " + requestCnt +  "  ( one Request has a max. size of: "+ packetsPerRequest + " x " + maxPacketSize+ " bytes )" + "\npacketCnt= " + packetCnt + " (number of packets from this frame)" + "\npacketErrorCnt= " + packetErrorCnt + " (This packets are Error packets)" +  "\npacket0Cnt= " + packet0Cnt + " (Packets with a size of 0 bytes)" + "\npacket12Cnt= " + packet12Cnt+ " (Packets with a size of 12 bytes)" + "\npacketDataCnt= " + packetDataCnt + " (This packets contain valid data)" + "\npacketHdr8cCnt= " + packetHdr8Ccnt + "\nframeCnt= " + frameCnt + " (The number of the counted frames)" + "\n\n");
-
-
-                stringBuilder.append("Explaination: The first number is the Requestnumber and the second number is the data packet from this request.\nThe comes the data length of this packet with: 'len='" +
-                        "\nThe 'data= ' shows the first 20 Hex values wich were stored in this packet\n(There are more values stored in this packet, but not displayed, ...)");
-                stringBuilder.append("Here is the structure of the Frame:\n\n");
-
-
-                for (String s : logArray) {
-                    stringBuilder.append("\n\n");
-                    stringBuilder.append(s);
-                }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        tv = (TextView) findViewById(R.id.textDarstellung);
-                        tv.setText(stringBuilder.toString() );
-
-                    }
-                });
-                runningTransfer1Frame64 = null;
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
-        }
-
-    }
-
-    private void submitActiveUrbs() throws IOException {
-        for (int i = 0; i < activeUrbs; i++) {
-            UsbIso.Request req = usbIso.getRequest();
-            req.initialize(camStreamingEndpoint.getAddress());
-            req.submit();
-        }
-    }
-
 
     private void isoRead() {
 
@@ -1697,19 +1332,13 @@ public class SetUpTheUsbDevice extends Activity {
             e.printStackTrace();
         }
         if (camIsOpen) {
-            if (sixtyfourbit) {
-                if (runningTransfer64 != null) {
-                    return;
-                }
-                runningTransfer64 = new IsochronousRead64(this, this);
-                runningTransfer64.start();
-            } else {
-                if (runningTransfer != null) {
-                    return;
-                }
-                runningTransfer = new IsochronousRead(this, this);
-                runningTransfer.start();
+
+            if (runningTransfer != null) {
+                return;
             }
+            runningTransfer = new IsochronousRead(this, this);
+            runningTransfer.start();
+
 
         } else {
             runOnUiThread(new Runnable() {
@@ -1753,19 +1382,13 @@ public class SetUpTheUsbDevice extends Activity {
             e.printStackTrace();
         }
         if (camIsOpen) {
-            if (sixtyfourbit) {
-                if (runningTransfer1Frame64 != null) {
-                    return;
-                }
-                runningTransfer1Frame64 = new IsochronousRead1Frame64(this, this);
-                runningTransfer1Frame64.start();
-            } else {
-                if (runningTransfer1Frame != null) {
-                    return;
-                }
-                runningTransfer1Frame = new IsochronousRead1Frame(this, this);
-                runningTransfer1Frame.start();
+
+            if (runningTransfer1Frame != null) {
+                return;
             }
+            runningTransfer1Frame = new IsochronousRead1Frame(this, this);
+            runningTransfer1Frame.start();
+
 
         } else {
             runOnUiThread(new Runnable() {
@@ -1961,7 +1584,6 @@ public class SetUpTheUsbDevice extends Activity {
         Intent intent=getIntent();
         Bundle bundle=intent.getBundleExtra("bun");
         if (bundle.getBoolean("edit") == true) {
-            sixtyfourbit = bundle.getBoolean("sixtyfourbit");
             camStreamingAltSetting=bundle.getInt("camStreamingAltSetting",0);
             videoformat=bundle.getString("videoformat");
             camFormatIndex=bundle.getInt("camFormatIndex",0);

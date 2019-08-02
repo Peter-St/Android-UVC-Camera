@@ -61,8 +61,6 @@ public class Main extends Activity {
     int mBaseDist;
     float mBaseRatio;
 
-    private boolean sixtyfourbit;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -171,21 +169,10 @@ public class Main extends Activity {
         if (showStoragePermissionRead() && showStoragePermissionWrite()) {
 
 
-            String bits;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                bits = TextUtils.join(", ", Build.SUPPORTED_ABIS).contains("64") ? "64-Bit" : "32-Bit";
-                sixtyfourbit = TextUtils.join(", ", Build.SUPPORTED_ABIS).contains("64");
-            } else {
-                bits = "32-Bit";
-                sixtyfourbit = false;
-            }
-            log("bits = " + bits);
-            log("sixtyfourbit = " + sixtyfourbit);
 
 
             Intent intent = new Intent(this, SetUpTheUsbDevice.class);
             Bundle bundle=new Bundle();
-            bundle.putBoolean("sixtyfourbit", sixtyfourbit);
             bundle.putBoolean("edit", true);
             bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
             bundle.putString("videoformat",videoformat);
@@ -230,11 +217,9 @@ public class Main extends Activity {
                         tv.setText("Values for the camera not correctly setted !!\nPlease set up the values for the Camera first.\nTo Set Up the Values press the Settings Button and click on 'Set up with Uvc Values' or 'Edit / Save / Restor' and 'Edit Save'");  }
                 });
             } else {
-
                 // TODO Auto-generated method stub
                 Intent intent = new Intent(getApplicationContext(), Start_Iso_StreamActivity.class);
                 Bundle bundle=new Bundle();
-                bundle.putBoolean("sixtyfourbit", sixtyfourbit);
                 bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
                 bundle.putString("videoformat",videoformat);
                 bundle.putInt("camFormatIndex",camFormatIndex);
