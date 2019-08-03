@@ -52,6 +52,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import com.sample.timelapse.MJPEGGenerator ;
+
 import humer.uvc_camera.UsbIso64.USBIso;
 import humer.uvc_camera.UsbIso64.usbdevice_fs_util;
 
@@ -266,6 +267,11 @@ public class Start_Iso_StreamActivity extends Activity {
                         date = new Date() ;
                         dateFormat = new SimpleDateFormat("dd.MM.yyyy_HH..mm..ss") ;
                         String sdPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Video/";
+                        File path = new File(sdPath);
+                        if (!path.exists()) {
+                            path.mkdirs();
+                        }
+
                         bitmapToVideoEncoder.startEncoding(imageWidth, imageHeight, new File(sdPath + "output-" + lastVideo +"-" + dateFormat.format(date) + ".mp4"));
 
                     } else {
@@ -925,7 +931,7 @@ public class Start_Iso_StreamActivity extends Activity {
 
         bildaufnahme = true;
         displayMessage("Image saved");
-        log("Saving the Image ...");
+        //log("Saving the Image ...");
 
     }
 
@@ -1004,9 +1010,10 @@ public class Start_Iso_StreamActivity extends Activity {
             file = new File(rootPath);
             if (!file.exists()) {
                 file.mkdirs();
-                String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getPath() ;
-                writeBytesToFile(fileName, jpegFrameData);
             }
+            String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getPath() ;
+            writeBytesToFile(fileName, jpegFrameData);
+            log ("file saved");
 
         }
 

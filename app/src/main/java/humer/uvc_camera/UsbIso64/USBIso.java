@@ -1,3 +1,6 @@
+// Changed by Peter Stoiber, Austria, on 3.8.2019
+// https://github.com/Peter-St/
+//
 // Copyright 2015 Christian d'Heureuse, Inventec Informatik AG, Zurich, Switzerland
 // www.source-code.biz, www.inventec.ch/chdh
 //
@@ -10,13 +13,15 @@
 // This module is provided "as is", without warranties of any kind.
 //
 // Home page: http://www.source-code.biz/snippets/java/UsbIso
+//
+// "For both users' and authors' sake, the GPL requires that modified versions be marked as changed, so that their problems will not be attributed erroneously to authors of previous versions."
+
 
 package humer.uvc_camera.UsbIso64;
 
 import com.sun.jna.LastErrorException;
 import com.sun.jna.Memory;
 import com.sun.jna.ptr.PointerByReference;
-import humer.uvc_camera.UsbIso64.USBIso.Request;
 import static humer.uvc_camera.UsbIso64.usbdevice_fs.USBDEVFS_DISCARDURB;
 import static humer.uvc_camera.UsbIso64.usbdevice_fs.USBDEVFS_REAPURB;
 import static humer.uvc_camera.UsbIso64.usbdevice_fs.USBDEVFS_REAPURBNDELAY;
