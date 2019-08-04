@@ -1,6 +1,9 @@
 // Changed by Peter Stoiber, Austria, on 3.8.2019
 // https://github.com/Peter-St/
+// Added Support for 64 bit devices.
 //
+//
+// Original Version from:
 // Copyright 2015 Christian d'Heureuse, Inventec Informatik AG, Zurich, Switzerland
 // www.source-code.biz, www.inventec.ch/chdh
 //
@@ -14,8 +17,6 @@
 //
 // Home page: http://www.source-code.biz/snippets/java/UsbIso
 //
-// "For both users' and authors' sake, the GPL requires that modified versions be marked as changed, so that their problems will not be attributed erroneously to authors of previous versions."
-
 
 package humer.uvc_camera.UsbIso64;
 
