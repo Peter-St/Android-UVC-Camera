@@ -19,12 +19,13 @@ The program uses the usb device driver to perform an isochronous transfer with y
 
 
 Explaination:
-- When the automatic search succeeds, you first set up the MAXIMAL PACKET SIZE. If your device is a mediathek device, you may have to lower the value for the max packet size.
-- The Value PACKETS PER REQUEST defines the Number of the Packets sended to the device: One packet has a size of 3000 bytes and you use 16 packets at one time for sending. Here you define the amount of Bytes which were sent.
-- Next thing are the USB REQUEST BLOCKS (activeUrb): These are in relation to the max packet size. You have to find here the right values for your device and control the output on the screen under the menupoint "Isoread".
+- When the automatic search succeeds, you first set up the MAXIMAL PACKET SIZE. If your device is a mediathek device, you may have to lower the value for the max packet size. Here your camera device supports normaly 4 to 10 different values.
+- The Value PACKETS PER REQUEST defines the Number of the Packets sending to the camera device. It also defines the amount of bytes from one Urb (UsbRequestBlock). The minimal size is one packet and you can raise it up to maybe 64.
+- Next value to set is the USB REQUEST BLOCKS (activeUrb) (Urb):  One Urb has a size of "MaxPacketsize x PacketsPerRequest". One Urb is the lowest value and you can raise it up to maybe 64. You have to find here the right values for your device and control the output on the screen under the menupoint "Isoread". The Urbs defines the amount of bytes which are currently available at your camera device. 
 - Some typically values for Qualcom Devices are: 8 for the activeUrbs and 16 Packets per Request....
+- Each camera and Phone needs different values and can proceed to find the right values for your devices.
 
-
+Isoread:
 The first thing of the method Isoread is a Controltransfer to the camera device:
 
 - If the controlltransfer is successful, than you are ready to go.
@@ -35,11 +36,11 @@ The first thing of the method Isoread is a Controltransfer to the camera device:
 
 - To know how big be a Frame should be, you can look at the output of the controll transfer of the camera in the log: maxVideoFrameSize, This value is returned from the camera and should be the valid frame size (The value is calculated by Imagewidth x Imagehight x 2).
 
-The IsochronousRead1 class shows you how the frames are structered by the camera. Different camerasetting == Different Frame structers. Try it out with different setting and look at the output. The eof hint shows the framesize in the log. For valid camera settings the size should be the same as maxFrameSize value of the controlltransfer.
+The ReadOneFrame method shows you how the frames are structered by the camera. Different camerasetting == Different Frame structers. Try it out with different setting and look at the output. The eof hint shows the framesize in the log. For valid camera settings the size should be the same as maxFrameSize value of the controlltransfer.
 
 
-Output method Isoread: (Controltransfer)
-Thirst the program will send a controlltransfer to your camera device. The output of it looks as following:
+Output from the controltransfer method:
+Thirst the program will send a controlltransfer to your camera device. The output maybe looks as following:
 Initial streaming parms: hint=0x0 format=1 frame=1 frameInterval=2000000 keyFrameRate=0 pFrameRate=0 compQuality=0 compWindowSize=0 delay=0 maxVideoFrameSize=0 maxPayloadTransferSize=0
 Probed streaming parms: hint=0x0 format=1 frame=1 frameInterval=2000000 keyFrameRate=0 pFrameRate=0 compQuality=0 compWindowSize=0 delay=0 maxVideoFrameSize=614400 maxPayloadTransferSize=3000
 Final streaming parms: hint=0x0 format=1 frame=1 frameInterval=2000000 keyFrameRate=0 pFrameRate=0 compQuality=0 compWindowSize=0 delay=0 maxVideoFrameSize=614400 maxPayloadTransferSize=3000
@@ -52,3 +53,5 @@ And in the third line are the new saved and final values from the usb camera.
 Outpuf from the first Method: isoRead:
 
 EOF frameLen=10436. --> For Example here a frame ends with a length of 10436 wich is not 614400 as we expected from the controltransfer, so you may have to change some values of you program to get a valid frame size.
+
+Good Luck and fun during testing!
