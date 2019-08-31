@@ -14,6 +14,7 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
@@ -21,6 +22,7 @@ import android.view.ContextThemeWrapper;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -526,48 +528,93 @@ public class SetUpTheUsbDevice extends Activity {
 
     private void listDevice(UsbDevice usbDevice) {
         int a = 0;
-        convertedMaxPacketSize = new int [(usbDevice.getInterfaceCount()-2)];
-        log ("usbDevice.getInterfaceCount()-2 = " + (usbDevice.getInterfaceCount()-2) );
-        log("Interface count: " + usbDevice.getInterfaceCount());
-        int interfaces = usbDevice.getInterfaceCount();
-        ArrayList<String> logArray = new ArrayList<String>(512);
-        stringBuilder = new StringBuilder();
-        for (int i = 0; i < interfaces; i++) {
-            UsbInterface usbInterface = usbDevice.getInterface(i);
-            log("[ - Interface: " + usbInterface.getId()  + " class=" + usbInterface.getInterfaceClass() + " subclass=" + usbInterface.getInterfaceSubclass() );
-            // UsbInterface.getAlternateSetting() has been added in Android 5.
-            int endpoints = usbInterface.getEndpointCount();
-            StringBuilder logEntry = new StringBuilder("[ InterfaceID " + usbInterface.getId() + " / Interfaceclass = " + usbInterface.getInterfaceClass() + " / InterfaceSubclass = " + usbInterface.getInterfaceSubclass());
-            stringBuilder.append(logEntry.toString());
-            stringBuilder.append("\n");
-            //logArray.add(logEntry.toString());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (usbDevice.getConfigurationCount()>1) {
+                AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
+                builderSingle.setIcon(R.drawable.ic_menu_camera);
+                builderSingle.setTitle("Your camera has more than one configurations:");
+                //builderSingle.setMessage("Select the maximal size of the Packets, which where sent to the camera device!! Important for Mediathek Devices !!");
 
-            for (int j = 0; j < endpoints; j++) {
-                UsbEndpoint usbEndpoint = usbInterface.getEndpoint(j);
-                log("- Endpoint: addr=" + String.format("0x%02x ", usbEndpoint.getAddress()).toString() + " maxPacketSize=" + returnConvertedValue(usbEndpoint.getMaxPacketSize()) + " type=" + usbEndpoint.getType() + " ]");
+                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_singlechoice);
+                for (int i = 0; i<usbDevice.getConfigurationCount(); i++){
+                    arrayAdapter.add(Integer.toString(i));
+                }
+                builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
 
-                StringBuilder logEntry2 = new StringBuilder("/ addr " + String.format("0x%02x ", usbEndpoint.getAddress()).toString() + " maxPacketSize=" + returnConvertedValue(usbEndpoint.getMaxPacketSize()) + " ]");
-                stringBuilder.append(logEntry2.toString());
+                builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String input = arrayAdapter.getItem(which);
+                        int configurations = Integer.parseInt(input.toString());
+                        System.out.println("usbDevice.getConfigurationCount() = " + usbDevice.getConfigurationCount());
+                        System.out.println("configurations = " + configurations);
+                        //camDeviceConnection.setConfiguration(usbDevice.getConfiguration(configurations));
+                    }
+                });
+                builderSingle.show();
+
+            } else log("1 Configuration found");
+        }
+        if (usbDevice.getInterfaceCount()<=2) {
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    //setContentView(R.layout.layout_main);
+                    tv = (TextView) findViewById(R.id.textDarstellung);
+                    tv.setSingleLine(false);
+                    tv.setText("There is something wrong with your camera\n\nThere have not been detected enought interfaces from your usb device\n\n" + usbDevice.getInterfaceCount() + " - Interfaces have been found, but there should be at least more than 2");
+                    tv.bringToFront();
+                }
+            });
+            return;
+        }
+        else {
+            convertedMaxPacketSize = new int [(usbDevice.getInterfaceCount()-2)];
+            log("Interface count: " + usbDevice.getInterfaceCount());
+            int interfaces = usbDevice.getInterfaceCount();
+            ArrayList<String> logArray = new ArrayList<String>(512);
+            stringBuilder = new StringBuilder();
+            for (int i = 0; i < interfaces; i++) {
+                UsbInterface usbInterface = usbDevice.getInterface(i);
+                log("[ - Interface: " + usbInterface.getId()  + " class=" + usbInterface.getInterfaceClass() + " subclass=" + usbInterface.getInterfaceSubclass() );
+                // UsbInterface.getAlternateSetting() has been added in Android 5.
+                int endpoints = usbInterface.getEndpointCount();
+                StringBuilder logEntry = new StringBuilder("[ InterfaceID " + usbInterface.getId() + " / Interfaceclass = " + usbInterface.getInterfaceClass() + " / InterfaceSubclass = " + usbInterface.getInterfaceSubclass());
+                stringBuilder.append(logEntry.toString());
                 stringBuilder.append("\n");
-                if (usbInterface.getId() == 1) {
-                    convertedMaxPacketSize[a] = returnConvertedValue(usbEndpoint.getMaxPacketSize());
-                    a++;
+                //logArray.add(logEntry.toString());
+
+                for (int j = 0; j < endpoints; j++) {
+                    UsbEndpoint usbEndpoint = usbInterface.getEndpoint(j);
+                    log("- Endpoint: addr=" + String.format("0x%02x ", usbEndpoint.getAddress()).toString() + " maxPacketSize=" + returnConvertedValue(usbEndpoint.getMaxPacketSize()) + " type=" + usbEndpoint.getType() + " ]");
+
+                    StringBuilder logEntry2 = new StringBuilder("/ addr " + String.format("0x%02x ", usbEndpoint.getAddress()).toString() + " maxPacketSize=" + returnConvertedValue(usbEndpoint.getMaxPacketSize()) + " ]");
+                    stringBuilder.append(logEntry2.toString());
+                    stringBuilder.append("\n");
+                    if (usbInterface.getId() == 1) {
+                        convertedMaxPacketSize[a] = returnConvertedValue(usbEndpoint.getMaxPacketSize());
+                        a++;
+                    }
                 }
             }
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    //setContentView(R.layout.layout_main);
+                    tv = (TextView) findViewById(R.id.textDarstellung);
+                    tv.setSingleLine(false);
+                    tv.setText(stringBuilder.toString());
+                    tv.bringToFront();
+                }
+            });
         }
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                //setContentView(R.layout.layout_main);
-                tv = (TextView) findViewById(R.id.textDarstellung);
-                tv.setSingleLine(false);
-                tv.setText(stringBuilder.toString());
-                tv.bringToFront();
-            }
-        });
-
-
     }
 
     private int returnConvertedValue(int wSize){

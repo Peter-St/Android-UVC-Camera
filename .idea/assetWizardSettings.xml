@@ -23,7 +23,8 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="scalingPercent" value="51" />
+                                                <entry key="scalingPercent" value="201" />
+                                                <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -34,7 +35,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="scalingPercent" value="49" />
+                                                <entry key="scalingPercent" value="47" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -45,10 +46,8 @@
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundColor" value="ffffff" />
-                                      <entry key="backgroundImage" value="$PROJECT_DIR$/app/src/main/res/drawable/ic_heart.png" />
+                                      <entry key="backgroundImage" value="$PROJECT_DIR$/../../../Dokumente/Image_icon_1024 x 1024_background.png" />
                                       <entry key="foregroundImage" value="$PROJECT_DIR$/../../../Dokumente/Image_icon_1024 x 1024.png" />
-                                      <entry key="legacyIconShape" value="NONE" />
-                                      <entry key="webIconShape" value="NONE" />
                                     </map>
                                   </option>
                                 </PersistentState>

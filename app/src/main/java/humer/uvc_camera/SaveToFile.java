@@ -414,6 +414,11 @@ public class SaveToFile  {
                             }
                         }
                         else if (isInteger(name) == true) {
+                            if (Integer.parseInt(name) > paths.size()) {
+                                alertView("Number too high", "Your input number was higher than the number of files which were existing in the save path folder!\n\nIf you input a number, than an existing file will be choosen!\n\n Solutions:\n\nLower the number to fit a file,\nor type in a word,\nor leave the field blanc.");
+                                //displayMessage("Number too high!\n\nIf you input a number, than an existing file will be choosen!\n\nYour input number was higher than the number of file wich exists");
+                                return;
+                            }
                             switch(option) {
                                 case savetofile:
                                     fileName = paths.get((Integer.parseInt(name) - 1));
@@ -956,6 +961,21 @@ public class SaveToFile  {
         int dx = (int) (event.getX(0) - event.getX(1));
         int dy = (int) (event.getY(0) - event.getY(1));
         return (int) (Math.sqrt(dx * dx + dy * dy));
+    }
+
+    private void alertView(String title, String message) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
+        dialog.setTitle( title )
+                .setIcon(R.drawable.ic_menu_camera)
+                .setMessage(message)
+//     .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//      public void onClick(DialogInterface dialoginterface, int i) {
+//          dialoginterface.cancel();
+//          }})
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialoginterface, int i) {
+                    }
+                }).show();
     }
 
 
