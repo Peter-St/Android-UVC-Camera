@@ -18,7 +18,6 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0"
-
         />
 
     <Button
@@ -31,11 +30,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0"
-
         />
-
-
-
 
     <Button
         android:id="@+id/findTheCamera"
@@ -51,8 +46,6 @@
         app:layout_constraintRight_toRightOf="@id/guideline"
         />
 
-
-
     <Button
         android:id="@+id/listTheCamera"
         android:layout_width="wrap_content"
@@ -67,7 +60,6 @@
         app:layout_constraintBottom_toBottomOf="@id/guidelinehor1"
         app:layout_constraintLeft_toLeftOf="@id/guideline2"
         app:layout_constraintRight_toRightOf="@id/guideline2"
-
         />
 
     <Button
@@ -82,7 +74,6 @@
         app:layout_constraintBottom_toBottomOf="@id/guidelinehor2"
         app:layout_constraintLeft_toLeftOf="@id/guideline"
         app:layout_constraintRight_toRightOf="@id/guideline"
-
         />
 
     <Button
@@ -97,14 +88,7 @@
         app:layout_constraintBottom_toBottomOf="@id/guidelinehor2"
         app:layout_constraintLeft_toLeftOf="@id/guideline2"
         app:layout_constraintRight_toRightOf="@id/guideline2"
-
         />
-
-
-
-
-
-
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline"
@@ -156,7 +140,6 @@
         android:weightSum="10">
 
         <LinearLayout
-
             android:id="@+id/show_contact_bottomArea"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -165,7 +148,6 @@
             android:layout_alignParentStart="true"
             android:layout_weight="4.5"
             android:orientation="vertical">
-
         </LinearLayout>
 
         <LinearLayout
@@ -179,37 +161,35 @@
             android:layout_weight="5.5"
             android:orientation="vertical">
 
-
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@id/guidelinehor3"
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="2dp"
-
                 android:gravity="center"
-
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="@id/guidelinehor3">
 
-                <TextView
-                    android:id="@+id/textDarstellung"
+                <com.shopgun.android.zoomlayout.ZoomLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/zoomLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="fill_vertical"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="3dp"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:id="@+id/textDarstellung"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="fill_vertical"
+                        android:layout_marginLeft="3dp"
+                        android:layout_marginRight="3dp"
+                        android:layout_marginBottom="3dp"
+                        />
+                </com.shopgun.android.zoomlayout.ZoomLayout>
 
-                    />
             </ScrollView>
 
         </LinearLayout>
 
-
-
-
     </LinearLayout>
-
 
 </android.support.constraint.ConstraintLayout>

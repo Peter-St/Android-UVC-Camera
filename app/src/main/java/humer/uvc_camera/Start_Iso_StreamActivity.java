@@ -65,7 +65,7 @@ public class Start_Iso_StreamActivity extends Activity {
     protected Button settingsButton;
     protected Button menu;
     protected Button stopStreamButton;
-    protected ImageButton iB;
+    protected ImageButton photoButton;
 
     // USB codes:
 // Request types (bmRequestType):
@@ -224,27 +224,30 @@ public class Start_Iso_StreamActivity extends Activity {
                 showMenu(view);
             }
         });
-        iB = (ImageButton) findViewById(R.id.Bildaufnahme);
+        photoButton = (ImageButton) findViewById(R.id.Bildaufnahme);
+
         final MediaPlayer mp2 = MediaPlayer.create(Start_Iso_StreamActivity.this, R.raw.sound2);
         final MediaPlayer mp1 = MediaPlayer.create(Start_Iso_StreamActivity.this, R.raw.sound1);
-        iB.setOnLongClickListener(new View.OnLongClickListener() {
+        photoButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                    mp2.start();
-                    hoheAuflösung();
-                    return true;
-                }
-            });
-
-        iB.setOnClickListener(new View.OnClickListener() {
-            @Override
-                public void onClick(View view) {
-                    mp1.start();
-                    BildaufnahmeButtonClickEvent();
-                }
+                mp2.start();
+                hoheAuflösung();
+                return true;
+            }
         });
-        iB.setEnabled(false);
-        iB.setAlpha(20); // 95% transparent
+
+        photoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mp1.start();
+                BildaufnahmeButtonClickEvent();
+            }
+        });
+        photoButton.setEnabled(false);
+        photoButton.setBackgroundResource(R.drawable.photo_clear);
+
+
         stopStreamButton = (Button) findViewById(R.id.stopKameraknopf);
         stopStreamButton.getBackground().setAlpha(20);  // 95% transparent
         stopStreamButton.setEnabled(false);
@@ -581,71 +584,6 @@ public class Start_Iso_StreamActivity extends Activity {
     }
 
 
-    public void changePackets(MenuItem item) {
-        stopKamera = true;
-        runningStream = null;
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(String.format("PacketsPerRequest = %d (Select the number of Packets in each Request Block.", packetsPerRequest));
-
-// Set up the input
-        final EditText input = new EditText(this);
-// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-        input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
-        builder.setView(input);
-
-// Set up the buttons
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (input.getText().toString().isEmpty() == false)  packetsPerRequest = Integer.parseInt(input.getText().toString());
-
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.show();
-    }
-
-    public void changeUrbs(MenuItem item) {
-        stopKamera = true;
-        runningStream = null;
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(String.format("activeURBs = %d (Select the number of Requests running in paralell order.", activeUrbs));
-
-// Set up the input
-        final EditText input = new EditText(this);
-// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-        input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
-        builder.setView(input);
-
-// Set up the buttons
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (input.getText().toString().isEmpty() == false)  activeUrbs = Integer.parseInt(input.getText().toString());
-
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.show();
-
-
-
-    }
-
-
-
     public void beenden() {
         if (camIsOpen) {
             try {
@@ -681,8 +619,8 @@ public class Start_Iso_StreamActivity extends Activity {
             stopStreamButton.getBackground().setAlpha(180);  // 25% transparent
             startStream.getBackground().setAlpha(20);  // 95% transparent
             ((Button) findViewById(R.id.stopKameraknopf)).setEnabled(true);
-            iB.setEnabled(true);
-            iB.setAlpha(200);
+            photoButton.setEnabled(true);
+            photoButton.setBackgroundResource(R.drawable.bg_button_bildaufnahme);
 
             videoButton.setEnabled(true);
             videoButton.setAlpha(1); // 100% transparent
@@ -944,20 +882,26 @@ public class Start_Iso_StreamActivity extends Activity {
 
     public void stopTheCameraStreamClickEvent(View view) {
         startStream.getBackground().setAlpha(180);  // 25% transparent
+        startStream.setEnabled(true);
+
         stopStreamButton.getBackground().setAlpha(20);  // 100% transparent
         ((Button)findViewById(R.id.stopKameraknopf)).setEnabled(false);
-        iB.setEnabled(false);
-        iB.setAlpha(20);
+        photoButton.setEnabled(false);
+        photoButton.setBackgroundResource(R.drawable.photo_clear);
         videoButton.setEnabled(false);
         videoButton.setAlpha(0); // 100% transparent
 
-
-
-        ((Button)findViewById(R.id.startStream)).setEnabled(true);
-        startStream.setEnabled(true);
-
+        //((Button)findViewById(R.id.startStream)).setEnabled(true);
 
         stopKamera = true;
+
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
         try {
             enableStreaming(false);
         } catch (Exception e) {

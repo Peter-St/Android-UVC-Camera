@@ -173,16 +173,25 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="@id/guidelinehor3">
 
-                <TextView
-                    android:id="@+id/textDarstellung"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="fill_vertical"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="3dp"
 
-                    />
+
+                <com.shopgun.android.zoomlayout.ZoomLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/zoomLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/textDarstellung"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="fill_vertical"
+                        android:layout_marginLeft="3dp"
+                        android:layout_marginRight="3dp"
+                        android:layout_marginBottom="3dp"
+                        />
+                </com.shopgun.android.zoomlayout.ZoomLayout>
+
+
             </ScrollView>
 
         </LinearLayout>

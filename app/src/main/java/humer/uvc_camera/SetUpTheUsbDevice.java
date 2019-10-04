@@ -17,10 +17,10 @@ import android.hardware.usb.UsbManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
+
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -243,27 +243,6 @@ public class SetUpTheUsbDevice extends Activity {
                 "You alse can run this program with all kinds of UVC Cameras\n" +
                 "If a camera doesn't work, you can contact the developer of this program for solutions.");
 
-        tv.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                if (event.getPointerCount() == 2) {
-                    int action = event.getAction();
-                    int pureaction = action & MotionEvent.ACTION_MASK;
-                    if (pureaction == MotionEvent.ACTION_POINTER_DOWN) {
-                        mBaseDist = getDistance(event);
-                        mBaseRatio = mRatio;
-                    } else {
-                        float delta = (getDistance(event) - mBaseDist) / STEP;
-                        float multi = (float) Math.pow(2, delta);
-                        mRatio = Math.min(1024.0f, Math.max(0.1f, mBaseRatio * multi));
-                        tv.setTextSize(mRatio + 13);
-                    }
-                }
-                return true;
-            }
-
-
-        });
         mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
         IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
         registerReceiver(mUsbReceiver, filter);
@@ -668,7 +647,6 @@ public class SetUpTheUsbDevice extends Activity {
 
             log("Camera opened sucessfully");
         }
-
     }
 
     private boolean compareStreamingParmsValues() {
@@ -747,8 +725,6 @@ public class SetUpTheUsbDevice extends Activity {
                                 if (convertedMaxPacketSize == null) listDevice(camDevice);
                                 stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize);
                             }
-
-
                             //Yes button clicked
                             break;
 
@@ -780,11 +756,6 @@ public class SetUpTheUsbDevice extends Activity {
         }   // ignore error, some cameras do not support the request
 
         initStreamingParms();
-        //if (cameraType == CameraType.arkmicro) {
-        //    initStillImageParms(); }
-        //if (cameraType == CameraType.microdia) {
-        //    initStillImageParms(); }
-        //...
     }
 
     private void initStreamingParms() throws Exception {
@@ -870,9 +841,6 @@ public class SetUpTheUsbDevice extends Activity {
         parms[0] = (byte) camFormatIndex;
         parms[1] = (byte) camFrameIndex;
         parms[2] = 1;
-//   len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, SET_CUR, VS_STILL_PROBE_CONTROL << 8, camStreamingInterface.getId(), parms, parms.length, timeout);
-//   if (len != parms.length) {
-//      throw new Exception("Camera initialization failed. Still image parms probe set failed. len=" + len); }
         len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, VS_STILL_PROBE_CONTROL << 8, camStreamingInterface.getId(), parms, parms.length, timeout);
         if (len != parms.length) {
             throw new Exception("Camera initialization failed. Still image parms probe get failed.");
@@ -882,10 +850,7 @@ public class SetUpTheUsbDevice extends Activity {
         if (len != parms.length) {
             throw new Exception("Camera initialization failed. Still image parms commit set failed.");
         }
-//   len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, GET_CUR, VS_STILL_COMMIT_CONTROL << 8, camStreamingInterface.getId(), parms, parms.length, timeout);
-//   if (len != parms.length) {
-//      throw new Exception("Camera initialization failed. Still image parms commit get failed. len=" + len); }
-//   log("Final still image parms: " + dumpStillImageParms(parms)); }
+
     }
 
     private String dumpStillImageParms(byte[] p) {
@@ -947,12 +912,6 @@ public class SetUpTheUsbDevice extends Activity {
         usbdevice_fs_util.setInterface(camDeviceConnection.getFileDescriptor(), camStreamingInterface.getId(), altSetting);
     }
 
-// public void clearHalt (int endpointAddr) throws IOException {
-//    IntByReference ep = new IntByReference(endpointAddr);
-//    int rc = libc.ioctl(fileDescriptor, USBDEVFS_CLEAR_HALT, ep.getPointer());
-//    if (rc != 0) {
-//       throw new IOException("ioctl(USBDEVFS_CLEAR_HALT) failed, rc=" + rc + "."); }}
-
     private void enableStreaming_direct(boolean enabled) throws Exception {
         if (!enabled) {
             return;
@@ -1013,10 +972,6 @@ public class SetUpTheUsbDevice extends Activity {
         }
         return s.toString();
     }
-
-
-
-
 
     class IsochronousRead extends Thread {
 
@@ -1150,18 +1105,13 @@ public class SetUpTheUsbDevice extends Activity {
                         break;
                     }
                     requestCnt++;
-
                     req.initialize();
                     try {
                         req.submit();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-
-
                 }
-
-
                 try {
                     enableStreaming(false);
                 } catch (Exception e) {
@@ -1184,13 +1134,8 @@ public class SetUpTheUsbDevice extends Activity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-
         }
-
     }
-
-
 
     class IsochronousRead1Frame extends Thread {
 
@@ -1306,11 +1251,7 @@ public class SetUpTheUsbDevice extends Activity {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-
-
                 }
-
-
                 try {
                     enableStreaming(false);
                 } catch (Exception e) {
@@ -1585,16 +1526,6 @@ public class SetUpTheUsbDevice extends Activity {
             return (((buf[1] ) << 8) | (buf[0] & 0xFF));
 
     }
-
-
-    int getDistance(MotionEvent event) {
-        int dx = (int) (event.getX(0) - event.getX(1));
-        int dy = (int) (event.getY(0) - event.getY(1));
-        return (int) (Math.sqrt(dx * dx + dy * dy));
-    }
-
-
-
 
     public void displayMessage(final String msg) {
         runOnUiThread(new Runnable() {
