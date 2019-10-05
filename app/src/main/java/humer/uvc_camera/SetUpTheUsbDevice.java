@@ -37,6 +37,7 @@ import java.util.HashMap;
 
 import humer.uvc_camera.UsbIso64.USBIso;
 import humer.uvc_camera.UsbIso64.usbdevice_fs_util;
+import noman.zoomtextview.ZoomTextView;
 
 
 public class SetUpTheUsbDevice extends Activity {
@@ -59,6 +60,7 @@ public class SetUpTheUsbDevice extends Activity {
     // Video interface subclass codes:
     private static final int SC_VIDEOCONTROL = 0x01;
     private static final int SC_VIDEOSTREAMING = 0x02;
+    private static final int SC_HUAWEI_SUBCLASS = 0x06;
     // Standard request codes:
     private static final int SET_INTERFACE = 0x0b;
     // Video class-specific request codes:
@@ -132,7 +134,7 @@ public class SetUpTheUsbDevice extends Activity {
 
     //Buttons & Views
     protected Button testrun;
-    private TextView tv;
+    private ZoomTextView tv;
 
     // Zoom View
     final static float STEP = 200;
@@ -150,6 +152,10 @@ public class SetUpTheUsbDevice extends Activity {
     // Brightness Values
     private static int brightnessMax;
     private static int brightnessMin;
+
+    // Huawei 360 Camera
+
+    private boolean huawei;
 
 
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
@@ -221,7 +227,7 @@ public class SetUpTheUsbDevice extends Activity {
             }
         });
 
-        tv = (TextView) findViewById(R.id.textDarstellung);
+        tv = (ZoomTextView) findViewById(R.id.textDarstellung);
         tv.setText("Explanation:\n\n-(this is a scrollable and zoomable Text)\n\nFirst you have to set values for your camera.\nYou can use the button (Set up with UVC Settings) to automatically set " +
                 "up the camera with UVC settings.\nOr you can set up or change the Vales by Hand with the button (Edit / Save the Camera Values)\n" +
                 "\nWhen you have setted up the camera with all the vales click on the button (Testrun) to see if you get a valid output.\nIf the testrun works, you will see a couple of frames, which you received from your camera." +
@@ -275,7 +281,7 @@ public class SetUpTheUsbDevice extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    tv = (TextView) findViewById(R.id.textDarstellung);
+                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                     tv.setText("No Camera connected.");  }
             });
             return;
@@ -283,7 +289,7 @@ public class SetUpTheUsbDevice extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    tv = (TextView) findViewById(R.id.textDarstellung);
+                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                     tv.setText("The Values for the Camera are not correct set.\n\nPlease set up all the values for the camera first!");  }
             });
             return;
@@ -350,7 +356,7 @@ public class SetUpTheUsbDevice extends Activity {
                         @Override
                         public void run() {
                             log ("Camera has no USB permissions ");
-                            tv = (TextView) findViewById(R.id.textDarstellung);
+                            tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                             tv.setText("A camera is connected to your Android Device\nNo Usb Permissions for the Camera");
                             displayMessage("A camera is connected to your Android Device");
                         }
@@ -360,7 +366,7 @@ public class SetUpTheUsbDevice extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        tv = (TextView) findViewById(R.id.textDarstellung);
+                        tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                         tv.setText("No camera found\nSolutions:\n- Connect a camera and try again ...");
                         displayMessage("No camera found\nSolutions:\n- Connect a camera and try again ...");
                     }
@@ -372,7 +378,7 @@ public class SetUpTheUsbDevice extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        tv = (TextView) findViewById(R.id.textDarstellung);
+                        tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                         tv.setText("A camera was found\n\n- The camera has Usb Permissions");
                     }
                 });
@@ -382,7 +388,7 @@ public class SetUpTheUsbDevice extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        tv = (TextView) findViewById(R.id.textDarstellung);
+                        tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                         tv.setText("A camera was found\n\n- NO USB CAMERA PERMISSIOMS");
                     }
                 });
@@ -397,7 +403,7 @@ public class SetUpTheUsbDevice extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    tv = (TextView) findViewById(R.id.textDarstellung);
+                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                     tv.setText("No Camera found.\nPlease connect first a camera and run 'Search for a camera' from the menu");  }
             });
         } else {
@@ -411,7 +417,7 @@ public class SetUpTheUsbDevice extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    tv = (TextView) findViewById(R.id.textDarstellung);
+                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                     tv.setText("No Camera found.\nPlease connect a camera, or if allready connected run 'Search for a camera' from the menu");  }
             });
         } else {
@@ -433,7 +439,7 @@ public class SetUpTheUsbDevice extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        tv = (TextView) findViewById(R.id.textDarstellung);
+                        tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                         tv.setText(stringBuilder.toString());
                     }
                 });
@@ -501,6 +507,13 @@ public class SetUpTheUsbDevice extends Activity {
             if (usbInterface.getInterfaceClass() == interfaceClass && usbInterface.getInterfaceSubclass() == interfaceSubclass && (!withEndpoint || usbInterface.getEndpointCount() > 0)) {
                 return usbInterface;
             }
+            else if (usbInterface.getInterfaceClass() == UsbConstants.USB_CLASS_VENDOR_SPEC && usbInterface.getInterfaceSubclass() == SC_HUAWEI_SUBCLASS && (!withEndpoint || usbInterface.getEndpointCount() > 0)) {
+                huawei = true;
+                return usbInterface;
+            }
+
+
+
         }
         return null;
     }
@@ -539,41 +552,108 @@ public class SetUpTheUsbDevice extends Activity {
 
             } else log("1 Configuration found");
         }
-        if (usbDevice.getInterfaceCount()<=2) {
 
+        if (usbDevice.getInterfaceCount()==0) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     //setContentView(R.layout.layout_main);
-                    tv = (TextView) findViewById(R.id.textDarstellung);
+                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                     tv.setSingleLine(false);
                     tv.setText("There is something wrong with your camera\n\nThere have not been detected enought interfaces from your usb device\n\n" + usbDevice.getInterfaceCount() + " - Interfaces have been found, but there should be at least more than 2");
                     tv.bringToFront();
                 }
             });
             return;
+
         }
+
+        else if (usbDevice.getInterfaceCount()==1) {
+
+            convertedMaxPacketSize = new int [(usbDevice.getInterfaceCount())];
+            stringBuilder = new StringBuilder();
+            log("usbDevice.getInterfaceCount() = " + usbDevice.getInterfaceCount());
+            int interfaces = usbDevice.getInterfaceCount();
+            for (int i = 0; i < interfaces; i++) {
+                UsbInterface usbInterface = usbDevice.getInterface(i);
+                log("Interface " + interfaces + " opened");
+
+                log("    usbInterface.getId() = " + usbInterface.getId());
+                log("    usbInterface.getInterfaceClass() = " + usbInterface.getInterfaceClass());
+                log("    usbInterface.getInterfaceSubclass() = " + usbInterface.getInterfaceSubclass());
+                log("    usbInterface.getEndpointCount() = " + usbInterface.getEndpointCount());
+                log("  Start counting the endpoints:");
+                StringBuilder logEntry = new StringBuilder("InterfaceID " + usbInterface.getId() +   "\n  [ Interfaceclass = " + usbInterface.getInterfaceClass() + " / InterfaceSubclass = " + usbInterface.getInterfaceSubclass() + " ]");
+                stringBuilder.append(logEntry.toString());
+                stringBuilder.append("\n");
+                int endpoints = usbInterface.getEndpointCount();
+                for (int j = 0; j < endpoints; j++) {
+                    UsbEndpoint usbEndpoint = usbInterface.getEndpoint(j);
+                    log("- Endpoint: addr=" + String.format("0x%02x ", usbEndpoint.getAddress()).toString() + " maxPacketSize=" + returnConvertedValue(usbEndpoint.getMaxPacketSize()) + " type=" + usbEndpoint.getType() + " ]");
+
+                    StringBuilder logEntry2 = new StringBuilder("    [ Endpoint " + j + " - addr " + String.format("0x%02x ", usbEndpoint.getAddress()).toString() + ", maxPacketSize=" + returnConvertedValue(usbEndpoint.getMaxPacketSize()) + " ]");
+                    stringBuilder.append(logEntry2.toString());
+                    stringBuilder.append("\n");
+                    if (usbInterface.getId() == 1) {
+                        convertedMaxPacketSize[a] = returnConvertedValue(usbEndpoint.getMaxPacketSize());
+                        a++;
+                    }
+                    if (usbEndpoint.getAddress() == 0x03) {
+                        camStreamingEndpoint = usbEndpoint;
+                        log ("Endpointadress set");
+                    }
+                }
+
+            }
+
+
+
+            stringBuilder.append("\n\nYour Camera looks like to be no UVC supported device.\nThis means your camera can't be used by this app, because your camera can't be acessed over the Universal Video Class Protocoll");
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    //setContentView(R.layout.layout_main);
+                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
+                    tv.setSingleLine(false);
+                    tv.setText(stringBuilder.toString());
+                    tv.bringToFront();
+                }
+            });
+        }
+
         else {
             convertedMaxPacketSize = new int [(usbDevice.getInterfaceCount()-2)];
             log("Interface count: " + usbDevice.getInterfaceCount());
             int interfaces = usbDevice.getInterfaceCount();
-            ArrayList<String> logArray = new ArrayList<String>(512);
             stringBuilder = new StringBuilder();
+            boolean cont =false , stream = false;
             for (int i = 0; i < interfaces; i++) {
                 UsbInterface usbInterface = usbDevice.getInterface(i);
                 log("[ - Interface: " + usbInterface.getId()  + " class=" + usbInterface.getInterfaceClass() + " subclass=" + usbInterface.getInterfaceSubclass() );
                 // UsbInterface.getAlternateSetting() has been added in Android 5.
                 int endpoints = usbInterface.getEndpointCount();
-                StringBuilder logEntry = new StringBuilder("[ InterfaceID " + usbInterface.getId() + " / Interfaceclass = " + usbInterface.getInterfaceClass() + " / InterfaceSubclass = " + usbInterface.getInterfaceSubclass());
-                stringBuilder.append(logEntry.toString());
-                stringBuilder.append("\n");
+                StringBuilder logEntry = new StringBuilder("InterfaceID " + usbInterface.getId() +   "\n    [ Interfaceclass = " + usbInterface.getInterfaceClass() + " / InterfaceSubclass = " + usbInterface.getInterfaceSubclass() + " ]");
+
+                if (!cont) {
+                    stringBuilder.append(logEntry.toString());
+                    stringBuilder.append("\n");
+                }
+                else if (!stream) {
+                    stringBuilder.append(logEntry.toString());
+                    stringBuilder.append("\n");
+                }
+
+                if (usbInterface.getId() == 0) cont =true;
+                else if (usbInterface.getId() == 1) stream =true;
+
                 //logArray.add(logEntry.toString());
 
                 for (int j = 0; j < endpoints; j++) {
                     UsbEndpoint usbEndpoint = usbInterface.getEndpoint(j);
-                    log("- Endpoint: addr=" + String.format("0x%02x ", usbEndpoint.getAddress()).toString() + " maxPacketSize=" + returnConvertedValue(usbEndpoint.getMaxPacketSize()) + " type=" + usbEndpoint.getType() + " ]");
+                    log("- Endpoint: address=" + String.format("0x%02x ", usbEndpoint.getAddress()).toString() + " maxPacketSize=" + returnConvertedValue(usbEndpoint.getMaxPacketSize()) + " type=" + usbEndpoint.getType() + " ]");
 
-                    StringBuilder logEntry2 = new StringBuilder("/ addr " + String.format("0x%02x ", usbEndpoint.getAddress()).toString() + " maxPacketSize=" + returnConvertedValue(usbEndpoint.getMaxPacketSize()) + " ]");
+                    StringBuilder logEntry2 = new StringBuilder("        [ Endpoint " + Math.max(0, (i-1))  + " - address " + String.format("0x%02x ", usbEndpoint.getAddress()).toString() + " - maxPacketSize=" + returnConvertedValue(usbEndpoint.getMaxPacketSize()) + " ]");
                     stringBuilder.append(logEntry2.toString());
                     stringBuilder.append("\n");
                     if (usbInterface.getId() == 1) {
@@ -582,12 +662,14 @@ public class SetUpTheUsbDevice extends Activity {
                     }
                 }
             }
+            stringBuilder.append("\n\n\n\nThe number of the Endpoint represents the value of the Altsetting\nIf the Altsetting is 0 than the Video Control Interface will be used.\nIf the Altsetting is higher, than the Video Stream Interface with its specific Max Packet Size will be used");
+
 
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     //setContentView(R.layout.layout_main);
-                    tv = (TextView) findViewById(R.id.textDarstellung);
+                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                     tv.setSingleLine(false);
                     tv.setText(stringBuilder.toString());
                     tv.bringToFront();
@@ -632,7 +714,7 @@ public class SetUpTheUsbDevice extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    tv = (TextView) findViewById(R.id.textDarstellung);
+                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                     tv.setText("No Permissions were granted to the Camera Device.");  }
             });
 
@@ -684,61 +766,86 @@ public class SetUpTheUsbDevice extends Activity {
 
 
     private void openCameraDevice(boolean init) throws Exception {
-        // (For transfer buffer sizes > 196608 the kernel file drivers/usb/core/devio.c must be patched.)
-        camControlInterface = getVideoControlInterface(camDevice);
-        camStreamingInterface = getVideoStreamingInterface(camDevice);
-        if (camStreamingInterface.getEndpointCount() < 1) {
-            throw new Exception("Streaming interface has no endpoint.");
-        }
-        camStreamingEndpoint = camStreamingInterface.getEndpoint(0);
-        camControlEndpoint = camControlInterface.getEndpoint(0);
-        bulkMode = camStreamingEndpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK;
-        camDeviceConnection = usbManager.openDevice(camDevice);
-        if (camDeviceConnection == null) {
-            displayMessage("Failed to open the device - Retry");
-            log("Failed to open the device - Retry");
-            throw new Exception("Unable to open camera device connection.");
-        }
+        if (!huawei) {
+            // (For transfer buffer sizes > 196608 the kernel file drivers/usb/core/devio.c must be patched.)
+            camControlInterface = getVideoControlInterface(camDevice);
+            camStreamingInterface = getVideoStreamingInterface(camDevice);
+            log("camControlInterface = " + camControlInterface + "  //  camStreamingInterface = " + camStreamingInterface);
+            if (camStreamingInterface.getEndpointCount() < 1) {
+                throw new Exception("Streaming interface has no endpoint.");
+            }
+            camStreamingEndpoint = camStreamingInterface.getEndpoint(0);
+            camControlEndpoint = camControlInterface.getEndpoint(0);
+            bulkMode = camStreamingEndpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK;
+            camDeviceConnection = usbManager.openDevice(camDevice);
+            if (camDeviceConnection == null) {
+                displayMessage("Failed to open the device - Retry");
+                log("Failed to open the device - Retry");
+                throw new Exception("Unable to open camera device connection.");
+            }
 
-        if (!camDeviceConnection.claimInterface(camControlInterface, true)) {
-            log("Failed to claim camControlInterface");
-            displayMessage("Unable to claim camera control interface.");
-            throw new Exception("Unable to claim camera control interface.");
-        }
-        if (!camDeviceConnection.claimInterface(camStreamingInterface, true)) {
-            log("Failed to claim camStreamingInterface");
-            displayMessage("Unable to claim camera streaming interface.");
-            throw new Exception("Unable to claim camera streaming interface.");
-        }
-        if (!init) {
-            byte[] a = camDeviceConnection.getRawDescriptors();
-            ByteBuffer uvcData = ByteBuffer.wrap(a);
-            uvc_descriptor = new UVC_Descriptor(uvcData);
+            if (!camDeviceConnection.claimInterface(camControlInterface, true)) {
+                log("Failed to claim camControlInterface");
+                displayMessage("Unable to claim camera control interface.");
+                throw new Exception("Unable to claim camera control interface.");
+            }
+            if (!camDeviceConnection.claimInterface(camStreamingInterface, true)) {
+                log("Failed to claim camStreamingInterface");
+                displayMessage("Unable to claim camera streaming interface.");
+                throw new Exception("Unable to claim camera streaming interface.");
+            }
+            if (!init) {
+                byte[] a = camDeviceConnection.getRawDescriptors();
+                ByteBuffer uvcData = ByteBuffer.wrap(a);
+                uvc_descriptor = new UVC_Descriptor(uvcData);
 
-            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    switch (which){
-                        case DialogInterface.BUTTON_POSITIVE:
-                            int a = uvc_descriptor.phraseUvcData();
-                            if (a == 0) {
-                                if (convertedMaxPacketSize == null) listDevice(camDevice);
-                                stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize);
-                            }
-                            //Yes button clicked
-                            break;
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+                            case DialogInterface.BUTTON_POSITIVE:
+                                int a = uvc_descriptor.phraseUvcData();
+                                if (a == 0) {
+                                    if (convertedMaxPacketSize == null) listDevice(camDevice);
+                                    stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize);
+                                }
+                                //Yes button clicked
+                                break;
 
-                        case DialogInterface.BUTTON_NEGATIVE:
+                            case DialogInterface.BUTTON_NEGATIVE:
 
-                            break;
+                                break;
+                        }
                     }
-                }
-            };
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("Do you want to set up from UVC values ?").setPositiveButton("Yes, set up from UVC", dialogClickListener)
-                    .setNegativeButton("No", dialogClickListener).show();
+                };
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("Do you want to set up from UVC values ?").setPositiveButton("Yes, set up from UVC", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show();
+            }
+        } else if (huawei) {
+            log("\nHuawei\n");
+            camStreamingInterface = getVideoStreamingInterface(camDevice);
+            camDeviceConnection = usbManager.openDevice(camDevice);
+            if (camDeviceConnection == null) {
+                displayMessage("Failed to open the device - Retry");
+                log("Failed to open the device - Retry");
+                throw new Exception("Unable to open camera device connection.");
+            }
+            if (!camDeviceConnection.claimInterface(camStreamingInterface, true)) {
+                log("Failed to claim camStreamingInterface");
+                displayMessage("Unable to claim camera streaming interface.");
+                throw new Exception("Unable to claim camera streaming interface.");
+            }
+            if (!init) {
+                byte[] a = camDeviceConnection.getRawDescriptors();
+                log ("bytes = " + print(a));
+                ByteBuffer uvcData = ByteBuffer.wrap(a);
+
+            }
         }
     }
+
+
 
     private void initCamera() throws Exception {
         try {
@@ -1025,7 +1132,7 @@ public class SetUpTheUsbDevice extends Activity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    tv = (TextView) findViewById(R.id.textDarstellung);
+                                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                                     tv.setText(String.format("The camera stream will be read out for %d Seconds\nLasting seconds: ",(time/1000), (time/1000))+((System.currentTimeMillis()-startTime)/1000));
                                     //displayMessage(String.format("The camera stream will be read out for %d Seconds\nLasting seconds: ",(time/1000), (time/1000))+((System.currentTimeMillis()-startTime)/1000));
                                 }
@@ -1124,7 +1231,7 @@ public class SetUpTheUsbDevice extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        tv = (TextView) findViewById(R.id.textDarstellung);
+                        tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                         tv.setText(stringBuilder.toString());
 
                     }
@@ -1273,7 +1380,7 @@ public class SetUpTheUsbDevice extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        tv = (TextView) findViewById(R.id.textDarstellung);
+                        tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                         tv.setText(stringBuilder.toString() );
 
                     }
@@ -1332,7 +1439,7 @@ public class SetUpTheUsbDevice extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    tv = (TextView) findViewById(R.id.textDarstellung);
+                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                     tv.setText("Failed to initialise the camera" + initStreamingParmsResult);
                 }
             });
@@ -1382,7 +1489,7 @@ public class SetUpTheUsbDevice extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    tv = (TextView) findViewById(R.id.textDarstellung);
+                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                     tv.setText("Failed to initialise the camera" + initStreamingParmsResult);
                 }
             });
@@ -1424,7 +1531,7 @@ public class SetUpTheUsbDevice extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    tv = (TextView) findViewById(R.id.textDarstellung);
+                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                     tv.setText(initStreamingParmsResult + "\n\nThe Control Transfers to the Camera has following Results:\n\n" +
                             "The first Controltransfer for sending the Values to the Camera: \n" + initStreamingParms + "" +
                             "\n\nThe second Controltransfer for probing the values with the camera:\n" + probedStreamingParms + "" +
@@ -1435,7 +1542,7 @@ public class SetUpTheUsbDevice extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    tv = (TextView) findViewById(R.id.textDarstellung);
+                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                     tv.setText("Failed to initialise the camera\n\n" + initStreamingParmsResult + "\n\nThe Control Transfers to the Camera has following Results:\n\n" +
                             "The first Controltransfer for sending the Values to the Camera: \n" + initStreamingParms + "" +
                             "\n\nThe second Controltransfer for probing the values with the camera:\n" + probedStreamingParms + "" +
@@ -1493,7 +1600,7 @@ public class SetUpTheUsbDevice extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    tv = (TextView) findViewById(R.id.textDarstellung);
+                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                     tv.setText("Brightness Control Sucessful\n\n" + stringBuilder.toString());
                 }
             });
@@ -1502,7 +1609,7 @@ public class SetUpTheUsbDevice extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    tv = (TextView) findViewById(R.id.textDarstellung);
+                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                     tv.setText("Please Run The Video Probe Commit Control Transfer first!");
                 }
             });
@@ -1606,5 +1713,18 @@ public class SetUpTheUsbDevice extends Activity {
             camDeviceConnection.close();
         }
         finish();
+    }
+
+
+    ////////// Other Methods ///////////////////
+
+    public static String print(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[ ");
+        for (byte b : bytes) {
+            sb.append(String.format("0x%02X ", b));
+        }
+        sb.append("]");
+        return sb.toString();
     }
 }

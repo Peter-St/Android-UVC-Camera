@@ -21,8 +21,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import noman.zoomtextview.ZoomTextView;
 
 public class Main extends Activity {
 
@@ -44,7 +45,7 @@ public class Main extends Activity {
     public Button startStream;
     public Button settingsButton;
     public Button menu;
-    private TextView tv;
+    private ZoomTextView tv;
 
     private final int REQUEST_PERMISSION_STORAGE=1;
     private int ActivitySetUpTheUsbDeviceRequestCode = 1;
@@ -58,7 +59,7 @@ public class Main extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
-        tv = (TextView) findViewById(R.id.textDarstellung);
+        tv = (ZoomTextView) findViewById(R.id.textDarstellung);
         tv.setText("Your current Values are:\n\n( - this is a sroll and zoom field - )\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
                 "\nAltSetting = " + camStreamingAltSetting + "\nMaxPacketSize = " + maxPacketSize + "\nVideoformat = " + videoformat + "\ncamFormatIndex = " + camFormatIndex + "\n" +
                 "camFrameIndex = " + camFrameIndex + "\nimageWidth = "+ imageWidth + "\nimageHeight = " + imageHeight + "\ncamFrameInterval = " + camFrameInterval + "" +
@@ -170,7 +171,7 @@ public class Main extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        tv = (TextView) findViewById(R.id.textDarstellung);
+                        tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                         tv.setText("Values for the camera not correctly setted !!\nPlease set up the values for the Camera first.\nTo Set Up the Values press the Settings Button and click on 'Set up with Uvc Values' or 'Edit / Save / Restor' and 'Edit Save'");  }
                 });
             } else {
