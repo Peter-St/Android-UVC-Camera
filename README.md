@@ -18,6 +18,30 @@ The program uses the usb device driver to perform an isochronous transfer with y
 - First you have to set up all camera settings for your device. The program then saves the values and you can restore them later or overwrite them with other values. There is a built-in service included to automatically set up the values ("Set Up With UVC Values Button").
 
 
+
+
+License
+-------
+
+    Copyright 2018 Peter Stoiber
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+
+
+
+
+
 Explaination:
 - When the automatic search succeeds, you first set up the MAXIMAL PACKET SIZE. If your device is a mediathek device, you may have to lower the value for the max packet size. Here your camera device supports normaly 4 to 10 different values.
 - The Value PACKETS PER REQUEST defines the Number of the Packets sending to the camera device. It also defines the amount of bytes from one Urb (UsbRequestBlock). The minimal size is one packet and you can raise it up to maybe 64.
