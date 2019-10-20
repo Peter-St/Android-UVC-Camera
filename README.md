@@ -23,7 +23,7 @@ The program uses the usb device driver to perform an isochronous transfer with y
 License
 -------
 
-    Copyright 2018 Peter Stoiber
+    Copyright 2019 Peter Stoiber
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
