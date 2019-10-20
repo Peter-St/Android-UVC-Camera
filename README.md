@@ -25,11 +25,28 @@ License
 
     Copyright 2019 Peter Stoiber
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+    Android-UVC-Camera is dual-licensed under 2 
+    alternative Open Source/Free licenses: LGPL 2.1 or later and 
+    Apache License 2.0.
 
-       http://www.apache.org/licenses/LICENSE-2.0
+    You can freely decide which license you want to apply to 
+    the project.
+
+    You may obtain a copy of the LGPL License at:
+
+    http://www.gnu.org/licenses/licenses.html
+
+    A copy is also included in the downloadable source code package
+    containing Android-UVC-Camera, in file "LICENSE.LGPL-2.1-or-later", under the same directory
+    as this file.
+
+    You may obtain a copy of the Apache License at:
+
+    http://www.apache.org/licenses/
+
+    A copy is also included in the downloadable source code package
+    containing Android-UVC-Camera, in file "LICENSE.Apache-2.0", under the same directory
+    as this file.
 
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
