@@ -51,7 +51,7 @@ Explaination:
 - The Value PACKETS PER REQUEST defines the Number of the Packets sending to the camera device. It also defines the amount of bytes from one Urb (UsbRequestBlock). The minimal size is one packet and you can raise it up to maybe 64.
 - Next value to set is the USB REQUEST BLOCKS (activeUrb) (Urb):  One Urb has a size of "MaxPacketsize x PacketsPerRequest". One Urb is the lowest value and you can raise it up to maybe 64. You have to find here the right values for your device and control the output on the screen under the menupoint "Isoread". The Urbs defines the amount of bytes which are currently available at your camera device. 
 - Some typically values for Qualcom Devices are: 8 for the activeUrbs and 16 Packets per Request....
-- Each camera and Phone needs different values and can proceed to find the right values for your devices.
+- Each camera and Phone needs different values! Now you have to find the right values for your devices.
 
 Isoread:
 The first thing of the method Isoread is a Controltransfer to the camera device:
