@@ -1,11 +1,9 @@
 package humer.uvc_camera;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
@@ -24,17 +22,16 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.widget.PopupMenu;
-import android.text.InputType;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -45,10 +42,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Formatter;
 import java.util.HashMap;
 
 import com.sample.timelapse.MJPEGGenerator ;
@@ -117,6 +116,10 @@ public class Start_Iso_StreamActivity extends Activity {
     private static int activeUrbs;
     private static String videoformat;
     private static boolean camIsOpen;
+    public static byte bUnitID;
+    public static byte bTerminalID;
+    public static byte[] bNumControlTerminal;
+    public static byte[] bNumControlUnit;
 
     // Vales for debuging the camera
     private boolean bildaufnahme = false;
@@ -154,14 +157,15 @@ public class Start_Iso_StreamActivity extends Activity {
     private BitmapToVideoEncoder bitmapToVideoEncoder;
     private volatile Start_Iso_StreamActivity.IsochronousStream runningStream;
     private SeekBar simpleSeekBar;
+    private Button defaultButton;
+    private Switch switchAuto;
 
 
-    // Brightness Values
-    private static int brightnessMax;
-    private static int brightnessMin;
-    private int currentBrightness;
-    private boolean changeBrightness;
-    private boolean brightnessChanged;
+    // Camera Configuration Values to adjust Values over Controltransfers
+
+
+    private boolean brightnessAutoState;
+    private boolean focusAutoState;
     float discrete=0;
     static float start;
     static float end;
@@ -474,10 +478,22 @@ public class Start_Iso_StreamActivity extends Activity {
         fetchTheValues();
         log("packetsPerRequest = " + packetsPerRequest);
         log("activeUrbs = " + activeUrbs);
+
+
+
+
         simpleSeekBar = (SeekBar) findViewById(R.id.simpleSeekBar); // initiate the Seek bar
         simpleSeekBar.setEnabled(false);
         simpleSeekBar.setAlpha(0);
         simpleSeekBar = null;
+        defaultButton = (Button) findViewById(R.id.defaultButton);
+        defaultButton.setEnabled(false);
+        defaultButton.setAlpha(0);
+        defaultButton = null;
+        switchAuto = (Switch) findViewById(R.id.switchAuto);
+        switchAuto.setEnabled(false);
+        switchAuto.setAlpha(0);
+        switchAuto = null;
         usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
         IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
@@ -508,53 +524,10 @@ public class Start_Iso_StreamActivity extends Activity {
                     case R.id.lowerRes:
                         lowerResolutionClickButtonEvent();
                         return true;
-                    case R.id.changeBrightness:
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Runnable myRunnable = new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        simpleSeekBar.setEnabled(false);
-                                        simpleSeekBar.setAlpha(0);
-                                        simpleSeekBar = null;
-                                    }
-                                };
-                                Handler myHandler = new Handler();
-                                final int TIME_TO_WAIT = 2500;
+                    case R.id.adjustValues:
 
+                        showAdjustValuesMenu(v);
 
-                                start = brightnessMin;
-                                end = brightnessMax;
-                                start_pos = currentBrightness;
-                                start_position=(int) (((start_pos-start)/(end-start))*100);
-                                discrete=start_pos;
-
-                                simpleSeekBar = (SeekBar) findViewById(R.id.simpleSeekBar); // initiate the Seek bar
-                                simpleSeekBar.setEnabled(true);
-                                simpleSeekBar.setAlpha(1);
-                                simpleSeekBar.setProgress(start_position);
-                                simpleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                                    int progressChangedValue = 0;
-                                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                                        float temp=progress;
-                                        float dis=end-start;
-                                        discrete=(start+((temp/100)*dis));
-                                    }
-                                    public void onStartTrackingTouch(SeekBar seekBar) {
-                                        // TODO Auto-generated method stub
-                                    }
-                                    public void onStopTrackingTouch(SeekBar seekBar) {
-                                        myHandler.removeCallbacks(myRunnable);
-                                        myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
-                                        currentBrightness = Math.round(discrete);
-                                        changeBrightness = true;
-                                        Toast.makeText(getBaseContext(), "Brightness is : "+String.valueOf(currentBrightness), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                                myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
-                            }
-                        });
                         return true;
                     case R.id.returnToConfigScreen:
                         returnToConfigScreen();
@@ -562,6 +535,165 @@ public class Start_Iso_StreamActivity extends Activity {
                     case R.id.beenden:
                         beenden();
                         return true;
+                    default:
+                        break;
+                }
+                return false;
+            }
+        });
+        popup.show();
+    }
+
+    public void showAdjustValuesMenu(View v) {
+        Context wrapper = new ContextThemeWrapper(this, R.style.YOURSTYLE);
+        PopupMenu popup = new PopupMenu(wrapper, v);
+        // This activity implements OnMenuItemClickListener
+        popup.inflate(R.menu.iso_stream_adjust_values);
+
+
+
+
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.brightness:
+
+                        if (bNumControlUnit!= null) {
+                            int n = 0;  // D0: Brightness (bit counting starts at 0 )
+                            log (" brigness is set = " + (BigInteger.valueOf(bNumControlUnit[0]).testBit(n)));
+
+                            if (BigInteger.valueOf(bNumControlUnit[0]).testBit(n)) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Runnable myRunnable = new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                simpleSeekBar.setEnabled(false);
+                                                simpleSeekBar.setAlpha(0);
+                                                simpleSeekBar = null;
+                                                defaultButton.setEnabled(false);
+                                                defaultButton.setAlpha(0);
+                                                defaultButton = null;
+                                            }
+                                        };
+                                        Handler myHandler = new Handler();
+                                        final int TIME_TO_WAIT = 2500;
+                                        SetCameraVariables setBright = new SetCameraVariables(camDeviceConnection, SetCameraVariables.CameraFunction.brightness, brightnessAutoState, bUnitID, bTerminalID);
+
+
+                                        start = setBright.minValue ;
+                                        end = setBright.maxValue;
+                                        start_pos = setBright.currentValue;
+                                        start_position=(int) (((start_pos-start)/(end-start))*100);
+                                        discrete=start_pos;
+
+                                        simpleSeekBar = (SeekBar) findViewById(R.id.simpleSeekBar);
+                                        simpleSeekBar.setEnabled(true);
+                                        simpleSeekBar.setAlpha(1);
+                                        simpleSeekBar.setProgress(start_position);
+                                        simpleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                                            int progressChangedValue = 0;
+                                            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                                                float temp=progress;
+                                                float dis=end-start;
+                                                discrete=(start+((temp/100)*dis));
+                                            }
+                                            public void onStartTrackingTouch(SeekBar seekBar) {
+                                                // TODO Auto-generated method stub
+                                            }
+                                            public void onStopTrackingTouch(SeekBar seekBar) {
+                                                if (brightnessAutoState) return;
+                                                myHandler.removeCallbacks(myRunnable);
+                                                myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                                                setBright.currentValue = Math.round(discrete);
+                                                setBright.adjustValue(SetCameraVariables.CameraFunctionSetting.adjust);
+                                            }
+                                        });
+                                        defaultButton = (Button) findViewById(R.id.defaultButton);
+                                        defaultButton.setEnabled(true);
+                                        defaultButton.setAlpha(1);
+                                        defaultButton.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                if(brightnessAutoState) return;
+                                                setBright.adjustValue(SetCameraVariables.CameraFunctionSetting.defaultValue);
+                                                myHandler.removeCallbacks(myRunnable);
+                                                myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                                                start_pos = setBright.currentValue;
+                                                start_position=(int) (((start_pos-start)/(end-start))*100);
+                                                discrete=start_pos;
+                                                simpleSeekBar.setProgress(start_position);
+                                            }
+                                        });
+                                        myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                                    }
+                                });
+                            } else displayMessage("Not supported");
+                        }
+                        return true;
+
+                    case R.id.focusAuto:
+
+                        if (bNumControlTerminal != null) {
+
+
+                            int n = 1;  // D17: Focus, Auto (2nd byte from Array)  (bit counting starts at 0 )
+                            if (BigInteger.valueOf(bNumControlTerminal[2]).testBit(n)) {
+
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Runnable myRunnable = new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                switchAuto.setEnabled(false);
+                                                switchAuto.setAlpha(0);
+                                                switchAuto = null;
+                                            }
+                                        };
+                                        Handler myHandler = new Handler();
+                                        final int TIME_TO_WAIT = 2500;
+                                        SetCameraVariables setFocus = new SetCameraVariables(camDeviceConnection, SetCameraVariables.CameraFunction.autofocus, focusAutoState, bUnitID, bTerminalID);
+                                        switchAuto = (Switch) findViewById(R.id.switchAuto);
+                                        switchAuto.setEnabled(true);
+                                        switchAuto.setAlpha(1);
+                                        if (brightnessAutoState) switchAuto.setChecked(true);
+                                        else switchAuto.setChecked(false);
+
+                                        switchAuto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+                                            @Override
+                                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                                                Log.v("Switch State=", ""+isChecked);
+                                                if (isChecked) {
+                                                    brightnessAutoState = true;
+                                                    setFocus.autoEnabled = true;
+                                                    setFocus.adjustValue(SetCameraVariables.CameraFunctionSetting.auto);
+                                                } else {
+                                                    brightnessAutoState = false;
+                                                    setFocus.autoEnabled = false;
+                                                    setFocus.adjustValue(SetCameraVariables.CameraFunctionSetting.auto);
+                                                }
+                                            }
+
+                                        });
+                                        myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                                    }
+                                });
+
+                            } else {
+                                displayMessage("Not supported !");
+                            }
+                            log (" focusAuto is set = " + (BigInteger.valueOf(bNumControlTerminal[2]).testBit(n)));
+
+
+                        }
+
+                        return true;
+
                     default:
                         break;
                 }
@@ -858,7 +990,7 @@ public class Start_Iso_StreamActivity extends Activity {
             log("Warning: getVideoStreamErrorCode() failed: " + e);
         }   // ignore error, some cameras do not support the request
         initStreamingParms();
-        initBrightnessParms();
+        //initBrightnessParms();
     }
 
 
@@ -1170,6 +1302,11 @@ public class Start_Iso_StreamActivity extends Activity {
     }
 
     private void initBrightnessParms() throws Exception {
+
+
+
+        /*
+
         final int timeout = 5000;
         int len;
         byte[] brightnessParms = new byte[2];
@@ -1192,6 +1329,8 @@ public class Start_Iso_StreamActivity extends Activity {
         len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, PU_BRIGHTNESS_CONTROL << 8, 0x0200, brightnessParms, brightnessParms.length, timeout);
         log( "brightness cur: " + unpackIntBrightness(brightnessParms));
         currentBrightness = unpackIntBrightness(brightnessParms);
+
+        */
     }
 
     private static void packIntBrightness(int i, byte[] buf) {
@@ -1540,7 +1679,9 @@ public class Start_Iso_StreamActivity extends Activity {
                             break;
                         }
                     }
-                    if (changeBrightness) changebright();
+
+
+                    //if (changeBrightness) changebright();
                 }
                 //enableStreaming(false);
                 //processReceivedMJpegVideoFrame(frameData.toByteArray());
@@ -1569,6 +1710,10 @@ public class Start_Iso_StreamActivity extends Activity {
         packetsPerRequest=bundle.getInt("packetsPerRequest",0);
         maxPacketSize=bundle.getInt("maxPacketSize",0);
         activeUrbs=bundle.getInt("activeUrbs",0);
+        bUnitID = bundle.getByte("bUnitID",(byte)0);
+        bTerminalID = bundle.getByte("bTerminalID",(byte)0);
+        bNumControlTerminal = bundle.getByteArray("bNumControlTerminal");
+        bNumControlUnit = bundle.getByteArray("bNumControlUnit");
 
 
     }
@@ -1630,6 +1775,8 @@ public class Start_Iso_StreamActivity extends Activity {
     }
 
     public void changebright () {
+
+        /*
         final int timeout = 500;
         int len;
         byte[] brightnessParms = new byte[2];
@@ -1650,6 +1797,19 @@ public class Start_Iso_StreamActivity extends Activity {
         }
         changeBrightness = false;
         if (currentBrightness != 0) brightnessChanged = true;
+
+        */
+    }
+
+    private static void printData (byte [] formatData) {
+
+        Formatter formatter = new Formatter();
+        for (byte b : formatData) {
+            formatter.format("0x%02x ", b);
+        }
+        String hex = formatter.toString();
+
+        System.out.println("hex " + hex);
     }
 
 }

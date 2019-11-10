@@ -103,6 +103,12 @@ public class SetUpTheUsbDevice extends Activity {
     public static int activeUrbs;
     public static String videoformat;
     public static String deviceName;
+    public static byte bUnitID;
+    public static byte bTerminalID;
+    public static byte[] bNumControlTerminal;
+    public static byte[] bNumControlUnit;
+
+
 
     // Vales for debuging the camera
     private boolean bildaufnahme = false;
@@ -129,7 +135,6 @@ public class SetUpTheUsbDevice extends Activity {
     private boolean bulkMode;
     private enum Options { searchTheCamera, testrun, listdevice, showTestRunMenu, setUpWithUvcSettings };
     private Options  options;
-
 
 
     //Buttons & Views
@@ -809,7 +814,6 @@ public class SetUpTheUsbDevice extends Activity {
                                     if (convertedMaxPacketSize == null) listDevice(camDevice);
                                     stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize);
                                 }
-                                //Yes button clicked
                                 break;
 
                             case DialogInterface.BUTTON_NEGATIVE:
@@ -1560,7 +1564,7 @@ public class SetUpTheUsbDevice extends Activity {
             int len;
             byte[] brightnessParms = new byte[2];
             // PU_BRIGHTNESS_CONTROL(0x02), GET_MIN(0x82) [UVC1.5, p. 160, 158, 96]
-            len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_MIN, PU_BRIGHTNESS_CONTROL << 8, 0x0200, brightnessParms, brightnessParms.length, timeout);
+            len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_MIN, PU_BRIGHTNESS_CONTROL << 8, bUnitID <<8, brightnessParms, brightnessParms.length, timeout);
             if (len != brightnessParms.length) {
                 displayMessage("Error: Durning PU_BRIGHTNESS_CONTROL");
                 throw new Exception("Camera PU_BRIGHTNESS_CONTROL GET_MIN failed. len= " + len + ".");
@@ -1569,15 +1573,15 @@ public class SetUpTheUsbDevice extends Activity {
             brightnessMin = unpackIntBrightness(brightnessParms);
             stringBuilder.append("\nbrightnessMin= " + brightnessMin);
             // PU_BRIGHTNESS_CONTROL(0x02), GET_MAX(0x83) [UVC1.5, p. 160, 158, 96]
-            camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_MAX, PU_BRIGHTNESS_CONTROL << 8, 0x0200, brightnessParms, brightnessParms.length, timeout);
+            camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_MAX, PU_BRIGHTNESS_CONTROL << 8, bUnitID <<8, brightnessParms, brightnessParms.length, timeout);
             log( "brightness max: " + unpackIntBrightness(brightnessParms));
             brightnessMax = unpackIntBrightness(brightnessParms);
             stringBuilder.append("\nbrightnessMax= " + brightnessMax);
             // PU_BRIGHTNESS_CONTROL(0x02), GET_RES(0x84) [UVC1.5, p. 160, 158, 96]
-            len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_RES, PU_BRIGHTNESS_CONTROL << 8, 0x0200, brightnessParms, brightnessParms.length, timeout);
+            len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_RES, PU_BRIGHTNESS_CONTROL << 8, bUnitID <<8, brightnessParms, brightnessParms.length, timeout);
             log( "brightness res: " + unpackIntBrightness(brightnessParms));
             // PU_BRIGHTNESS_CONTROL(0x02), GET_CUR(0x81) [UVC1.5, p. 160, 158, 96]
-            len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, PU_BRIGHTNESS_CONTROL << 8, 0x0200, brightnessParms, brightnessParms.length, timeout);
+            len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, PU_BRIGHTNESS_CONTROL << 8, bUnitID <<8, brightnessParms, brightnessParms.length, timeout);
             log( "brightness cur: " + unpackIntBrightness(brightnessParms));
             stringBuilder.append("\ncurrent Brightness= " + unpackIntBrightness(brightnessParms));
 
@@ -1589,12 +1593,12 @@ public class SetUpTheUsbDevice extends Activity {
             packIntBrightness(brightness, brightnessParms);
 
             // PU_BRIGHTNESS_CONTROL(0x02), SET_CUR(0x01) [UVC1.5, p. 160, 158, 96]
-            camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, PU_BRIGHTNESS_CONTROL << 8, 0x0200, brightnessParms, brightnessParms.length, timeout);
+            camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, PU_BRIGHTNESS_CONTROL << 8, bUnitID <<8, brightnessParms, brightnessParms.length, timeout);
             brightness = (brightnessParms[1]  <<8 ) | ( brightnessParms[0] & 0xff);
             log( "brightness set: " + brightness);
 
             // PU_BRIGHTNESS_CONTROL(0x02), GET_CUR(0x81) [UVC1.5, p. 160, 158, 96]
-            camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, PU_BRIGHTNESS_CONTROL << 8, 0x0200, brightnessParms, brightnessParms.length, timeout);
+            camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, PU_BRIGHTNESS_CONTROL << 8, bUnitID <<8, brightnessParms, brightnessParms.length, timeout);
             log( "brightness get: " + unpackIntBrightness(brightnessParms));
             stringBuilder.append("\ncurrent changed Brightness= " + unpackIntBrightness(brightnessParms));
             runOnUiThread(new Runnable() {
@@ -1680,6 +1684,11 @@ public class SetUpTheUsbDevice extends Activity {
             maxPacketSize=bundle.getInt("maxPacketSize",0);
             activeUrbs=bundle.getInt("activeUrbs",0);
             deviceName=bundle.getString("deviceName");
+            bUnitID = bundle.getByte("bUnitID",(byte)0);
+            bTerminalID = bundle.getByte("bTerminalID",(byte)0);
+            bNumControlTerminal = bundle.getByteArray("bNumControlTerminal");
+            bNumControlUnit = bundle.getByteArray("bNumControlUnit");
+
         } else {
             stf = new SaveToFile(this, this);
             stf.restoreValuesFromFile();
@@ -1706,6 +1715,12 @@ public class SetUpTheUsbDevice extends Activity {
         resultIntent.putExtra("maxPacketSize", maxPacketSize);
         resultIntent.putExtra("activeUrbs", activeUrbs);
         resultIntent.putExtra("deviceName", deviceName);
+        resultIntent.putExtra("bUnitID", bUnitID);
+        resultIntent.putExtra("bTerminalID", bTerminalID);
+        resultIntent.putExtra("bNumControlTerminal", bNumControlTerminal);
+        resultIntent.putExtra("bNumControlUnit", bNumControlUnit);
+
+
         setResult(Activity.RESULT_OK, resultIntent);
         if (camDeviceConnection != null) {
             if (camControlInterface != null)           camDeviceConnection.releaseInterface(camControlInterface);

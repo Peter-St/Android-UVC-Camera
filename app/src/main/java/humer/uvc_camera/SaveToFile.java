@@ -60,6 +60,11 @@ public class SaveToFile  {
     public static int spacketsPerRequest ;
     public static int sactiveUrbs ;
     public static String sdeviceName;
+    public static byte bUnitID;
+    public static byte bTerminalID;
+    public static byte[] bNumControlTerminal;
+    public static byte[] bNumControlUnit;
+
 
 
     private static String saveFilePathFolder = "UVC_Camera/save";
@@ -278,6 +283,10 @@ public class SaveToFile  {
         smaxPacketSize = setUpTheUsbDevice.maxPacketSize;
         sactiveUrbs = setUpTheUsbDevice.activeUrbs;
         sdeviceName = setUpTheUsbDevice.deviceName;
+        bUnitID = setUpTheUsbDevice.bUnitID;
+        bTerminalID = setUpTheUsbDevice.bTerminalID;
+        bNumControlTerminal = setUpTheUsbDevice.bNumControlTerminal;
+        bNumControlUnit = setUpTheUsbDevice.bNumControlUnit;
     }
 
     private void writeTheValues(){
@@ -293,6 +302,12 @@ public class SaveToFile  {
             uvc_camera.maxPacketSize = smaxPacketSize;
             uvc_camera.activeUrbs = sactiveUrbs;
             uvc_camera.deviceName = sdeviceName;
+            uvc_camera.bUnitID = bUnitID;
+            uvc_camera.bTerminalID = bTerminalID;
+            uvc_camera.bNumControlUnit = bNumControlUnit;
+            uvc_camera.bNumControlTerminal = bNumControlTerminal;
+
+
         } else {
             setUpTheUsbDevice.camStreamingAltSetting = sALT_SETTING;
             setUpTheUsbDevice.videoformat = svideoformat;
@@ -305,6 +320,10 @@ public class SaveToFile  {
             setUpTheUsbDevice.maxPacketSize = smaxPacketSize;
             setUpTheUsbDevice.activeUrbs = sactiveUrbs;
             setUpTheUsbDevice.deviceName = sdeviceName;
+            setUpTheUsbDevice.bUnitID = bUnitID;
+            setUpTheUsbDevice.bTerminalID = bTerminalID;
+            setUpTheUsbDevice.bNumControlTerminal = bNumControlTerminal;
+            setUpTheUsbDevice.bNumControlUnit = bNumControlUnit;
         }
 
     }
@@ -512,6 +531,11 @@ public class SaveToFile  {
             save.writeObject(sactiveUrbs);
             save.writeObject(saveFilePathFolder);
             save.writeObject(sdeviceName);
+            save.writeObject(bUnitID);
+            save.writeObject(bTerminalID);
+            save.writeObject(bNumControlTerminal);
+            save.writeObject(bNumControlUnit);
+
             // Close the file.
             save.close(); // This also closes saveFile.
         } catch (Exception e) { log("Error"); e.printStackTrace();}
@@ -539,6 +563,10 @@ public class SaveToFile  {
             sactiveUrbs  = (Integer) save.readObject();
             saveFilePathFolder  = (String) save.readObject();
             sdeviceName = (String) save.readObject();
+            bUnitID  = (Byte) save.readObject();
+            bTerminalID  = (Byte) save.readObject();
+            bNumControlTerminal  = (byte[]) save.readObject();
+            bNumControlUnit  = (byte[]) save.readObject();
             save.close();
         }
         catch(Exception exc){
@@ -606,6 +634,10 @@ public class SaveToFile  {
 
         fetchTheValues();
         this.uvc_descriptor = uvc_desc;
+        bUnitID = uvc_desc.bUnitID;
+        bTerminalID = uvc_desc.bTerminalID;
+        bNumControlTerminal = uvc_desc.bNumControlTerminal;
+        bNumControlUnit = uvc_desc.bNumControlUnit;
         for (int a=0; a<maxPacketSizeArray.length; a++) {
             log ("maxPacketSizeArray[" + a + "] = " + maxPacketSizeArray[a]);
         }

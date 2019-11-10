@@ -3,8 +3,8 @@
 
 
     <item
-        android:id="@+id/changeBrightness"
-        android:title="Change the Brightness"
+        android:id="@+id/adjustValues"
+        android:title="Change / Adjust Values"
         />
 
     <group android:checkableBehavior="all">

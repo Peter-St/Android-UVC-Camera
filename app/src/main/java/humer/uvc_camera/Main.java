@@ -38,6 +38,11 @@ public class Main extends Activity {
     public static int activeUrbs;
     public static String videoformat;
     public static String deviceName;
+    public static byte bUnitID;
+    public static byte bTerminalID;
+    public static byte[] bNumControlTerminal;
+    public static byte[] bNumControlUnit;
+
 
     public boolean bildaufnahme = false;
 
@@ -98,6 +103,11 @@ public class Main extends Activity {
             maxPacketSize=data.getIntExtra("maxPacketSize",0);
             activeUrbs=data.getIntExtra("activeUrbs",0);
             deviceName=data.getStringExtra("deviceName");
+            bUnitID = data.getByteExtra("bUnitID",(byte) 0);
+            bTerminalID = data.getByteExtra("bTerminalID",(byte)0);
+            bNumControlTerminal = data.getByteArrayExtra("bNumControlTerminal");
+            bNumControlUnit = data.getByteArrayExtra("bNumControlUnit");
+
 
             tv.setText("Your current Values are:\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
                     "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat + "\nCamera Format Index = " + camFormatIndex + "\n" +
@@ -143,6 +153,11 @@ public class Main extends Activity {
             bundle.putInt("maxPacketSize",maxPacketSize);
             bundle.putInt("activeUrbs",activeUrbs);
             bundle.putString("deviceName",deviceName);
+            bundle.putByte("bUnitID",bUnitID);
+            bundle.putByte("bTerminalID",bTerminalID);
+            bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
+            bundle.putByteArray("bNumControlUnit", bNumControlUnit);
+
             intent.putExtra("bun",bundle);
             super.onResume();
             startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
@@ -188,6 +203,11 @@ public class Main extends Activity {
                 bundle.putInt("packetsPerRequest",packetsPerRequest);
                 bundle.putInt("maxPacketSize",maxPacketSize);
                 bundle.putInt("activeUrbs",activeUrbs);
+                bundle.putByte("bUnitID",bUnitID);
+                bundle.putByte("bTerminalID",bTerminalID);
+                bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
+                bundle.putByteArray("bNumControlUnit", bNumControlUnit);
+
                 intent.putExtra("bun",bundle);
                 startActivity(intent);
             }
@@ -207,9 +227,9 @@ public class Main extends Activity {
     public void setTextTextView () {
         tv.setText("Your current Values are:\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
                 "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat + "\nCamera Format Index = " + camFormatIndex + "\n" +
-                "Camera FrameIndex = " + camFrameIndex + "\nImage Width = "+ imageWidth + "\nImage Height = " + imageHeight + "\nCamera Frame Interval = " + camFrameInterval)          ;
+                "Camera FrameIndex = " + camFrameIndex + "\nImage Width = "+ imageWidth + "\nImage Height = " + imageHeight + "\nCamera Frame Interval = " +
+                camFrameInterval + "\n\nUVC Values:\nbUnitID = " + bUnitID + "\nbTerminalID = " + bTerminalID);
         tv.setTextColor(Color.GREEN);
-
     }
 
     private boolean showStoragePermissionRead() {

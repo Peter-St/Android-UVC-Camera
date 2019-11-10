@@ -30,6 +30,12 @@ public class UVC_Descriptor {
     public final ArrayList<UVC_Descriptor.FormatIndex> formatIndex = new ArrayList<>();
     private static ByteBuffer uvcData;
 
+    // Values for Controltransfers when setting the brightness ...
+    public static byte bUnitID;
+    public static byte bTerminalID;
+    public static byte[] bNumControlTerminal;
+    public static byte[] bNumControlUnit;
+
 
 
 
@@ -45,12 +51,31 @@ public class UVC_Descriptor {
             ArrayList<byte []> frameData = new ArrayList<>();
             byte[] formatData = null;
             int positionAbsolute = 0;
+            //printData(uvcData.array());
             do  {
-
                 int pos = uvcData.position();
                 byte descSize = uvcData.get(pos);
                 byte descType = uvcData.get(pos +1);
                 byte descSubType = uvcData.get(pos + 2);
+
+                //Set  INPUT_TERMINAL bTerminalID, bNumControlTerminal
+                if (descType == 0x24 && descSubType == 0x02) {
+                    bTerminalID = uvcData.get(pos +3);
+                    bNumControlTerminal = new byte[uvcData.get(pos+14)];
+                    for (int i = 0; i < bNumControlTerminal.length; i++) {
+                        bNumControlTerminal[i] = uvcData.get(pos + 15 + i);
+                    }
+                }
+
+                // Set PROCESSING_UNIT bUnitID, bNumControlUnit
+                if (descType == 0x24 && descSubType == 0x05) {
+                    bUnitID = uvcData.get(pos +3);
+                    bNumControlUnit = new byte[uvcData.get(pos+7)];
+                    for (int i = 0; i < bNumControlUnit.length; i++) {
+                        bNumControlUnit[i] = uvcData.get(pos + 8 + i);
+                    }
+                }
+
 
                 //search for the VideoStreamInterface
                 if (descSize == 0x09 && uvcData.get(pos +5) == CC_VIDEO &&  uvcData.get(pos +6) == SC_VIDEOSTREAMING) {
@@ -62,7 +87,7 @@ public class UVC_Descriptor {
                         formatData = new byte [descSize];
                         uvcData.get(formatData, 0 ,descSize);
                         frameData = new ArrayList<>();
-                        printData(formatData);
+                        //printData(formatData);
                     }
                     else if (descSubType == VS_frame_uncompressed) {
                         byte [] uncompressedFrameData = new byte [descSize];
