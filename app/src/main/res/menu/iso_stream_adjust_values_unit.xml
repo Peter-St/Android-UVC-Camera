@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/brightness"
+        android:title="Brightness"
+        />
+    <item
+        android:id="@+id/contrast"
+        android:title="Contrast"
+        />
+    <item
+        android:id="@+id/hue"
+        android:title="Hue"
+        />
+    <item
+        android:id="@+id/saturation"
+        android:title="Saturation"
+        />
+    <item
+        android:id="@+id/sharpness"
+        android:title="Sharpness"
+        />
+    <item
+        android:id="@+id/gamma"
+        android:title="Gamma"
+        />
+    <item
+        android:id="@+id/white_balance_temperature"
+        android:title="White Balance Temperature"
+        />
+    <item
+        android:id="@+id/white_balance_component"
+        android:title="White Balance Component"
+        />
+    <item
+        android:id="@+id/backlight_compensation"
+        android:title="Backlight Compensation"
+        />
+    <item
+        android:id="@+id/gain"
+        android:title="Gain"
+        />
+    <item
+        android:id="@+id/power_line_frequency"
+        android:title="Power Line Frequency"
+        />
+    <item
+        android:id="@+id/hue_auto"
+        android:title="Hue, Auto"
+        />
+    <item
+        android:id="@+id/white_balance_temperature_auto"
+        android:title="White Balance Temperature, Auto"
+        />
+    <item
+        android:id="@+id/white_balance_component_auto"
+        android:title="White Balance Component, Auto"
+        />
+    <item
+        android:id="@+id/digital_multiplier"
+        android:title="Digital Multiplier"
+        />
+    <item
+        android:id="@+id/digital_multiplier_limit"
+        android:title="Digital Multiplier Limit"
+        />
+    <item
+        android:id="@+id/analog_video_standard"
+        android:title="Analog Video Standard"
+        />
+    <item
+        android:id="@+id/analog_video_lock_status"
+        android:title="Analog Video Lock Status"
+        />
+</menu>

@@ -24,6 +24,7 @@ import android.os.Handler;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -164,8 +165,10 @@ public class Start_Iso_StreamActivity extends Activity {
     // Camera Configuration Values to adjust Values over Controltransfers
 
 
-    private boolean brightnessAutoState;
     private boolean focusAutoState;
+    private boolean exposureAutoState;
+
+
     float discrete=0;
     static float start;
     static float end;
@@ -506,6 +509,15 @@ public class Start_Iso_StreamActivity extends Activity {
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(mUsbReceiver);
+    }
+
+
+
+
     public void showMenu(View v) {
         Context wrapper = new ContextThemeWrapper(this, R.style.YOURSTYLE);
         PopupMenu popup = new PopupMenu(wrapper, v);
@@ -517,17 +529,25 @@ public class Start_Iso_StreamActivity extends Activity {
         else popup.getMenu().findItem(R.id.lowerRes).setChecked(false);
 
 
+        if (bNumControlTerminal == null ||  bNumControlUnit == null) {
+            popup.getMenu().findItem(R.id.adjustValuesUnit).setVisible(false);
+            popup.getMenu().findItem(R.id.adjustValuesTerminal).setVisible(false);
+        }
+
+
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
+
+                    case R.id.adjustValuesUnit:
+                        showAdjustValuesUnitMenu(v);
+                        return true;
+                    case R.id.adjustValuesTerminal:
+                        showAdjustValuesTerminalMenu(v);
+                        return true;
                     case R.id.lowerRes:
                         lowerResolutionClickButtonEvent();
-                        return true;
-                    case R.id.adjustValues:
-
-                        showAdjustValuesMenu(v);
-
                         return true;
                     case R.id.returnToConfigScreen:
                         returnToConfigScreen();
@@ -544,156 +564,173 @@ public class Start_Iso_StreamActivity extends Activity {
         popup.show();
     }
 
-    public void showAdjustValuesMenu(View v) {
+    public void showAdjustValuesUnitMenu(View v) {
         Context wrapper = new ContextThemeWrapper(this, R.style.YOURSTYLE);
         PopupMenu popup = new PopupMenu(wrapper, v);
-        // This activity implements OnMenuItemClickListener
-        popup.inflate(R.menu.iso_stream_adjust_values);
+        popup.inflate(R.menu.iso_stream_adjust_values_unit);
 
+        LockCameraVariables lockVariables = new LockCameraVariables(bNumControlTerminal, bNumControlUnit);
+        lockVariables.initUnit() ;
 
-
+        if(lockVariables.Brightness == true)  popup.getMenu().findItem(R.id.brightness).setVisible(true);
+        else  popup.getMenu().findItem(R.id.brightness).setVisible(false);
+        if(lockVariables.Contrast == true)  popup.getMenu().findItem(R.id.contrast).setVisible(true);
+        else  popup.getMenu().findItem(R.id.contrast).setVisible(false);
+        if(lockVariables.Hue == true)  popup.getMenu().findItem(R.id.hue).setVisible(true);
+        else  popup.getMenu().findItem(R.id.hue).setVisible(false);
+        if(lockVariables.Saturation == true)  popup.getMenu().findItem(R.id.saturation).setVisible(true);
+        else  popup.getMenu().findItem(R.id.saturation).setVisible(false);
+        if(lockVariables.Sharpness == true)  popup.getMenu().findItem(R.id.sharpness).setVisible(true);
+        else  popup.getMenu().findItem(R.id.sharpness).setVisible(false);
+        if(lockVariables.Gamma == true)  popup.getMenu().findItem(R.id.gamma).setVisible(true);
+        else  popup.getMenu().findItem(R.id.gamma).setVisible(false);
+        if(lockVariables.White_Balance_Temperature == true)  popup.getMenu().findItem(R.id.white_balance_temperature).setVisible(true);
+        else  popup.getMenu().findItem(R.id.white_balance_temperature).setVisible(false);
+        if(lockVariables.White_Balance_Component == true)  popup.getMenu().findItem(R.id.white_balance_component).setVisible(true);
+        else  popup.getMenu().findItem(R.id.white_balance_component).setVisible(false);
+        if(lockVariables.Backlight_Compensation == true)  popup.getMenu().findItem(R.id.backlight_compensation).setVisible(true);
+        else  popup.getMenu().findItem(R.id.backlight_compensation).setVisible(false);
+        if(lockVariables.Gain == true)  popup.getMenu().findItem(R.id.gain).setVisible(true);
+        else  popup.getMenu().findItem(R.id.gain).setVisible(false);
+        if(lockVariables.Power_Line_Frequency == true)  popup.getMenu().findItem(R.id.power_line_frequency).setVisible(true);
+        else  popup.getMenu().findItem(R.id.power_line_frequency).setVisible(false);
+        if(lockVariables.Hue_Auto == true)  popup.getMenu().findItem(R.id.hue_auto).setVisible(true);
+        else  popup.getMenu().findItem(R.id.hue_auto).setVisible(false);
+        if(lockVariables.White_Balance_Temperature_Auto == true)  popup.getMenu().findItem(R.id.white_balance_temperature_auto).setVisible(true);
+        else  popup.getMenu().findItem(R.id.white_balance_temperature_auto).setVisible(false);
+        if(lockVariables.White_Balance_Component_Auto == true)  popup.getMenu().findItem(R.id.white_balance_component_auto).setVisible(true);
+        else  popup.getMenu().findItem(R.id.white_balance_component_auto).setVisible(false);
+        if(lockVariables.Digital_Multiplier == true)  popup.getMenu().findItem(R.id.digital_multiplier).setVisible(true);
+        else  popup.getMenu().findItem(R.id.digital_multiplier).setVisible(false);
+        if(lockVariables.Digital_Multiplier_Limit == true)  popup.getMenu().findItem(R.id.digital_multiplier_limit).setVisible(true);
+        else  popup.getMenu().findItem(R.id.digital_multiplier_limit).setVisible(false);
+        if(lockVariables.Analog_Video_Standard == true)  popup.getMenu().findItem(R.id.analog_video_standard).setVisible(true);
+        else  popup.getMenu().findItem(R.id.analog_video_standard).setVisible(false);
+        if(lockVariables.Analog_Video_Lock_Status == true)  popup.getMenu().findItem(R.id.analog_video_lock_status).setVisible(true);
+        else  popup.getMenu().findItem(R.id.analog_video_lock_status).setVisible(false);
 
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.brightness:
-
-                        if (bNumControlUnit!= null) {
-                            int n = 0;  // D0: Brightness (bit counting starts at 0 )
-                            log (" brigness is set = " + (BigInteger.valueOf(bNumControlUnit[0]).testBit(n)));
-
-                            if (BigInteger.valueOf(bNumControlUnit[0]).testBit(n)) {
-                                runOnUiThread(new Runnable() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Runnable myRunnable = new Runnable() {
                                     @Override
                                     public void run() {
-                                        Runnable myRunnable = new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                simpleSeekBar.setEnabled(false);
-                                                simpleSeekBar.setAlpha(0);
-                                                simpleSeekBar = null;
-                                                defaultButton.setEnabled(false);
-                                                defaultButton.setAlpha(0);
-                                                defaultButton = null;
-                                            }
-                                        };
-                                        Handler myHandler = new Handler();
-                                        final int TIME_TO_WAIT = 2500;
-                                        SetCameraVariables setBright = new SetCameraVariables(camDeviceConnection, SetCameraVariables.CameraFunction.brightness, brightnessAutoState, bUnitID, bTerminalID);
+                                        simpleSeekBar.setEnabled(false);
+                                        simpleSeekBar.setAlpha(0);
+                                        simpleSeekBar = null;
+                                        defaultButton.setEnabled(false);
+                                        defaultButton.setAlpha(0);
+                                        defaultButton = null;
+                                    }
+                                };
+                                Handler myHandler = new Handler();
+                                final int TIME_TO_WAIT = 2500;
+                                SetCameraVariables setBright = new SetCameraVariables(camDeviceConnection, SetCameraVariables.CameraFunction.brightness,
+                                        false, bUnitID, bTerminalID);
 
 
-                                        start = setBright.minValue ;
-                                        end = setBright.maxValue;
+                                start = setBright.minValue ;
+                                end = setBright.maxValue;
+                                start_pos = setBright.currentValue;
+                                start_position=(int) (((start_pos-start)/(end-start))*100);
+                                discrete=start_pos;
+
+                                simpleSeekBar = (SeekBar) findViewById(R.id.simpleSeekBar);
+                                simpleSeekBar.setEnabled(true);
+                                simpleSeekBar.setAlpha(1);
+                                simpleSeekBar.setProgress(start_position);
+                                simpleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                                    int progressChangedValue = 0;
+                                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                                        float temp=progress;
+                                        float dis=end-start;
+                                        discrete=(start+((temp/100)*dis));
+                                    }
+                                    public void onStartTrackingTouch(SeekBar seekBar) {
+                                        // TODO Auto-generated method stub
+                                    }
+                                    public void onStopTrackingTouch(SeekBar seekBar) {
+                                        myHandler.removeCallbacks(myRunnable);
+                                        myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                                        setBright.currentValue = Math.round(discrete);
+                                        setBright.adjustValue(SetCameraVariables.CameraFunctionSetting.adjust);
+                                    }
+                                });
+                                defaultButton = (Button) findViewById(R.id.defaultButton);
+                                defaultButton.setEnabled(true);
+                                defaultButton.setAlpha(1);
+                                defaultButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        setBright.adjustValue(SetCameraVariables.CameraFunctionSetting.defaultAdjust);
+                                        myHandler.removeCallbacks(myRunnable);
+                                        myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
                                         start_pos = setBright.currentValue;
                                         start_position=(int) (((start_pos-start)/(end-start))*100);
                                         discrete=start_pos;
-
-                                        simpleSeekBar = (SeekBar) findViewById(R.id.simpleSeekBar);
-                                        simpleSeekBar.setEnabled(true);
-                                        simpleSeekBar.setAlpha(1);
                                         simpleSeekBar.setProgress(start_position);
-                                        simpleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                                            int progressChangedValue = 0;
-                                            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                                                float temp=progress;
-                                                float dis=end-start;
-                                                discrete=(start+((temp/100)*dis));
-                                            }
-                                            public void onStartTrackingTouch(SeekBar seekBar) {
-                                                // TODO Auto-generated method stub
-                                            }
-                                            public void onStopTrackingTouch(SeekBar seekBar) {
-                                                if (brightnessAutoState) return;
-                                                myHandler.removeCallbacks(myRunnable);
-                                                myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
-                                                setBright.currentValue = Math.round(discrete);
-                                                setBright.adjustValue(SetCameraVariables.CameraFunctionSetting.adjust);
-                                            }
-                                        });
-                                        defaultButton = (Button) findViewById(R.id.defaultButton);
-                                        defaultButton.setEnabled(true);
-                                        defaultButton.setAlpha(1);
-                                        defaultButton.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View view) {
-                                                if(brightnessAutoState) return;
-                                                setBright.adjustValue(SetCameraVariables.CameraFunctionSetting.defaultValue);
-                                                myHandler.removeCallbacks(myRunnable);
-                                                myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
-                                                start_pos = setBright.currentValue;
-                                                start_position=(int) (((start_pos-start)/(end-start))*100);
-                                                discrete=start_pos;
-                                                simpleSeekBar.setProgress(start_position);
-                                            }
-                                        });
-                                        myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
                                     }
                                 });
-                            } else displayMessage("Not supported");
-                        }
-                        return true;
-
-                    case R.id.focusAuto:
-
-                        if (bNumControlTerminal != null) {
-
-
-                            int n = 1;  // D17: Focus, Auto (2nd byte from Array)  (bit counting starts at 0 )
-                            if (BigInteger.valueOf(bNumControlTerminal[2]).testBit(n)) {
-
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Runnable myRunnable = new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                switchAuto.setEnabled(false);
-                                                switchAuto.setAlpha(0);
-                                                switchAuto = null;
-                                            }
-                                        };
-                                        Handler myHandler = new Handler();
-                                        final int TIME_TO_WAIT = 2500;
-                                        SetCameraVariables setFocus = new SetCameraVariables(camDeviceConnection, SetCameraVariables.CameraFunction.autofocus, focusAutoState, bUnitID, bTerminalID);
-                                        switchAuto = (Switch) findViewById(R.id.switchAuto);
-                                        switchAuto.setEnabled(true);
-                                        switchAuto.setAlpha(1);
-                                        if (brightnessAutoState) switchAuto.setChecked(true);
-                                        else switchAuto.setChecked(false);
-
-                                        switchAuto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-                                            @Override
-                                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                                                Log.v("Switch State=", ""+isChecked);
-                                                if (isChecked) {
-                                                    brightnessAutoState = true;
-                                                    setFocus.autoEnabled = true;
-                                                    setFocus.adjustValue(SetCameraVariables.CameraFunctionSetting.auto);
-                                                } else {
-                                                    brightnessAutoState = false;
-                                                    setFocus.autoEnabled = false;
-                                                    setFocus.adjustValue(SetCameraVariables.CameraFunctionSetting.auto);
-                                                }
-                                            }
-
-                                        });
-                                        myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
-                                    }
-                                });
-
-                            } else {
-                                displayMessage("Not supported !");
+                                myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
                             }
-                            log (" focusAuto is set = " + (BigInteger.valueOf(bNumControlTerminal[2]).testBit(n)));
-
-
-                        }
-
+                        });
                         return true;
-
+                    case R.id.contrast:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.hue:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.saturation:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.sharpness:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.gamma:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.white_balance_temperature:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.white_balance_component:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.backlight_compensation:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.gain:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.power_line_frequency:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.hue_auto:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.white_balance_temperature_auto:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.white_balance_component_auto:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.digital_multiplier:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.digital_multiplier_limit:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.analog_video_standard:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.analog_video_lock_status:
+                        displayMessage("Not supported up to now...");
+                        return true;
                     default:
                         break;
                 }
@@ -702,6 +739,213 @@ public class Start_Iso_StreamActivity extends Activity {
         });
         popup.show();
     }
+
+    public void showAdjustValuesTerminalMenu(View v) {
+        Context wrapper = new ContextThemeWrapper(this, R.style.YOURSTYLE);
+        PopupMenu popup = new PopupMenu(wrapper, v);
+        popup.inflate(R.menu.iso_stream_adjust_values_terminal);
+
+        LockCameraVariables lockVariables = new LockCameraVariables(bNumControlTerminal, bNumControlUnit);
+        lockVariables.initTerminal();
+
+        if(lockVariables.Scanning_Mode == true)  popup.getMenu().findItem(R.id.scanning_Mode).setVisible(true);
+        else  popup.getMenu().findItem(R.id.scanning_Mode).setVisible(false);
+        if(lockVariables.Auto_Exposure_Mode == true)  popup.getMenu().findItem(R.id.auto_exposure_mode).setVisible(true);
+        else  popup.getMenu().findItem(R.id.auto_exposure_mode).setVisible(false);
+        if(lockVariables.Auto_Exposure_Priority == true)  popup.getMenu().findItem(R.id.Auto_Exposure_Priority).setVisible(true);
+        else  popup.getMenu().findItem(R.id.Auto_Exposure_Priority).setVisible(false);
+        if(lockVariables.Exposure_Time_Absolute == true)  popup.getMenu().findItem(R.id.Exposure_Time_Absolute).setVisible(true);
+        else  popup.getMenu().findItem(R.id.Exposure_Time_Absolute).setVisible(false);
+        if(lockVariables.Exposure_Time_Relative == true)  popup.getMenu().findItem(R.id.Exposure_Time_Relative).setVisible(true);
+        else  popup.getMenu().findItem(R.id.Exposure_Time_Relative).setVisible(false);
+        if(lockVariables.Focus_Absolute == true)  popup.getMenu().findItem(R.id.Focus_Absolute).setVisible(true);
+        else  popup.getMenu().findItem(R.id.Focus_Absolute).setVisible(false);
+        if(lockVariables.Focus_Relative == true)  popup.getMenu().findItem(R.id.Focus_Relative).setVisible(true);
+        else  popup.getMenu().findItem(R.id.Focus_Relative).setVisible(false);
+        if(lockVariables.Iris_Absolute == true)  popup.getMenu().findItem(R.id.Iris_Absolute).setVisible(true);
+        else  popup.getMenu().findItem(R.id.Iris_Absolute).setVisible(false);
+        if(lockVariables.Iris_Relative == true)  popup.getMenu().findItem(R.id.Iris_Relative).setVisible(true);
+        else  popup.getMenu().findItem(R.id.Iris_Relative).setVisible(false);
+        if(lockVariables.Zoom_Absolute == true)  popup.getMenu().findItem(R.id.Zoom_Absolute).setVisible(true);
+        else  popup.getMenu().findItem(R.id.Zoom_Absolute).setVisible(false);
+        if(lockVariables.Zoom_Relative == true)  popup.getMenu().findItem(R.id.Zoom_Relative).setVisible(true);
+        else  popup.getMenu().findItem(R.id.Zoom_Relative).setVisible(false);
+        if(lockVariables.PanTilt_Absolute == true)  popup.getMenu().findItem(R.id.PanTilt_Absolute).setVisible(true);
+        else  popup.getMenu().findItem(R.id.PanTilt_Absolute).setVisible(false);
+        if(lockVariables.PanTilt_Relative == true)  popup.getMenu().findItem(R.id.PanTilt_Relative).setVisible(true);
+        else  popup.getMenu().findItem(R.id.PanTilt_Relative).setVisible(false);
+        if(lockVariables.Roll_Absolute == true)  popup.getMenu().findItem(R.id.Roll_Absolute).setVisible(true);
+        else  popup.getMenu().findItem(R.id.Roll_Absolute).setVisible(false);
+        if(lockVariables.Roll_Relative == true)  popup.getMenu().findItem(R.id.Roll_Relative).setVisible(true);
+        else  popup.getMenu().findItem(R.id.Roll_Relative).setVisible(false);
+        if(lockVariables.Reserved_one == true)  popup.getMenu().findItem(R.id.Reserved1).setVisible(true);
+        else  popup.getMenu().findItem(R.id.Reserved1).setVisible(false);
+        if(lockVariables.Reserved_two == true)  popup.getMenu().findItem(R.id.Reserved2).setVisible(true);
+        else  popup.getMenu().findItem(R.id.Reserved2).setVisible(false);
+        if(lockVariables.Focus_Auto == true)  popup.getMenu().findItem(R.id.focusAuto).setVisible(true);
+        else  popup.getMenu().findItem(R.id.focusAuto).setVisible(false);
+        if(lockVariables.Privacy == true)  popup.getMenu().findItem(R.id.Privacy).setVisible(true);
+        else  popup.getMenu().findItem(R.id.Privacy).setVisible(false);
+
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.scanning_Mode:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.auto_exposure_mode:
+                        //exposureAutoState = true;
+                        displayMessage("Auto_Exposure_Mode should not be disabled. ..");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Runnable myRunnable = new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        switchAuto.setEnabled(false);
+                                        switchAuto.setAlpha(0);
+                                        switchAuto = null;
+                                    }
+                                };
+                                Handler myHandler = new Handler();
+                                final int TIME_TO_WAIT = 2500;
+                                SetCameraVariables setAutoExposure = new SetCameraVariables(camDeviceConnection, SetCameraVariables.CameraFunction.auto_exposure_mode,
+                                        exposureAutoState, bUnitID, bTerminalID);
+                                exposureAutoState = setAutoExposure.autoEnabled;
+                                switchAuto = (Switch) findViewById(R.id.switchAuto);
+                                switchAuto.setEnabled(true);
+                                switchAuto.setAlpha(1);
+                                if (exposureAutoState) switchAuto.setChecked(true);
+                                else switchAuto.setChecked(false);
+
+                                switchAuto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                    @Override
+                                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                                        Log.v("Switch State=", ""+isChecked);
+                                        if (isChecked) {
+                                            exposureAutoState = true;
+                                            setAutoExposure.autoEnabled = true;
+                                            setAutoExposure.adjustValue(SetCameraVariables.CameraFunctionSetting.auto);
+                                        } else {
+                                            exposureAutoState = false;
+                                            setAutoExposure.autoEnabled = false;
+                                            setAutoExposure.adjustValue(SetCameraVariables.CameraFunctionSetting.auto);
+                                        }
+                                    }
+
+                                });
+                                myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                            }
+                        });
+                        return true;
+                    case R.id.Auto_Exposure_Priority:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.Exposure_Time_Absolute:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.Exposure_Time_Relative:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.Focus_Absolute:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.Focus_Relative:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.Iris_Absolute:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.Iris_Relative:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.Zoom_Absolute:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.Zoom_Relative:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.PanTilt_Absolute:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.PanTilt_Relative:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.Roll_Absolute:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.Roll_Relative:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.Reserved1:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.Reserved2:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    case R.id.focusAuto:
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Runnable myRunnable = new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        switchAuto.setEnabled(false);
+                                        switchAuto.setAlpha(0);
+                                        switchAuto = null;
+                                    }
+                                };
+                                Handler myHandler = new Handler();
+                                final int TIME_TO_WAIT = 2500;
+                                SetCameraVariables setFocus = new SetCameraVariables(camDeviceConnection, SetCameraVariables.CameraFunction.autofocus, focusAutoState,
+                                        bUnitID, bTerminalID);
+                                focusAutoState = setFocus.autoEnabled;
+
+
+                                switchAuto = (Switch) findViewById(R.id.switchAuto);
+                                switchAuto.setEnabled(true);
+                                switchAuto.setAlpha(1);
+                                if (focusAutoState) switchAuto.setChecked(true);
+                                else switchAuto.setChecked(false);
+
+                                switchAuto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+                                    @Override
+                                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                                        Log.v("Switch State=", ""+isChecked);
+                                        if (isChecked) {
+                                            focusAutoState = true;
+                                            setFocus.autoEnabled = true;
+                                            setFocus.adjustValue(SetCameraVariables.CameraFunctionSetting.auto);
+                                        } else {
+                                            focusAutoState = false;
+                                            setFocus.autoEnabled = false;
+                                            setFocus.adjustValue(SetCameraVariables.CameraFunctionSetting.auto);
+                                        }
+                                    }
+
+                                });
+                                myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                            }
+                        });
+                        return true;
+
+                    case R.id.Privacy:
+                        displayMessage("Not supported up to now...");
+                        return true;
+                    default:
+                        break;
+                }
+                return false;
+            }
+        });
+        popup.show();
+    }
+
+
 
     public void lowerResolutionClickButtonEvent () {
         if (lowerResolution) lowerResolution = false;
@@ -1301,38 +1545,6 @@ public class Start_Iso_StreamActivity extends Activity {
         controlltransfer = new String(dumpStreamingParms(streamingParms));
     }
 
-    private void initBrightnessParms() throws Exception {
-
-
-
-        /*
-
-        final int timeout = 5000;
-        int len;
-        byte[] brightnessParms = new byte[2];
-        // PU_BRIGHTNESS_CONTROL(0x02), GET_MIN(0x82) [UVC1.5, p. 160, 158, 96]
-        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_MIN, PU_BRIGHTNESS_CONTROL << 8, 0x0200, brightnessParms, brightnessParms.length, timeout);
-        if (len != brightnessParms.length) {
-            displayMessage("Error: Durning PU_BRIGHTNESS_CONTROL");
-            throw new Exception("Camera PU_BRIGHTNESS_CONTROL GET_MIN failed. len= " + len + ".");
-        }
-        log( "brightness min: " + unpackIntBrightness(brightnessParms));
-        brightnessMin = unpackIntBrightness(brightnessParms);
-        // PU_BRIGHTNESS_CONTROL(0x02), GET_MAX(0x83) [UVC1.5, p. 160, 158, 96]
-        camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_MAX, PU_BRIGHTNESS_CONTROL << 8, 0x0200, brightnessParms, brightnessParms.length, timeout);
-        log( "brightness max: " + unpackIntBrightness(brightnessParms));
-        brightnessMax = unpackIntBrightness(brightnessParms);
-        // PU_BRIGHTNESS_CONTROL(0x02), GET_RES(0x84) [UVC1.5, p. 160, 158, 96]
-        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_RES, PU_BRIGHTNESS_CONTROL << 8, 0x0200, brightnessParms, brightnessParms.length, timeout);
-        log( "brightness res: " + unpackIntBrightness(brightnessParms));
-        // PU_BRIGHTNESS_CONTROL(0x02), GET_CUR(0x81) [UVC1.5, p. 160, 158, 96]
-        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, PU_BRIGHTNESS_CONTROL << 8, 0x0200, brightnessParms, brightnessParms.length, timeout);
-        log( "brightness cur: " + unpackIntBrightness(brightnessParms));
-        currentBrightness = unpackIntBrightness(brightnessParms);
-
-        */
-    }
-
     private static void packIntBrightness(int i, byte[] buf) {
         buf[0] = (byte) (i & 0xFF);
         buf[0 + 1] = (byte) ((i >>> 8) & 0xFF);
@@ -1441,12 +1653,6 @@ public class Start_Iso_StreamActivity extends Activity {
         log("setAltSetting");
         usbdevice_fs_util.setInterface(camDeviceConnection.getFileDescriptor(), camStreamingInterface.getId(), altSetting);
     }
-
-// public void clearHalt (int endpointAddr) throws IOException {
-//    IntByReference ep = new IntByReference(endpointAddr);
-//    int rc = libc.ioctl(fileDescriptor, USBDEVFS_CLEAR_HALT, ep.getPointer());
-//    if (rc != 0) {
-//       throw new IOException("ioctl(USBDEVFS_CLEAR_HALT) failed, rc=" + rc + "."); }}
 
     private void enableStreaming_direct(boolean enabled) throws Exception {
         if (!enabled) {

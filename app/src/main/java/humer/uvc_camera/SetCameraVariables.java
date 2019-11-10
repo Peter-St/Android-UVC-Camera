@@ -3,6 +3,8 @@ package humer.uvc_camera;
 import android.hardware.usb.UsbDeviceConnection;
 import android.util.Log;
 
+import java.math.BigInteger;
+
 public class SetCameraVariables {
 
 
@@ -74,8 +76,8 @@ public class SetCameraVariables {
 
     private UsbDeviceConnection camDeviceConnection;
 
-    public enum CameraFunction {brightness, autofocus};
-    public enum CameraFunctionSetting {defaultValue, auto, adjust}
+    public enum CameraFunction {brightness, autofocus, auto_exposure_mode};
+    public enum CameraFunctionSetting {defaultAdjust, auto, adjust}
 
     private CameraFunction cameraFunction;
 
@@ -99,169 +101,319 @@ public class SetCameraVariables {
     }
 
     private void initCameraFunction(CameraFunction cameraFunct) {
-        switch (cameraFunct) {
-            case brightness:
 
-                int timeout = 5000;
-                int len;
-                byte[] brightnessParms = new byte[2];
-                // PU_BRIGHTNESS_CONTROL(0x02), GET_MIN(0x82) [UVC1.5, p. 160, 158, 96]
-                len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_MIN, PU_BRIGHTNESS_CONTROL << 8, bUnitID <<8, brightnessParms, brightnessParms.length, timeout);
-                if (len != brightnessParms.length) {
-                    log("Error: Durning PU_BRIGHTNESS_CONTROL");
-                }
+        int timeout = 500;
+        int len;
+        byte[] controlParms = null;
+        boolean BOOL_GET_CUR = false;
+        boolean BOOL_GET_RES = false;
+        boolean BOOL_GET_INFO = false;
+        boolean BOOL_GET_DEF = false;
+        boolean BOOL_GET_MIN = false;
+        boolean BOOL_GET_MAX = false;
 
-                log("brightness min: " + unpackIntTwoValues(brightnessParms));
-                minValue = unpackIntTwoValues(brightnessParms);
-                // CT_FOCUS_AUTO_CONTROL(0x02), GET_MAX(0x83) [UVC1.5, p. 160, 158, 96]
-                camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_MAX, PU_BRIGHTNESS_CONTROL << 8, bUnitID <<8, brightnessParms, brightnessParms.length, timeout);
-                log("brightness max: " + unpackIntTwoValues(brightnessParms));
-                maxValue = unpackIntTwoValues(brightnessParms);
-                // PU_BRIGHTNESS_CONTROL(0x02), GET_RES(0x84) [UVC1.5, p. 160, 158, 96]
-                len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_RES, PU_BRIGHTNESS_CONTROL << 8, bUnitID <<8, brightnessParms, brightnessParms.length, timeout);
-                log("brightness res: " + unpackIntTwoValues(brightnessParms));
-                // PU_BRIGHTNESS_CONTROL(0x02), GET_CUR(0x81) [UVC1.5, p. 160, 158, 96]
-                len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, PU_BRIGHTNESS_CONTROL << 8, bUnitID <<8, brightnessParms, brightnessParms.length, timeout);
-                log("brightness cur: " + unpackIntTwoValues(brightnessParms));
-                currentValue = unpackIntTwoValues(brightnessParms);
-                len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_DEF, PU_BRIGHTNESS_CONTROL << 8, bUnitID <<8, brightnessParms, brightnessParms.length, timeout);
-                log("brightness default: " + unpackIntTwoValues(brightnessParms));
-                defaultValue = unpackIntTwoValues(brightnessParms);
-                len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_INFO, PU_BRIGHTNESS_CONTROL << 8, bUnitID <<8, brightnessParms, brightnessParms.length, timeout);
-                log("brightness info: " + unpackIntTwoValues(brightnessParms));
-                infoValue = unpackIntTwoValues(brightnessParms);
-                break;
-
-
-
-
-            case autofocus:
-
-                timeout = 500;
-                byte[] focusParms = new byte[1];
-                len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, CT_FOCUS_AUTO_CONTROL << 8, bTerminalID <<8, focusParms, focusParms.length, timeout);
-                if (len != focusParms.length) {
-                    log("Error: Durning CT_FOCUS_AUTO_CONTROL, GET_CUR");
-                }
-                log("current Focus VAlue: " + unpackIntOneValues(focusParms));
-                currentValue = unpackIntOneValues(focusParms);
-
-                len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_DEF, CT_FOCUS_AUTO_CONTROL << 8, bTerminalID <<8, focusParms, focusParms.length, timeout);
-                if (len != focusParms.length) {
-                    log("Error: Durning CT_FOCUS_AUTO_CONTROL, GET_DEF");
-                }
-                log("Focus default: " + unpackIntOneValues(focusParms));
-                defaultValue = unpackIntOneValues(focusParms);
-                len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_INFO, CT_FOCUS_AUTO_CONTROL << 8, bTerminalID, focusParms, focusParms.length, timeout);
-                if (len != focusParms.length) {
-                    log("Error: Durning CT_FOCUS_AUTO_CONTROL, GET_INFO");
-                }
-                log("Focus info: " + unpackIntOneValues(focusParms));
-                infoValue = unpackIntOneValues(focusParms);
-                break;
-
-            default:
-                throw new AssertionError();
-
-        }
-    }
-
-    public void adjustValue(CameraFunctionSetting setting) {
+        int CONTROL;
+        byte bID;
 
         switch (cameraFunction) {
             // temporary solution
             case brightness:
-                int timeout = 500;
-                int len;
-                byte[] brightnessParms = new byte[2];
-
-                switch (setting) {
-
-                    case defaultValue:
-
-                        packIntTwoValues(defaultValue, brightnessParms);
-                        // PU_BRIGHTNESS_CONTROL(0x02), SET_CUR(0x01) [UVC1.5, p. 160, 158, 96]
-                        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, PU_BRIGHTNESS_CONTROL << 8, bUnitID <<8, brightnessParms, brightnessParms.length, timeout);
-                        if (len != brightnessParms.length) {
-                            log("Error: Durning PU_BRIGHTNESS_CONTROL");
-                        }
-                        // PU_BRIGHTNESS_CONTROL(0x02), GET_CUR(0x81) [UVC1.5, p. 160, 158, 96]
-                        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, PU_BRIGHTNESS_CONTROL << 8, bUnitID <<8, brightnessParms, brightnessParms.length, timeout);
-                        if (len != brightnessParms.length) {
-                            log("Error: Durning PU_BRIGHTNESS_CONTROL");
-                        } else {
-                            currentValue = unpackIntTwoValues(brightnessParms);
-                            log( "currentBrightness: " + currentValue);
-                        }
-                        break;
-
-                    case adjust:
-
-                        packIntTwoValues(currentValue, brightnessParms);
-                        // PU_BRIGHTNESS_CONTROL(0x02), SET_CUR(0x01) [UVC1.5, p. 160, 158, 96]
-                        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, PU_BRIGHTNESS_CONTROL << 8, bUnitID <<8, brightnessParms, brightnessParms.length, timeout);
-                        if (len != brightnessParms.length) {
-                            log("Error: Durning PU_BRIGHTNESS_CONTROL");
-                        }
-                        // PU_BRIGHTNESS_CONTROL(0x02), GET_CUR(0x81) [UVC1.5, p. 160, 158, 96]
-                        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, PU_BRIGHTNESS_CONTROL << 8, bUnitID <<8, brightnessParms, brightnessParms.length, timeout);
-                        if (len != brightnessParms.length) {
-                            log("Error: Durning PU_BRIGHTNESS_CONTROL");
-                        } else {
-                            currentValue = unpackIntTwoValues(brightnessParms);
-                            log( "currentBrightness: " + currentValue);
-                        }
-                        break;
-                }
-
+                bID = bUnitID;
+                controlParms = new byte[2];
+                BOOL_GET_CUR = true;
+                BOOL_GET_MIN = true;
+                BOOL_GET_MAX = true;
+                BOOL_GET_RES = true;
+                BOOL_GET_INFO = true;
+                BOOL_GET_DEF = true;
+                CONTROL = PU_BRIGHTNESS_CONTROL;
                 break;
 
             case autofocus:
+                bID = bTerminalID;
+                controlParms = new byte [1];
+                BOOL_GET_CUR = true;
+                BOOL_GET_INFO = true;
+                BOOL_GET_DEF = true;
+                CONTROL = CT_FOCUS_AUTO_CONTROL;
+                break;
 
-                byte[] focusParms = new byte [1];
-                timeout = 500;
-                if(autoEnabled) {
-
-                    packIntOneValues(currentValue, focusParms);
-                    // CT_FOCUS_AUTO_CONTROL(0x02), SET_CUR(0x01) [UVC1.5, p. 160, 158, 96]
-                    len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, CT_FOCUS_AUTO_CONTROL << 8, bTerminalID <<8, focusParms, focusParms.length, timeout);
-                    if (len != focusParms.length) {
-                        log("Error: Durning CT_FOCUS_AUTO_CONTROL - SET_CUR");
-                    }
-                    // CT_FOCUS_AUTO_CONTROL(0x02), GET_CUR(0x81) [UVC1.5, p. 160, 158, 96]
-                    len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, CT_FOCUS_AUTO_CONTROL << 8, bTerminalID <<8, focusParms, focusParms.length, timeout);
-                    if (len != focusParms.length) {
-                        log("Error: Durning CT_FOCUS_AUTO_CONTROL - GET_CUR");
-                    } else {
-                        currentValue = unpackIntOneValues(focusParms);
-                        log( "currentBrightness: " + currentValue);
-                    }
-
-                } else {
-
-                    packIntOneValues(currentValue, focusParms);
-                    // CT_FOCUS_AUTO_CONTROL(0x02), SET_CUR(0x01) [UVC1.5, p. 160, 158, 96]
-                    len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, CT_FOCUS_AUTO_CONTROL << 8, bTerminalID <<8, focusParms, focusParms.length, timeout);
-                    if (len != focusParms.length) {
-                        log("Error: Durning CT_FOCUS_AUTO_CONTROL");
-                    }
-                    // CT_FOCUS_AUTO_CONTROL(0x02), GET_CUR(0x81) [UVC1.5, p. 160, 158, 96]
-                    len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, CT_FOCUS_AUTO_CONTROL << 8, bTerminalID <<8, focusParms, focusParms.length, timeout);
-                    if (len != focusParms.length) {
-                        log("Error: Durning CT_FOCUS_AUTO_CONTROL");
-                    } else {
-                        currentValue = unpackIntOneValues(focusParms);
-                        log( "currentBrightness: " + currentValue);
-                    }
-
-                }
-
+            case auto_exposure_mode:
+                bID = bTerminalID;
+                controlParms = new byte [1];
+                BOOL_GET_CUR = true;
+                BOOL_GET_RES = true;
+                BOOL_GET_INFO = true;
+                BOOL_GET_DEF = true;
+                CONTROL = CT_AE_MODE_CONTROL;
                 break;
 
             default:
                 throw new AssertionError();
-
         }
+
+
+        if (BOOL_GET_MIN) {
+            len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_MIN, CONTROL << 8, bID << 8, controlParms, controlParms.length, timeout);
+            if (len != controlParms.length) log("Error: Durning CONTROL GET_MIN");
+
+            if(controlParms.length == 1){
+                log("Min Value: " + unpackIntOneValues(controlParms));
+                minValue = unpackIntOneValues(controlParms);
+            }
+            else if (controlParms.length == 2) {
+                log("Min Value: " + unpackIntTwoValues(controlParms));
+                minValue = unpackIntTwoValues(controlParms);
+            }
+        }
+        if (BOOL_GET_MAX) {
+            len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_MAX, CONTROL << 8, bID << 8, controlParms, controlParms.length, timeout);
+            if (len != controlParms.length) log("Error: Durning CONTROL GET_MAX");
+
+            if(controlParms.length == 1){
+                log("Max Value: " + unpackIntOneValues(controlParms));
+                maxValue = unpackIntOneValues(controlParms);
+            }
+            else if (controlParms.length == 2) {
+                log("Max Value: " + unpackIntTwoValues(controlParms));
+                maxValue = unpackIntTwoValues(controlParms);
+            }
+        }
+        if (BOOL_GET_RES) {
+            len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_RES, CONTROL << 8, bID << 8, controlParms, controlParms.length, timeout);
+            if (len != controlParms.length) log("Error: Durning CONTROL GET_RES");
+
+            if(controlParms.length == 1){
+                log("RES Value: " + unpackIntOneValues(controlParms));
+                resolutionValue = unpackIntOneValues(controlParms);
+            }
+            else if (controlParms.length == 2) {
+                log("RES Value: " + unpackIntTwoValues(controlParms));
+                resolutionValue = unpackIntTwoValues(controlParms);
+            }
+        }
+        if (BOOL_GET_CUR) {
+            len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, CONTROL << 8, bID << 8, controlParms, controlParms.length, timeout);
+            if (len != controlParms.length) log("Error: Durning CONTROL GET_CUR");
+            if(controlParms.length == 1){
+                log("CUR Value: " + unpackIntOneValues(controlParms));
+                currentValue = unpackIntOneValues(controlParms);
+            }
+            else if (controlParms.length == 2) {
+                log("CUR Value: " + unpackIntTwoValues(controlParms));
+                currentValue = unpackIntTwoValues(controlParms);
+            }
+        }
+        if (BOOL_GET_DEF) {
+            len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_DEF, CONTROL << 8, bID << 8, controlParms, controlParms.length, timeout);
+            if (len != controlParms.length)  log("Error: Durning CONTROL GET_DEF");
+            if(controlParms.length == 1){
+                log("DEF Value: " + unpackIntOneValues(controlParms));
+                defaultValue = unpackIntOneValues(controlParms);
+            }
+            else if (controlParms.length == 2) {
+                log("DEF Value: " + unpackIntTwoValues(controlParms));
+                defaultValue = unpackIntTwoValues(controlParms);
+            }
+        }
+        if (BOOL_GET_INFO) {
+            len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_INFO, CONTROL << 8, bID << 8, controlParms, controlParms.length, timeout);
+            if (len != controlParms.length)   log("Error: Durning CONTROL GET_INFO");
+
+            if(controlParms.length == 1){  log("INFO Value: " + unpackIntOneValues(controlParms));  infoValue = unpackIntOneValues(controlParms); }
+            else if (controlParms.length == 2) { log("INFO Value: " + unpackIntTwoValues(controlParms)); infoValue = unpackIntTwoValues(controlParms);  }
+        }
+
+
+
+        switch (cameraFunction) {
+
+            case auto_exposure_mode:
+                // D0: Manual Mode – manual Exposure Time, manual Iris
+                // D1: Auto Mode – auto Exposure Time, auto Iris
+                // D2: Shutter Priority Mode - manual Exposure Time, auto Iris
+                // D3: Aperture Priority Mode – auto Exposure Time, manual Iris
+                if(BigInteger.valueOf(currentValue).testBit(0)) autoEnabled = false;
+                else if(BigInteger.valueOf(currentValue).testBit(1)) autoEnabled = true;
+                else if(BigInteger.valueOf(currentValue).testBit(2)) autoEnabled = false;
+                else if(BigInteger.valueOf(currentValue).testBit(3)) autoEnabled = true;
+                break;
+            case autofocus:
+                if (currentValue == 0) autoEnabled = false;
+                else if (currentValue == 1) autoEnabled = true;
+                break;
+
+            default:
+                break;
+        }
+
+    }
+
+    public void adjustValue(CameraFunctionSetting setting) {
+
+        int timeout = 500;
+        int len;
+        byte[] controlParms = null;
+        boolean BOOL_SET_CUR;
+        boolean BOOL_GET_CUR;
+        boolean BOOL_GET_RES;
+        boolean BOOL_GET_INFO;
+        boolean BOOL_GET_DEF;
+        boolean BOOL_GET_MIN;
+        boolean BOOL_GET_MAX;
+        int CONTROL;
+        byte bID;
+        boolean exit = false;
+
+        switch (cameraFunction) {
+            // temporary solution
+            case brightness:
+                bID = bUnitID;
+                controlParms = new byte[2];
+                BOOL_SET_CUR = true;
+                BOOL_GET_CUR = true;
+                CONTROL = PU_BRIGHTNESS_CONTROL;
+                break;
+
+            case autofocus:
+                bID = bTerminalID;
+                controlParms = new byte [1];
+                BOOL_SET_CUR = true;
+                BOOL_GET_CUR = true;
+                CONTROL = CT_FOCUS_AUTO_CONTROL;
+                break;
+
+            case auto_exposure_mode:
+                bID = bTerminalID;
+                controlParms = new byte [1];
+                BOOL_SET_CUR = true;
+                BOOL_GET_CUR = true;
+                CONTROL = CT_AE_MODE_CONTROL;
+                exit = true;
+                break;
+
+            default:
+                throw new AssertionError();
+        }
+
+        switch (setting) {
+            case defaultAdjust:
+
+                if (controlParms.length == 1) packIntOneValues(defaultValue, controlParms);
+                else if (controlParms.length == 2) packIntTwoValues(defaultValue, controlParms);
+
+                if(BOOL_SET_CUR) {
+                    len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, CONTROL << 8, bID <<8, controlParms, controlParms.length, timeout);
+                    if (len != controlParms.length) {
+                        log("Error: Durning CONTROL");
+                    }
+                }
+                if (BOOL_GET_CUR) {
+                    len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, CONTROL << 8, bID <<8, controlParms, controlParms.length, timeout);
+                    if (len != controlParms.length) {
+                        log("Error: Durning CONTROL");
+                    } else {
+                        currentValue = unpackIntTwoValues(controlParms);
+                        log( "currentValue: " + currentValue);
+                    }
+                }
+
+                break;
+
+            case adjust:
+
+                if (controlParms.length == 1) packIntOneValues(currentValue, controlParms);
+                else if (controlParms.length == 2) packIntTwoValues(currentValue, controlParms);
+
+                if(BOOL_SET_CUR) {
+                    len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, CONTROL << 8, bID <<8, controlParms, controlParms.length, timeout);
+                    if (len != controlParms.length) {
+                        log("Error: Durning CONTROL");
+                    }
+                }
+                if (BOOL_GET_CUR) {
+                    len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, CONTROL << 8, bID <<8, controlParms, controlParms.length, timeout);
+                    if (len != controlParms.length) {
+                        log("Error: Durning CONTROL");
+                    } else {
+                        if(controlParms.length == 1) currentValue = unpackIntOneValues(controlParms);
+                        else if (controlParms.length == 2) currentValue = unpackIntTwoValues(controlParms);
+                        log( "currentValue: " + currentValue);
+                    }
+                }
+
+                break;
+
+            case auto:
+                if (exit) break;
+                if(autoEnabled) {
+                    if (controlParms.length == 1) packIntOneValues(0x01, controlParms);
+                    else if (controlParms.length == 2) packIntTwoValues(0x01, controlParms);
+                    if(BOOL_SET_CUR) {
+                        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, CONTROL << 8, bID <<8, controlParms, controlParms.length, timeout);
+                        if (len != controlParms.length) {
+                            log("Error: Durning CONTROL - SET_CUR");
+                        }
+                    }
+                    if (BOOL_GET_CUR) {
+                        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, CONTROL << 8, bID <<8, controlParms, controlParms.length, timeout);
+                        if (len != controlParms.length) {
+                            log("Error: Durning CONTROL - GET_CUR");
+                        } else {
+                            currentValue = unpackIntOneValues(controlParms);
+                            log( "currentValue: " + currentValue);
+                        }
+                    }
+                } else {
+                    if (controlParms.length == 1) packIntOneValues(0x00, controlParms);
+                    else if (controlParms.length == 2) packIntTwoValues(0x00, controlParms);
+                    if(BOOL_SET_CUR) {
+                        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, CONTROL << 8, bID <<8, controlParms, controlParms.length, timeout);
+                        if (len != controlParms.length) {
+                            log("Error: Durning CONTROL");
+                        }
+                    }
+                    if (BOOL_GET_CUR) {
+                        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, CONTROL << 8, bID <<8, controlParms, controlParms.length, timeout);
+                        if (len != controlParms.length) {
+                            log("Error: Durning CONTROL");
+                        } else {
+                            currentValue = unpackIntOneValues(controlParms);
+                            log( "currentBrightness: " + currentValue);
+                        }
+                    }
+                }
+                break;
+            default:
+                throw new AssertionError();
+        }
+
+        switch (cameraFunction) {
+
+            case auto_exposure_mode:
+                if (autoEnabled) {
+                    packIntOneValues(defaultValue, controlParms);
+                    len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, CONTROL << 8, bID <<8, controlParms, controlParms.length, timeout);
+                    if (len != controlParms.length) {
+                        log("Error: Durning CONTROL - SET_CUR");
+                    }
+                } else {
+                    packIntOneValues(0x01, controlParms);
+                    len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, CONTROL << 8, bID <<8, controlParms, controlParms.length, timeout);
+                    if (len != controlParms.length) {
+                        log("Error: Durning CONTROL - SET_CUR");
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
+
+
+
+
+
 
     }
 
