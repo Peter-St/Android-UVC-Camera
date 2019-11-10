@@ -8,7 +8,7 @@ https://play.google.com/store/apps/details?id=humer.uvc_camera&hl=de
 
 
 
-This is a Android Studio Project. It connects to a usb camera from your Android Device. (OTG cabel or OTG Hub needed)
+This is a Android Studio Project. It connects to a usb camera from your Android Device. (OTG cabel or OTG Hub needed) (It works with Micro Usb and Usb Type C devices)
 
 # This Project was built to perform an Isochronous Video Stream from all Android Devices (Above 4.1 Ice Cream Sandwich)(Mediathek Devices too).
 
@@ -25,18 +25,22 @@ License
 
     Copyright 2019 Peter Stoiber
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
 
-       http://www.apache.org/licenses/LICENSE-2.0
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+    Please contact the author if you need another license.
+    This Repository is provided "as is", without warranties of any kind.
 
 
 
@@ -47,7 +51,7 @@ Explaination:
 - The Value PACKETS PER REQUEST defines the Number of the Packets sending to the camera device. It also defines the amount of bytes from one Urb (UsbRequestBlock). The minimal size is one packet and you can raise it up to maybe 64.
 - Next value to set is the USB REQUEST BLOCKS (activeUrb) (Urb):  One Urb has a size of "MaxPacketsize x PacketsPerRequest". One Urb is the lowest value and you can raise it up to maybe 64. You have to find here the right values for your device and control the output on the screen under the menupoint "Isoread". The Urbs defines the amount of bytes which are currently available at your camera device. 
 - Some typically values for Qualcom Devices are: 8 for the activeUrbs and 16 Packets per Request....
-- Each camera and Phone needs different values and can proceed to find the right values for your devices.
+- Each camera and Phone needs different values! Now you have to find the right values for your devices.
 
 Isoread:
 The first thing of the method Isoread is a Controltransfer to the camera device:
