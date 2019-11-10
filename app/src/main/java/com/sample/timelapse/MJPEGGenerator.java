@@ -10,6 +10,12 @@ package com.sample.timelapse;
  // Open. You can then make changes to the template in the Source Editor.
  //
 
+
+
+
+
+
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
