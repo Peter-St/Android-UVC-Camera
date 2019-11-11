@@ -80,7 +80,11 @@ public class Main extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
         tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-        tv.setText("Your current Values are:\n\n( - this is a sroll and zoom field - )\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
+        tv.setText("NEW CAMERA FUNCTIONS IN THIS APP:\nThe camera functions for changing the brightness and other camera values" +
+                " have been rewritten!\nTo use the new functions re-run the Button 'Set Up With Uvc Values' for your camera and save the Values!!!" +
+                "\nIf you click the options menu now in the Camera Stream Screen, you now see all functions supported by your camera. " +
+                "Up to now not all functions are supportet by this app, but they could be available in near future.\nSo far,\nHappy testing!" +
+                "\n\nYour current Values are:\n\n( - this is a sroll and zoom field - )\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
                 "\nAltSetting = " + camStreamingAltSetting + "\nMaxPacketSize = " + maxPacketSize + "\nVideoformat = " + videoformat + "\ncamFormatIndex = " + camFormatIndex + "\n" +
                 "camFrameIndex = " + camFrameIndex + "\nimageWidth = "+ imageWidth + "\nimageHeight = " + imageHeight + "\ncamFrameInterval = " + camFrameInterval + "" +
                 "\n\nYou can edit these Settings by clicking on (Set Up The Camera Device).\nYou can then save the values and later restore them.");
