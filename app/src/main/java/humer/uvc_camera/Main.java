@@ -88,6 +88,7 @@ public class Main extends Activity {
                 "\nAltSetting = " + camStreamingAltSetting + "\nMaxPacketSize = " + maxPacketSize + "\nVideoformat = " + videoformat + "\ncamFormatIndex = " + camFormatIndex + "\n" +
                 "camFrameIndex = " + camFrameIndex + "\nimageWidth = "+ imageWidth + "\nimageHeight = " + imageHeight + "\ncamFrameInterval = " + camFrameInterval + "" +
                 "\n\nYou can edit these Settings by clicking on (Set Up The Camera Device).\nYou can then save the values and later restore them.");
+        tv.setTextColor(darker(Color.BLUE, 100));
     }
 
     @Override
@@ -248,7 +249,7 @@ public class Main extends Activity {
                 "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat + "\nCamera Format Index = " + camFormatIndex + "\n" +
                 "Camera FrameIndex = " + camFrameIndex + "\nImage Width = "+ imageWidth + "\nImage Height = " + imageHeight + "\nCamera Frame Interval = " +
                 camFrameInterval + "\n\nUVC Values:\nbUnitID = " + bUnitID + "\nbTerminalID = " + bTerminalID);
-        tv.setTextColor(Color.GREEN);
+        tv.setTextColor(darker(Color.GREEN, 100));
     }
 
     private boolean showStoragePermissionRead() {
@@ -308,6 +309,17 @@ public class Main extends Activity {
                 new String[]{permissionName}, permissionRequestCode);
     }
 
+    public static int darker (int color, float factor) {
+        int a = Color.alpha( color );
+        int r = Color.red( color );
+        int g = Color.green( color );
+        int b = Color.blue( color );
+
+        return Color.argb( a,
+                Math.max( (int)(r * factor), 0 ),
+                Math.max( (int)(g * factor), 0 ),
+                Math.max( (int)(b * factor), 0 ) );
+    }
 
 
 }

@@ -26,9 +26,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Environment;
 import android.support.design.widget.TextInputLayout;
 import android.text.InputType;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -146,6 +150,7 @@ public class SaveToFile  {
                 tv.setText(msg + "\n\nYour current Values are:\n\nPackets Per Request = " + spacketsPerRequest +"\nActive Urbs = " + sactiveUrbs +
                         "\nAltSetting = " + sALT_SETTING + "\nMaximal Packet Size = " + smaxPacketSize + "\nVideoformat = " + svideoformat + "\nCamera Format Index = " + scamFormatIndex + "\n" +
                         "Camera FrameIndex = " + scamFrameIndex + "\nImage Width = "+ simageWidth + "\nImage Height = " + simageHeight + "\nCamera Frame Interval = " + scamFrameInterval );
+                tv.setTextColor(Color.BLACK);
                 tv.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View view, MotionEvent event) {
@@ -184,26 +189,37 @@ public class SaveToFile  {
     public void startEditSave() {
         fetchTheValues();
         activity.setContentView(R.layout.einstellungen);
+
+
         sALT_SETTING_text = (TextView) activity.findViewById(R.id.Altsetting);
-        sALT_SETTING_text.setText( String.format("ALT_SETTING:  %s" , sALT_SETTING));
+        sALT_SETTING_text.setText(setColorText("ALT_SETTING:\n", String.format("%s" , sALT_SETTING)), TextView.BufferType.SPANNABLE);
+
+
+
+
+
+
+
+
         smaxPacketSize_text = (TextView) activity.findViewById(R.id.MaxPacketSize);
-        smaxPacketSize_text.setText( String.format("maxPacketSize:  %s" , smaxPacketSize));
+        smaxPacketSize_text.setText(setColorText("MaxPacketSize:\n", String.format("%s" , smaxPacketSize)), TextView.BufferType.SPANNABLE);
         scamFormatIndex_text = (TextView) activity.findViewById(R.id.FormatIndex);
-        scamFormatIndex_text.setText( String.format("FormatIndex:  %s" , scamFormatIndex));
+        scamFormatIndex_text.setText(setColorText("FormatIndex:\n", String.format("%s" , scamFormatIndex)), TextView.BufferType.SPANNABLE);
         svideoformat_text = (TextView) activity.findViewById(R.id.svideoformat);
-        svideoformat_text.setText( String.format("Videoformat:  %s" , svideoformat));
+        svideoformat_text.setText(setColorText("Videoformat:\n", String.format("%s" , svideoformat)), TextView.BufferType.SPANNABLE);
         scamFrameIndex_text = (TextView) activity.findViewById(R.id.FrameIndex);
-        scamFrameIndex_text.setText( String.format("FrameIndex:  %s" , scamFrameIndex));
+        scamFrameIndex_text.setText(setColorText("FrameIndex:\n", String.format("%s" , scamFrameIndex)), TextView.BufferType.SPANNABLE);
         simageWidth_text = (TextView) activity.findViewById(R.id.ImageWidth);
-        simageWidth_text.setText( String.format("imageWidth:  %s" , simageWidth));
+        simageWidth_text.setText(setColorText("ImageWidth:\n", String.format("%s" , simageWidth)), TextView.BufferType.SPANNABLE);
         simageHeight_text = (TextView) activity.findViewById(R.id.ImageHeight);
-        simageHeight_text.setText( String.format("imageHeight:  %s" , simageHeight));
+        simageHeight_text.setText(setColorText("ImageHeight:\n", String.format("%s" , simageHeight)), TextView.BufferType.SPANNABLE);
         scamFrameInterval_text = (TextView) activity.findViewById(R.id.FrameInterval);
-        scamFrameInterval_text.setText( String.format("CAM_FRAME_INTERVAL:  %s" , scamFrameInterval));
+        scamFrameInterval_text.setText(setColorText("Frame_Interval:\n", String.format("%s" , scamFrameInterval)), TextView.BufferType.SPANNABLE);
         spacketsPerRequest_text = (TextView) activity.findViewById(R.id.PacketsPerReq);
-        spacketsPerRequest_text.setText( String.format("PacketsPerRequest:  %s" , spacketsPerRequest));
+        spacketsPerRequest_text.setText(setColorText("PacketsPerRequest:\n", String.format("%s" , spacketsPerRequest)), TextView.BufferType.SPANNABLE);
         sactiveUrbs_text = (TextView) activity.findViewById(R.id.ActiveUrbs);
-        sactiveUrbs_text.setText( String.format("ACTIVE_URBS:  %s" , sactiveUrbs));
+        sactiveUrbs_text.setText(setColorText("ACTIVE_URBS:\n", String.format("%s" , sactiveUrbs)), TextView.BufferType.SPANNABLE);
+
 
 
         Button button_cancle = (Button) activity.findViewById(R.id.button_cancel);
@@ -972,9 +988,6 @@ public class SaveToFile  {
             public void run() {
 
                 displayMessage(msg);
-                //
-                //tv.setText("msg");
-
 
             }
         });
@@ -1005,6 +1018,33 @@ public class SaveToFile  {
                     public void onClick(DialogInterface dialoginterface, int i) {
                     }
                 }).show();
+    }
+
+    private SpannableStringBuilder setColorText (String aString, String bString ) {
+
+        SpannableStringBuilder spanBuilder = new SpannableStringBuilder();
+
+        SpannableString str1= new SpannableString(aString);
+        str1.setSpan(new ForegroundColorSpan(Color.BLACK), 0, str1.length(), 0);
+        spanBuilder.append(str1);
+
+        SpannableString str2= new SpannableString(bString);
+        str2.setSpan(new ForegroundColorSpan(darker(Color.GREEN,120)), 0, str2.length(), 0);
+        spanBuilder.append(str2);
+
+        return spanBuilder;
+    }
+
+    public static int darker (int color, float factor) {
+        int a = Color.alpha( color );
+        int r = Color.red( color );
+        int g = Color.green( color );
+        int b = Color.blue( color );
+
+        return Color.argb( a,
+                Math.max( (int)(r * factor), 0 ),
+                Math.max( (int)(g * factor), 0 ),
+                Math.max( (int)(b * factor), 0 ) );
     }
 
 

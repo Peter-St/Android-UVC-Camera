@@ -30,6 +30,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
@@ -214,6 +215,7 @@ public class SetUpTheUsbDevice extends Activity {
                         camDevice = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                         displayMessage("ACTION_USB_DEVICE_ATTACHED:");
                         tv.setText("ACTION_USB_DEVICE_ATTACHED: \n");
+                        tv.setTextColor(Color.BLACK);
                         if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                             displayMessage("Permissions Granted to Usb Device");
                         }
@@ -224,6 +226,7 @@ public class SetUpTheUsbDevice extends Activity {
                         camDevice = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                         displayMessage("ACTION_USB_DEVICE_DETACHED: \n");
                         tv.setText("ACTION_USB_DEVICE_DETACHED: \n");
+                        tv.setTextColor(Color.BLACK);
                         if (camDeviceConnection != null) {
                             if (camControlInterface != null) camDeviceConnection.releaseInterface(camControlInterface);
                             if (camStreamingInterface != null) camDeviceConnection.releaseInterface(camStreamingInterface);
@@ -272,6 +275,8 @@ public class SetUpTheUsbDevice extends Activity {
                 "You can run this program with all kinds of Android Devices.\n" +
                 "You alse can run this program with all kinds of UVC Cameras\n" +
                 "If a camera doesn't work, you can contact the developer of this program for solutions.");
+        tv.setTextColor(Color.BLACK);
+
 
         mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
         IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
@@ -306,7 +311,8 @@ public class SetUpTheUsbDevice extends Activity {
                 @Override
                 public void run() {
                     tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                    tv.setText("No Camera connected.");  }
+                    tv.setText("No Camera connected.");
+                    tv.setTextColor(darker(Color.RED, 50));}
             });
             return;
         } else if (camFormatIndex == 0 || camFrameIndex == 0 ||camFrameInterval == 0 ||packetsPerRequest == 0 ||maxPacketSize == 0 ||imageWidth == 0 || activeUrbs == 0  ) {
@@ -314,7 +320,8 @@ public class SetUpTheUsbDevice extends Activity {
                 @Override
                 public void run() {
                     tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                    tv.setText("The Values for the Camera are not correct set.\n\nPlease set up all the values for the camera first!");  }
+                    tv.setText("The Values for the Camera are not correct set.\n\nPlease set up all the values for the camera first!");
+                    tv.setTextColor(darker(Color.RED, 50));}
             });
             return;
 
@@ -373,6 +380,7 @@ public class SetUpTheUsbDevice extends Activity {
                             log ("Camera has Usb permissions = ");
                             tv.setText("A camera has been found.\n\nThe Permissions to the Camera have been granted");
                             displayMessage("A camera has been found.");
+                            tv.setTextColor(darker(Color.GREEN, 50));
                         }
                     });
                 } else {
@@ -383,6 +391,7 @@ public class SetUpTheUsbDevice extends Activity {
                             tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                             tv.setText("A camera is connected to your Android Device\nNo Usb Permissions for the Camera");
                             displayMessage("A camera is connected to your Android Device");
+                            tv.setTextColor(darker(Color.RED, 50));
                         }
                     });
                 }
@@ -393,6 +402,7 @@ public class SetUpTheUsbDevice extends Activity {
                         tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                         tv.setText("No camera found\nSolutions:\n- Connect a camera and try again ...");
                         displayMessage("No camera found\nSolutions:\n- Connect a camera and try again ...");
+                        tv.setTextColor(darker(Color.RED, 50));
                     }
                 });
             }
@@ -404,6 +414,7 @@ public class SetUpTheUsbDevice extends Activity {
                     public void run() {
                         tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                         tv.setText("A camera was found\n\n- The camera has Usb Permissions");
+                        tv.setTextColor(darker(Color.GREEN, 50));
                     }
                 });
 
@@ -414,6 +425,7 @@ public class SetUpTheUsbDevice extends Activity {
                     public void run() {
                         tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                         tv.setText("A camera was found\n\n- NO USB CAMERA PERMISSIOMS");
+                        tv.setTextColor(darker(Color.RED, 50));
                     }
                 });
                 usbManager.requestPermission(camDevice, mPermissionIntent);
@@ -428,7 +440,8 @@ public class SetUpTheUsbDevice extends Activity {
                 @Override
                 public void run() {
                     tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                    tv.setText("No Camera found.\nPlease connect first a camera and run 'Search for a camera' from the menu");  }
+                    tv.setText("No Camera found.\nPlease connect first a camera and run 'Search for a camera' from the menu");
+                    tv.setTextColor(darker(Color.RED, 50));}
             });
         } else {
             listDevice(camDevice);
@@ -442,7 +455,8 @@ public class SetUpTheUsbDevice extends Activity {
                 @Override
                 public void run() {
                     tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                    tv.setText("No Camera found.\nPlease connect a camera, or if allready connected run 'Search for a camera' from the menu");  }
+                    tv.setText("No Camera found.\nPlease connect a camera, or if allready connected run 'Search for a camera' from the menu");
+                    tv.setTextColor(darker(Color.RED, 50));}
             });
         } else {
             camIsOpen = false;
@@ -465,6 +479,7 @@ public class SetUpTheUsbDevice extends Activity {
                     public void run() {
                         tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                         tv.setText(stringBuilder.toString());
+                        tv.setTextColor(Color.BLACK);
                     }
                 });
 
@@ -585,6 +600,7 @@ public class SetUpTheUsbDevice extends Activity {
                     tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                     tv.setSingleLine(false);
                     tv.setText("There is something wrong with your camera\n\nThere have not been detected enought interfaces from your usb device\n\n" + usbDevice.getInterfaceCount() + " - Interfaces have been found, but there should be at least more than 2");
+                    tv.setTextColor(darker(Color.RED, 50));
                     tv.bringToFront();
                 }
             });
@@ -641,6 +657,7 @@ public class SetUpTheUsbDevice extends Activity {
                     tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                     tv.setSingleLine(false);
                     tv.setText(stringBuilder.toString());
+                    tv.setTextColor(Color.BLACK);
                     tv.bringToFront();
                 }
             });
@@ -697,6 +714,7 @@ public class SetUpTheUsbDevice extends Activity {
                     tv.setSingleLine(false);
                     tv.setText(stringBuilder.toString());
                     tv.bringToFront();
+                    tv.setTextColor(Color.BLACK);
                 }
             });
         }
@@ -739,7 +757,8 @@ public class SetUpTheUsbDevice extends Activity {
                 @Override
                 public void run() {
                     tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                    tv.setText("No Permissions were granted to the Camera Device.");  }
+                    tv.setText("No Permissions were granted to the Camera Device.");
+                    tv.setTextColor(darker(Color.RED, 50));}
             });
 
         } else {
@@ -1157,7 +1176,7 @@ public class SetUpTheUsbDevice extends Activity {
                                 public void run() {
                                     tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                                     tv.setText(String.format("The camera stream will be read out for %d Seconds\nLasting seconds: ",(time/1000), (time/1000))+((System.currentTimeMillis()-startTime)/1000));
-                                    //displayMessage(String.format("The camera stream will be read out for %d Seconds\nLasting seconds: ",(time/1000), (time/1000))+((System.currentTimeMillis()-startTime)/1000));
+                                    tv.setTextColor(Color.BLACK);
                                 }
                             });
                             try {
@@ -1256,6 +1275,7 @@ public class SetUpTheUsbDevice extends Activity {
                     public void run() {
                         tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                         tv.setText(stringBuilder.toString());
+                        tv.setTextColor(Color.BLACK);
 
                     }
                 });
@@ -1405,6 +1425,7 @@ public class SetUpTheUsbDevice extends Activity {
                     public void run() {
                         tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                         tv.setText(stringBuilder.toString() );
+                        tv.setTextColor(Color.BLACK);
 
                     }
                 });
@@ -1464,6 +1485,7 @@ public class SetUpTheUsbDevice extends Activity {
                 public void run() {
                     tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                     tv.setText("Failed to initialise the camera" + initStreamingParmsResult);
+                    tv.setTextColor(Color.BLACK);
                 }
             });
         }
@@ -1514,6 +1536,7 @@ public class SetUpTheUsbDevice extends Activity {
                 public void run() {
                     tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                     tv.setText("Failed to initialise the camera" + initStreamingParmsResult);
+                    tv.setTextColor(Color.BLACK);
                 }
             });
         }
@@ -1559,6 +1582,7 @@ public class SetUpTheUsbDevice extends Activity {
                             "The first Controltransfer for sending the Values to the Camera: \n" + initStreamingParms + "" +
                             "\n\nThe second Controltransfer for probing the values with the camera:\n" + probedStreamingParms + "" +
                             "\n\nThe Last Controltransfer for receiving the final Camera Values from the Camera: \n" + finalStreamingParms);
+                    tv.setTextColor(Color.BLACK);
                 }
             });
         } else {
@@ -1570,6 +1594,7 @@ public class SetUpTheUsbDevice extends Activity {
                             "The first Controltransfer for sending the Values to the Camera: \n" + initStreamingParms + "" +
                             "\n\nThe second Controltransfer for probing the values with the camera:\n" + probedStreamingParms + "" +
                             "\n\nThe Last Controltransfer for receiving the final Camera Values from the Camera: \n" + finalStreamingParms);
+                    tv.setTextColor(darker(Color.RED, 50));
                 }
             });
         }
@@ -1625,6 +1650,7 @@ public class SetUpTheUsbDevice extends Activity {
                 public void run() {
                     tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                     tv.setText("Brightness Control Sucessful\n\n" + stringBuilder.toString());
+                    tv.setTextColor(Color.BLACK);
                 }
             });
 
@@ -1634,6 +1660,7 @@ public class SetUpTheUsbDevice extends Activity {
                 public void run() {
                     tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                     tv.setText("Please Run The Video Probe Commit Control Transfer first!");
+                    tv.setTextColor(Color.BLACK);
                 }
             });
         }
@@ -1760,5 +1787,17 @@ public class SetUpTheUsbDevice extends Activity {
         }
         sb.append("]");
         return sb.toString();
+    }
+
+    public static int darker (int color, float factor) {
+        int a = Color.alpha( color );
+        int r = Color.red( color );
+        int g = Color.green( color );
+        int b = Color.blue( color );
+
+        return Color.argb( a,
+                Math.max( (int)(r * factor), 0 ),
+                Math.max( (int)(g * factor), 0 ),
+                Math.max( (int)(b * factor), 0 ) );
     }
 }

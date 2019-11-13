@@ -132,60 +132,42 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="1" />
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:weightSum="10">
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_below="@id/guidelinehor3"
 
-        <LinearLayout
-            android:id="@+id/show_contact_bottomArea"
+        app:layout_constraintTop_toBottomOf="@id/setUpWithUVC"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+
+        android:layout_marginEnd="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginVertical="10dp"
+
+        android:scrollbars="vertical"
+        android:fadeScrollbars="false"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:scrollbarFadeDuration="50000"
+        android:scrollbarSize="4dp"
+        android:scrollbarThumbVertical="@color/colorSecondaryText"
+
+        >
+
+
+        <noman.zoomtextview.ZoomTextView
+            android:id="@+id/textDarstellung"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_weight="4.5"
-            android:orientation="vertical">
-        </LinearLayout>
+            android:layout_height="match_parent"
+            android:gravity="fill_vertical"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            android:layout_marginBottom="3dp"
+            />
 
-        <LinearLayout
-            android:id="@+id/show_contact_middleArea"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_above="@+id/show_contact_bottomArea"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/show_contact_headerArea"
-            android:layout_weight="5.5"
-            android:orientation="vertical">
+    </ScrollView>
 
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/guidelinehor3"
-                android:layout_marginTop="2dp"
-                android:layout_marginBottom="2dp"
-                android:gravity="center"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="@id/guidelinehor3">
-
-
-                    <noman.zoomtextview.ZoomTextView
-                        android:id="@+id/textDarstellung"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="fill_vertical"
-                        android:layout_marginLeft="3dp"
-                        android:layout_marginRight="3dp"
-                        android:layout_marginBottom="3dp"
-                        />
-
-            </ScrollView>
-
-        </LinearLayout>
-
-    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

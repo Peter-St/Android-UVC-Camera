@@ -3,4 +3,9 @@
     <color name="colorPrimary">#9fee2b11</color>
     <color name="colorPrimaryDark">#6e0f2122</color>
     <color name="colorAccent">#a8358a00</color>
+    <color name="textColorPrimary">#FFFFFF</color>
+    <color name="windowBackground">#FFFFFF</color>
+    <color name="navigationBarColor">#000000</color>
+    <color name="colorSecondaryText">#727272</color>
+    <color name="divider">#B6B6B6</color>
 </resources>

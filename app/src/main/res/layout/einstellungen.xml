@@ -1,126 +1,282 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
-    android:id="@+id/rl"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/main_background"
+    >
+
+    <android.support.constraint.Guideline
+        android:id="@+id/h_line"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.9" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/v_line"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <android.support.v4.widget.NestedScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/scoll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/h_line"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+
+        android:scrollbars="vertical"
+        android:fadeScrollbars="false"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:scrollbarFadeDuration="50000"
+        android:scrollbarSize="4dp"
+        android:scrollbarThumbVertical="@color/colorSecondaryText"
 
 
-    <LinearLayout
-        android:id="@+id/ll1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="0dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginTop="0dp"
-        android:orientation="horizontal">
+        >
 
-        <LinearLayout
-            android:id="@+id/Output"
-            android:layout_width="182dp"
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            >
+
+
+            <android.support.constraint.Guideline
+                android:id="@+id/v_guideline1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@android:color/darker_gray"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+
+                />
+
+
 
             <TextView
                 android:id="@+id/Altsetting"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="55dp"
                 android:text="Altsetting"
-                android:textSize="18sp" />
+                android:textSize="18sp"
 
 
+
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="@id/v_guideline1"
+                app:layout_constraintTop_toTopOf="parent"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/Altsetting"
+                />
 
             <TextView
                 android:id="@+id/MaxPacketSize"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="55dp"
                 android:text="MaxPacketSize"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="@id/v_guideline1"
+                app:layout_constraintTop_toBottomOf="@id/Altsetting"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/MaxPacketSize"
+                />
 
             <TextView
                 android:id="@+id/FormatIndex"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="55dp"
                 android:background="?attr/colorButtonNormal"
                 android:text="FormatIndex"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="@id/v_guideline1"
+                app:layout_constraintTop_toBottomOf="@id/MaxPacketSize"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/FormatIndex"
+                />
 
             <TextView
                 android:id="@+id/svideoformat"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="55dp"
                 android:text="Videoformat"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+
+
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="@id/v_guideline1"
+                app:layout_constraintTop_toBottomOf="@id/FormatIndex"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/svideoformat"
+                />
 
             <TextView
                 android:id="@+id/FrameIndex"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="55dp"
                 android:background="?attr/colorButtonNormal"
                 android:text="FrameIndex"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="@id/v_guideline1"
+                app:layout_constraintTop_toBottomOf="@id/svideoformat"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/FrameIndex"
+                />
 
             <TextView
                 android:id="@+id/ImageWidth"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="55dp"
                 android:text="ImageWidth"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="@id/v_guideline1"
+                app:layout_constraintTop_toBottomOf="@id/FrameIndex"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ImageWidth"
+                />
 
             <TextView
                 android:id="@+id/ImageHeight"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="55dp"
                 android:text="ImageHeight"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="@id/v_guideline1"
+                app:layout_constraintTop_toBottomOf="@id/ImageWidth"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ImageHeight"
+                />
 
             <TextView
                 android:id="@+id/FrameInterval"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="55dp"
                 android:background="?attr/colorButtonNormal"
                 android:text="FrameInterval"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="@id/v_guideline1"
+                app:layout_constraintTop_toBottomOf="@id/ImageHeight"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/FrameInterval"
+                />
 
             <TextView
                 android:id="@+id/PacketsPerReq"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="55dp"
                 android:text="PacketsPerReq."
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="@id/v_guideline1"
+                app:layout_constraintTop_toBottomOf="@id/FrameInterval"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/PacketsPerReq"
+                />
 
             <TextView
                 android:id="@+id/ActiveUrbs"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="55dp"
                 android:text="ActiveUrbs"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="@id/v_guideline1"
+                app:layout_constraintTop_toBottomOf="@id/PacketsPerReq"
+                />
 
-            <Button
-                android:id="@+id/button_cancel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="cancel" />
-        </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/Input"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+
+
+
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/alt"
-                android:layout_width="match_parent"
-                android:layout_height="55dp">
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                app:layout_constraintLeft_toLeftOf="@id/v_guideline1"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                >
 
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/altsetttext"
@@ -132,8 +288,12 @@
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/maxP"
-                android:layout_width="match_parent"
-                android:layout_height="55dp">
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="@id/v_guideline1"
+                app:layout_constraintTop_toBottomOf="@id/alt"
+                >
 
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/maxPtext"
@@ -145,9 +305,12 @@
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/Format"
-                android:layout_width="match_parent"
-                android:layout_height="55dp">
-
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="@id/v_guideline1"
+                app:layout_constraintTop_toBottomOf="@id/maxP"
+                >
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/FormatText"
                     android:layout_width="match_parent"
@@ -158,22 +321,27 @@
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/Video"
-                android:layout_width="match_parent"
-                android:layout_height="55dp">
-
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="@id/v_guideline1"
+                app:layout_constraintTop_toBottomOf="@id/Format"
+                >
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/VideoText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="mjpeg or yuv"
-                    />
+                    android:hint="mjpeg or yuv" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/Frame"
-                android:layout_width="match_parent"
-                android:layout_height="55dp">
-
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="@id/v_guideline1"
+                app:layout_constraintTop_toBottomOf="@id/Video"
+                >
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/FrameText"
                     android:layout_width="match_parent"
@@ -184,9 +352,12 @@
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/Imagewi"
-                android:layout_width="match_parent"
-                android:layout_height="55dp">
-
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="@id/v_guideline1"
+                app:layout_constraintTop_toBottomOf="@id/Frame"
+                >
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/ImageWiText"
                     android:layout_width="match_parent"
@@ -197,9 +368,12 @@
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/ImageHei"
-                android:layout_width="match_parent"
-                android:layout_height="55dp">
-
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="@id/v_guideline1"
+                app:layout_constraintTop_toBottomOf="@id/Imagewi"
+                >
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/ImageHeiText"
                     android:layout_width="match_parent"
@@ -210,9 +384,12 @@
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/frameInt"
-                android:layout_width="match_parent"
-                android:layout_height="55dp">
-
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="@id/v_guideline1"
+                app:layout_constraintTop_toBottomOf="@id/ImageHei"
+                >
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/frameIntText"
                     android:layout_width="match_parent"
@@ -223,9 +400,12 @@
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/PacketsPer"
-                android:layout_width="match_parent"
-                android:layout_height="55dp">
-
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="@id/v_guideline1"
+                app:layout_constraintTop_toBottomOf="@id/frameInt"
+                >
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/PacketsPerText"
                     android:layout_width="match_parent"
@@ -236,9 +416,12 @@
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/ActiveUr"
-                android:layout_width="match_parent"
-                android:layout_height="55dp">
-
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="@id/v_guideline1"
+                app:layout_constraintTop_toBottomOf="@id/PacketsPer"
+                >
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/ActiveUrText"
                     android:layout_width="match_parent"
@@ -247,16 +430,55 @@
                     android:inputType="number" />
             </android.support.design.widget.TextInputLayout>
 
-            <Button
-                android:id="@+id/button_ok"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="ok" />
-        </LinearLayout>
-    </LinearLayout>
+
+        </android.support.constraint.ConstraintLayout>
 
 
 
-</RelativeLayout>
 
-</ScrollView>
+
+    </android.support.v4.widget.NestedScrollView>
+
+
+
+
+    <Button
+        android:id="@+id/button_ok"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="ok"
+
+        app:layout_constraintTop_toTopOf="@id/h_line"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="@id/v_line"
+        app:layout_constraintRight_toRightOf="parent"
+        android:background="@drawable/bg_button_green"
+
+        android:layout_marginEnd="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginVertical="5dp"
+        />
+
+
+    <Button
+        android:id="@+id/button_cancel"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="cancel"
+
+        app:layout_constraintTop_toTopOf="@id/h_line"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="@id/v_line"
+        android:background="@drawable/bg_button"
+
+        android:layout_marginEnd="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginVertical="5dp"
+
+        />
+
+
+</android.support.constraint.ConstraintLayout>
