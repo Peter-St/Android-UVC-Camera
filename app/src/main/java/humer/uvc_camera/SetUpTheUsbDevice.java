@@ -380,7 +380,7 @@ public class SetUpTheUsbDevice extends Activity {
                             log ("Camera has Usb permissions = ");
                             tv.setText("A camera has been found.\n\nThe Permissions to the Camera have been granted");
                             displayMessage("A camera has been found.");
-                            tv.setTextColor(darker(Color.GREEN, 50));
+                            tv.setTextColor(darker(Color.GREEN, 100));
                         }
                     });
                 } else {
@@ -414,7 +414,7 @@ public class SetUpTheUsbDevice extends Activity {
                     public void run() {
                         tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                         tv.setText("A camera was found\n\n- The camera has Usb Permissions");
-                        tv.setTextColor(darker(Color.GREEN, 50));
+                        tv.setTextColor(darker(Color.GREEN, 100));
                     }
                 });
 
@@ -612,7 +612,6 @@ public class SetUpTheUsbDevice extends Activity {
 
             convertedMaxPacketSize = new int [(usbDevice.getInterfaceCount())];
             stringBuilder = new StringBuilder();
-            log("usbDevice.getInterfaceCount() = " + usbDevice.getInterfaceCount());
             int interfaces = usbDevice.getInterfaceCount();
             for (int i = 0; i < interfaces; i++) {
                 UsbInterface usbInterface = usbDevice.getInterface(i);
@@ -627,6 +626,8 @@ public class SetUpTheUsbDevice extends Activity {
                 stringBuilder.append(logEntry.toString());
                 stringBuilder.append("\n");
                 int endpoints = usbInterface.getEndpointCount();
+                log("usbInterface.getEndpointCount() = " + usbInterface.getEndpointCount());
+
                 for (int j = 0; j < endpoints; j++) {
                     UsbEndpoint usbEndpoint = usbInterface.getEndpoint(j);
                     log("- Endpoint: addr=" + String.format("0x%02x ", usbEndpoint.getAddress()).toString() + " maxPacketSize=" + returnConvertedValue(usbEndpoint.getMaxPacketSize()) + " type=" + usbEndpoint.getType() + " ]");

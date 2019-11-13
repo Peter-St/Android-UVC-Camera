@@ -69,11 +69,13 @@ public class UVC_Descriptor {
 
     public int phraseUvcData() {
         try {
+            boolean foundPROCESSING_UNIT = false;
+            boolean foundINPUT_TERMINAL = false;
             boolean videoStreamInterfaceDescriptor = false;
             ArrayList<byte []> frameData = new ArrayList<>();
             byte[] formatData = null;
             int positionAbsolute = 0;
-            //printData(uvcData.array());
+            printData(uvcData.array());
             do  {
                 int pos = uvcData.position();
                 byte descSize = uvcData.get(pos);
@@ -82,19 +84,25 @@ public class UVC_Descriptor {
 
                 //Set  INPUT_TERMINAL bTerminalID, bNumControlTerminal
                 if (descType == 0x24 && descSubType == 0x02) {
-                    bTerminalID = uvcData.get(pos +3);
-                    bNumControlTerminal = new byte[uvcData.get(pos+14)];
-                    for (int i = 0; i < bNumControlTerminal.length; i++) {
-                        bNumControlTerminal[i] = uvcData.get(pos + 15 + i);
+                    if (!foundINPUT_TERMINAL) {
+                        foundINPUT_TERMINAL = true;
+                        bTerminalID = uvcData.get(pos +3);
+                        bNumControlTerminal = new byte[uvcData.get(pos+14)];
+                        for (int i = 0; i < bNumControlTerminal.length; i++) {
+                            bNumControlTerminal[i] = uvcData.get(pos + 15 + i);
+                        }
                     }
                 }
 
                 // Set PROCESSING_UNIT bUnitID, bNumControlUnit
                 if (descType == 0x24 && descSubType == 0x05) {
-                    bUnitID = uvcData.get(pos +3);
-                    bNumControlUnit = new byte[uvcData.get(pos+7)];
-                    for (int i = 0; i < bNumControlUnit.length; i++) {
-                        bNumControlUnit[i] = uvcData.get(pos + 8 + i);
+                    if (!foundPROCESSING_UNIT) {
+                        foundPROCESSING_UNIT = true;
+                        bUnitID = uvcData.get(pos +3);
+                        bNumControlUnit = new byte[uvcData.get(pos+7)];
+                        for (int i = 0; i < bNumControlUnit.length; i++) {
+                            bNumControlUnit[i] = uvcData.get(pos + 8 + i);
+                        }
                     }
                 }
 
