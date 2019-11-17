@@ -57,7 +57,7 @@ public class Main extends Activity {
     public static byte bTerminalID;
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
-
+    public static byte bStillCaptureMethod;
 
     public boolean bildaufnahme = false;
 
@@ -127,6 +127,7 @@ public class Main extends Activity {
             bTerminalID = data.getByteExtra("bTerminalID",(byte)0);
             bNumControlTerminal = data.getByteArrayExtra("bNumControlTerminal");
             bNumControlUnit = data.getByteArrayExtra("bNumControlUnit");
+            bStillCaptureMethod = data.getByteExtra("bStillCaptureMethod",(byte) 0);
 
 
             tv.setText("Your current Values are:\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
@@ -177,6 +178,7 @@ public class Main extends Activity {
             bundle.putByte("bTerminalID",bTerminalID);
             bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
             bundle.putByteArray("bNumControlUnit", bNumControlUnit);
+            bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
 
             intent.putExtra("bun",bundle);
             super.onResume();
@@ -227,6 +229,7 @@ public class Main extends Activity {
                 bundle.putByte("bTerminalID",bTerminalID);
                 bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
                 bundle.putByteArray("bNumControlUnit", bNumControlUnit);
+                bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
 
                 intent.putExtra("bun",bundle);
                 startActivity(intent);

@@ -127,20 +127,12 @@ public class SetUpTheUsbDevice extends Activity {
     public static byte bTerminalID;
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
+    public static byte bStillCaptureMethod;
 
 
 
     // Vales for debuging the camera
-    private boolean bildaufnahme = false;
-    private boolean videorecord = false;
-    private boolean videorecordApiJellyBean = false;
-    private boolean stopKamera = false;
-    private boolean pauseCamera = false;
-    private boolean longclickVideoRecord = false;
-    private int stillImageFrame = 0;
-    private int stillImageFrameBeenden = 0;
-    private boolean stillImageAufnahme = false;
-    private int stillImage = 0;
+
     private String controlltransfer;
     private String initStreamingParmsResult;
     private String initStreamingParms;
@@ -154,18 +146,11 @@ public class SetUpTheUsbDevice extends Activity {
     public static boolean camIsOpen;
     private boolean bulkMode;
     private enum Options { searchTheCamera, testrun, listdevice, showTestRunMenu, setUpWithUvcSettings };
-    private Options  options;
 
 
     //Buttons & Views
     protected Button testrun;
     private ZoomTextView tv;
-
-    // Zoom View
-    final static float STEP = 200;
-    float mRatio = 1.0f;
-    int mBaseDist;
-    float mBaseRatio;
 
     //  Other Classes as Objects
     private UVC_Descriptor uvc_descriptor;
@@ -1706,7 +1691,6 @@ public class SetUpTheUsbDevice extends Activity {
 
     public void returnToConfigScreen(View view) {
 
-        stopKamera = true;
         mPermissionIntent = null;
         unregisterReceiver(mUsbReceiver);
         unregisterReceiver(mUsbDeviceReceiver);
@@ -1735,7 +1719,7 @@ public class SetUpTheUsbDevice extends Activity {
             bTerminalID = bundle.getByte("bTerminalID",(byte)0);
             bNumControlTerminal = bundle.getByteArray("bNumControlTerminal");
             bNumControlUnit = bundle.getByteArray("bNumControlUnit");
-
+            bStillCaptureMethod = bundle.getByte("bStillCaptureMethod", (byte)0);
         } else {
             stf = new SaveToFile(this, this);
             stf.restoreValuesFromFile();
@@ -1766,6 +1750,7 @@ public class SetUpTheUsbDevice extends Activity {
         resultIntent.putExtra("bTerminalID", bTerminalID);
         resultIntent.putExtra("bNumControlTerminal", bNumControlTerminal);
         resultIntent.putExtra("bNumControlUnit", bNumControlUnit);
+        resultIntent.putExtra("bStillCaptureMethod", bStillCaptureMethod);
 
 
         setResult(Activity.RESULT_OK, resultIntent);

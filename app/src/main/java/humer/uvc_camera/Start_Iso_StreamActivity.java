@@ -107,8 +107,6 @@ public class Start_Iso_StreamActivity extends Activity {
     // VideoStreaming interface control selectors (CS):
     private static final int VS_PROBE_CONTROL = 0x01;
     private static final int VS_COMMIT_CONTROL = 0x02;
-    private static final int PU_BRIGHTNESS_CONTROL = 0x02;
-
     private static final int VS_STILL_PROBE_CONTROL = 0x03;
     private static final int VS_STILL_COMMIT_CONTROL = 0x04;
     private static final int VS_STREAM_ERROR_CODE_CONTROL = 0x06;
@@ -138,6 +136,7 @@ public class Start_Iso_StreamActivity extends Activity {
     private static boolean camIsOpen;
     public static byte bUnitID;
     public static byte bTerminalID;
+    public static byte bStillCaptureMethod;
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
 
@@ -148,10 +147,8 @@ public class Start_Iso_StreamActivity extends Activity {
     private boolean stopKamera = false;
     private boolean pauseCamera = false;
     private boolean longclickVideoRecord = false;
-    private int stillImageFrame = 0;
-    private int stillImageFrameBeenden = 0;
     private boolean stillImageAufnahme = false;
-    private int stillImage = 0;
+    private boolean saveStillImage = false;
     private String controlltransfer;
     private boolean exit = false;
     public StringBuilder stringBuilder;
@@ -258,7 +255,7 @@ public class Start_Iso_StreamActivity extends Activity {
             @Override
             public boolean onLongClick(View view) {
                 mp2.start();
-                hoheAuflösung();
+                if (bStillCaptureMethod == 2)  stillImageAufnahme = true;
                 return true;
             }
         });
@@ -525,7 +522,6 @@ public class Start_Iso_StreamActivity extends Activity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     @Override
@@ -534,8 +530,12 @@ public class Start_Iso_StreamActivity extends Activity {
         unregisterReceiver(mUsbReceiver);
     }
 
-
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
+        registerReceiver(mUsbReceiver, filter);
+    }
 
     public void showMenu(View v) {
         Context wrapper = new ContextThemeWrapper(this, R.style.YOURSTYLE);
@@ -1027,6 +1027,7 @@ public class Start_Iso_StreamActivity extends Activity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            initStillImageParms();
             if (camIsOpen) {
 
                 if (runningStream != null) {
@@ -1264,15 +1265,7 @@ public class Start_Iso_StreamActivity extends Activity {
 
         bildaufnahme = true;
         displayMessage("Image saved");
-        //log("Saving the Image ...");
 
-    }
-
-    private void hoheAuflösung() {
-
-        stillImageFrame++;
-        displayMessage("Still Image Frame saved");
-        log("Saving the Image ....  " + "");
     }
 
     public void stopTheCameraStreamClickEvent(View view) {
@@ -1323,16 +1316,62 @@ public class Start_Iso_StreamActivity extends Activity {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         yuvImage.compressToJpeg(new Rect(0, 0, imageWidth, imageHeight), 100, os);
         byte[] jpegByteArray = os.toByteArray();
-        final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                imageView.setImageBitmap(bitmap);
+
+        if (bildaufnahme) {
+            bildaufnahme = false ;
+            date = new Date() ;
+            dateFormat = new SimpleDateFormat("dd.MM.yyyy_HH..mm..ss") ;
+            String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
+            file = new File(rootPath);
+            if (!file.exists()) {
+                file.mkdirs();
             }
-        });
-        if (videorecordApiJellyBean) {
-            bitmapToVideoEncoder.queueFrame(bitmap);
+            String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getPath() ;
+            writeBytesToFile(fileName, jpegByteArray);
+            log ("file saved");
         }
+
+        if (saveStillImage) {
+            date = new Date();
+            dateFormat = new SimpleDateFormat("\"dd.MM.yyyy_HH..mm..ss") ;
+            String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
+            file = new File(rootPath);
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+            String fileName = new File(rootPath + "Still_Image" + dateFormat.format(date) + ".jpg").getPath() ;
+            writeBytesToFile(fileName, jpegByteArray);
+            saveStillImage = false;
+        }
+
+        if (videorecord) {
+            if (System.currentTimeMillis() - currentTime > 200) {
+                currentTime = System.currentTimeMillis();
+                lastPicture ++;
+                String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Video/rec/";
+                File file = new File(rootPath);
+                if (!file.exists()) {
+                    file.mkdirs();
+                }
+                String fileName = new File(rootPath + lastPicture + ".jpg").getPath() ;
+                writeBytesToFile(fileName, jpegByteArray);
+            }
+        }
+
+        if (exit == false) {
+            final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    imageView.setImageBitmap(bitmap);
+                }
+            });
+            if (videorecordApiJellyBean) {
+                bitmapToVideoEncoder.queueFrame(bitmap);
+            }
+        }
+
+
 
     }
 
@@ -1356,24 +1395,19 @@ public class Start_Iso_StreamActivity extends Activity {
 
         }
 
-        if (stillImageAufnahme) {
-            if (stillImage == 1) {
-                date = new Date();
-                dateFormat = new SimpleDateFormat("\"dd.MM.yyyy_HH..mm..ss") ;
-                String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
-                file = new File(rootPath);
-                if (!file.exists()) {
-                    file.mkdirs();
-                }
-                //String fileName = new File(rootPath + String.valueOf(date.getTime()) + ".jpg").getPath();
-                String fileName = new File(rootPath + dateFormat.format(date) + ".png").getPath() ;
-                writeBytesToFile(fileName, mjpegFrameData);
+        if (saveStillImage) {
+
+            date = new Date();
+            dateFormat = new SimpleDateFormat("\"dd.MM.yyyy_HH..mm..ss") ;
+            String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
+            file = new File(rootPath);
+            if (!file.exists()) {
+                file.mkdirs();
             }
-            stillImage++;
-            if (stillImage == 2) {
-                stillImageAufnahme = false;
-                stillImage = 0;
-            }
+            String fileName = new File(rootPath + "Still_Image" + dateFormat.format(date) + ".jpg").getPath() ;
+            writeBytesToFile(fileName, mjpegFrameData);
+            saveStillImage = false;
+            log("Still Image Save Complete");
         }
 
         if (videorecord) {
@@ -1387,7 +1421,6 @@ public class Start_Iso_StreamActivity extends Activity {
                 }
                 String fileName = new File(rootPath + lastPicture + ".jpg").getPath() ;
                 writeBytesToFile(fileName, jpegFrameData);
-
             }
 
         }
@@ -1590,29 +1623,45 @@ public class Start_Iso_StreamActivity extends Activity {
         return s.toString();
     }
 
-    private void initStillImageParms() throws Exception {
+    private void initStillImageParms() {
         final int timeout = 5000;
         int len;
         byte[] parms = new byte[11];
+
+        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_MIN, VS_STILL_PROBE_CONTROL << 8, camStreamingInterface.getId(), parms, parms.length, timeout);
+        if (len != parms.length) {
+            log("Camera initialization failed. Still image parms probe get failed.");
+        }
+        log("Probed still image parms (GET_MIN): " + dumpStillImageParms(parms));
+        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_MAX, VS_STILL_PROBE_CONTROL << 8, camStreamingInterface.getId(), parms, parms.length, timeout);
+        if (len != parms.length) {
+            log("Camera initialization failed. Still image parms probe get failed.");
+        }
+        log("Probed still image parms (GET_MAX): " + dumpStillImageParms(parms));
+
         parms[0] = (byte) camFormatIndex;
         parms[1] = (byte) camFrameIndex;
-        parms[2] = 1;
-//   len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, SET_CUR, VS_STILL_PROBE_CONTROL << 8, camStreamingInterface.getId(), parms, parms.length, timeout);
-//   if (len != parms.length) {
-//      throw new Exception("Camera initialization failed. Still image parms probe set failed. len=" + len); }
+        //parms[2] = 1;
+
         len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, VS_STILL_PROBE_CONTROL << 8, camStreamingInterface.getId(), parms, parms.length, timeout);
         if (len != parms.length) {
-            throw new Exception("Camera initialization failed. Still image parms probe get failed.");
+            log("Camera initialization failed. Still image parms probe get failed.");
         }
-        log("Probed still image parms: " + dumpStillImageParms(parms));
+        log("Probed still image parms (GET_CUR): " + dumpStillImageParms(parms));
+
+
+        parms[0] = (byte) camFormatIndex;
+        parms[1] = (byte) camFrameIndex;
+
+
         len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, VS_STILL_COMMIT_CONTROL << 8, camStreamingInterface.getId(), parms, parms.length, timeout);
         if (len != parms.length) {
-            throw new Exception("Camera initialization failed. Still image parms commit set failed.");
+            log("Camera initialization failed. Still image parms commit set failed.");
         }
-//   len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, GET_CUR, VS_STILL_COMMIT_CONTROL << 8, camStreamingInterface.getId(), parms, parms.length, timeout);
-//   if (len != parms.length) {
-//      throw new Exception("Camera initialization failed. Still image parms commit get failed. len=" + len); }
-//   log("Final still image parms: " + dumpStillImageParms(parms)); }
+        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, VS_STILL_COMMIT_CONTROL << 8, camStreamingInterface.getId(), parms, parms.length, timeout);
+        if (len != parms.length) {
+            log("Camera initialization failed. Still image parms commit get failed. len=" + len); }
+        log("Final still image parms: " + dumpStillImageParms(parms));
     }
 
     private String dumpStillImageParms(byte[] p) {
@@ -1684,12 +1733,14 @@ public class Start_Iso_StreamActivity extends Activity {
         }
     }
 
-    private void sendStillImageTrigger() throws Exception {
+    private void sendStillImageTrigger() {
+        log("Sending Still Image Trigger");
         byte buf[] = new byte[1];
         buf[0] = 1;
         int len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, VS_STILL_IMAGE_TRIGGER_CONTROL << 8, camStreamingInterface.getId(), buf, 1, 1000);
         if (len != 1) {
-            throw new Exception("VS_STILL_IMAGE_TRIGGER_CONTROL failed, len=" + len + ".");
+            displayMessage("Still Image Controltransfer failed !!");
+            log("Still Image Controltransfer failed !!");
         }
     }
 
@@ -1867,6 +1918,7 @@ public class Start_Iso_StreamActivity extends Activity {
                             if (dataLen > 0 && skipFrames == 0) {
                                 frameData.write(data, headerLen, dataLen);
                             }
+
                             if ((headerFlags & 2) != 0) {
                                 if (skipFrames > 0) {
                                     log("Skipping frame, len= " + frameData.size());
@@ -1874,16 +1926,15 @@ public class Start_Iso_StreamActivity extends Activity {
                                     skipFrames--;
                                 }
                                 else {
-                                    if (stillImageFrame > stillImageFrameBeenden ) {
-                                        try {
-                                            sendStillImageTrigger();
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                        stillImageAufnahme = true;
+                                    if (stillImageAufnahme) {
+                                        sendStillImageTrigger();
+                                        stillImageAufnahme = false;
                                     }
+                                    if ((headerFlags & 0x20) != 0) {
+                                        log("Still Image Bit set.\nSetting saveStillImage");
+                                        saveStillImage = true;
 
-                                    stillImageFrameBeenden = stillImageFrame;
+                                    }
                                     frameData.write(data, headerLen, dataLen);
                                     if (videoformat.equals("mjpeg") ) {
                                         try {
@@ -1906,7 +1957,6 @@ public class Start_Iso_StreamActivity extends Activity {
                     }
 
 
-                    //if (changeBrightness) changebright();
                 }
                 //enableStreaming(false);
                 //processReceivedMJpegVideoFrame(frameData.toByteArray());
@@ -1939,8 +1989,7 @@ public class Start_Iso_StreamActivity extends Activity {
         bTerminalID = bundle.getByte("bTerminalID",(byte)0);
         bNumControlTerminal = bundle.getByteArray("bNumControlTerminal");
         bNumControlUnit = bundle.getByteArray("bNumControlUnit");
-
-
+        bStillCaptureMethod = bundle.getByte("bStillCaptureMethod", (byte)0);
     }
 
 
@@ -1957,9 +2006,6 @@ public class Start_Iso_StreamActivity extends Activity {
 
 
     public static Bitmap decodeSampledBitmapFromByteArray(byte[] data) {
-
-
-
         // First decode with inJustDecodeBounds=true to check dimensions
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -1997,33 +2043,6 @@ public class Start_Iso_StreamActivity extends Activity {
         }
 
         return inSampleSize;
-    }
-
-    public void changebright () {
-
-        /*
-        final int timeout = 500;
-        int len;
-        byte[] brightnessParms = new byte[2];
-        packIntBrightness(currentBrightness, brightnessParms);
-
-        // PU_BRIGHTNESS_CONTROL(0x02), SET_CUR(0x01) [UVC1.5, p. 160, 158, 96]
-        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, PU_BRIGHTNESS_CONTROL << 8, 0x0200, brightnessParms, brightnessParms.length, timeout);
-        if (len != brightnessParms.length) {
-            displayMessage("Error: Durning PU_BRIGHTNESS_CONTROL");
-        }
-        // PU_BRIGHTNESS_CONTROL(0x02), GET_CUR(0x81) [UVC1.5, p. 160, 158, 96]
-        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, PU_BRIGHTNESS_CONTROL << 8, 0x0200, brightnessParms, brightnessParms.length, timeout);
-        if (len != brightnessParms.length) {
-            displayMessage("Error: Durning PU_BRIGHTNESS_CONTROL");
-        } else {
-            currentBrightness = unpackIntBrightness(brightnessParms);
-            log( "currentBrightness: " + currentBrightness);
-        }
-        changeBrightness = false;
-        if (currentBrightness != 0) brightnessChanged = true;
-
-        */
     }
 
     private static void printData (byte [] formatData) {

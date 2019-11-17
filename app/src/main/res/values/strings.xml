@@ -3,6 +3,9 @@
     <string name="readme"><![CDATA[
        
 Camera stream over Usb.\n
+OTG cabel or OTG Hub needed\n
+It works with Micro Usb and Usb Type C devices\n
+(Some OTG cabels doesn\'t work --> I\'ll found one which is an extern powered more Port USB-C OTG cable and doesn\'t work ...)\n
 All phones, tablets with all chipsets are supported\n
 Explaination:\n
 First you have to set up your Camera with the values for the isochronous data transfer.\n

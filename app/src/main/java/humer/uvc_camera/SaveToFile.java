@@ -65,7 +65,7 @@ public class SaveToFile  {
     public static byte bTerminalID;
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
-
+    public static byte bStillCaptureMethod;
 
 
     private static String saveFilePathFolder = "UVC_Camera/save";
@@ -300,6 +300,7 @@ public class SaveToFile  {
         bTerminalID = setUpTheUsbDevice.bTerminalID;
         bNumControlTerminal = setUpTheUsbDevice.bNumControlTerminal;
         bNumControlUnit = setUpTheUsbDevice.bNumControlUnit;
+        bStillCaptureMethod = setUpTheUsbDevice.bStillCaptureMethod;
     }
 
     private void writeTheValues(){
@@ -319,6 +320,7 @@ public class SaveToFile  {
             uvc_camera.bTerminalID = bTerminalID;
             uvc_camera.bNumControlUnit = bNumControlUnit;
             uvc_camera.bNumControlTerminal = bNumControlTerminal;
+            uvc_camera.bStillCaptureMethod = bStillCaptureMethod;
 
 
         } else {
@@ -337,6 +339,7 @@ public class SaveToFile  {
             setUpTheUsbDevice.bTerminalID = bTerminalID;
             setUpTheUsbDevice.bNumControlTerminal = bNumControlTerminal;
             setUpTheUsbDevice.bNumControlUnit = bNumControlUnit;
+            setUpTheUsbDevice.bStillCaptureMethod = bStillCaptureMethod;
         }
 
     }
@@ -548,6 +551,7 @@ public class SaveToFile  {
             save.writeObject(bTerminalID);
             save.writeObject(bNumControlTerminal);
             save.writeObject(bNumControlUnit);
+            save.writeObject(bStillCaptureMethod);
 
             // Close the file.
             save.close(); // This also closes saveFile.
@@ -580,6 +584,7 @@ public class SaveToFile  {
             bTerminalID  = (Byte) save.readObject();
             bNumControlTerminal  = (byte[]) save.readObject();
             bNumControlUnit  = (byte[]) save.readObject();
+            bStillCaptureMethod = (Byte) save.readObject();
             save.close();
         }
         catch(Exception exc){
@@ -651,6 +656,7 @@ public class SaveToFile  {
         bTerminalID = uvc_desc.bTerminalID;
         bNumControlTerminal = uvc_desc.bNumControlTerminal;
         bNumControlUnit = uvc_desc.bNumControlUnit;
+        bStillCaptureMethod = uvc_desc.bStillCaptureMethod;
         for (int a=0; a<maxPacketSizeArray.length; a++) {
             log ("maxPacketSizeArray[" + a + "] = " + maxPacketSizeArray[a]);
         }

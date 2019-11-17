@@ -55,6 +55,7 @@ public class UVC_Descriptor {
     // Values for Controltransfers when setting the brightness ...
     public static byte bUnitID;
     public static byte bTerminalID;
+    public static byte bStillCaptureMethod;
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
 
@@ -71,6 +72,7 @@ public class UVC_Descriptor {
         try {
             boolean foundPROCESSING_UNIT = false;
             boolean foundINPUT_TERMINAL = false;
+            boolean foundINPUT_HEADER_IN_Endpoint = false;
             boolean videoStreamInterfaceDescriptor = false;
             ArrayList<byte []> frameData = new ArrayList<>();
             byte[] formatData = null;
@@ -81,6 +83,12 @@ public class UVC_Descriptor {
                 byte descSize = uvcData.get(pos);
                 byte descType = uvcData.get(pos +1);
                 byte descSubType = uvcData.get(pos + 2);
+
+                //Get Still Image Support
+                if (descType == 0x24 && descSubType == 0x01 && foundPROCESSING_UNIT && !foundINPUT_HEADER_IN_Endpoint) {
+                    foundINPUT_HEADER_IN_Endpoint = true;
+                    bStillCaptureMethod = uvcData.get(pos + 9);
+                }
 
                 //Set  INPUT_TERMINAL bTerminalID, bNumControlTerminal
                 if (descType == 0x24 && descSubType == 0x02) {
