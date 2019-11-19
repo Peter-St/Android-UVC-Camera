@@ -48,7 +48,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -296,7 +295,6 @@ public class SetUpTheUsbDevice extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                     tv.setText("No Camera connected.");
                     tv.setTextColor(darker(Color.RED, 50));}
             });
@@ -305,7 +303,6 @@ public class SetUpTheUsbDevice extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                     tv.setText("The Values for the Camera are not correct set.\n\nPlease set up all the values for the camera first!");
                     tv.setTextColor(darker(Color.RED, 50));}
             });
@@ -315,20 +312,13 @@ public class SetUpTheUsbDevice extends Activity {
             Context wrapper = new ContextThemeWrapper(this, R.style.YOURSTYLE);
             PopupMenu popup = new PopupMenu(wrapper, v);
             // This activity implements OnMenuItemClickListener
-            popup.inflate(R.menu.testrun_menubutton);
+            popup.inflate(R.menu.set_up_the_device_testrun_menubutton);
             popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
                     switch (item.getItemId()) {
                         case R.id.videoProbeCommit:
                             videoProbeCommitTransfer();
-                            return true;
-                        case R.id.brightness_control:
-                            try {
-                                brightnessControlTransfer();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
                             return true;
                         case R.id.testrun5sec:
                             isoRead();
@@ -1239,7 +1229,7 @@ public class SetUpTheUsbDevice extends Activity {
                     }
                     if (stopReq) {
                         break;
-                    }
+                    }else if (packetErrorCnt > 800) break;
                     requestCnt++;
                     req.initialize();
                     try {
@@ -1257,6 +1247,15 @@ public class SetUpTheUsbDevice extends Activity {
                 //for (String s : logArray) {
                 //    log(s);
                 //}
+
+                if (packetErrorCnt > 800) {
+                    stringBuilder = new StringBuilder();
+                    stringBuilder.append("Your Camera only return Error frames!\nPlease change your camera values\n");
+                    stringBuilder.append("\n\nrequests= " + requestCnt +  "  ( one Request has a max. size of: "+ packetsPerRequest + " x " + maxPacketSize+ " bytes )" + "\npacketCnt= " + packetCnt + " (number of packets from this frame)" + "\npacketErrorCnt= " + packetErrorCnt + " (This packets are Error packets)" +  "\npacket0Cnt= " + packet0Cnt + " (Packets with a size of 0 bytes)" + "\npacket12Cnt= " + packet12Cnt+ " (Packets with a size of 12 bytes)" + "\npacketDataCnt= " + packetDataCnt + " (This packets contain valid data)" + "\npacketHdr8cCnt= " + packetHdr8Ccnt + "\nframeCnt= " + frameCnt + " (The number of the counted frames)" + "\n\n");
+
+                }
+
+
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -1377,11 +1376,11 @@ public class SetUpTheUsbDevice extends Activity {
                         }
                         logArray.add(logEntry.toString());
                     }
-                    if (frameCnt > 0) {
-                        break;
-                    }
-                    requestCnt++;
+                    if (frameCnt > 0)  break;
+                    else if (packetErrorCnt > 800) break;
 
+
+                    requestCnt++;
                     req.initialize();
                     try {
                         req.submit();
@@ -1395,6 +1394,15 @@ public class SetUpTheUsbDevice extends Activity {
                     log("Exception during enableStreaming(false): " + e);
                 }
                 log("requests=" + requestCnt + " packetCnt=" + packetCnt + " packetErrorCnt=" + packetErrorCnt + " packet0Cnt=" + packet0Cnt + ", packet12Cnt=" + packet12Cnt + ", packetDataCnt=" + packetDataCnt + " packetHdr8cCnt=" + packetHdr8Ccnt + " frameCnt=" + frameCnt);
+
+
+                if (packetErrorCnt > 800) {
+                    stringBuilder = new StringBuilder();
+                    stringBuilder.append("Your Camera only return Error frames!\nPlease change your camera values\n");
+                    stringBuilder.append("\n\nrequests= " + requestCnt +  "  ( one Request has a max. size of: "+ packetsPerRequest + " x " + maxPacketSize+ " bytes )" + "\npacketCnt= " + packetCnt + " (number of packets from this frame)" + "\npacketErrorCnt= " + packetErrorCnt + " (This packets are Error packets)" +  "\npacket0Cnt= " + packet0Cnt + " (Packets with a size of 0 bytes)" + "\npacket12Cnt= " + packet12Cnt+ " (Packets with a size of 12 bytes)" + "\npacketDataCnt= " + packetDataCnt + " (This packets contain valid data)" + "\npacketHdr8cCnt= " + packetHdr8Ccnt + "\nframeCnt= " + frameCnt + " (The number of the counted frames)" + "\n\n");
+
+                }
+
                 stringBuilder.append("\n\nrequests= " + requestCnt +  "  ( one Request has a max. size of: "+ packetsPerRequest + " x " + maxPacketSize+ " bytes )" + "\npacketCnt= " + packetCnt + " (number of packets from this frame)" + "\npacketErrorCnt= " + packetErrorCnt + " (This packets are Error packets)" +  "\npacket0Cnt= " + packet0Cnt + " (Packets with a size of 0 bytes)" + "\npacket12Cnt= " + packet12Cnt+ " (Packets with a size of 12 bytes)" + "\npacketDataCnt= " + packetDataCnt + " (This packets contain valid data)" + "\npacketHdr8cCnt= " + packetHdr8Ccnt + "\nframeCnt= " + frameCnt + " (The number of the counted frames)" + "\n\n");
 
 

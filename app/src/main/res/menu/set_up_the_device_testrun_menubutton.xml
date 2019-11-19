@@ -2,23 +2,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-
     <item
-        android:id="@+id/controltransfer"
-        android:title="Control Transfer" >
-        <menu>
+        android:id="@+id/videoProbeCommit"
+        android:title="Video Probe-Commit Controls" />
 
-            <item
-                android:id="@+id/videoProbeCommit"
-                android:title="Video Probe-Commit Controls" />
-
-            <item
-                android:id="@+id/brightness_control"
-                android:title="PU_BRIGHTNESS_CONTROL" />
-
-        </menu>
-
-    </item>
 
 
     <item
