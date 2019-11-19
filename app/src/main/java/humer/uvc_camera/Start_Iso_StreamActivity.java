@@ -154,6 +154,8 @@ public class Start_Iso_StreamActivity extends Activity {
     public StringBuilder stringBuilder;
     private int [] convertedMaxPacketSize;
     private boolean lowerResolution;
+    private static enum Videoformat {yuv, mjpeg, YUY2}
+
 
     // Buttons & Views
     protected Button settingsButtonOverview;
@@ -1311,8 +1313,11 @@ public class Start_Iso_StreamActivity extends Activity {
         }
     }
 
-    private void processReceivedVideoFrameYuv(byte[] frameData) throws IOException {
-        YuvImage yuvImage = new YuvImage(frameData, ImageFormat.YUY2, imageWidth, imageHeight, null);
+
+    private void processReceivedVideoFrameYuv(byte[] frameData, Videoformat videoFromat) throws IOException {
+        YuvImage yuvImage ;
+        if (videoFromat == Videoformat.YUY2) yuvImage = new YuvImage(frameData, ImageFormat.YUY2, imageWidth, imageHeight, null);
+        else yuvImage = new YuvImage(frameData, ImageFormat.YUY2, imageWidth, imageHeight, null);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         yuvImage.compressToJpeg(new Rect(0, 0, imageWidth, imageHeight), 100, os);
         byte[] jpegByteArray = os.toByteArray();
@@ -1943,8 +1948,11 @@ public class Start_Iso_StreamActivity extends Activity {
                                             e.printStackTrace();
                                         }
                                     }else if (videoformat.equals("yuv")){
-                                        processReceivedVideoFrameYuv(frameData.toByteArray());
+                                        processReceivedVideoFrameYuv(frameData.toByteArray(), Videoformat.yuv);
+                                    }else if (videoformat.equals("YUY2")){
+                                        processReceivedVideoFrameYuv(frameData.toByteArray(), Videoformat.YUY2);
                                     }
+
                                     frameData.reset();
                                 }
                             }

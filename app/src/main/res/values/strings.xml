@@ -6,13 +6,27 @@ Camera stream over Usb.\n
 OTG cabel or OTG Hub needed\n
 It works with Micro Usb and Usb Type C devices\n
 (Some OTG cabels doesn\'t work --> I\'ll found one which is an extern powered more Port USB-C OTG cable and doesn\'t work ...)\n
-All phones, tablets with all chipsets are supported\n
+All phones, tablets with all chipsets are supported\n\n
+
 Explaination:\n
-First you have to set up your Camera with the values for the isochronous data transfer.\n
-Use the "Set up the camera device" button --> Search for a camera.\n
-Next you can list the interfaces and endpoints of the camera. (List the camera button)\n
-To automatic find the camera values click on: "Set up with uvc values" button. (you need a UVC compliance camera)\n
+To set up the userspace driver for your USB camera you have to set the following \'isochronous data transfer\' values:\n\n
+
+Alt-Setting, Maximal-Packet-Size, Format-Index, Frame-Index, Videoformat, Image-Width, Image-Hight, Frame-Interval, Packets-Per-Request, Active-Urbs\n
+This Values are explained at the end of this Text.\n\n
+
+To adjust this values automatically, click on the Button: "SET UP WITH UVC SETTINGS". (you need a UVC compliance camera)\n
 You can save your settings and restore them later, for faster setup.\n\n
+
+To adjust this values by hand, click on the Button: "EDIT / SAVE THE CAMERA VALUES". (you need a UVC compliance camera)\n
+You can save your settings and restore them later, for faster setup.\n\n
+
+On first Start follow these steps:\n
+
+Use the "SET UP THE CAMERA DEVICE" button --> Search for a camera.\n
+Next you can list the interfaces and endpoints of the camera. (List the camera button)\n
+Set up the Camera with the values for the isochronous data transfer.\n
+
+
 Next important part is the Testrun for your camera.\n
 Thirst you have to perform a controlltransfer.
 Click "Testrun" --> "Controltransfer" --> "and perform the first Controltransfer.\n
@@ -22,6 +36,36 @@ Have a look at your frames: If they are all identically and big enougth, than yo
 Otherwise you have to edit some values for your camera: Perhaps -PacketsPerRequest- or -ActiveUrbs-, or something else.\n\n
 Click the "Transmission Start" --> "Start the Camera" Button to start the transmission.\n
 If everything works, you can watch the video of your camera.\n\n
+
+Alt-Setting:\n
+The Alt-Setting is a camera specific setting which defines which interface of your camera shall be used for the isochronous data transfer.\n\n
+
+Maximal-Packet-Size:\n
+Each Alt-Setting has it's own Maximal-Packet-Size. The Maximal-Packet-Size is byte Number which defines how many bytes each Packet of the iso transfer maximal contains.\n\n
+
+Format-Index:\n
+Your Camera can support different Format Index\'s. This could be MJPEG, or uncompressed (YUV) or ...\n\n
+
+Videoformat\n
+This is a helper value, which has to be set to your selected Format-Index. You have to enter YUV, or MJPEG, or ...\n\n
+
+Frame-Index:\n
+Each Format-Index of your camera can have different Frame Index\'s. This is a number which represents the camera resolution (1920x1020, or 640x480)\n\n
+
+Image-Width, Image-Hight:\n
+This are helper values, which have to be set to your selected Frame-Index. For Example: Image-Width = 640 and Image-Hight = 480\n\n
+
+Frame-Interval:\n
+The Frame-Interval is a number which defines, on how much nano secounds each new frame will be sent from the camera to your device.\n
+For example: 666666 means each 0,066 Secounds a frame is sent. 666666 = 15 frames per secound.\n
+333333 are 30 Frames per secound\n\n
+
+Packets-Per-Request:\n
+This is a value wich defines how many Packet will be sent from your camera to your device in one cycle of the transfer.\n\n
+
+Active-Urbs:\n
+And this value defines have many cycles are running paralell to each other in the data steam between camera and Android device.\n\n
+
 This program is on GitHub on following link:\n
 https://github.com/Peter-St/Android-UVC-Camera/
 

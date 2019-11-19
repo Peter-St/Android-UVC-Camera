@@ -76,6 +76,7 @@ public class SaveToFile  {
     private SetUpTheUsbDevice setUpTheUsbDevice;
     private Main uvc_camera = null;
     private Context mContext;
+    private View v;
     private Activity activity;
 
 
@@ -131,10 +132,11 @@ public class SaveToFile  {
         this.activity = (Activity)mContext;
     }
 
-    public SaveToFile (SetUpTheUsbDevice setUpTheUsbDevice, Context mContext) {
+    public SaveToFile (SetUpTheUsbDevice setUpTheUsbDevice, Context mContext, View v) {
         this.setUpTheUsbDevice = setUpTheUsbDevice;
         this.mContext = mContext;
         this.activity = (Activity)mContext;
+        this.v = v;
         this.init = true;
     }
 
@@ -188,19 +190,11 @@ public class SaveToFile  {
 
     public void startEditSave() {
         fetchTheValues();
-        activity.setContentView(R.layout.einstellungen);
+        activity.setContentView(R.layout.set_up_the_device_configuration);
 
 
         sALT_SETTING_text = (TextView) activity.findViewById(R.id.Altsetting);
         sALT_SETTING_text.setText(setColorText("ALT_SETTING:\n", String.format("%s" , sALT_SETTING)), TextView.BufferType.SPANNABLE);
-
-
-
-
-
-
-
-
         smaxPacketSize_text = (TextView) activity.findViewById(R.id.MaxPacketSize);
         smaxPacketSize_text.setText(setColorText("MaxPacketSize:\n", String.format("%s" , smaxPacketSize)), TextView.BufferType.SPANNABLE);
         scamFormatIndex_text = (TextView) activity.findViewById(R.id.FormatIndex);
@@ -219,8 +213,52 @@ public class SaveToFile  {
         spacketsPerRequest_text.setText(setColorText("PacketsPerRequest:\n", String.format("%s" , spacketsPerRequest)), TextView.BufferType.SPANNABLE);
         sactiveUrbs_text = (TextView) activity.findViewById(R.id.ActiveUrbs);
         sactiveUrbs_text.setText(setColorText("ACTIVE_URBS:\n", String.format("%s" , sactiveUrbs)), TextView.BufferType.SPANNABLE);
+        valueInput = (TextInputLayout) activity.findViewById(R.id.Video);
+        valueInput.getEditText().setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
+                builderSingle.setIcon(R.drawable.ic_menu_camera);
+                builderSingle.setTitle("Select the Video Format:");
+                //builderSingle.setMessage("Select the maximal size of the Packets, which where sent to the camera device!! Important for Mediathek Devices !!");
+
+                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
+
+                arrayAdapter.add("YUY2");
+                arrayAdapter.add("MJPEG");
+                builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String input = arrayAdapter.getItem(which);
+                        if (input == "YUY2") {
+                            valueInput = (TextInputLayout) activity.findViewById(R.id.Video);
+                            valueInput.getEditText().setText("YUY2");
+                        }
+                        if (input == "MJPEG") {
+                            valueInput = (TextInputLayout) activity.findViewById(R.id.Video);
+                            valueInput.getEditText().setText("mjpeg");
+                        }
+                        System.out.println("svideoformat = " + svideoformat);
+                    }
+                });
+                builderSingle.show();
+
+            }
+        });
 
 
+
+
+
+        ///////
 
         Button button_cancle = (Button) activity.findViewById(R.id.button_cancel);
         button_cancle.setOnClickListener(new Button.OnClickListener() {
@@ -243,7 +281,7 @@ public class SaveToFile  {
                 if (valueInput.getEditText().getText().toString().isEmpty() == false) scamFormatIndex = Integer.parseInt(valueInput.getEditText().getText().toString());
                 valueInput = (TextInputLayout) activity.findViewById(R.id.Video);
                 if (valueInput.getEditText().getText().toString().isEmpty() == false) svideoformat = valueInput.getEditText().getText().toString();
-                valueInput = (TextInputLayout) activity.findViewById(R.id.Imagewi);
+                valueInput = (TextInputLayout) activity.findViewById(R.id.Frame);
                 if (valueInput.getEditText().getText().toString().isEmpty() == false) scamFrameIndex = Integer.parseInt(valueInput.getEditText().getText().toString());
                 valueInput = (TextInputLayout) activity.findViewById(R.id.Imagewi);
                 if (valueInput.getEditText().getText().toString().isEmpty() == false) simageWidth = Integer.parseInt(valueInput.getEditText().getText().toString());
@@ -283,6 +321,50 @@ public class SaveToFile  {
         });
 
     }
+
+    ////// Buttons:  /////////////////
+
+
+    public void selectVideoFormat (View v) {
+
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
+        builderSingle.setIcon(R.drawable.ic_menu_camera);
+        builderSingle.setTitle("Select the Video Format:");
+        //builderSingle.setMessage("Select the maximal size of the Packets, which where sent to the camera device!! Important for Mediathek Devices !!");
+
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
+
+        arrayAdapter.add("YUY2");
+        arrayAdapter.add("MJPEG");
+
+
+        builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String input = arrayAdapter.getItem(which);
+                if (input == "YUY2") {
+                    valueInput = (TextInputLayout) activity.findViewById(R.id.Video);
+                    valueInput.getEditText().setText("YUY2");
+                }
+                if (input == "MJPEG") {
+                    valueInput = (TextInputLayout) activity.findViewById(R.id.Video);
+                    valueInput.getEditText().setText("mjpeg");
+                }
+                System.out.println("svideoformat = " + svideoformat);
+            }
+        });
+        builderSingle.show();
+    }
+
+
+    ////// Buttons  END //////////
 
     private void fetchTheValues(){
         sALT_SETTING = setUpTheUsbDevice.camStreamingAltSetting;
@@ -1052,6 +1134,7 @@ public class SaveToFile  {
                 Math.max( (int)(g * factor), 0 ),
                 Math.max( (int)(b * factor), 0 ) );
     }
+
 
 
 }

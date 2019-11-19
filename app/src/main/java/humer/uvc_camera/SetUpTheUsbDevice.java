@@ -226,10 +226,11 @@ public class SetUpTheUsbDevice extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.set_up_the_device_layout_main);
+        View v = getLayoutInflater().inflate(R.layout.set_up_the_device_layout_main, null);
+        setContentView(v);
         usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         fetchTheValues();
-        stf = new SaveToFile(this, this);
+        stf = new SaveToFile(this, this, v);
 
         testrun = findViewById(R.id.testrun);
         testrun.setOnClickListener(new View.OnClickListener() {
@@ -240,7 +241,7 @@ public class SetUpTheUsbDevice extends Activity {
         });
 
         tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-        tv.setText("Explanation:\n\n-(this is a scrollable and zoomable Text)\n\nFirst you have to set values for your camera.\nYou can use the button (Set up with UVC Settings) to automatically set " +
+        tv.setText("Explanation:\n\n-(this is a scrollable and zoomable Text)\n\nTo set up the userspace driver for your USB camera you have to set the values for your camera.\nYou can use the button (Set up with UVC Settings) to automatically set " +
                 "up the camera with UVC settings.\nOr you can set up or change the Vales by Hand with the button (Edit / Save the Camera Values)\n" +
                 "\nWhen you have setted up the camera with all the vales click on the button (Testrun) to see if you get a valid output.\nIf the testrun works, you will see a couple of frames, which you received from your camera." +
                 "\nNow you can try out other settings and maybe your output changes a little bit" +
@@ -1721,7 +1722,7 @@ public class SetUpTheUsbDevice extends Activity {
             bNumControlUnit = bundle.getByteArray("bNumControlUnit");
             bStillCaptureMethod = bundle.getByte("bStillCaptureMethod", (byte)0);
         } else {
-            stf = new SaveToFile(this, this);
+            //stf = new SaveToFile(this, this);
             stf.restoreValuesFromFile();
             mPermissionIntent = null;
             unregisterReceiver(mUsbReceiver);

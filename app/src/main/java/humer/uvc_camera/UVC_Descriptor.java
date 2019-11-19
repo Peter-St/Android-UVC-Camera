@@ -191,7 +191,7 @@ public class UVC_Descriptor {
         public final ArrayList<byte []> frameData;
         public int formatIndexNumber;
         public int numberOfFrameDescriptors;
-        public enum Videoformat {yuv, mjpeg}
+        public enum Videoformat {yuv, mjpeg, YUY2}
         public Videoformat videoformat;
         public String guidFormat = new String();
 
