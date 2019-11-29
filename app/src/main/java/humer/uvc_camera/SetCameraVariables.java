@@ -59,8 +59,29 @@ public class SetCameraVariables {
     // VideoStreaming interface control selectors (CS):
     private static final int VS_PROBE_CONTROL = 0x01;
     private static final int VS_COMMIT_CONTROL = 0x02;
-    private static final int PU_BRIGHTNESS_CONTROL = 0x02;
 
+
+    // Processing Unit Control Selectors
+
+    private static final int PU_CONTROL_UNDEFINED = 0x00;
+    private static final int PU_BACKLIGHT_COMPENSATION_CONTROL = 0x01;
+    private static final int PU_BRIGHTNESS_CONTROL = 0x02;
+    private static final int PU_CONTRAST_CONTROL = 0x03;
+    private static final int PU_GAIN_CONTROL = 0x04;
+    private static final int PU_POWER_LINE_FREQUENCY_CONTROL = 0x05;
+    private static final int PU_HUE_CONTROL = 0x06;
+    private static final int PU_SATURATION_CONTROL = 0x07;
+    private static final int PU_SHARPNESS_CONTROL = 0x08;
+    private static final int PU_GAMMA_CONTROL = 0x09;
+    private static final int PU_WHITE_BALANCE_TEMPERATURE_CONTROL = 0x0A;
+    private static final int PU_WHITE_BALANCE_TEMPERATURE_AUTO_CONTROL = 0x0B;
+    private static final int PU_WHITE_BALANCE_COMPONENT_CONTROL = 0x0C;
+    private static final int PU_WHITE_BALANCE_COMPONENT_AUTO_CONTROL = 0x0D;
+    private static final int PU_DIGITAL_MULTIPLIER_CONTROL = 0x0E;
+    private static final int PU_DIGITAL_MULTIPLIER_LIMIT_CONTROL = 0x0F;
+    private static final int PU_HUE_AUTO_CONTROL = 0x10;
+    private static final int PU_ANALOG_VIDEO_STANDARD_CONTROL = 0x11;
+    private static final int PU_ANALOG_LOCK_STATUS_CONTROL = 0x12;
 
     // Camera Terminal Control Selectors
 
@@ -98,7 +119,7 @@ public class SetCameraVariables {
 
     private UsbDeviceConnection camDeviceConnection;
 
-    public enum CameraFunction {brightness, autofocus, auto_exposure_mode};
+    public enum CameraFunction {brightness, contrast, hue, saturation, sharpness, gamma, gain, power_line_frequency, autofocus, auto_exposure_mode};
     public enum CameraFunctionSetting {defaultAdjust, auto, adjust}
 
     private CameraFunction cameraFunction;
@@ -106,12 +127,15 @@ public class SetCameraVariables {
     public static int minValue;
     public static int maxValue;
     public int currentValue;
-    private int defaultValue;
+    private static int defaultValue;
     private static int resolutionValue;
     private static int infoValue;
     public boolean autoEnabled;
     public static byte bUnitID;
     public static byte bTerminalID;
+
+    private static int CONTROL;
+    private static byte bID;
 
     public SetCameraVariables(UsbDeviceConnection camConnection, CameraFunction cameraFunct, boolean auto, byte bUnit, byte bTerminal) {
         this.camDeviceConnection = camConnection;
@@ -119,10 +143,10 @@ public class SetCameraVariables {
         this.autoEnabled = auto;
         this.bUnitID = bUnit;
         this.bTerminalID = bTerminal;
-        initCameraFunction(cameraFunction);
+        initCameraFunction();
     }
 
-    private void initCameraFunction(CameraFunction cameraFunct) {
+    private void initCameraFunction() {
 
         int timeout = 500;
         int len;
@@ -133,9 +157,6 @@ public class SetCameraVariables {
         boolean BOOL_GET_DEF = false;
         boolean BOOL_GET_MIN = false;
         boolean BOOL_GET_MAX = false;
-
-        int CONTROL;
-        byte bID;
 
         switch (cameraFunction) {
             // temporary solution
@@ -149,6 +170,89 @@ public class SetCameraVariables {
                 BOOL_GET_INFO = true;
                 BOOL_GET_DEF = true;
                 CONTROL = PU_BRIGHTNESS_CONTROL;
+                break;
+
+            case contrast:
+                bID = bUnitID;
+                controlParms = new byte[2];
+                BOOL_GET_CUR = true;
+                BOOL_GET_MIN = true;
+                BOOL_GET_MAX = true;
+                BOOL_GET_RES = true;
+                BOOL_GET_INFO = true;
+                BOOL_GET_DEF = true;
+                CONTROL = PU_CONTRAST_CONTROL;
+                break;
+
+
+            case hue:
+                bID = bUnitID;
+                controlParms = new byte[2];
+                BOOL_GET_CUR = true;
+                BOOL_GET_MIN = true;
+                BOOL_GET_MAX = true;
+                BOOL_GET_RES = true;
+                BOOL_GET_INFO = true;
+                BOOL_GET_DEF = true;
+                CONTROL = PU_HUE_CONTROL;
+                break;
+
+            case saturation:
+                bID = bUnitID;
+                controlParms = new byte[2];
+                BOOL_GET_CUR = true;
+                BOOL_GET_MIN = true;
+                BOOL_GET_MAX = true;
+                BOOL_GET_RES = true;
+                BOOL_GET_INFO = true;
+                BOOL_GET_DEF = true;
+                CONTROL = PU_SATURATION_CONTROL;
+                break;
+
+            case sharpness:
+                bID = bUnitID;
+                controlParms = new byte[2];
+                BOOL_GET_CUR = true;
+                BOOL_GET_MIN = true;
+                BOOL_GET_MAX = true;
+                BOOL_GET_RES = true;
+                BOOL_GET_INFO = true;
+                BOOL_GET_DEF = true;
+                CONTROL = PU_SHARPNESS_CONTROL;
+                break;
+
+            case gamma:
+                bID = bUnitID;
+                controlParms = new byte[2];
+                BOOL_GET_CUR = true;
+                BOOL_GET_MIN = true;
+                BOOL_GET_MAX = true;
+                BOOL_GET_RES = true;
+                BOOL_GET_INFO = true;
+                BOOL_GET_DEF = true;
+                CONTROL = PU_GAMMA_CONTROL;
+                break;
+
+            case gain:
+                bID = bUnitID;
+                controlParms = new byte[2];
+                BOOL_GET_CUR = true;
+                BOOL_GET_MIN = true;
+                BOOL_GET_MAX = true;
+                BOOL_GET_RES = true;
+                BOOL_GET_INFO = true;
+                BOOL_GET_DEF = true;
+                CONTROL = PU_GAIN_CONTROL;
+                break;
+
+            case power_line_frequency:
+                bID = bUnitID;
+                controlParms = new byte[1];
+                BOOL_GET_CUR = true;
+                BOOL_GET_MIN = true;
+                BOOL_GET_INFO = true;
+                BOOL_GET_DEF = true;
+                CONTROL = PU_POWER_LINE_FREQUENCY_CONTROL;
                 break;
 
             case autofocus:
@@ -272,45 +376,40 @@ public class SetCameraVariables {
     }
 
     public void adjustValue(CameraFunctionSetting setting) {
+        log("adjust");
 
         int timeout = 500;
         int len;
         byte[] controlParms = null;
-        boolean BOOL_SET_CUR;
-        boolean BOOL_GET_CUR;
+        boolean BOOL_SET_CUR = true;
+        boolean BOOL_GET_CUR = false;
         boolean BOOL_GET_RES;
         boolean BOOL_GET_INFO;
         boolean BOOL_GET_DEF;
         boolean BOOL_GET_MIN;
         boolean BOOL_GET_MAX;
-        int CONTROL;
-        byte bID;
         boolean exit = false;
 
         switch (cameraFunction) {
-            // temporary solution
             case brightness:
-                bID = bUnitID;
                 controlParms = new byte[2];
-                BOOL_SET_CUR = true;
                 BOOL_GET_CUR = true;
-                CONTROL = PU_BRIGHTNESS_CONTROL;
+                break;
+            case contrast:
+                controlParms = new byte[2];
+                BOOL_GET_CUR = true;
                 break;
 
+
+
             case autofocus:
-                bID = bTerminalID;
                 controlParms = new byte [1];
-                BOOL_SET_CUR = true;
                 BOOL_GET_CUR = true;
-                CONTROL = CT_FOCUS_AUTO_CONTROL;
                 break;
 
             case auto_exposure_mode:
-                bID = bTerminalID;
                 controlParms = new byte [1];
-                BOOL_SET_CUR = true;
                 BOOL_GET_CUR = true;
-                CONTROL = CT_AE_MODE_CONTROL;
                 exit = true;
                 break;
 
@@ -319,8 +418,8 @@ public class SetCameraVariables {
         }
 
         switch (setting) {
-            case defaultAdjust:
 
+            case defaultAdjust:
                 if (controlParms.length == 1) packIntOneValues(defaultValue, controlParms);
                 else if (controlParms.length == 2) packIntTwoValues(defaultValue, controlParms);
 
@@ -329,42 +428,23 @@ public class SetCameraVariables {
                     if (len != controlParms.length) {
                         log("Error: Durning CONTROL");
                     }
+                    if (controlParms.length == 1) currentValue = unpackIntOneValues(controlParms);
+                    else if (controlParms.length == 2) currentValue = unpackIntTwoValues(controlParms);
                 }
-                if (BOOL_GET_CUR) {
-                    len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, CONTROL << 8, bID <<8, controlParms, controlParms.length, timeout);
-                    if (len != controlParms.length) {
-                        log("Error: Durning CONTROL");
-                    } else {
-                        currentValue = unpackIntTwoValues(controlParms);
-                        log( "currentValue: " + currentValue);
-                    }
-                }
-
                 break;
 
             case adjust:
-
                 if (controlParms.length == 1) packIntOneValues(currentValue, controlParms);
                 else if (controlParms.length == 2) packIntTwoValues(currentValue, controlParms);
-
+                log( "currentValue: " + currentValue);
                 if(BOOL_SET_CUR) {
                     len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, CONTROL << 8, bID <<8, controlParms, controlParms.length, timeout);
                     if (len != controlParms.length) {
                         log("Error: Durning CONTROL");
-                    }
+                    } else log("Bright controlParms = " + unpackIntTwoValues(controlParms));
                 }
-                if (BOOL_GET_CUR) {
-                    len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, CONTROL << 8, bID <<8, controlParms, controlParms.length, timeout);
-                    if (len != controlParms.length) {
-                        log("Error: Durning CONTROL");
-                    } else {
-                        if(controlParms.length == 1) currentValue = unpackIntOneValues(controlParms);
-                        else if (controlParms.length == 2) currentValue = unpackIntTwoValues(controlParms);
-                        log( "currentValue: " + currentValue);
-                    }
-                }
-
                 break;
+
 
             case auto:
                 if (exit) break;

@@ -499,22 +499,10 @@ public class Start_Iso_StreamActivity extends Activity {
         fetchTheValues();
         log("packetsPerRequest = " + packetsPerRequest);
         log("activeUrbs = " + activeUrbs);
-
-
-
-
-        simpleSeekBar = (SeekBar) findViewById(R.id.simpleSeekBar); // initiate the Seek bar
-        simpleSeekBar.setEnabled(false);
-        simpleSeekBar.setAlpha(0);
-        simpleSeekBar = null;
-        defaultButton = (Button) findViewById(R.id.defaultButton);
-        defaultButton.setEnabled(false);
-        defaultButton.setAlpha(0);
-        defaultButton = null;
+        simpleSeekBar = (SeekBar) findViewById(R.id.simpleSeekBar); simpleSeekBar.setEnabled(false); simpleSeekBar.setAlpha(0); simpleSeekBar = null;
+        defaultButton = (Button) findViewById(R.id.defaultButton); defaultButton.setEnabled(false); defaultButton.setAlpha(0); defaultButton = null;
         switchAuto = (Switch) findViewById(R.id.switchAuto);
-        switchAuto.setEnabled(false);
-        switchAuto.setAlpha(0);
-        switchAuto = null;
+        switchAuto.setEnabled(false); switchAuto.setAlpha(0); switchAuto = null;
         usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
         IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
@@ -530,13 +518,7 @@ public class Start_Iso_StreamActivity extends Activity {
     protected void onPause() {
         super.onPause();
         unregisterReceiver(mUsbReceiver);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
-        registerReceiver(mUsbReceiver, filter);
+        beenden();
     }
 
     public void showMenu(View v) {
@@ -641,29 +623,21 @@ public class Start_Iso_StreamActivity extends Activity {
                                 Runnable myRunnable = new Runnable() {
                                     @Override
                                     public void run() {
-                                        simpleSeekBar.setEnabled(false);
-                                        simpleSeekBar.setAlpha(0);
-                                        simpleSeekBar = null;
-                                        defaultButton.setEnabled(false);
-                                        defaultButton.setAlpha(0);
-                                        defaultButton = null;
+                                        simpleSeekBar.setEnabled(false); simpleSeekBar.setAlpha(0); simpleSeekBar = null;
+                                        defaultButton.setEnabled(false); defaultButton.setAlpha(0); defaultButton = null;
                                     }
                                 };
                                 Handler myHandler = new Handler();
                                 final int TIME_TO_WAIT = 2500;
                                 SetCameraVariables setBright = new SetCameraVariables(camDeviceConnection, SetCameraVariables.CameraFunction.brightness,
                                         false, bUnitID, bTerminalID);
-
-
                                 start = setBright.minValue ;
                                 end = setBright.maxValue;
                                 start_pos = setBright.currentValue;
                                 start_position=(int) (((start_pos-start)/(end-start))*100);
                                 discrete=start_pos;
 
-                                simpleSeekBar = (SeekBar) findViewById(R.id.simpleSeekBar);
-                                simpleSeekBar.setEnabled(true);
-                                simpleSeekBar.setAlpha(1);
+                                simpleSeekBar = (SeekBar) findViewById(R.id.simpleSeekBar); simpleSeekBar.setEnabled(true); simpleSeekBar.setAlpha(1);
                                 simpleSeekBar.setProgress(start_position);
                                 simpleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                                     int progressChangedValue = 0;
@@ -678,13 +652,14 @@ public class Start_Iso_StreamActivity extends Activity {
                                     public void onStopTrackingTouch(SeekBar seekBar) {
                                         myHandler.removeCallbacks(myRunnable);
                                         myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                                        log("setBright.currentValue = " + setBright.currentValue);
                                         setBright.currentValue = Math.round(discrete);
+                                        log("setBright.currentValue = " + setBright.currentValue);
+                                        log("");
                                         setBright.adjustValue(SetCameraVariables.CameraFunctionSetting.adjust);
                                     }
                                 });
-                                defaultButton = (Button) findViewById(R.id.defaultButton);
-                                defaultButton.setEnabled(true);
-                                defaultButton.setAlpha(1);
+                                defaultButton = (Button) findViewById(R.id.defaultButton); defaultButton.setEnabled(true); defaultButton.setAlpha(1);
                                 defaultButton.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
@@ -702,7 +677,61 @@ public class Start_Iso_StreamActivity extends Activity {
                         });
                         return true;
                     case R.id.contrast:
-                        displayMessage("Not supported up to now...");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Runnable myRunnable = new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        simpleSeekBar.setEnabled(false); simpleSeekBar.setAlpha(0); simpleSeekBar = null;
+                                        defaultButton.setEnabled(false); defaultButton.setAlpha(0); defaultButton = null;
+                                    }
+                                };
+                                Handler myHandler = new Handler();
+                                final int TIME_TO_WAIT = 2500;
+                                SetCameraVariables setValue = new SetCameraVariables(camDeviceConnection, SetCameraVariables.CameraFunction.contrast,
+                                        false, bUnitID, bTerminalID);
+                                start = setValue.minValue ;
+                                end = setValue.maxValue;
+                                start_pos = setValue.currentValue;
+                                start_position=(int) (((start_pos-start)/(end-start))*100);
+                                discrete=start_pos;
+
+                                simpleSeekBar = (SeekBar) findViewById(R.id.simpleSeekBar); simpleSeekBar.setEnabled(true); simpleSeekBar.setAlpha(1);
+                                simpleSeekBar.setProgress(start_position);
+                                simpleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                                    int progressChangedValue = 0;
+                                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                                        float temp=progress;
+                                        float dis=end-start;
+                                        discrete=(start+((temp/100)*dis));
+                                    }
+                                    public void onStartTrackingTouch(SeekBar seekBar) {
+                                        // TODO Auto-generated method stub
+                                    }
+                                    public void onStopTrackingTouch(SeekBar seekBar) {
+                                        myHandler.removeCallbacks(myRunnable);
+                                        myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                                        setValue.currentValue = Math.round(discrete);
+                                        setValue.adjustValue(SetCameraVariables.CameraFunctionSetting.adjust);
+                                    }
+                                });
+                                defaultButton = (Button) findViewById(R.id.defaultButton); defaultButton.setEnabled(true); defaultButton.setAlpha(1);
+                                defaultButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        setValue.adjustValue(SetCameraVariables.CameraFunctionSetting.defaultAdjust);
+                                        myHandler.removeCallbacks(myRunnable);
+                                        myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                                        start_pos = setValue.currentValue;
+                                        start_position=(int) (((start_pos-start)/(end-start))*100);
+                                        discrete=start_pos;
+                                        simpleSeekBar.setProgress(start_position);
+                                    }
+                                });
+                                myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                            }
+                        });
                         return true;
                     case R.id.hue:
                         displayMessage("Not supported up to now...");
