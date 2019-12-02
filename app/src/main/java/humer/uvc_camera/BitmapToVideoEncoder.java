@@ -245,7 +245,6 @@ public class BitmapToVideoEncoder {
                     //if (inputBuffers[a].equals(inputBuffer) ) Log.d(TAG, "inputBuffers[a] == inputBuffer");
                     //else Log.d(TAG, "Inputbuffers different !!!   inputBuffers[a] != inputBuffer");
 
-
                     //inputBuffer.clear();
                     //inputBuffer.put(byteConvertFrame);
 
@@ -271,22 +270,15 @@ public class BitmapToVideoEncoder {
                 } else if (mBufferInfo.size != 0) {
 
                     //ByteBuffer encodedData = mediaCodec.getOutputBuffer(encoderStatus);
-
                     ByteBuffer[] encodedDatas = mediaCodec.getOutputBuffers();
-
-
-
                     if (encodedDatas == null) {
                         Log.e(TAG, "encoderOutputBuffer " + encoderStatus + " was null");
                     } else {
                         encodedDatas[encoderStatus].position(mBufferInfo.offset);
                         encodedDatas[encoderStatus].limit(mBufferInfo.offset + mBufferInfo.size);
                         //mediaMuxer.writeSampleData(mTrackIndex, encodedData, mBufferInfo);
-
-
                         mediaMuxer.writeSampleData(mTrackIndex, encodedDatas[encoderStatus], mBufferInfo);
                         mediaCodec.releaseOutputBuffer(encoderStatus, false);
-
                         Log.d(TAG, "encoderStatus = " + encoderStatus);
 
                     }
@@ -376,16 +368,13 @@ public class BitmapToVideoEncoder {
     }
 
     private byte[] getNV21(int inputWidth, int inputHeight, Bitmap scaled) {
-
         int[] argb = new int[inputWidth * inputHeight];
-
         scaled.getPixels(argb, 0, inputWidth, 0, 0, inputWidth, inputHeight);
-
         byte[] yuv = new byte[inputWidth * inputHeight * 3 / 2];
         encodeYUV420SP(yuv, argb, inputWidth, inputHeight);
+        //Not calling bitmap.recycle() which is not strictly required for android >2.3.3
 
-        scaled.recycle();
-
+        //scaled.recycle();
         return yuv;
     }
 

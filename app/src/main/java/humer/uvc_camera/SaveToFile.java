@@ -224,9 +224,12 @@ public class SaveToFile  {
                 //builderSingle.setMessage("Select the maximal size of the Packets, which where sent to the camera device!! Important for Mediathek Devices !!");
 
                 final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
-
-                arrayAdapter.add("YUY2");
                 arrayAdapter.add("MJPEG");
+                arrayAdapter.add("YUY2");
+                arrayAdapter.add("YV12");
+                arrayAdapter.add("YUV_422_888");
+                arrayAdapter.add("YUV_420_888");
+
                 builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -242,9 +245,21 @@ public class SaveToFile  {
                             valueInput = (TextInputLayout) activity.findViewById(R.id.Video);
                             valueInput.getEditText().setText("YUY2");
                         }
-                        if (input == "MJPEG") {
+                        else if (input == "MJPEG") {
                             valueInput = (TextInputLayout) activity.findViewById(R.id.Video);
                             valueInput.getEditText().setText("mjpeg");
+                        }
+                        else if (input == "YV12") {
+                            valueInput = (TextInputLayout) activity.findViewById(R.id.Video);
+                            valueInput.getEditText().setText("YV12");
+                        }
+                        else if (input == "YUV_422_888") {
+                            valueInput = (TextInputLayout) activity.findViewById(R.id.Video);
+                            valueInput.getEditText().setText("YUV_422_888");
+                        }
+                        else if (input == "YUV_420_888") {
+                            valueInput = (TextInputLayout) activity.findViewById(R.id.Video);
+                            valueInput.getEditText().setText("YUV_420_888");
                         }
                         System.out.println("svideoformat = " + svideoformat);
                     }

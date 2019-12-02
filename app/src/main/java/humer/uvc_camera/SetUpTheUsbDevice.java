@@ -280,11 +280,18 @@ public class SetUpTheUsbDevice extends Activity {
     @Override
     public void onBackPressed()
     {
+        writeTheValues();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
         mPermissionIntent = null;
         unregisterReceiver(mUsbReceiver);
         unregisterReceiver(mUsbDeviceReceiver);
-        writeTheValues();
+        beenden();
     }
+
 
 
 
@@ -336,9 +343,6 @@ public class SetUpTheUsbDevice extends Activity {
         }
 
     }
-
-
-
 
     public void searchTheCamera (View view) {
         if (camDevice == null) {
@@ -409,7 +413,6 @@ public class SetUpTheUsbDevice extends Activity {
         }
     }
 
-
     public void listDeviceButtonClickEvent(View view) {
         if (camDevice == null) {
             runOnUiThread(new Runnable() {
@@ -466,6 +469,10 @@ public class SetUpTheUsbDevice extends Activity {
     public void editCameraSettings (View view) {
         stf.startEditSave();
 
+    }
+
+    public void returnToConfigScreen(View view) {
+        writeTheValues();
     }
 
 
@@ -1697,17 +1704,6 @@ public class SetUpTheUsbDevice extends Activity {
         displayMessage("Error: " + e);
     }
 
-
-    public void returnToConfigScreen(View view) {
-
-        mPermissionIntent = null;
-        unregisterReceiver(mUsbReceiver);
-        unregisterReceiver(mUsbDeviceReceiver);
-        writeTheValues();
-
-
-    }
-
     private void fetchTheValues(){
 
         Intent intent=getIntent();
@@ -1766,6 +1762,23 @@ public class SetUpTheUsbDevice extends Activity {
         if (camDeviceConnection != null) {
             if (camControlInterface != null)           camDeviceConnection.releaseInterface(camControlInterface);
             if (camStreamingInterface != null)         camDeviceConnection.releaseInterface(camStreamingInterface);
+            camDeviceConnection.close();
+        }
+        finish();
+    }
+
+    public void beenden() {
+        if (camIsOpen) {
+            try {
+                closeCameraDevice();
+            } catch (Exception e) {
+                displayErrorMessage(e);
+                return;
+            }
+        }
+        else if (camDeviceConnection != null) {
+            camDeviceConnection.releaseInterface(camControlInterface);
+            camDeviceConnection.releaseInterface(camStreamingInterface);
             camDeviceConnection.close();
         }
         finish();

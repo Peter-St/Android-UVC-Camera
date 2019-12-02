@@ -377,7 +377,6 @@ public class SetCameraVariables {
 
     public void adjustValue(CameraFunctionSetting setting) {
         log("adjust");
-
         int timeout = 500;
         int len;
         byte[] controlParms = null;
@@ -436,12 +435,11 @@ public class SetCameraVariables {
             case adjust:
                 if (controlParms.length == 1) packIntOneValues(currentValue, controlParms);
                 else if (controlParms.length == 2) packIntTwoValues(currentValue, controlParms);
-                log( "currentValue: " + currentValue);
                 if(BOOL_SET_CUR) {
                     len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, CONTROL << 8, bID <<8, controlParms, controlParms.length, timeout);
                     if (len != controlParms.length) {
                         log("Error: Durning CONTROL");
-                    } else log("Bright controlParms = " + unpackIntTwoValues(controlParms));
+                    }
                 }
                 break;
 
@@ -462,7 +460,8 @@ public class SetCameraVariables {
                         if (len != controlParms.length) {
                             log("Error: Durning CONTROL - GET_CUR");
                         } else {
-                            currentValue = unpackIntOneValues(controlParms);
+                            if (controlParms.length == 1) currentValue = unpackIntOneValues(controlParms);
+                            else if (controlParms.length == 2) currentValue = unpackIntTwoValues(controlParms);
                             log( "currentValue: " + currentValue);
                         }
                     }
@@ -480,8 +479,9 @@ public class SetCameraVariables {
                         if (len != controlParms.length) {
                             log("Error: Durning CONTROL");
                         } else {
-                            currentValue = unpackIntOneValues(controlParms);
-                            log( "currentBrightness: " + currentValue);
+                            if (controlParms.length == 1) currentValue = unpackIntOneValues(controlParms);
+                            else if (controlParms.length == 2) currentValue = unpackIntTwoValues(controlParms);
+                            log( "currentValue: " + currentValue);
                         }
                     }
                 }

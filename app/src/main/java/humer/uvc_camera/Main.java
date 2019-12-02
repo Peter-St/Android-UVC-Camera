@@ -68,7 +68,8 @@ public class Main extends Activity {
     private ZoomTextView tv;
 
     private final int REQUEST_PERMISSION_STORAGE=1;
-    private int ActivitySetUpTheUsbDeviceRequestCode = 1;
+    private static int ActivitySetUpTheUsbDeviceRequestCode = 1;
+    private static int ActivityStartIsoStreamRequestCode = 2;
 
     final static float STEP = 200;
     float mRatio = 1.0f;
@@ -136,6 +137,10 @@ public class Main extends Activity {
             tv.setTextColor(Color.BLACK);
 
         }
+        if (requestCode == ActivityStartIsoStreamRequestCode && resultCode == RESULT_OK && data != null) {
+            boolean exit = data.getBooleanExtra("closeProgram",false);
+            if (exit == true) finish();
+        }
     }
 
 
@@ -156,9 +161,6 @@ public class Main extends Activity {
 
     public void setUpTheUsbDevice(View view){
         if (showStoragePermissionRead() && showStoragePermissionWrite()) {
-
-
-
 
             Intent intent = new Intent(this, SetUpTheUsbDevice.class);
             Bundle bundle=new Bundle();
@@ -195,8 +197,6 @@ public class Main extends Activity {
             stf.restoreValuesFromFile();
             stf = null;
         }
-
-
     }
 
 
@@ -213,7 +213,7 @@ public class Main extends Activity {
                 });
             } else {
                 // TODO Auto-generated method stub
-                Intent intent = new Intent(getApplicationContext(), Start_Iso_StreamActivity.class);
+                Intent intent = new Intent(this, Start_Iso_StreamActivity.class);
                 Bundle bundle=new Bundle();
                 bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
                 bundle.putString("videoformat",videoformat);
@@ -232,7 +232,7 @@ public class Main extends Activity {
                 bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
 
                 intent.putExtra("bun",bundle);
-                startActivity(intent);
+                startActivityForResult(intent, ActivityStartIsoStreamRequestCode);
             }
         }
 

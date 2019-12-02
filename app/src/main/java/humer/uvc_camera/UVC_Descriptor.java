@@ -191,7 +191,7 @@ public class UVC_Descriptor {
         public final ArrayList<byte []> frameData;
         public int formatIndexNumber;
         public int numberOfFrameDescriptors;
-        public enum Videoformat {yuv, mjpeg, YUY2}
+        public enum Videoformat {yuv, mjpeg, YUY2, YV12, YUV_422_888, YUV_420_888}
         public Videoformat videoformat;
         public String guidFormat = new String();
 
@@ -218,10 +218,22 @@ public class UVC_Descriptor {
                 }
                 guidFormat = formatter.toString();
                 System.out.println("guidFormat = " + guidFormat);
-                if (guidFormat.equals("5955593200001000800000aa00389b71") ) {
-                    videoformat = Videoformat.yuv;
-                    System.out.println("videoformat = Videoformat.yuy2");
-                }
+                // YUY2
+                if (guidFormat.equals("5955593200001000800000aa00389b71") ) { videoformat = Videoformat.YUY2; System.out.println("videoformat = Videoformat.YUY2"); }
+                else if (guidFormat.equals("5955593200000010800000aa00389b71") ) {videoformat = Videoformat.YUY2;System.out.println("videoformat = Videoformat.YUY2");}
+                else if (guidFormat.equals("3259555900000010800000aa00389b71") ) {videoformat = Videoformat.YUY2;System.out.println("videoformat = Videoformat.YUY2");}
+                // YV12
+                else if (guidFormat.equals("3032344900000010800000aa00389b71") ) {videoformat = Videoformat.YV12;System.out.println("videoformat = Videoformat.YV12");}
+                else if (guidFormat.equals("5655594900000010800000aa00389b71") ) {videoformat = Videoformat.YV12;System.out.println("videoformat = Videoformat.YV12");}
+                else if (guidFormat.equals("3131325900000010800000aa00389b71") ) {videoformat = Videoformat.YV12;System.out.println("videoformat = Videoformat.YV12");}
+                else if (guidFormat.equals("5956313200001000800000aa00389b71") ) {videoformat = Videoformat.YV12;System.out.println("videoformat = Videoformat.YV12");}
+                else if (guidFormat.equals("5956313200000010800000aa00389b71") ) {videoformat = Videoformat.YV12;System.out.println("videoformat = Videoformat.YV12");}
+                // YUV_420_888
+                else if (guidFormat.equals("4934323000000010800000aa00389b71") ) {videoformat = Videoformat.YUV_420_888;System.out.println("videoformat = Videoformat.YUV_420_888");}
+                else if (guidFormat.equals("4934323000001000800000aa00389b71") ) {videoformat = Videoformat.YUV_420_888;System.out.println("videoformat = Videoformat.YUV_420_888");}
+                // YUV_422_888
+                else if (guidFormat.equals("5559565900001000800000aa00389b71") ) {videoformat = Videoformat.YUV_422_888;System.out.println("videoformat = Videoformat.YUV_422_888");}
+                else if (guidFormat.equals("5559565900000010800000aa00389b71") ) {videoformat = Videoformat.YUV_422_888;System.out.println("videoformat = Videoformat.YUV_422_888");}
                 else guidFormat = "unknown";
             }
             else if (formatData[2] ==  VS_format_mjpeg ) {

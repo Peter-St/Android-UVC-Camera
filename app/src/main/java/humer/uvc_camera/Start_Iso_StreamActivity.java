@@ -154,7 +154,7 @@ public class Start_Iso_StreamActivity extends Activity {
     public StringBuilder stringBuilder;
     private int [] convertedMaxPacketSize;
     private boolean lowerResolution;
-    private static enum Videoformat {yuv, mjpeg, YUY2}
+    private static enum Videoformat {yuv, mjpeg, YUY2, YV12, YUV_422_888, YUV_420_888}
 
 
     // Buttons & Views
@@ -179,10 +179,7 @@ public class Start_Iso_StreamActivity extends Activity {
     private Button defaultButton;
     private Switch switchAuto;
 
-
     // Camera Configuration Values to adjust Values over Controltransfers
-
-
     private boolean focusAutoState;
     private boolean exposureAutoState;
 
@@ -518,7 +515,7 @@ public class Start_Iso_StreamActivity extends Activity {
     protected void onPause() {
         super.onPause();
         unregisterReceiver(mUsbReceiver);
-        beenden();
+        beenden(false);
     }
 
     public void showMenu(View v) {
@@ -556,7 +553,7 @@ public class Start_Iso_StreamActivity extends Activity {
                         returnToConfigScreen();
                         return true;
                     case R.id.beenden:
-                        beenden();
+                        beenden(true);
                         return true;
                     default:
                         break;
@@ -696,11 +693,9 @@ public class Start_Iso_StreamActivity extends Activity {
                                 start_pos = setValue.currentValue;
                                 start_position=(int) (((start_pos-start)/(end-start))*100);
                                 discrete=start_pos;
-
                                 simpleSeekBar = (SeekBar) findViewById(R.id.simpleSeekBar); simpleSeekBar.setEnabled(true); simpleSeekBar.setAlpha(1);
                                 simpleSeekBar.setProgress(start_position);
                                 simpleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                                    int progressChangedValue = 0;
                                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                                         float temp=progress;
                                         float dis=end-start;
@@ -1010,7 +1005,7 @@ public class Start_Iso_StreamActivity extends Activity {
     }
 
 
-    public void beenden() {
+    public void beenden(boolean exit) {
         if (camIsOpen) {
             try {
                 closeCameraDevice();
@@ -1024,12 +1019,12 @@ public class Start_Iso_StreamActivity extends Activity {
             camDeviceConnection.releaseInterface(camStreamingInterface);
             camDeviceConnection.close();
         }
+        Intent resultIntent = new Intent();
+        if (exit == true) resultIntent.putExtra("closeProgram", true);
+        setResult(Activity.RESULT_OK, resultIntent);
+
         finish();
     }
-
-
-
-
 
     public void isoStream(MenuItem Item) {
 
@@ -1084,71 +1079,6 @@ public class Start_Iso_StreamActivity extends Activity {
     }
 
 
-    private void listDevice(UsbDevice usbDevice) {
-        int a = 0;
-        convertedMaxPacketSize = new int [(usbDevice.getInterfaceCount()-2)];
-        log ("usbDevice.getInterfaceCount()-2 = " + (usbDevice.getInterfaceCount()-2) );
-        log("Interface count: " + usbDevice.getInterfaceCount());
-        int interfaces = usbDevice.getInterfaceCount();
-        ArrayList<String> logArray = new ArrayList<String>(512);
-        stringBuilder = new StringBuilder();
-        for (int i = 0; i < interfaces; i++) {
-            UsbInterface usbInterface = usbDevice.getInterface(i);
-            log("[ - Interface: " + usbInterface.getId()  + " class=" + usbInterface.getInterfaceClass() + " subclass=" + usbInterface.getInterfaceSubclass() );
-            // UsbInterface.getAlternateSetting() has been added in Android 5.
-            int endpoints = usbInterface.getEndpointCount();
-            StringBuilder logEntry = new StringBuilder("[ InterfaceID " + usbInterface.getId() + " / Interfaceclass = " + usbInterface.getInterfaceClass() + " / InterfaceSubclass = " + usbInterface.getInterfaceSubclass());
-            stringBuilder.append(logEntry.toString());
-            stringBuilder.append("\n");
-            //logArray.add(logEntry.toString());
-
-            for (int j = 0; j < endpoints; j++) {
-                UsbEndpoint usbEndpoint = usbInterface.getEndpoint(j);
-                log("- Endpoint: addr=" + String.format("0x%02x ", usbEndpoint.getAddress()).toString() + " maxPacketSize=" + returnConvertedValue(usbEndpoint.getMaxPacketSize()) + " type=" + usbEndpoint.getType() + " ]");
-
-                StringBuilder logEntry2 = new StringBuilder("/ addr " + String.format("0x%02x ", usbEndpoint.getAddress()).toString() + " maxPacketSize=" + returnConvertedValue(usbEndpoint.getMaxPacketSize()) + " ]");
-                stringBuilder.append(logEntry2.toString());
-                stringBuilder.append("\n");
-                if (usbInterface.getId() == 1) {
-                    convertedMaxPacketSize[a] = returnConvertedValue(usbEndpoint.getMaxPacketSize());
-                    a++;
-                }
-            }
-        }
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                setContentView(R.layout.layout_main);
-                tv = (TextView) findViewById(R.id.textDarstellung);
-                tv.setSingleLine(false);
-                tv.setText(stringBuilder.toString());
-                settingsButtonOverview = (Button) findViewById(R.id.settingsButton);
-                settingsButtonOverview.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //Creating the instance of PopupMenu
-                        PopupMenu popup = new PopupMenu(Start_Iso_StreamActivity.this, settingsButtonOverview);
-                        //Inflating the Popup using xml file
-                        popup.getMenuInflater().inflate(R.menu.camera_settings, popup.getMenu());
-
-                        //registering popup with OnMenuItemClickListener
-                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                            public boolean onMenuItemClick(MenuItem item) {
-                                //  Toast.makeText(Main.this,"Auswahl von: " + item.getTitle(),Toast.LENGTH_SHORT).show();
-                                return true; }
-                        });
-                        popup.show();//showing popup menu
-                    }
-                });//closing the setOnClickListener method
-            }
-        });
-
-
-    }
-
-
-
     private int returnConvertedValue(int wSize){
         String st = Integer.toBinaryString(wSize);
         StringBuilder result = new StringBuilder();
@@ -1168,9 +1098,6 @@ public class Start_Iso_StreamActivity extends Activity {
             return (c+1)*d;
         }
     }
-
-
-
 
 
     private void findCam() throws Exception {
@@ -1221,7 +1148,6 @@ public class Start_Iso_StreamActivity extends Activity {
         return null;
     }
 
-
     private void openCam(boolean init) throws Exception {
         openCameraDevice(init);
         if (init) {
@@ -1258,8 +1184,6 @@ public class Start_Iso_StreamActivity extends Activity {
         }
     }
 
-
-
     private void closeCameraDevice() throws IOException {
         if (camDeviceConnection != null) {
             camDeviceConnection.releaseInterface(camControlInterface);
@@ -1288,15 +1212,9 @@ public class Start_Iso_StreamActivity extends Activity {
         //initBrightnessParms();
     }
 
-
-
-
-
     private void BildaufnahmeButtonClickEvent() {
-
         bildaufnahme = true;
         displayMessage("Image saved");
-
     }
 
     public void stopTheCameraStreamClickEvent(View view) {
@@ -1309,9 +1227,6 @@ public class Start_Iso_StreamActivity extends Activity {
         photoButton.setBackgroundResource(R.drawable.photo_clear);
         videoButton.setEnabled(false);
         videoButton.setAlpha(0); // 100% transparent
-
-        //((Button)findViewById(R.id.startStream)).setEnabled(true);
-
         stopKamera = true;
 
         try {
@@ -1346,6 +1261,9 @@ public class Start_Iso_StreamActivity extends Activity {
     private void processReceivedVideoFrameYuv(byte[] frameData, Videoformat videoFromat) throws IOException {
         YuvImage yuvImage ;
         if (videoFromat == Videoformat.YUY2) yuvImage = new YuvImage(frameData, ImageFormat.YUY2, imageWidth, imageHeight, null);
+        else if (videoFromat == Videoformat.YV12) yuvImage = new YuvImage(frameData, ImageFormat.YV12, imageWidth, imageHeight, null);
+        else if (videoFromat == Videoformat.YUV_420_888) yuvImage = new YuvImage(frameData, ImageFormat.YUV_420_888, imageWidth, imageHeight, null);
+        else if (videoFromat == Videoformat.YUV_422_888) yuvImage = new YuvImage(frameData, ImageFormat.YUV_422_888, imageWidth, imageHeight, null);
         else yuvImage = new YuvImage(frameData, ImageFormat.YUY2, imageWidth, imageHeight, null);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         yuvImage.compressToJpeg(new Rect(0, 0, imageWidth, imageHeight), 100, os);
@@ -1503,9 +1421,9 @@ public class Start_Iso_StreamActivity extends Activity {
         while (frameLen > 0 && frameData[frameLen - 1] == 0) {
             frameLen--;
         }
-        //  if (frameLen < 100 || (frameData[0] & 0xff) != 0xff || (frameData[1] & 0xff) != 0xD8 || (frameData[frameLen - 2] & 0xff) != 0xff || (frameData[frameLen - 1] & 0xff) != 0xd9) {
-        //        throw new Exception("Invalid MJPEG frame structure, length=" + frameData.length);
-        //  }
+        if (frameLen < 100 || (frameData[0] & 0xff) != 0xff || (frameData[1] & 0xff) != 0xD8 || (frameData[frameLen - 2] & 0xff) != 0xff || (frameData[frameLen - 1] & 0xff) != 0xd9) {
+            logError("Invalid MJPEG frame structure, length= " + frameData.length);
+        }
         boolean hasHuffmanTable = findJpegSegment(frameData, frameLen, 0xC4) != -1;
         exit = false;
         if (hasHuffmanTable) {
@@ -1516,11 +1434,9 @@ public class Start_Iso_StreamActivity extends Activity {
         } else {
             int segmentDaPos = findJpegSegment(frameData, frameLen, 0xDA);
 
-            try {if (segmentDaPos == -1) {
-                exit = true;
-            }
+            try {if (segmentDaPos == -1)   exit = true;
             } catch (Exception e) {
-                log("Segment 0xDA not found in MJPEG frame data.");}
+                logError("Segment 0xDA not found in MJPEG frame data.");}
             //          throw new Exception("Segment 0xDA not found in MJPEG frame data.");
             if (exit ==false) {
                 byte[] a = new byte[frameLen + mjpgHuffmanTable.length];
@@ -1532,39 +1448,6 @@ public class Start_Iso_StreamActivity extends Activity {
                 return null;
 
 
-        }
-    }
-
-    // see USB video class standard, USB_Video_Payload_MJPEG_1.5.pdf
-    private byte[] convertMjpegFrameToJpeg(byte[] frameData) throws Exception {
-        int frameLen = frameData.length;
-        while (frameLen > 0 && frameData[frameLen - 1] == 0) {
-            frameLen--;
-        }
-
-        try {
-            if (frameLen < 100 || (frameData[0] & 0xff) != 0xff || (frameData[1] & 0xff) != 0xD8 || (frameData[frameLen - 2] & 0xff) != 0xff || (frameData[frameLen - 1] & 0xff) != 0xd9)
-                ;
-        } catch (Exception e) {
-            log("Invalid MJPEG frame structure, length=" + frameData.length);
-        }
-
-        boolean hasHuffmanTable = findJpegSegment(frameData, frameLen, 0xC4) != -1;
-        if (hasHuffmanTable) {
-            if (frameData.length == frameLen) {
-                return frameData;
-            }
-            return Arrays.copyOf(frameData, frameLen);
-        } else {
-            int segmentDaPos = findJpegSegment(frameData, frameLen, 0xDA);
-            if (segmentDaPos == -1) {
-                throw new Exception("Segment 0xDA not found in MJPEG frame data.");
-            }
-            byte[] a = new byte[frameLen + mjpgHuffmanTable.length];
-            System.arraycopy(frameData, 0, a, 0, segmentDaPos);
-            System.arraycopy(mjpgHuffmanTable, 0, a, segmentDaPos, mjpgHuffmanTable.length);
-            System.arraycopy(frameData, segmentDaPos, a, segmentDaPos + mjpgHuffmanTable.length, frameLen - segmentDaPos);
-            return a;
         }
     }
 
@@ -1629,16 +1512,6 @@ public class Start_Iso_StreamActivity extends Activity {
         stringBuilder.append("\nFinal streaming parms: \n");
         stringBuilder.append(dumpStreamingParms(streamingParms));
         controlltransfer = new String(dumpStreamingParms(streamingParms));
-    }
-
-    private static void packIntBrightness(int i, byte[] buf) {
-        buf[0] = (byte) (i & 0xFF);
-        buf[0 + 1] = (byte) ((i >>> 8) & 0xFF);
-    }
-
-    private static int unpackIntBrightness(byte[] buf) {
-        return (((buf[1] ) << 8) | (buf[0] & 0xFF));
-
     }
 
     private String dumpStreamingParms(byte[] p) {
@@ -1756,17 +1629,6 @@ public class Start_Iso_StreamActivity extends Activity {
         usbdevice_fs_util.setInterface(camDeviceConnection.getFileDescriptor(), camStreamingInterface.getId(), altSetting);
     }
 
-    private void enableStreaming_direct(boolean enabled) throws Exception {
-        if (!enabled) {
-            return;
-        }
-        // Ist unklar, wie man das Streaming disabled. AltSetting muss 0 sein damit die Video-Daten kommen.
-        int len = camDeviceConnection.controlTransfer(RT_STANDARD_INTERFACE_SET, SET_INTERFACE, 0, camStreamingInterface.getId(), null, 0, 1000);
-        if (len != 0) {
-            throw new Exception("SET_INTERFACE (direct) failed, len=" + len + ".");
-        }
-    }
-
     private void sendStillImageTrigger() {
         log("Sending Still Image Trigger");
         byte buf[] = new byte[1];
@@ -1779,7 +1641,6 @@ public class Start_Iso_StreamActivity extends Activity {
     }
 
     // Resets the error code after retrieving it.
-// Does not work with the e-con camera module!
     private int getVideoControlErrorCode() throws Exception {
         byte buf[] = new byte[1];
         buf[0] = 99;
@@ -1834,12 +1695,14 @@ public class Start_Iso_StreamActivity extends Activity {
         Log.i("UVC_Camera", msg);
     }
 
+    public void logError(String msg) {
+        Log.e("UVC_Camera", msg);
+    }
+
     public void displayErrorMessage(Throwable e) {
         Log.e("UVC_Camera", "Error in MainActivity", e);
         displayMessage("Error: " + e);
     }
-
-
 
     // see 10918-1:1994, K.3.3.1 Specification of typical tables for DC difference coding
     private static byte[] mjpgHuffmanTable = {
@@ -1980,8 +1843,13 @@ public class Start_Iso_StreamActivity extends Activity {
                                         processReceivedVideoFrameYuv(frameData.toByteArray(), Videoformat.yuv);
                                     }else if (videoformat.equals("YUY2")){
                                         processReceivedVideoFrameYuv(frameData.toByteArray(), Videoformat.YUY2);
+                                    }else if (videoformat.equals("YUY2")){
+                                        processReceivedVideoFrameYuv(frameData.toByteArray(), Videoformat.YV12);
+                                    }else if (videoformat.equals("YUV_420_888")){
+                                        processReceivedVideoFrameYuv(frameData.toByteArray(), Videoformat.YUV_420_888);
+                                    }else if (videoformat.equals("YUV_422_888")){
+                                        processReceivedVideoFrameYuv(frameData.toByteArray(), Videoformat.YUV_422_888);
                                     }
-
                                     frameData.reset();
                                 }
                             }
@@ -2029,7 +1897,6 @@ public class Start_Iso_StreamActivity extends Activity {
         bStillCaptureMethod = bundle.getByte("bStillCaptureMethod", (byte)0);
     }
 
-
     private int round(double d){
         double dAbs = Math.abs(d);
         int i = (int) dAbs;
@@ -2040,24 +1907,6 @@ public class Start_Iso_StreamActivity extends Activity {
             return d<0 ? -(i+1) : i+1;
         }
     }
-
-
-    public static Bitmap decodeSampledBitmapFromByteArray(byte[] data) {
-        // First decode with inJustDecodeBounds=true to check dimensions
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeByteArray(data, 0, data.length, options);
-
-
-        // Calculate inSampleSize
-        options.inSampleSize = calculateInSampleSize(options, imageWidth / 2, imageHeight / 2);
-
-        // Decode bitmap with inSampleSize set
-        options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeByteArray(data, 0, data.length, options);
-    }
-
-
 
     public static int calculateInSampleSize(
             BitmapFactory.Options options, int reqWidth, int reqHeight) {
