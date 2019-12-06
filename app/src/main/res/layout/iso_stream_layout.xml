@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Main">
@@ -74,17 +76,48 @@
         android:background="@drawable/bg_button_start_stream"
         android:text="Transmission start" />
 
-    <Button
+    <io.github.yavski.fabspeeddial.FabSpeedDial
         android:id="@+id/settingsButton"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:background="@drawable/bg_button_settings"
-        android:textColor="@android:color/holo_blue_light"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:layout_gravity="start|end"
+        app:touchGuard="false"
+        app:fabGravity="top_end"
+        app:fabDrawable="@drawable/bg_button_settings"
+        app:fabBackgroundTint="#50000080"
+        app:fabMenu="@menu/iso_stream_settings_button"
+        app:miniFabBackgroundTintList="@array/brightness_colors"
+        app:miniFabDrawableTint="@color/black"
+        app:miniFabTitleTextColor="@color/black" />
+
+    <FrameLayout
+        android:id="@+id/switch_view"
+        style="@style/SwitchContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:layout_below="@id/settingsButton"
+        android:layout_marginTop="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_alignParentRight="true"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="70dp"
+            android:layout_marginTop="0dp"
+            android:text="@string/menu_item_lower_resolution"
+            android:textColor="#000080"
+            android:textSize="18sp" />
+
+        <android.support.v7.widget.SwitchCompat
+            style="@style/Switch"
+            android:id="@+id/switch_lowerResolution"
+            android:layout_width="wrap_content"
+            android:layout_height="120dp" />
+    </FrameLayout>
 
 
     <TextView

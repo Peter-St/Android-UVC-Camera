@@ -23,6 +23,7 @@ This Repository is provided "as is", without warranties of any kind.
 package humer.uvc_camera;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -43,14 +44,17 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.design.internal.NavigationMenu;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -62,9 +66,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Formatter;
@@ -74,17 +76,12 @@ import com.sample.timelapse.MJPEGGenerator ;
 
 import humer.uvc_camera.UsbIso64.USBIso;
 import humer.uvc_camera.UsbIso64.usbdevice_fs_util;
+import io.github.yavski.fabspeeddial.FabSpeedDial;
+import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
 public class Start_Iso_StreamActivity extends Activity {
 
     private static final String ACTION_USB_PERMISSION = "humer.uvc_camera.USB_PERMISSION";
-
-    protected ImageView imageView;
-    protected Button startStream;
-    protected Button settingsButton;
-    protected Button menu;
-    protected Button stopStreamButton;
-    protected ImageButton photoButton;
 
     // USB codes:
 // Request types (bmRequestType):
@@ -158,6 +155,11 @@ public class Start_Iso_StreamActivity extends Activity {
 
 
     // Buttons & Views
+    protected ImageView imageView;
+    protected Button startStream;
+    protected Button menu;
+    protected Button stopStreamButton;
+    protected ImageButton photoButton;
     protected Button settingsButtonOverview;
     protected ToggleButton videoButton;
     private TextView tv;
@@ -210,8 +212,6 @@ public class Start_Iso_StreamActivity extends Activity {
         }
     };
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -239,13 +239,57 @@ public class Start_Iso_StreamActivity extends Activity {
             }
         });//closing the setOnClickListener method
         startStream.getBackground().setAlpha(180);  // 25% transparent
-        settingsButton = findViewById(R.id.settingsButton);
-        settingsButton.setOnClickListener(new View.OnClickListener() {
+
+        FabSpeedDial fabSpeedDial = (FabSpeedDial) findViewById(R.id.settingsButton);
+        fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
+
             @Override
-            public void onClick(View view) {
-                showMenu(view);
+            public boolean onPrepareMenu(NavigationMenu navigationMenu) {
+                if (lowerResolution) {
+                    MenuItem menuItem = navigationMenu.findItem(R.id.lowerRes);
+                    menuItem.setTitle("Lower Resolution (Activated)");
+                    menuItem.setIcon(R.drawable.lower_resolution_not_activated_24dp);
+                } else {
+                    MenuItem menuItem = navigationMenu.findItem(R.id.lowerRes);
+                    menuItem.setTitle("Lower Resolution (Disabled)");
+                    menuItem.setIcon(R.drawable.ic_wallpaper_lower_resolution_24dp);
+                }
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemSelected(MenuItem menuItem) {
+                log("click");
+                Snackbar.make(findViewById(R.id.rootView), getString(R.string.selected_menu_item,
+                        menuItem.getTitle()), Snackbar.LENGTH_SHORT).show();
+
+                switch (menuItem.getItemId()) {
+                    case R.id.adjustValuesUnit:
+                        showAdjustValuesUnitMenu(findViewById(R.id.startStream));
+                        return false;
+                    case R.id.adjustValuesTerminal:
+                        showAdjustValuesTerminalMenu(findViewById(R.id.startStream));
+                        return false;
+                    case R.id.lowerRes:
+                        lowerResolutionClickButtonEvent();
+                        return false;
+                    case R.id.returnToConfigScreen:
+                        returnToConfigScreen();
+                        return false;
+                    case R.id.beenden:
+                        beenden(true);
+                        return false;
+                    default:
+                        break;
+                }
+                return false;
             }
         });
+
+
+        FrameLayout layout = (FrameLayout)findViewById(R.id.switch_view);
+        layout.setVisibility(View.GONE);
+
         photoButton = (ImageButton) findViewById(R.id.Bildaufnahme);
 
         final MediaPlayer mp2 = MediaPlayer.create(Start_Iso_StreamActivity.this, R.raw.sound2);
@@ -518,55 +562,9 @@ public class Start_Iso_StreamActivity extends Activity {
         beenden(false);
     }
 
-    public void showMenu(View v) {
-        Context wrapper = new ContextThemeWrapper(this, R.style.YOURSTYLE);
-        PopupMenu popup = new PopupMenu(wrapper, v);
-        // This activity implements OnMenuItemClickListener
-        popup.inflate(R.menu.iso_stream_settings_button);
-
-
-        if (lowerResolution) popup.getMenu().findItem(R.id.lowerRes).setChecked(true);
-        else popup.getMenu().findItem(R.id.lowerRes).setChecked(false);
-
-
-        if (bNumControlTerminal == null ||  bNumControlUnit == null) {
-            popup.getMenu().findItem(R.id.adjustValuesUnit).setVisible(false);
-            popup.getMenu().findItem(R.id.adjustValuesTerminal).setVisible(false);
-        }
-
-
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-
-                    case R.id.adjustValuesUnit:
-                        showAdjustValuesUnitMenu(v);
-                        return true;
-                    case R.id.adjustValuesTerminal:
-                        showAdjustValuesTerminalMenu(v);
-                        return true;
-                    case R.id.lowerRes:
-                        lowerResolutionClickButtonEvent();
-                        return true;
-                    case R.id.returnToConfigScreen:
-                        returnToConfigScreen();
-                        return true;
-                    case R.id.beenden:
-                        beenden(true);
-                        return true;
-                    default:
-                        break;
-                }
-                return false;
-            }
-        });
-        popup.show();
-    }
-
     public void showAdjustValuesUnitMenu(View v) {
-        Context wrapper = new ContextThemeWrapper(this, R.style.YOURSTYLE);
-        PopupMenu popup = new PopupMenu(wrapper, v);
+        //Context wrapper = new ContextThemeWrapper(this, R.style.YOURSTYLE);
+        PopupMenu popup = new PopupMenu(this, v);
         popup.inflate(R.menu.iso_stream_adjust_values_unit);
 
         LockCameraVariables lockVariables = new LockCameraVariables(bNumControlTerminal, bNumControlUnit);
@@ -612,6 +610,7 @@ public class Start_Iso_StreamActivity extends Activity {
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                if (camDevice == null) return false;
                 switch (item.getItemId()) {
                     case R.id.brightness:
                         runOnUiThread(new Runnable() {
@@ -674,6 +673,7 @@ public class Start_Iso_StreamActivity extends Activity {
                         });
                         return true;
                     case R.id.contrast:
+                        if (camDevice == null) return false;
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -786,8 +786,8 @@ public class Start_Iso_StreamActivity extends Activity {
     }
 
     public void showAdjustValuesTerminalMenu(View v) {
-        Context wrapper = new ContextThemeWrapper(this, R.style.YOURSTYLE);
-        PopupMenu popup = new PopupMenu(wrapper, v);
+        //Context wrapper = new ContextThemeWrapper(this, R.style.YOURSTYLE);
+        PopupMenu popup = new PopupMenu(this, v);
         popup.inflate(R.menu.iso_stream_adjust_values_terminal);
 
         LockCameraVariables lockVariables = new LockCameraVariables(bNumControlTerminal, bNumControlUnit);
@@ -840,6 +840,7 @@ public class Start_Iso_StreamActivity extends Activity {
                         displayMessage("Not supported up to now...");
                         return true;
                     case R.id.auto_exposure_mode:
+                        if (camDevice == null) return false;
                         //exposureAutoState = true;
                         displayMessage("Auto_Exposure_Mode should not be disabled. ..");
                         runOnUiThread(new Runnable() {
@@ -993,8 +994,45 @@ public class Start_Iso_StreamActivity extends Activity {
 
 
     public void lowerResolutionClickButtonEvent () {
-        if (lowerResolution) lowerResolution = false;
-        else lowerResolution = true;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                final FrameLayout layout = (FrameLayout)findViewById(R.id.switch_view);
+                layout.setVisibility(View.VISIBLE);
+                final SwitchCompat switchView = (SwitchCompat) findViewById(R.id.switch_lowerResolution);
+                if (lowerResolution) switchView.setChecked(true);
+                else switchView.setChecked(false);
+                Runnable myRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        layout.setVisibility (View.GONE);
+                    }
+                };
+                Handler myHandler = new Handler();
+                final int TIME_TO_WAIT = 3500;
+
+
+                switchView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                        Log.v("Switch State=", ""+isChecked);
+                        if (isChecked) {
+                            lowerResolution = true;
+                            myHandler.removeCallbacks(myRunnable);
+                            myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                        } else {
+                            lowerResolution = false;
+                            myHandler.removeCallbacks(myRunnable);
+                            myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                        }
+                    }
+
+                });
+                myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+            }
+        });
+
     }
 
     public void returnToConfigScreen() {
