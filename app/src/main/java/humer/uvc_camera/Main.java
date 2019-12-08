@@ -31,6 +31,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
@@ -143,6 +144,7 @@ public class Main extends Activity {
         }
     }
 
+    ////////////////   BUTTONS  //////////////////////////////////////////7
 
     public void viewPrivatePolicy(View view) {
         // TODO Auto-generated method stub
@@ -186,12 +188,43 @@ public class Main extends Activity {
             super.onResume();
             startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
         }
+        else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            Intent intent = new Intent(this, SetUpTheUsbDevice.class);
+            Bundle bundle=new Bundle();
+            bundle.putBoolean("edit", true);
+            bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
+            bundle.putString("videoformat",videoformat);
+            bundle.putInt("camFormatIndex",camFormatIndex);
+            bundle.putInt("imageWidth",imageWidth);
+            bundle.putInt("imageHeight",imageHeight);
+            bundle.putInt("camFrameIndex",camFrameIndex);
+            bundle.putInt("camFrameInterval",camFrameInterval);
+            bundle.putInt("packetsPerRequest",packetsPerRequest);
+            bundle.putInt("maxPacketSize",maxPacketSize);
+            bundle.putInt("activeUrbs",activeUrbs);
+            bundle.putString("deviceName",deviceName);
+            bundle.putByte("bUnitID",bUnitID);
+            bundle.putByte("bTerminalID",bTerminalID);
+            bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
+            bundle.putByteArray("bNumControlUnit", bNumControlUnit);
+            bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
+
+            intent.putExtra("bun",bundle);
+            super.onResume();
+            startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
+        }
 
     }
 
 
     public void restoreCameraSettings (View view) {
         if (showStoragePermissionRead() && showStoragePermissionWrite()) {
+            SaveToFile  stf;
+            stf = new SaveToFile(this, this);
+            stf.restoreValuesFromFile();
+            stf = null;
+        }
+        else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
             SaveToFile  stf;
             stf = new SaveToFile(this, this);
             stf.restoreValuesFromFile();
@@ -204,6 +237,37 @@ public class Main extends Activity {
 
     public void isoStream(View view){
         if (showStoragePermissionRead() && showStoragePermissionWrite()) {
+            if (camFormatIndex == 0 || camFrameIndex == 0 ||camFrameInterval == 0 ||packetsPerRequest == 0 ||maxPacketSize == 0 ||imageWidth == 0 || activeUrbs == 0 ) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tv = (ZoomTextView) findViewById(R.id.textDarstellung);
+                        tv.setText("Values for the camera not correctly setted !!\nPlease set up the values for the Camera first.\nTo Set Up the Values press the Settings Button and click on 'Set up with Uvc Values' or 'Edit / Save / Restor' and 'Edit Save'");  }
+                });
+            } else {
+                // TODO Auto-generated method stub
+                Intent intent = new Intent(this, Start_Iso_StreamActivity.class);
+                Bundle bundle=new Bundle();
+                bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
+                bundle.putString("videoformat",videoformat);
+                bundle.putInt("camFormatIndex",camFormatIndex);
+                bundle.putInt("imageWidth",imageWidth);
+                bundle.putInt("imageHeight",imageHeight);
+                bundle.putInt("camFrameIndex",camFrameIndex);
+                bundle.putInt("camFrameInterval",camFrameInterval);
+                bundle.putInt("packetsPerRequest",packetsPerRequest);
+                bundle.putInt("maxPacketSize",maxPacketSize);
+                bundle.putInt("activeUrbs",activeUrbs);
+                bundle.putByte("bUnitID",bUnitID);
+                bundle.putByte("bTerminalID",bTerminalID);
+                bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
+                bundle.putByteArray("bNumControlUnit", bNumControlUnit);
+                bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
+
+                intent.putExtra("bun",bundle);
+                startActivityForResult(intent, ActivityStartIsoStreamRequestCode);
+            }
+        } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
             if (camFormatIndex == 0 || camFrameIndex == 0 ||camFrameInterval == 0 ||packetsPerRequest == 0 ||maxPacketSize == 0 ||imageWidth == 0 || activeUrbs == 0 ) {
                 runOnUiThread(new Runnable() {
                     @Override

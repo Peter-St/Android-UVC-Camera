@@ -7,8 +7,8 @@ android {
         applicationId "humer.uvc_camera"
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 44
-        versionName "1.4.13"
+        versionCode 45
+        versionName "1.4.14"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

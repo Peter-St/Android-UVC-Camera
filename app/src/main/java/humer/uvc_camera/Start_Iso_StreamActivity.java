@@ -542,8 +542,7 @@ public class Start_Iso_StreamActivity extends Activity {
         log("activeUrbs = " + activeUrbs);
         simpleSeekBar = (SeekBar) findViewById(R.id.simpleSeekBar); simpleSeekBar.setEnabled(false); simpleSeekBar.setAlpha(0); simpleSeekBar = null;
         defaultButton = (Button) findViewById(R.id.defaultButton); defaultButton.setEnabled(false); defaultButton.setAlpha(0); defaultButton = null;
-        switchAuto = (Switch) findViewById(R.id.switchAuto);
-        switchAuto.setEnabled(false); switchAuto.setAlpha(0); switchAuto = null;
+        switchAuto = (Switch) findViewById(R.id.switchAuto); switchAuto.setEnabled(false); switchAuto.setVisibility(View.GONE); switchAuto = null;
         usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
         IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
@@ -610,7 +609,7 @@ public class Start_Iso_StreamActivity extends Activity {
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if (camDevice == null) return false;
+                if (camDevice == null || runningStream == null) return false;
                 switch (item.getItemId()) {
                     case R.id.brightness:
                         runOnUiThread(new Runnable() {
@@ -673,7 +672,6 @@ public class Start_Iso_StreamActivity extends Activity {
                         });
                         return true;
                     case R.id.contrast:
-                        if (camDevice == null) return false;
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -835,6 +833,7 @@ public class Start_Iso_StreamActivity extends Activity {
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                if (runningStream == null) return false;
                 switch (item.getItemId()) {
                     case R.id.scanning_Mode:
                         displayMessage("Not supported up to now...");
@@ -850,7 +849,7 @@ public class Start_Iso_StreamActivity extends Activity {
                                     @Override
                                     public void run() {
                                         switchAuto.setEnabled(false);
-                                        switchAuto.setAlpha(0);
+                                        switchAuto.setVisibility(View.GONE);
                                         switchAuto = null;
                                     }
                                 };
@@ -861,7 +860,7 @@ public class Start_Iso_StreamActivity extends Activity {
                                 exposureAutoState = setAutoExposure.autoEnabled;
                                 switchAuto = (Switch) findViewById(R.id.switchAuto);
                                 switchAuto.setEnabled(true);
-                                switchAuto.setAlpha(1);
+                                switchAuto.setVisibility(View.VISIBLE);
                                 if (exposureAutoState) switchAuto.setChecked(true);
                                 else switchAuto.setChecked(false);
 
@@ -939,7 +938,7 @@ public class Start_Iso_StreamActivity extends Activity {
                                     @Override
                                     public void run() {
                                         switchAuto.setEnabled(false);
-                                        switchAuto.setAlpha(0);
+                                        switchAuto.setVisibility(View.GONE);
                                         switchAuto = null;
                                     }
                                 };
@@ -952,7 +951,7 @@ public class Start_Iso_StreamActivity extends Activity {
 
                                 switchAuto = (Switch) findViewById(R.id.switchAuto);
                                 switchAuto.setEnabled(true);
-                                switchAuto.setAlpha(1);
+                                switchAuto.setVisibility(View.VISIBLE);
                                 if (focusAutoState) switchAuto.setChecked(true);
                                 else switchAuto.setChecked(false);
 
@@ -990,8 +989,6 @@ public class Start_Iso_StreamActivity extends Activity {
         });
         popup.show();
     }
-
-
 
     public void lowerResolutionClickButtonEvent () {
         runOnUiThread(new Runnable() {
@@ -1041,7 +1038,6 @@ public class Start_Iso_StreamActivity extends Activity {
         //imageView = (ImageView) findViewById(R.id.imageView);
         onBackPressed();
     }
-
 
     public void beenden(boolean exit) {
         if (camIsOpen) {
@@ -1116,7 +1112,6 @@ public class Start_Iso_StreamActivity extends Activity {
 
     }
 
-
     private int returnConvertedValue(int wSize){
         String st = Integer.toBinaryString(wSize);
         StringBuilder result = new StringBuilder();
@@ -1136,7 +1131,6 @@ public class Start_Iso_StreamActivity extends Activity {
             return (c+1)*d;
         }
     }
-
 
     private void findCam() throws Exception {
 
@@ -1295,7 +1289,6 @@ public class Start_Iso_StreamActivity extends Activity {
         }
     }
 
-
     private void processReceivedVideoFrameYuv(byte[] frameData, Videoformat videoFromat) throws IOException {
         YuvImage yuvImage ;
         if (videoFromat == Videoformat.YUY2) yuvImage = new YuvImage(frameData, ImageFormat.YUY2, imageWidth, imageHeight, null);
@@ -1364,7 +1357,6 @@ public class Start_Iso_StreamActivity extends Activity {
 
 
     }
-
 
     public void processReceivedMJpegVideoFrameKamera(byte[] mjpegFrameData) throws Exception {
 
