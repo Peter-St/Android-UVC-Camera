@@ -1,7 +1,0 @@
-Dateibeschreiber --> Über JNA   
-
-Endpunktaddresse auslesen   -----> Android
-                            -----> Linux
-
-
-Video ohne Intit der Kamera ?                     
