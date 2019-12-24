@@ -76,29 +76,40 @@
         android:background="@drawable/bg_button_start_stream"
         android:text="Transmission start" />
 
-    <io.github.yavski.fabspeeddial.FabSpeedDial
-        android:id="@+id/settingsButton"
+
+    <FrameLayout
+        android:id="@+id/framelayout"
+        style="@style/SwitchContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_gravity="start|end"
-        app:touchGuard="false"
-        app:fabGravity="top_end"
-        app:fabDrawable="@drawable/bg_button_settings"
-        app:fabBackgroundTint="#50000080"
-        app:fabMenu="@menu/iso_stream_settings_button"
-        app:miniFabBackgroundTintList="@array/brightness_colors"
-        app:miniFabDrawableTint="@color/black"
-        app:miniFabTitleTextColor="@color/black" />
+        >
+
+        <io.github.yavski.fabspeeddial.FabSpeedDial
+            android:id="@+id/settingsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fabMenu="@menu/iso_stream_settings_button"
+            app:fabGravity="top_end"
+            android:layout_gravity="start|end"
+            app:touchGuard="false"
+
+            app:fabDrawable="@drawable/bg_button_settings"
+            app:fabBackgroundTint="#50000080"
+            app:miniFabBackgroundTintList="@array/brightness_colors"
+            app:miniFabDrawableTint="@color/black"
+            app:miniFabTitleTextColor="@color/black"
+            />
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/switch_view"
         style="@style/SwitchContainer"
         android:layout_width="wrap_content"
         android:layout_height="100dp"
-        android:layout_below="@id/settingsButton"
+        android:layout_below="@id/framelayout"
         android:layout_marginTop="40dp"
         android:layout_marginRight="40dp"
         android:layout_alignParentRight="true"

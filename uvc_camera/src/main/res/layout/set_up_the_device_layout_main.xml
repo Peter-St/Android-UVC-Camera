@@ -4,7 +4,53 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/set_dev_rootView"
     android:background="@drawable/main_background">
+
+
+    <Button
+        android:id="@+id/find_Camera2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Find the Camera"
+        android:onClick="findTheCameraClickEvent"
+        android:background="@drawable/bg_button"
+
+        app:layout_constraintTop_toTopOf="@id/guidelinehor1"
+        app:layout_constraintBottom_toBottomOf="@id/guidelinehor1"
+        app:layout_constraintLeft_toLeftOf="@id/guideline"
+        app:layout_constraintRight_toRightOf="@id/guideline"
+        />
+
+    <FrameLayout
+        android:id="@+id/frameLayoutButtonView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/guidelinehor1"
+        app:layout_constraintBottom_toBottomOf="@id/guidelinehor1"
+        app:layout_constraintLeft_toLeftOf="@id/guideline"
+        app:layout_constraintRight_toRightOf="@id/guideline"
+        >
+
+        <io.github.yavski.fabspeeddial.FabSpeedDial
+            android:id="@+id/find_Camera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:touchGuard="false"
+            android:layout_gravity="start|end"
+            app:fabGravity="top_end"
+            app:fabMenu="@menu/set_up_the_device_permission"
+            android:background="@drawable/bg_button"
+
+            app:fabDrawable="@drawable/bg_button_settings"
+            app:fabBackgroundTint="#50000080"
+            app:miniFabBackgroundTintList="@array/brightness_colors"
+            app:miniFabDrawableTint="@color/black"
+            app:miniFabTitleTextColor="@color/black"
+            />
+
+    </FrameLayout>
+
 
     <Button
         android:id="@+id/returnToMainScreen"
@@ -32,19 +78,6 @@
         app:layout_constraintVertical_bias="0"
         />
 
-    <Button
-        android:id="@+id/findTheCamera"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Find the Camera"
-        android:onClick="searchTheCamera"
-        android:background="@drawable/bg_button"
-
-        app:layout_constraintTop_toTopOf="@id/guidelinehor1"
-        app:layout_constraintBottom_toBottomOf="@id/guidelinehor1"
-        app:layout_constraintLeft_toLeftOf="@id/guideline"
-        app:layout_constraintRight_toRightOf="@id/guideline"
-        />
 
     <Button
         android:id="@+id/listTheCamera"

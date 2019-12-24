@@ -44,6 +44,10 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
     implementation 'io.github.yavski:fab-speed-dial:1.0.7'
 
+    implementation project(':libusbcamera')
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
 }
 
 configurations.all {
