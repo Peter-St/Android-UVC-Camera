@@ -1,0 +1,46 @@
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/setUpUvcSettings"
+        android:onClick="setUpWithUvcSettings"
+        android:title="Set Up the Camera with UVC Settings" />
+
+
+
+
+
+    <item
+        android:id="@+id/edit"
+        android:title="Edit / Save / Restore" >
+
+        <menu>
+
+            <item
+                android:id="@+id/editCameraValues"
+                android:onClick="editCameraSettings"
+                android:title="Edit / Save The Camera Values" />
+
+            <item
+                android:id="@+id/restoreTheValues"
+                android:onClick="restoreCameraSettings"
+                android:title="Restore Camera Values" />
+
+        </menu>
+
+
+
+    </item>
+
+    <item
+        android:id="@+id/Kamera_Auflisten"
+        android:onClick="listDeviceButtonClickEvent"
+        android:title="List up the camera Details" />
+
+
+    <item
+        android:id="@+id/beenden"
+        android:onClick="beenden"
+        android:title="Exit Program" />
+
+</menu>

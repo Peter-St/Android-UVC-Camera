@@ -1,0 +1,57 @@
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <item
+        android:id="@+id/adjustValuesUnit"
+        android:icon="@drawable/ic_brightness_green_24dp"
+        app:fabDrawableTint="@color/Coral"
+        android:title="Adjust / Change PROCESSING Values"
+        app:touchGuard="false"
+        app:showAsAction="always"
+        android:orderInCategory="0"
+        />
+
+    <item
+        android:id="@+id/adjustValuesTerminal"
+        android:icon="@drawable/ic_brightness_2green_24dp"
+        app:iconTint="@color/green"
+        android:title="Adjust / Change TERMINAL  Values"
+        app:showAsAction="ifRoom"
+        app:touchGuard="false"
+        android:orderInCategory="1"
+        />
+
+    <group android:checkableBehavior="all">
+        <item
+            android:icon="@drawable/ic_wallpaper_lower_resolution_24dp"
+            app:iconTint="@color/white"
+            android:id="@+id/lowerRes"
+            android:title="Lower Resolution"
+            android:checkable="true"
+            app:showAsAction="ifRoom"
+            app:touchGuard="false"
+            android:orderInCategory="2"
+            />
+    </group>
+
+    <item
+        android:icon="@drawable/return_main_screen_24dp"
+
+        android:id="@+id/returnToConfigScreen"
+        android:title="Return To Configuration Sreen"
+        app:touchGuard="false"
+        android:orderInCategory="3"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:icon="@drawable/exit_program_24dp"
+
+        android:id="@+id/beenden"
+        android:title="Exit Program"
+        app:touchGuard="false"
+        android:orderInCategory="4"
+        app:showAsAction="ifRoom"/>
+
+</menu>
