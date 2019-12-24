@@ -1,220 +1,91 @@
-AndroidUSBCamera
-============   
-AndroidUSBCamera is developed based on the [saki4510t/UVCCamera](https://github.com/saki4510t/UVCCamera), the project of USB Camera (UVC equipment) and the use of video data acquisition are highly packaged, and it can help developers using USB Camera devices easily by a few simple APIs. By using AndroidUSBCamera,you can detect and connect to a USB Camera simply.And you also can use it to realize taking picture,recording mp4,switching resolutions ,getting h.264/aac/yuv(nv21) stream and setting  camera's contrast or brightness,supporting 480P、720P、1080P and higher,etc.   
+# Android-UVC-Camera
 
-Supporting Android 5.0,6.0,7.0,8.0,9.0
+Still under development.... 
 
-[中文文档： AndroidUSBCamera，UVCCamera开发通用库](http://blog.csdn.net/andrexpert/article/details/78324181)  
+New in Version 2 of this app is the support of higher Android Devices.(API 28 +)
+A Helper Module with Native Libraries is included to grant the Usb Permissions for Android 9 + 10.
 
-Usage
--------
-### 1.Add to your Android Studio project  
-
-Step 1. Add the JitPack repository to your build file.Add it in your root build.gradle at the end of repositories:  
-```java
-allprojects {
-		repositories {
-			...
-			maven { url 'http://raw.github.com/saki4510t/libcommon/master/repository/' }
-			maven { url 'https://jitpack.io' }
-		}
-	}
-```  
-Step 2. Add the dependency  
-```java
-dependencies {
-	       implementation 'com.github.jiangdongguo:AndroidUSBCamera:2.3.1'
-}
-```
-### 2. APIs Introduction  
-(1) In order to using it correctly,the following four steps must be achieved：  
-```java
-mUVCCameraView = (CameraViewInterface) mTextureView;
-mUVCCameraView.setCallback(mCallback);
-mCameraHelper = UVCCameraHelper.getInstance();
-// set default preview size
- mCameraHelper.setDefaultPreviewSize(1280,720);
-// set default frame format，defalut is UVCCameraHelper.Frame_FORMAT_MPEG
-// if using mpeg can not record mp4,please try yuv
-// mCameraHelper.setDefaultFrameFormat(UVCCameraHelper.FRAME_FORMAT_YUYV);	
-mCameraHelper.initUSBMonitor(this, mUVCCameraView, mDevConnectListener); 
-```
-   To be attention,mCallback is a object of interface CameraViewInterface.Callback,and it's used to be listenering surfaceView
-created or detoryed.mDevConnectListener is a object of interface UVCCameraHelper.OnMyDevConnectListener,and it's used to be listenering to detect and conntect USB device.Here is the coding order:  
-```java
-private CameraViewInterface.Callback mCallback = new CameraViewInterface.Callback mCallback(){
-    @Override
-    public void onSurfaceCreated(CameraViewInterface view, Surface surface) {
-        // must have
-        if (!isPreview && mCameraHelper.isCameraOpened()) {
-            mCameraHelper.startPreview(mUVCCameraView);
-            isPreview = true;
-        }
-    }
-
-    @Override
-    public void onSurfaceChanged(CameraViewInterface view, Surface surface, int width, int height) {
-
-    }
-
-    @Override
-    public void onSurfaceDestroy(CameraViewInterface view, Surface surface) {
-        // must have
-        if (isPreview && mCameraHelper.isCameraOpened()) {
-            mCameraHelper.stopPreview();
-            isPreview = false;
-        }
-    }
-}
-private UVCCameraHelper.OnMyDevConnectListener listener = new UVCCameraHelper.OnMyDevConnectListener() {
-
-        @Override
-        public void onAttachDev(UsbDevice device) {
-            // request open permission(must have)
-            if (!isRequest) {
-                isRequest = true;
-                if (mCameraHelper != null) {
-                    mCameraHelper.requestPermission(0);
-                }
-            }
-        }
-
-        @Override
-        public void onDettachDev(UsbDevice device) {
-            // close camera(must have)
-            if (isRequest) {
-                isRequest = false;
-                mCameraHelper.closeCamera();
-            }
-        }
-
-        @Override
-        public void onConnectDev(UsbDevice device, boolean isConnected) {
-       	
-        }
-
-        @Override
-        public void onDisConnectDev(UsbDevice device) {
-          
-        }
-    };
-```
-![Connecting gif](https://github.com/jiangdongguo/AndroidUSBCamera/blob/master/gifs/detecting.gif)  
-(2) Capturing JPG Images  
-```java
- mCameraHelper.capturePicture(picPath, new AbstractUVCCameraHandler.OnCaptureListener() {
-                    @Override
-                    public void onCaptureResult(String path) {
-                        Log.i(TAG,"save path：" + path);
-                    }
-                }); 
-```
-(3) Recording Mp4,supporting close voice and save file automatic.
-```java
-RecordParams params = new RecordParams();
-                    params.setRecordPath(videoPath);
-                    params.setRecordDuration(0);                        // 0,do not cut save
-                    params.setVoiceClose(mSwitchVoice.isChecked());    // is close voice
-                    mCameraHelper.startPusher(params, new AbstractUVCCameraHandler.OnEncodeResultListener() {
-                        @Override
-                        public void onEncodeResult(byte[] data, int offset, int length, long timestamp, int type) {
-                            // type = 1,h264 video stream
-                            if (type == 1) {
-//                                FileUtils.putFileStream(data, offset, length);
-                            }
-                            // type = 0,aac audio stream
-                            if(type == 0) {
-
-                            }
-                        }
-
-                        @Override
-                        public void onRecordResult(String videoPath) {
-                            Log.i(TAG,"videoPath = "+videoPath);
-                        }
-                    });  
-// of course,if you only want to getting h.264 and aac stream
-// you can do like this
-mCameraHelper.startPusher(listener);
-```
-(4) setting camera's brightness and contrast.  
-```java
-mCameraHelper.setModelValue(UVCCameraHelper.MODE_BRIGHTNESS,progress);
-mCameraHelper.setModelValue(UVCCameraHelper.MODE_CONTRAST,progress);
-mCameraHelper.getModelValue(UVCCameraHelper.MODE_BRIGHTNESS);
-mCameraHelper.getModelValue(UVCCameraHelper.MODE_CONTRAST);
-...
-```
-![Connecting gif](https://github.com/jiangdongguo/AndroidUSBCamera/blob/master/gifs/brightness.gif)
-(5) switch resolutions and camera.  
-```java
-mCameraHelper.updateResolution(widht, height);
-```
-![Connecting gif](https://github.com/jiangdongguo/AndroidUSBCamera/blob/master/gifs/2.1.0.gif)  
-At last,remember adding permissions:  
-```xml
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.RECORD_AUDIO" />  
-```     
+Link on Play Store:
+https://play.google.com/store/apps/details?id=humer.uvc_camera&hl=de
 
 
-### 3. Solving Problems
-
-1. connected,but preview failed
-
-Please checking your preview format and change YUV to MJPEG or MJPEG to YUV,because some usb devices only supporting YUV   
-
-2. never found the device   
-
-- confirm your phone support otg   
-
-- get a file from your sd card named failed-device.txt in the path of root sd card/UsbCamera/failed-device.txt and tell me
+This is a Android Studio Project. It connects to a usb camera from your Android Device. (OTG cabel or OTG Hub needed) (It works with Micro Usb and Usb Type C devices)
 
 
-Download APK
--------  
-  
-&emsp;In order to display the functions, I develop a simple released apk,which is based on version 2.3.1,and the build version is 28.0.3.Here is my configs and if you have any questions please issues to me ,I will follow it do my best.
-```
-ext {
-    javaSourceCompatibility = JavaVersion.VERSION_1_8
-    javaTargetCompatibility = JavaVersion.VERSION_1_8
-    compileSdkVersion = 28
-    buildToolsVersion = '28.0.3'
-    minSdkVersion = 21
-    targetSdkVersion = 28
-    commonLibVersion= '2.12.4'
-}
-```   
-download way:  
+# This Project was built to perform an Isochronous Video Stream from all Android Devices (Above 4.1 Ice Cream Sandwich)(Mediathek Devices too).
 
-![download](https://github.com/jiangdongguo/AndroidUSBCamera/blob/master/gifs/download.png)  
-
-displaying:  
-
-![download](https://github.com/jiangdongguo/AndroidUSBCamera/blob/master/gifs/USBCam.gif)  
+(Some OTG cabels doesn't work -->  I'll found one which is an extern powered more Port USB-C OTG cable and doesn't work ...)
+(An non working OTG cable doesn't show the right interfaces and endpoints of you camera: --> When you click on 'List Up The Camera' Button)
 
 
-Other Library about Android Camera
--------
-[OkCamera](https://github.com/jiangdongguo/OkCamera) Android Camera univsersally operation.  
-[AndroidRecordMp4](https://github.com/jiangdongguo/AndroidRecordMp4) Using MediaCodec realize record mp4.  
-[AndroidYuvOsd](https://github.com/jiangdongguo/AndroidYuvOsd) YUV data operation.  
-[Lame4Mp3](https://github.com/jiangdongguo/Lame4Mp3) pcm to mp3 and pcm to aac.  
+The program uses the usb device driver to perform an isochronous transfer with your camera device.
+
+- When you click on 'Set up the Camera Device' Button, the app searches for a connected camera. (Usb OTG Cable required)
+- First you have to set up all camera settings for your device. The program then saves the values and you can restore them later or overwrite them with other values. There is a built-in service included to automatically set up the values ("Set Up With UVC Values Button").
+
+
+
 
 License
 -------
 
-    Copyright 2018 Jiangdongguo
+    Copyright 2019 Peter Stoiber
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
 
-       http://www.apache.org/licenses/LICENSE-2.0
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+    Please contact the author if you need another license.
+    This Repository is provided "as is", without warranties of any kind.
+
+
+
+
+
+Explaination:
+- When the automatic search succeeds, you first set up the MAXIMAL PACKET SIZE. If your device is a mediathek device, you may have to lower the value for the max packet size. Here your camera device supports normaly 4 to 10 different values.
+- The Value PACKETS PER REQUEST defines the Number of the Packets sending to the camera device. It also defines the amount of bytes from one Urb (UsbRequestBlock). The minimal size is one packet and you can raise it up to maybe 64.
+- Next value to set is the USB REQUEST BLOCKS (activeUrb) (Urb):  One Urb has a size of "MaxPacketsize x PacketsPerRequest". One Urb is the lowest value and you can raise it up to maybe 64. You have to find here the right values for your device and control the output on the screen under the menupoint "Isoread". The Urbs defines the amount of bytes which are currently available at your camera device. 
+- Some typically values for Qualcom Devices are: 8 for the activeUrbs and 16 Packets per Request....
+- Each camera and Phone needs different values! Now you have to find the right values for your devices.
+
+Isoread:
+The first thing of the method Isoread is a Controltransfer to the camera device:
+
+- If the controlltransfer is successful, than you are ready to go.
+- Next take a look at the frames.
+- When you receive identically and long frames, you can proceed to the method Isostream, where the frames were displayed on your screen.
+
+
+
+- To know how big be a Frame should be, you can look at the output of the controll transfer of the camera in the log: maxVideoFrameSize, This value is returned from the camera and should be the valid frame size (The value is calculated by Imagewidth x Imagehight x 2).
+
+The ReadOneFrame method shows you how the frames are structered by the camera. Different camerasetting == Different Frame structers. Try it out with different setting and look at the output. The eof hint shows the framesize in the log. For valid camera settings the size should be the same as maxFrameSize value of the controlltransfer.
+
+
+Output from the controltransfer method:
+Thirst the program will send a controlltransfer to your camera device. The output maybe looks as following:
+Initial streaming parms: hint=0x0 format=1 frame=1 frameInterval=2000000 keyFrameRate=0 pFrameRate=0 compQuality=0 compWindowSize=0 delay=0 maxVideoFrameSize=0 maxPayloadTransferSize=0
+Probed streaming parms: hint=0x0 format=1 frame=1 frameInterval=2000000 keyFrameRate=0 pFrameRate=0 compQuality=0 compWindowSize=0 delay=0 maxVideoFrameSize=614400 maxPayloadTransferSize=3000
+Final streaming parms: hint=0x0 format=1 frame=1 frameInterval=2000000 keyFrameRate=0 pFrameRate=0 compQuality=0 compWindowSize=0 delay=0 maxVideoFrameSize=614400 maxPayloadTransferSize=3000
+The first line are the values you set in the program, to connect the camera. (Initial streaming parms}
+
+The secound line are the values from the camera, which the camera returned from your values.
+
+And in the third line are the new saved and final values from the usb camera.
+
+Outpuf from the first Method: isoRead:
+
+EOF frameLen=10436. --> For Example here a frame ends with a length of 10436 wich is not 614400 as we expected from the controltransfer, so you may have to change some values of you program to get a valid frame size.
+
+Good Luck and fun during testing!
