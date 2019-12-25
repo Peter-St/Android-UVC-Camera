@@ -23,10 +23,10 @@ task clean(type: Delete) {
 }
 
 ext {
-    supportLibVersion = '27.1.1'  // variable that can be referenced to keep support libs consistent
+    supportLibVersion = '28.1.1'  // variable that can be referenced to keep support libs consistent
     commonLibVersion= '2.12.4'
-    versionCompiler = 27
-    versionTarget = 27
+    versionCompiler = 28
+    versionTarget = 28
     // if hope supporting 4.4
     // please modify it to 16
     minSdkVersion = 15

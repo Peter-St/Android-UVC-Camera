@@ -3,12 +3,12 @@ apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.jiangdongguo'
 
 android {
-    compileSdkVersion rootProject.ext.versionCompiler
+    compileSdkVersion  27
     defaultConfig {
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.versionTarget
-        versionCode 2
-        versionName rootProject.ext.versionNameString
+        minSdkVersion  15
+        targetSdkVersion  27
+        versionCode 46
+        versionName "2.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -31,8 +31,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testImplementation 'junit:junit:4.12'
-    implementation "com.android.support:appcompat-v7:${supportLibVersion}"
-    implementation "com.android.support:support-annotations:${supportLibVersion}"
+    implementation "com.android.support:appcompat-v7:27.1.1"
+    implementation "com.android.support:support-annotations:27.1.1"
     // when changing compile to implementation
     // AS will report exception of com.serenegiant.widget.IAspectRatioView
     api("com.serenegiant:common:${commonLibVersion}") {

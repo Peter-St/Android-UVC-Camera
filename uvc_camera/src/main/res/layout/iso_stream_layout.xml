@@ -11,8 +11,9 @@
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignEnd="@+id/stopKameraknopf"
-        android:layout_alignRight="@+id/stopKameraknopf"
+
+
+
         android:layout_alignParentTop="true"
         android:layout_marginTop="0dp"
         android:layout_marginEnd="1dp"
@@ -59,9 +60,8 @@
         android:id="@+id/stopKameraknopf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/settingsButton"
-        android:layout_alignRight="@+id/settingsButton"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
         android:background="@drawable/bg_button_stop"
         android:onClick="stopTheCameraStreamClickEvent"
         android:text="Stop !" />
