@@ -1,8 +1,9 @@
-package  humer.uvc_camera.Permission.view;
+package humer.uvc_camera.Permission.view;
 
 import android.content.Intent;
 import android.hardware.usb.UsbDevice;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
@@ -19,14 +20,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SimpleAdapter;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import humer.uvc_camera.R;
 import com.jiangdg.usbcamera.UVCCameraHelper;
-import  humer.uvc_camera.Permission.application.MyApplication;
+import humer.uvc_camera.Permission.application.MyApplication;
 import com.jiangdg.usbcamera.utils.FileUtils;
 import com.serenegiant.usb.CameraDialog;
 import com.serenegiant.usb.Size;
@@ -41,6 +42,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import humer.uvc_camera.R;
+
 /**
  * UVCCamera use demo
  * <p>
@@ -49,7 +52,6 @@ import butterknife.ButterKnife;
 
 public class USBCameraActivity extends AppCompatActivity implements CameraDialog.CameraDialogParent, CameraViewInterface.Callback {
     private static final String TAG = "Debug";
-    /*
     @BindView(R.id.camera_view)
     public View mTextureView;
     @BindView(R.id.toolbar)
@@ -60,15 +62,6 @@ public class USBCameraActivity extends AppCompatActivity implements CameraDialog
     public SeekBar mSeekContrast;
     @BindView(R.id.switch_rec_voice)
     public Switch mSwitchVoice;
-*/
-
-    public View mTextureView;
-    public Switch mSwitchVoice;
-    public SeekBar mSeekContrast;
-    public SeekBar mSeekBrightness;
-    public Toolbar mToolbar;
-
-
 
     private UVCCameraHelper mCameraHelper;
     private CameraViewInterface mUVCCameraView;
@@ -106,8 +99,33 @@ public class USBCameraActivity extends AppCompatActivity implements CameraDialog
                 showShortMsg("fail to connect,please check resolution params");
                 isPreview = false;
             } else {
+
+
                 isPreview = true;
                 showShortMsg("connecting");
+                Log.d("aa, ","finsih called !!");
+                if (mCameraHelper != null) {
+                    mCameraHelper.unregisterUSB();
+                }
+                finish();
+                Log.d("aa" , "Start of the Streaming\nSetting the view invisible");
+                isPreview = true;
+                mTextureView.setVisibility(View.INVISIBLE);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        View v = getLayoutInflater().inflate(R.layout.activity_splash, null);
+                        setContentView(v);
+                        showShortMsg("Permissions Sucessful Obtained");
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+
+                            }
+                        }, 500);
+                    }
+                });
+
                 // initialize seekbar
                 // need to wait UVCCamera initialize over
                 new Thread(new Runnable() {
@@ -120,8 +138,8 @@ public class USBCameraActivity extends AppCompatActivity implements CameraDialog
                         }
                         Looper.prepare();
                         if(mCameraHelper != null && mCameraHelper.isCameraOpened()) {
-                        //    mSeekBrightness.setProgress(mCameraHelper.getModelValue(UVCCameraHelper.MODE_BRIGHTNESS));
-                         //   mSeekContrast.setProgress(mCameraHelper.getModelValue(UVCCameraHelper.MODE_CONTRAST));
+                            mSeekBrightness.setProgress(mCameraHelper.getModelValue(UVCCameraHelper.MODE_BRIGHTNESS));
+                            mSeekContrast.setProgress(mCameraHelper.getModelValue(UVCCameraHelper.MODE_CONTRAST));
                         }
                         Looper.loop();
                     }
@@ -135,10 +153,6 @@ public class USBCameraActivity extends AppCompatActivity implements CameraDialog
         }
     };
 
-
-
-
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -146,14 +160,14 @@ public class USBCameraActivity extends AppCompatActivity implements CameraDialog
         ButterKnife.bind(this);
         initView();
 
-        mTextureView = findViewById(R.id.camera_view);
-        mSwitchVoice = findViewById(R.id.switch_rec_voice);
-        mSeekContrast = findViewById(R.id.seekbar_contrast);
-        mSeekBrightness = findViewById(R.id.seekbar_brightness);
-        mToolbar = findViewById(R.id.toolbar);
+        RelativeLayout rel = findViewById(R.id.rel);
 
+        rel.getBackground().setAlpha(2);
 
-
+        mToolbar.setVisibility(View.INVISIBLE);
+        mSeekContrast.setVisibility(View.INVISIBLE);
+        mSeekBrightness.setVisibility(View.INVISIBLE);
+        mSwitchVoice.setVisibility(View.INVISIBLE);
 
 
 
@@ -176,10 +190,44 @@ public class USBCameraActivity extends AppCompatActivity implements CameraDialog
     private void initView() {
         setSupportActionBar(mToolbar);
 
-//        mSeekBrightness.setMax(100);
+        mSeekBrightness.setMax(100);
+        mSeekBrightness.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(mCameraHelper != null && mCameraHelper.isCameraOpened()) {
+                    mCameraHelper.setModelValue(UVCCameraHelper.MODE_BRIGHTNESS,progress);
+                }
+            }
 
-   //     mSeekContrast.setMax(100);
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
 
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        mSeekContrast.setMax(100);
+        mSeekContrast.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(mCameraHelper != null && mCameraHelper.isCameraOpened()) {
+                    mCameraHelper.setModelValue(UVCCameraHelper.MODE_CONTRAST,progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
     @Override
@@ -208,73 +256,78 @@ public class USBCameraActivity extends AppCompatActivity implements CameraDialog
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-        if (itemId == R.id.menu_takepic) {
-            if (mCameraHelper == null || !mCameraHelper.isCameraOpened()) {
-                showShortMsg("sorry,camera open failed");
-                return super.onOptionsItemSelected(item);
-            }
-            String picPath = UVCCameraHelper.ROOT_PATH + MyApplication.DIRECTORY_NAME + "/images/" + System.currentTimeMillis()
-                    + UVCCameraHelper.SUFFIX_JPEG;
-            mCameraHelper.capturePicture(picPath, new AbstractUVCCameraHandler.OnCaptureListener() {
-                @Override
-                public void onCaptureResult(String path) {
-                    Log.i(TAG, "save path：" + path);
+        switch (item.getItemId()) {
+            case R.id.menu_takepic:
+                if (mCameraHelper == null || !mCameraHelper.isCameraOpened()) {
+                    showShortMsg("sorry,camera open failed");
+                    return super.onOptionsItemSelected(item);
                 }
-            });
-        } else if (itemId == R.id.menu_recording) {
-            if (mCameraHelper == null || !mCameraHelper.isCameraOpened()) {
-                showShortMsg("sorry,camera open failed");
-                return super.onOptionsItemSelected(item);
-            }
-            if (!mCameraHelper.isPushing()) {
-                String videoPath = UVCCameraHelper.ROOT_PATH + MyApplication.DIRECTORY_NAME + "/videos/" + System.currentTimeMillis();
-                FileUtils.createfile(FileUtils.ROOT_PATH + "test666.h264");
-                // if you want to record,please create RecordParams like this
-                RecordParams params = new RecordParams();
-                params.setRecordPath(videoPath);
-                params.setRecordDuration(0);                        // 设置为0，不分割保存
-                params.setVoiceClose(mSwitchVoice.isChecked());    // is close voice
-                mCameraHelper.startPusher(params, new AbstractUVCCameraHandler.OnEncodeResultListener() {
+                String picPath = UVCCameraHelper.ROOT_PATH + MyApplication.DIRECTORY_NAME +"/images/"+ System.currentTimeMillis()
+                        + UVCCameraHelper.SUFFIX_JPEG;
+                mCameraHelper.capturePicture(picPath, new AbstractUVCCameraHandler.OnCaptureListener() {
                     @Override
-                    public void onEncodeResult(byte[] data, int offset, int length, long timestamp, int type) {
-                        // type = 1,h264 video stream
-                        if (type == 1) {
-                            FileUtils.putFileStream(data, offset, length);
-                        }
-                        // type = 0,aac audio stream
-                        if (type == 0) {
-
-                        }
-                    }
-
-                    @Override
-                    public void onRecordResult(String videoPath) {
-                        Log.i(TAG, "videoPath = " + videoPath);
+                    public void onCaptureResult(String path) {
+                        Log.i(TAG,"save path：" + path);
                     }
                 });
-                // if you only want to push stream,please call like this
-                // mCameraHelper.startPusher(listener);
-                showShortMsg("start record...");
-                mSwitchVoice.setEnabled(false);
-            } else {
-                FileUtils.releaseFile();
-                mCameraHelper.stopPusher();
-                showShortMsg("stop record...");
-                mSwitchVoice.setEnabled(true);
-            }
-        } else if (itemId == R.id.menu_resolution) {
-            if (mCameraHelper == null || !mCameraHelper.isCameraOpened()) {
-                showShortMsg("sorry,camera open failed");
-                return super.onOptionsItemSelected(item);
-            }
-            showResolutionListDialog();
-        } else if (itemId == R.id.menu_focus) {
-            if (mCameraHelper == null || !mCameraHelper.isCameraOpened()) {
-                showShortMsg("sorry,camera open failed");
-                return super.onOptionsItemSelected(item);
-            }
-            mCameraHelper.startCameraFoucs();
+
+                break;
+            case R.id.menu_recording:
+                if (mCameraHelper == null || !mCameraHelper.isCameraOpened()) {
+                    showShortMsg("sorry,camera open failed");
+                    return super.onOptionsItemSelected(item);
+                }
+                if (!mCameraHelper.isPushing()) {
+                    String videoPath = UVCCameraHelper.ROOT_PATH + MyApplication.DIRECTORY_NAME +"/videos/"+ System.currentTimeMillis();
+                    FileUtils.createfile(FileUtils.ROOT_PATH + "test666.h264");
+                    // if you want to record,please create RecordParams like this
+                    RecordParams params = new RecordParams();
+                    params.setRecordPath(videoPath);
+                    params.setRecordDuration(0);                        // 设置为0，不分割保存
+                    params.setVoiceClose(mSwitchVoice.isChecked());    // is close voice
+                    mCameraHelper.startPusher(params, new AbstractUVCCameraHandler.OnEncodeResultListener() {
+                        @Override
+                        public void onEncodeResult(byte[] data, int offset, int length, long timestamp, int type) {
+                            // type = 1,h264 video stream
+                            if (type == 1) {
+                                FileUtils.putFileStream(data, offset, length);
+                            }
+                            // type = 0,aac audio stream
+                            if(type == 0) {
+
+                            }
+                        }
+
+                        @Override
+                        public void onRecordResult(String videoPath) {
+                            Log.i(TAG,"videoPath = "+videoPath);
+                        }
+                    });
+                    // if you only want to push stream,please call like this
+                    // mCameraHelper.startPusher(listener);
+                    showShortMsg("start record...");
+                    mSwitchVoice.setEnabled(false);
+                } else {
+                    FileUtils.releaseFile();
+                    mCameraHelper.stopPusher();
+                    showShortMsg("stop record...");
+                    mSwitchVoice.setEnabled(true);
+                }
+                break;
+            case R.id.menu_resolution:
+                if (mCameraHelper == null || !mCameraHelper.isCameraOpened()) {
+                    showShortMsg("sorry,camera open failed");
+                    return super.onOptionsItemSelected(item);
+                }
+                showResolutionListDialog();
+                break;
+            case R.id.menu_focus:
+                if (mCameraHelper == null || !mCameraHelper.isCameraOpened()) {
+                    showShortMsg("sorry,camera open failed");
+                    return super.onOptionsItemSelected(item);
+                }
+                mCameraHelper.startCameraFoucs();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

@@ -2,11 +2,15 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rel"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ff000000"
+    android:background="#795A5A"
     tools:context=".Permission.view.USBCameraActivity"
-    tools:ignore="MergeRootFrame">
+    tools:ignore="MergeRootFrame"
+
+    >
+
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -26,7 +30,7 @@
             android:id="@+id/camera_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center" />
     </FrameLayout>
 
     <LinearLayout
@@ -34,17 +38,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
         android:orientation="horizontal">
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:paddingBottom="7dp"
             android:paddingTop="7dp"
+            android:paddingBottom="7dp"
             android:text="对比度(contrast)"
             android:textColor="@color/white" />
 
@@ -60,17 +64,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/llayout_contrast"
-        android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
         android:orientation="horizontal">
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:paddingBottom="7dp"
             android:paddingTop="7dp"
+            android:paddingBottom="7dp"
             android:text="亮度(brightness)"
             android:textColor="@color/white" />
 
@@ -85,11 +89,11 @@
         android:id="@+id/switch_rec_voice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/llayout_brightness"
-        android:layout_alignStart="@+id/llayout_brightness"
         android:layout_below="@+id/toolbar"
-        android:layout_marginLeft="13dp"
+        android:layout_alignStart="@+id/llayout_brightness"
+        android:layout_alignLeft="@+id/llayout_brightness"
         android:layout_marginStart="13dp"
+        android:layout_marginLeft="13dp"
         android:layout_marginTop="27dp"
         android:checked="true"
         android:text="closeVoice"

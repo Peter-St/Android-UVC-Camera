@@ -1,9 +1,10 @@
-apply plugin: 'com.android.library'
+apply plugin: 'com.android.application'
 
 
 android {
     compileSdkVersion 27
     defaultConfig {
+        applicationId "humer.uvc_camera"
         minSdkVersion 15
         targetSdkVersion 27
         versionCode 46
@@ -47,6 +48,8 @@ dependencies {
     implementation project(':libusbcamera')
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
+    compile group: 'org.greenrobot', name: 'eventbus', version: '3.0.0'
 
 }
 
