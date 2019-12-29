@@ -27,17 +27,13 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Environment;
-import android.support.design.internal.NavigationMenu;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.text.InputType;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -51,9 +47,6 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-
-import io.github.yavski.fabspeeddial.FabSpeedDial;
-import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
 public class SaveToFile  {
 
@@ -188,65 +181,7 @@ public class SaveToFile  {
                         setUpTheUsbDevice.showTestRunMenu(view);
                     }
                 });
-                setUpTheUsbDevice.b = activity.findViewById(R.id.find_Camera2);
-                setUpTheUsbDevice.b.setEnabled(true);
-                setUpTheUsbDevice.b.setVisibility(View.VISIBLE);
 
-
-                setUpTheUsbDevice.fabSpeedDial = activity.findViewById(R.id.find_Camera);
-                setUpTheUsbDevice.fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
-
-                    @Override
-                    public boolean onPrepareMenu(NavigationMenu navigationMenu) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            MenuItem menuItem = navigationMenu.findItem(R.id.findTheCamera);
-                            //menuItem.setTitle("Lower Resolution (Activated)");
-                            menuItem.setIcon(R.drawable.ic_search_camera_24dp);
-
-                            MenuItem menuItem2 = navigationMenu.findItem(R.id.requestPermission);
-                            //menuItem2.setTitle("Lower Resolution (Disabled)");
-                            menuItem2.setIcon(R.drawable.ic_request_permission_24dp);
-                            return true;
-                        } else {
-                            setUpTheUsbDevice.searchTheCamera(null);
-                            return false;
-                        }
-                    }
-
-                    @Override
-                    public boolean onMenuItemSelected(MenuItem menuItem) {
-                        log("click");
-                        Snackbar.make(activity.findViewById(R.id.set_dev_rootView), setUpTheUsbDevice.getString(R.string.selected_menu_item,
-                                menuItem.getTitle()), Snackbar.LENGTH_SHORT).show();
-
-                        int itemId = menuItem.getItemId();
-                        if (itemId == R.id.findTheCamera) {
-                            setUpTheUsbDevice.searchTheCamera(null);
-                            setUpTheUsbDevice.b.getBackground().setVisible(true, true);
-                            setUpTheUsbDevice.b.setEnabled(true);
-                            setUpTheUsbDevice.fabSpeedDial.setVisibility(View.GONE);
-                            return false;
-                        } else if (itemId == R.id.requestPermission) {
-                            if (setUpTheUsbDevice.camDevice != null) if ( setUpTheUsbDevice.usbManager.hasPermission(setUpTheUsbDevice.camDevice)) return false;
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                setUpTheUsbDevice.startRequestPermissonActivity();
-                            }
-                            setUpTheUsbDevice.fabSpeedDial.setVisibility(View.GONE);
-                            setUpTheUsbDevice.b.getBackground().setVisible(true, true);
-                            setUpTheUsbDevice.b.setEnabled(true);
-                            return false;
-                        }
-                        return false;
-                    }
-                    @Override
-                    public void onMenuClosed() {
-                        setUpTheUsbDevice.b.getBackground().setVisible(true, true);
-                        setUpTheUsbDevice.b.setEnabled(true);
-                        setUpTheUsbDevice.fabSpeedDial.setVisibility(View.GONE);
-                    }
-
-                });
-                setUpTheUsbDevice.fabSpeedDial.setVisibility(View.GONE);
 
             }
         });

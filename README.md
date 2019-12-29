@@ -2,9 +2,6 @@
 
 Still under development.... 
 
-New in Version 2 of this app is the support of higher Android Devices.(API 28 +)
-A Helper Module with Native Libraries is included to grant the Usb Permissions for Android 9 + 10.
-
 Link on Play Store:
 https://play.google.com/store/apps/details?id=humer.uvc_camera&hl=de
 

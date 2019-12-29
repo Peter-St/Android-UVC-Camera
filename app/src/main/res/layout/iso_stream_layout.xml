@@ -11,9 +11,8 @@
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
-
-
+        android:layout_alignEnd="@+id/stopKameraknopf"
+        android:layout_alignRight="@+id/stopKameraknopf"
         android:layout_alignParentTop="true"
         android:layout_marginTop="0dp"
         android:layout_marginEnd="1dp"
@@ -60,8 +59,9 @@
         android:id="@+id/stopKameraknopf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/settingsButton"
+        android:layout_alignRight="@+id/settingsButton"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
         android:background="@drawable/bg_button_stop"
         android:onClick="stopTheCameraStreamClickEvent"
         android:text="Stop !" />
@@ -76,40 +76,29 @@
         android:background="@drawable/bg_button_start_stream"
         android:text="Transmission start" />
 
-
-    <FrameLayout
-        android:id="@+id/framelayout"
-        style="@style/SwitchContainer"
+    <io.github.yavski.fabspeeddial.FabSpeedDial
+        android:id="@+id/settingsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        >
-
-        <io.github.yavski.fabspeeddial.FabSpeedDial
-            android:id="@+id/settingsButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fabMenu="@menu/iso_stream_settings_button"
-            app:fabGravity="top_end"
-            android:layout_gravity="start|end"
-            app:touchGuard="false"
-
-            app:fabDrawable="@drawable/bg_button_settings"
-            app:fabBackgroundTint="#50000080"
-            app:miniFabBackgroundTintList="@array/brightness_colors"
-            app:miniFabDrawableTint="@color/black"
-            app:miniFabTitleTextColor="@color/black"
-            />
-    </FrameLayout>
+        android:layout_gravity="start|end"
+        app:touchGuard="false"
+        app:fabGravity="top_end"
+        app:fabDrawable="@drawable/bg_button_settings"
+        app:fabBackgroundTint="#50000080"
+        app:fabMenu="@menu/iso_stream_settings_button"
+        app:miniFabBackgroundTintList="@array/brightness_colors"
+        app:miniFabDrawableTint="@color/black"
+        app:miniFabTitleTextColor="@color/black" />
 
     <FrameLayout
         android:id="@+id/switch_view"
         style="@style/SwitchContainer"
         android:layout_width="wrap_content"
         android:layout_height="100dp"
-        android:layout_below="@id/framelayout"
+        android:layout_below="@id/settingsButton"
         android:layout_marginTop="40dp"
         android:layout_marginRight="40dp"
         android:layout_alignParentRight="true"

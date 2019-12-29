@@ -1,1 +1,1 @@
-include ':app', ':libusbcamera', ':uvc_camera'
+include ':app', ':jna'

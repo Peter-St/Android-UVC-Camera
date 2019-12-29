@@ -39,8 +39,6 @@ import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.internal.NavigationMenu;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
@@ -56,19 +54,14 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-
-import humer.uvc_camera.Permission.view.SplashActivity;
 import humer.uvc_camera.UsbIso64.USBIso;
 import humer.uvc_camera.UsbIso64.usbdevice_fs_util;
-import io.github.yavski.fabspeeddial.FabSpeedDial;
-import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 import noman.zoomtextview.ZoomTextView;
 
 
 public class SetUpTheUsbDevice extends Activity {
 
     private static final String ACTION_USB_PERMISSION = "humer.uvc_camera.USB_PERMISSION";
-    private static final int ActivityGetPermissionsFromNative = 4;
 
 
     protected ImageView imageView;
@@ -108,8 +101,8 @@ public class SetUpTheUsbDevice extends Activity {
     private static final int VS_STILL_IMAGE_TRIGGER_CONTROL = 0x05;
 
     // Android USB Classes
-    public UsbManager usbManager;
-    public UsbDevice camDevice = null;
+    private UsbManager usbManager;
+    private UsbDevice camDevice = null;
     private UsbDeviceConnection camDeviceConnection;
     private UsbInterface camControlInterface;
     private UsbInterface camStreamingInterface;
@@ -157,8 +150,6 @@ public class SetUpTheUsbDevice extends Activity {
     //Buttons & Views
     protected Button testrun;
     private ZoomTextView tv;
-    public Button b;
-    public FabSpeedDial fabSpeedDial;
 
     //  Other Classes as Objects
     private UVC_Descriptor uvc_descriptor;
@@ -247,7 +238,6 @@ public class SetUpTheUsbDevice extends Activity {
                 showTestRunMenu(view);
             }
         });
-        testrun.invalidate();
 
         tv = (ZoomTextView) findViewById(R.id.textDarstellung);
         tv.setText("Explanation:\n\n-(this is a scrollable and zoomable Text)\n\nTo set up the userspace driver for your USB camera you have to set the values for your camera.\nYou can use the button (Set up with UVC Settings) to automatically set " +
@@ -284,66 +274,6 @@ public class SetUpTheUsbDevice extends Activity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        b = findViewById(R.id.find_Camera2);
-        b.getBackground().setAlpha(230);
-        b.setVisibility(View.VISIBLE);
-
-        fabSpeedDial = (FabSpeedDial) findViewById(R.id.find_Camera);
-        fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
-
-            @Override
-            public boolean onPrepareMenu(NavigationMenu navigationMenu) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    MenuItem menuItem = navigationMenu.findItem(R.id.findTheCamera);
-                    //menuItem.setTitle("Lower Resolution (Activated)");
-                    menuItem.setIcon(R.drawable.ic_search_camera_24dp);
-
-                    MenuItem menuItem2 = navigationMenu.findItem(R.id.requestPermission);
-                    //menuItem2.setTitle("Lower Resolution (Disabled)");
-                    menuItem2.setIcon(R.drawable.ic_request_permission_24dp);
-                    return true;
-                } else {
-                    searchTheCamera(null);
-                    return false;
-                }
-            }
-
-            @Override
-            public boolean onMenuItemSelected(MenuItem menuItem) {
-                log("click");
-
-                int itemId = menuItem.getItemId();
-                if (itemId == R.id.findTheCamera) {
-                    searchTheCamera(null);
-                    b.getBackground().setAlpha(230);
-                    b.setEnabled(true);
-                    fabSpeedDial.setVisibility(View.INVISIBLE);
-
-                    return false;
-                } else if (itemId == R.id.requestPermission) {
-                    fabSpeedDial.setVisibility(View.INVISIBLE);
-
-                    b.getBackground().setAlpha(230);
-                    b.setEnabled(true);
-
-
-                        startRequestPermissonActivity();
-
-                    return false;
-                }
-                return false;
-            }
-            @Override
-            public void onMenuClosed() {
-                b.getBackground().setAlpha(230);
-                b.setEnabled(true);
-                fabSpeedDial.setVisibility(View.INVISIBLE);
-
-            }
-
-        });
-        fabSpeedDial.setVisibility(View.INVISIBLE);
-
     }
 
 
@@ -364,21 +294,8 @@ public class SetUpTheUsbDevice extends Activity {
 
 
 
+
     //////////////////////// BUTTONS ///////////////////////////////////////
-
-    public void findTheCameraClickEvent(View v) {
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N) {
-            searchTheCamera(null);
-            return ;
-        }
-
-        b.getBackground().setAlpha(0);
-        b.setEnabled(false);
-        fabSpeedDial.setVisibility(View.VISIBLE);
-        fabSpeedDial.openMenu();
-    }
-
-
 
     public void showTestRunMenu(View v) {
         if (camDevice == null) {
@@ -406,16 +323,18 @@ public class SetUpTheUsbDevice extends Activity {
             popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-                    int itemId = item.getItemId();
-                    if (itemId == R.id.videoProbeCommit) {
-                        videoProbeCommitTransfer();
-                        return true;
-                    } else if (itemId == R.id.testrun5sec) {
-                        isoRead();
-                        return true;
-                    } else if (itemId == R.id.testrun1frame) {
-                        isoRead1Frame();
-                        return true;
+                    switch (item.getItemId()) {
+                        case R.id.videoProbeCommit:
+                            videoProbeCommitTransfer();
+                            return true;
+                        case R.id.testrun5sec:
+                            isoRead();
+                            return true;
+                        case R.id.testrun1frame:
+                            isoRead1Frame();
+                            return true;
+                        default:
+                            break;
                     }
                     return false;
                 }
@@ -557,38 +476,7 @@ public class SetUpTheUsbDevice extends Activity {
     }
 
 
-
     ///////////////////////////////////   Camera spezific methods   ////////////////////////////////////////////
-
-    public void startRequestPermissonActivity() {
-
-
-
-        Intent intent = new Intent(this, SplashActivity.class);
-        Bundle bundle=new Bundle();
-        bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
-        bundle.putString("videoformat",videoformat);
-        bundle.putInt("camFormatIndex",camFormatIndex);
-        bundle.putInt("imageWidth",imageWidth);
-        bundle.putInt("imageHeight",imageHeight);
-        bundle.putInt("camFrameIndex",camFrameIndex);
-        bundle.putInt("camFrameInterval",camFrameInterval);
-        bundle.putInt("packetsPerRequest",packetsPerRequest);
-        bundle.putInt("maxPacketSize",maxPacketSize);
-        bundle.putInt("activeUrbs",activeUrbs);
-        bundle.putByte("bUnitID",bUnitID);
-        bundle.putByte("bTerminalID",bTerminalID);
-        bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
-        bundle.putByteArray("bNumControlUnit", bNumControlUnit);
-        bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
-
-        intent.putExtra("bun",bundle);
-        startActivity(intent);
-
-        log("starting Activity started");
-
-
-    }
 
 
     private void findCam() throws Exception {
@@ -1783,26 +1671,6 @@ public class SetUpTheUsbDevice extends Activity {
 
     private void focusControlTransfer(){
 
-        Intent intent = new Intent(this, Start_Iso_StreamActivity.class);
-        Bundle bundle=new Bundle();
-        bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
-        bundle.putString("videoformat",videoformat);
-        bundle.putInt("camFormatIndex",camFormatIndex);
-        bundle.putInt("imageWidth",imageWidth);
-        bundle.putInt("imageHeight",imageHeight);
-        bundle.putInt("camFrameIndex",camFrameIndex);
-        bundle.putInt("camFrameInterval",camFrameInterval);
-        bundle.putInt("packetsPerRequest",packetsPerRequest);
-        bundle.putInt("maxPacketSize",maxPacketSize);
-        bundle.putInt("activeUrbs",activeUrbs);
-        bundle.putByte("bUnitID",bUnitID);
-        bundle.putByte("bTerminalID",bTerminalID);
-        bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
-        bundle.putByteArray("bNumControlUnit", bNumControlUnit);
-        bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
-
-        intent.putExtra("bun",bundle);
-        startActivityForResult(intent, ActivityGetPermissionsFromNative);
 
     }
 
