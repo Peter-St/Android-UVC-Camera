@@ -40,13 +40,17 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import humer.uvc_camera.UVC_Descriptor.IUVC_Descriptor;
+import humer.uvc_camera.UVC_Descriptor.UVC_Descriptor;
+import humer.uvc_camera.UVC_Descriptor.UVC_Initializer;
 
 public class SaveToFile  {
 
@@ -66,20 +70,22 @@ public class SaveToFile  {
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
     public static byte bStillCaptureMethod;
-
+    // MJpeg
+    public static int [] [] mJpegResolutions = null;
+    public static int [] [] arrayToResolutionFrameInterValArrayMjpeg = null;
+    // Yuv
+    public static int [] [] yuvResolutions = null;
+    public static int [] [] arrayToResolutionFrameInterValArrayYuv = null;
 
     private static String saveFilePathFolder = "UVC_Camera/save";
     private TextInputLayout valueInput;
     private boolean init = false;
-
 
     private SetUpTheUsbDevice setUpTheUsbDevice;
     private Main uvc_camera = null;
     private Context mContext;
     private View v;
     private Activity activity;
-
-
 
     TextView sALT_SETTING_text;
     TextView smaxPacketSize_text;
@@ -97,14 +103,9 @@ public class SaveToFile  {
 
     private enum OptionForSaveFile {savetofile, restorefromfile}
     OptionForSaveFile optionForSaveFile;
-
-    private boolean abfrage = true;
-
     static ArrayList<String> paths = new ArrayList<>(50);
-    private static ArrayList<String> saveValues = new ArrayList<>(20);
 
     TextView tv;
-    private Button settingsButton;
 
     private UVC_Descriptor uvc_descriptor;
     private static int [] numberFormatIndexes;
@@ -269,10 +270,6 @@ public class SaveToFile  {
             }
         });
 
-
-
-
-
         ///////
 
         Button button_cancle = (Button) activity.findViewById(R.id.button_cancel);
@@ -345,14 +342,9 @@ public class SaveToFile  {
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
         builderSingle.setIcon(R.drawable.ic_menu_camera);
         builderSingle.setTitle("Select the Video Format:");
-        //builderSingle.setMessage("Select the maximal size of the Packets, which where sent to the camera device!! Important for Mediathek Devices !!");
-
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
-
         arrayAdapter.add("YUY2");
         arrayAdapter.add("MJPEG");
-
-
         builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -398,6 +390,14 @@ public class SaveToFile  {
         bNumControlTerminal = setUpTheUsbDevice.bNumControlTerminal;
         bNumControlUnit = setUpTheUsbDevice.bNumControlUnit;
         bStillCaptureMethod = setUpTheUsbDevice.bStillCaptureMethod;
+
+        mJpegResolutions = setUpTheUsbDevice.mJpegResolutions;
+        arrayToResolutionFrameInterValArrayMjpeg = setUpTheUsbDevice.arrayToResolutionFrameInterValArrayMjpeg;
+        yuvResolutions = setUpTheUsbDevice.yuvResolutions;
+        arrayToResolutionFrameInterValArrayYuv = setUpTheUsbDevice.arrayToResolutionFrameInterValArrayYuv;
+
+
+
     }
 
     private void writeTheValues(){
@@ -418,7 +418,10 @@ public class SaveToFile  {
             uvc_camera.bNumControlUnit = bNumControlUnit;
             uvc_camera.bNumControlTerminal = bNumControlTerminal;
             uvc_camera.bStillCaptureMethod = bStillCaptureMethod;
-
+            uvc_camera.mJpegResolutions = mJpegResolutions;
+            uvc_camera.arrayToResolutionFrameInterValArrayMjpeg = arrayToResolutionFrameInterValArrayMjpeg;
+            uvc_camera.yuvResolutions = yuvResolutions;
+            uvc_camera.arrayToResolutionFrameInterValArrayYuv = arrayToResolutionFrameInterValArrayYuv;
 
         } else {
             setUpTheUsbDevice.camStreamingAltSetting = sALT_SETTING;
@@ -437,7 +440,28 @@ public class SaveToFile  {
             setUpTheUsbDevice.bNumControlTerminal = bNumControlTerminal;
             setUpTheUsbDevice.bNumControlUnit = bNumControlUnit;
             setUpTheUsbDevice.bStillCaptureMethod = bStillCaptureMethod;
+            setUpTheUsbDevice.mJpegResolutions = mJpegResolutions;
+            setUpTheUsbDevice.arrayToResolutionFrameInterValArrayMjpeg = arrayToResolutionFrameInterValArrayMjpeg;
+            setUpTheUsbDevice.yuvResolutions = yuvResolutions;
+            setUpTheUsbDevice.arrayToResolutionFrameInterValArrayYuv = arrayToResolutionFrameInterValArrayYuv;
+
         }
+
+        if (mJpegResolutions != null) log("mJpegResolutions != null"); else log("mJpegResolutions == null");
+        if (arrayToResolutionFrameInterValArrayMjpeg != null) {
+            ;
+            log("arrayToResolutionFrameInterValArrayMjpeg.length = " + arrayToResolutionFrameInterValArrayMjpeg.length);
+            log("arrayToResolutionFrameInterValArrayMjpeg[0].length = " + arrayToResolutionFrameInterValArrayMjpeg[0].length);
+            log("arrayToResolutionFrameInterValArrayMjpeg[1].length = " + arrayToResolutionFrameInterValArrayMjpeg[1].length);
+
+
+
+            log("arrayToResolutionFrameInterValArrayMjpeg != null");
+        } else log("arrayToResolutionFrameInterValArrayMjpeg == null");
+        if (yuvResolutions != null) log("yuvResolutions != null"); else log("yuvResolutions == null");
+        if (arrayToResolutionFrameInterValArrayYuv != null) log("arrayToResolutionFrameInterValArrayYuv != null"); else log("arrayToResolutionFrameInterValArrayYuv == null");
+
+
 
     }
 
@@ -649,6 +673,10 @@ public class SaveToFile  {
             save.writeObject(bNumControlTerminal);
             save.writeObject(bNumControlUnit);
             save.writeObject(bStillCaptureMethod);
+            save.writeObject(mJpegResolutions);
+            save.writeObject(arrayToResolutionFrameInterValArrayMjpeg);
+            save.writeObject(yuvResolutions);
+            save.writeObject(arrayToResolutionFrameInterValArrayYuv);
 
             // Close the file.
             save.close(); // This also closes saveFile.
@@ -682,26 +710,23 @@ public class SaveToFile  {
             bNumControlTerminal  = (byte[]) save.readObject();
             bNumControlUnit  = (byte[]) save.readObject();
             bStillCaptureMethod = (Byte) save.readObject();
+            mJpegResolutions  = (int[] []) save.readObject();
+            arrayToResolutionFrameInterValArrayMjpeg  = (int[] []) save.readObject();
+            yuvResolutions  = (int[] []) save.readObject();
+            arrayToResolutionFrameInterValArrayYuv  = (int[] []) save.readObject();
             save.close();
         }
         catch(Exception exc){
             exc.printStackTrace();
         }
-
         log("sALT_SETTING = " + sALT_SETTING + "  /  svideoformat = " + svideoformat + "  /  scamFormatIndex = " + scamFormatIndex + "  /  scamFrameIndex = " + scamFrameIndex);
         writeTheValues();
-
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("Restored Values:\n"));
         sb.append(String.format("Altsetting = %d\nVideoFormat = %s\nImageWidth = %d\nImageHeight = %d\nFrameInterval = %d\nPacketsPerRequest = %d\nActiveUrbs = %d", sALT_SETTING, svideoformat, simageWidth, simageHeight, scamFrameInterval, spacketsPerRequest, sactiveUrbs));
         setTextViewMain();
         writeMsgMain(sb.toString());
-
     }
-
-
-
-
 
     public static boolean isInteger(String s) {
         return isInteger(s,10);
@@ -719,8 +744,6 @@ public class SaveToFile  {
         return true;
     }
 
-
-
     private void displayMessage(final String msg) {
         if (uvc_camera != null)  uvc_camera.displayMessage(msg);
         else setUpTheUsbDevice.displayMessage(msg);
@@ -730,7 +753,6 @@ public class SaveToFile  {
         Log.i("SaveToFile", msg);
     }
 
-
     public void listFilesForFolder(final File folder) {
         for (final File fileEntry : folder.listFiles()) {
             if (fileEntry.isDirectory()) {
@@ -738,16 +760,46 @@ public class SaveToFile  {
             } else {
                 System.out.println(fileEntry.getName());
                 paths.add(fileEntry.toString());
-
             }
         }
     }
 
-
-
     public void setUpWithUvcValues(UVC_Descriptor uvc_desc, int[] maxPacketSizeArray) {
-
         fetchTheValues();
+        UVC_Initializer initializer = new UVC_Initializer(uvc_desc);
+        // MJpeg
+        this.mJpegResolutions = initializer.mJpegResolutions;
+        this.arrayToResolutionFrameInterValArrayMjpeg = initializer.arrayToResolutionFrameInterValArrayMjpeg;
+        // Yuv
+        this.yuvResolutions = initializer.yuvResolutions;
+        this.arrayToResolutionFrameInterValArrayYuv = initializer.arrayToResolutionFrameInterValArrayYuv;
+
+
+
+        IUVC_Descriptor iuvcDescriptor = new UVC_Initializer(mJpegResolutions, arrayToResolutionFrameInterValArrayMjpeg, yuvResolutions, arrayToResolutionFrameInterValArrayYuv);
+
+        log("iuvcDescriptor initialised");
+
+
+        log("Resolutions could be: \n" + Arrays.deepToString(iuvcDescriptor.findDifferentResolutions(true)));
+
+        log("FrameInterval could be:   -->  " + iuvcDescriptor.findDifferentFrameIntervals(true, new int [] {1920, 1080}));
+
+        int [] differentRes = iuvcDescriptor.findDifferentFrameIntervals(true, new int [] {1920, 1080});
+
+
+        for (int i: differentRes) {
+            System.out.print(i);
+            System.out.print(" ");
+        }
+
+
+
+
+
+
+
+
         this.uvc_descriptor = uvc_desc;
         bUnitID = uvc_desc.bUnitID;
         bTerminalID = uvc_desc.bTerminalID;
@@ -763,16 +815,12 @@ public class SaveToFile  {
             formatIndex = uvc_descriptor.getFormatIndex(i);
             arrayFormatFrameIndexes[i] = formatIndex.frameIndex.size();
         }
-
         maxPacketSizeStr = new String [maxPacketSizeArray.length];
         for (int a =0; a<maxPacketSizeArray.length; a++) {
             maxPacketSizeStr[a] = Integer.toString(maxPacketSizeArray[a]);
         }
         selectMaxPacketSize();
-
     }
-
-
 
     private int returnConvertedValue(int wSize){
         String st = Integer.toBinaryString(wSize);
@@ -794,22 +842,14 @@ public class SaveToFile  {
         }
     }
 
-
-
-
     private void selectMaxPacketSize(){
-
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
         builderSingle.setIcon(R.drawable.ic_menu_camera);
         builderSingle.setTitle("Select the maximal Packet Size:");
-        //builderSingle.setMessage("Select the maximal size of the Packets, which where sent to the camera device!! Important for Mediathek Devices !!");
-
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
         for (int i = 0; i<maxPacketSizeStr.length; i++){
             arrayAdapter.add(maxPacketSizeStr[i]);
         }
-
-
         builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -817,7 +857,6 @@ public class SaveToFile  {
                 dialog.dismiss();
             }
         });
-
         builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -834,24 +873,17 @@ public class SaveToFile  {
             }
         });
         builderSingle.show();
-
     }
 
-
-
-
     public void selectPackets() {
-
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setTitle("Packets per Request");
         builder.setMessage(String.format("Select the Packets per Request: (Number of Packet with a size of: %d)", smaxPacketSize));
-
 // Set up the input
         final EditText input = new EditText(mContext);
 // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
         input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
         builder.setView(input);
-
 // Set up the buttons
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
@@ -867,16 +899,13 @@ public class SaveToFile  {
                 dialog.cancel();
             }
         });
-
         builder.show();
-
     }
 
     public void selectUrbs() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setTitle("USB Request Block");
         builder.setMessage(String.format("Select the URBs: (Select the number of Packet Blocks running in paralell order.)\nOne Block is %d x %d Bytes",smaxPacketSize,  spacketsPerRequest ));
-
 // Set up the input
         final EditText input = new EditText(mContext);
 // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
@@ -899,15 +928,10 @@ public class SaveToFile  {
                 dialog.cancel();
             }
         });
-
         builder.show();
-
     }
 
-
     private void selectFormatIndex () {
-
-
         numberFormatIndexes = new int[uvc_descriptor.formatIndex.size()];
         final String[] textmsg = new String[uvc_descriptor.formatIndex.size()];
         for (int a = 0; a < uvc_descriptor.formatIndex.size(); a++) {
@@ -963,10 +987,7 @@ public class SaveToFile  {
         builderSingle.show();
     }
 
-
-
     private void selectFrameIndex () {
-
      frameDescriptorsResolutionArray = new String[formatIndex.numberOfFrameDescriptors];
         String inp;
 
@@ -1023,8 +1044,6 @@ public class SaveToFile  {
         for (int k=0; k<dwFrameIntervalArray.length; k++) {
             dwFrameIntervalArray[k] = Integer.toString(frameIndex.dwFrameInterval[k]);
         }
-
-
         final AlertDialog.Builder dwFrameIntervalArraybuilder = new AlertDialog.Builder(mContext);
         dwFrameIntervalArraybuilder.setIcon(R.drawable.ic_menu_camera);
         dwFrameIntervalArraybuilder.setTitle("Frameintervall");

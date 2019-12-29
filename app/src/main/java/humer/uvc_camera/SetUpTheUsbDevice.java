@@ -54,6 +54,10 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+
+import humer.uvc_camera.UVC_Descriptor.IUVC_Descriptor;
+import humer.uvc_camera.UVC_Descriptor.UVC_Descriptor;
+import humer.uvc_camera.UVC_Descriptor.UVC_Initializer;
 import humer.uvc_camera.UsbIso64.USBIso;
 import humer.uvc_camera.UsbIso64.usbdevice_fs_util;
 import noman.zoomtextview.ZoomTextView;
@@ -79,7 +83,6 @@ public class SetUpTheUsbDevice extends Activity {
     // Video interface subclass codes:
     private static final int SC_VIDEOCONTROL = 0x01;
     private static final int SC_VIDEOSTREAMING = 0x02;
-    private static final int SC_HUAWEI_SUBCLASS = 0x06;
     // Standard request codes:
     private static final int SET_INTERFACE = 0x0b;
     // Video class-specific request codes:
@@ -127,8 +130,12 @@ public class SetUpTheUsbDevice extends Activity {
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
     public static byte bStillCaptureMethod;
-
-
+    // MJpeg
+    public static int [] [] mJpegResolutions = null;
+    public static int [] [] arrayToResolutionFrameInterValArrayMjpeg = null;
+    // Yuv
+    public static int [] [] yuvResolutions = null;
+    public static int [] [] arrayToResolutionFrameInterValArrayYuv = null;
 
     // Vales for debuging the camera
 
@@ -162,9 +169,6 @@ public class SetUpTheUsbDevice extends Activity {
     private static int brightnessMax;
     private static int brightnessMin;
 
-    // Huawei 360 Camera
-
-    private boolean huawei;
 
 
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
@@ -529,13 +533,6 @@ public class SetUpTheUsbDevice extends Activity {
             if (usbInterface.getInterfaceClass() == interfaceClass && usbInterface.getInterfaceSubclass() == interfaceSubclass && (!withEndpoint || usbInterface.getEndpointCount() > 0)) {
                 return usbInterface;
             }
-            else if (usbInterface.getInterfaceClass() == UsbConstants.USB_CLASS_VENDOR_SPEC && usbInterface.getInterfaceSubclass() == SC_HUAWEI_SUBCLASS && (!withEndpoint || usbInterface.getEndpointCount() > 0)) {
-                huawei = true;
-                return usbInterface;
-            }
-
-
-
         }
         return null;
     }
@@ -793,82 +790,63 @@ public class SetUpTheUsbDevice extends Activity {
 
 
     private void openCameraDevice(boolean init) throws Exception {
-        if (!huawei) {
-            // (For transfer buffer sizes > 196608 the kernel file drivers/usb/core/devio.c must be patched.)
-            camControlInterface = getVideoControlInterface(camDevice);
-            camStreamingInterface = getVideoStreamingInterface(camDevice);
-            log("camControlInterface = " + camControlInterface + "  //  camStreamingInterface = " + camStreamingInterface);
-            if (camStreamingInterface.getEndpointCount() < 1) {
-                throw new Exception("Streaming interface has no endpoint.");
-            }
-            camStreamingEndpoint = camStreamingInterface.getEndpoint(0);
-            camControlEndpoint = camControlInterface.getEndpoint(0);
-            bulkMode = camStreamingEndpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK;
-            camDeviceConnection = usbManager.openDevice(camDevice);
-            if (camDeviceConnection == null) {
-                displayMessage("Failed to open the device - Retry");
-                log("Failed to open the device - Retry");
-                throw new Exception("Unable to open camera device connection.");
-            }
 
-            if (!camDeviceConnection.claimInterface(camControlInterface, true)) {
-                log("Failed to claim camControlInterface");
-                displayMessage("Unable to claim camera control interface.");
-                throw new Exception("Unable to claim camera control interface.");
-            }
-            if (!camDeviceConnection.claimInterface(camStreamingInterface, true)) {
-                log("Failed to claim camStreamingInterface");
-                displayMessage("Unable to claim camera streaming interface.");
-                throw new Exception("Unable to claim camera streaming interface.");
-            }
-            if (!init) {
-                byte[] a = camDeviceConnection.getRawDescriptors();
-                ByteBuffer uvcData = ByteBuffer.wrap(a);
-                uvc_descriptor = new UVC_Descriptor(uvcData);
-
-                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which){
-                            case DialogInterface.BUTTON_POSITIVE:
-                                int a = uvc_descriptor.phraseUvcData();
-                                if (a == 0) {
-                                    if (convertedMaxPacketSize == null) listDevice(camDevice);
-                                    stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize);
-                                }
-                                break;
-
-                            case DialogInterface.BUTTON_NEGATIVE:
-
-                                break;
-                        }
-                    }
-                };
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage("Do you want to set up from UVC values ?").setPositiveButton("Yes, set up from UVC", dialogClickListener)
-                        .setNegativeButton("No", dialogClickListener).show();
-            }
-        } else if (huawei) {
-            log("\nHuawei\n");
-            camStreamingInterface = getVideoStreamingInterface(camDevice);
-            camDeviceConnection = usbManager.openDevice(camDevice);
-            if (camDeviceConnection == null) {
-                displayMessage("Failed to open the device - Retry");
-                log("Failed to open the device - Retry");
-                throw new Exception("Unable to open camera device connection.");
-            }
-            if (!camDeviceConnection.claimInterface(camStreamingInterface, true)) {
-                log("Failed to claim camStreamingInterface");
-                displayMessage("Unable to claim camera streaming interface.");
-                throw new Exception("Unable to claim camera streaming interface.");
-            }
-            if (!init) {
-                byte[] a = camDeviceConnection.getRawDescriptors();
-                log ("bytes = " + print(a));
-                ByteBuffer uvcData = ByteBuffer.wrap(a);
-
-            }
+        // (For transfer buffer sizes > 196608 the kernel file drivers/usb/core/devio.c must be patched.)
+        camControlInterface = getVideoControlInterface(camDevice);
+        camStreamingInterface = getVideoStreamingInterface(camDevice);
+        log("camControlInterface = " + camControlInterface + "  //  camStreamingInterface = " + camStreamingInterface);
+        if (camStreamingInterface.getEndpointCount() < 1) {
+            throw new Exception("Streaming interface has no endpoint.");
         }
+        camStreamingEndpoint = camStreamingInterface.getEndpoint(0);
+        camControlEndpoint = camControlInterface.getEndpoint(0);
+        bulkMode = camStreamingEndpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK;
+        camDeviceConnection = usbManager.openDevice(camDevice);
+        if (camDeviceConnection == null) {
+            displayMessage("Failed to open the device - Retry");
+            log("Failed to open the device - Retry");
+            throw new Exception("Unable to open camera device connection.");
+        }
+
+        if (!camDeviceConnection.claimInterface(camControlInterface, true)) {
+            log("Failed to claim camControlInterface");
+            displayMessage("Unable to claim camera control interface.");
+            throw new Exception("Unable to claim camera control interface.");
+        }
+        if (!camDeviceConnection.claimInterface(camStreamingInterface, true)) {
+            log("Failed to claim camStreamingInterface");
+            displayMessage("Unable to claim camera streaming interface.");
+            throw new Exception("Unable to claim camera streaming interface.");
+        }
+        if (!init) {
+            byte[] a = camDeviceConnection.getRawDescriptors();
+            ByteBuffer uvcData = ByteBuffer.wrap(a);
+            uvc_descriptor = new UVC_Descriptor(uvcData);
+
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which){
+                        case DialogInterface.BUTTON_POSITIVE:
+                            int a = uvc_descriptor.phraseUvcData();
+                            if (a == 0) {
+                                if (convertedMaxPacketSize == null) listDevice(camDevice);
+                                stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize);
+                            }
+                            break;
+
+                        case DialogInterface.BUTTON_NEGATIVE:
+
+                            break;
+                    }
+                }
+            };
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Do you want to set up from UVC values ?").setPositiveButton("Yes, set up from UVC", dialogClickListener)
+                    .setNegativeButton("No", dialogClickListener).show();
+        }
+
+
     }
 
 
@@ -1696,7 +1674,7 @@ public class SetUpTheUsbDevice extends Activity {
     }
 
     public void log(String msg) {
-        Log.i("UVC_Camera", msg);
+        Log.i("UVC_Camera_Set_Up", msg);
     }
 
     public void displayErrorMessage(Throwable e) {
@@ -1725,6 +1703,25 @@ public class SetUpTheUsbDevice extends Activity {
             bNumControlTerminal = bundle.getByteArray("bNumControlTerminal");
             bNumControlUnit = bundle.getByteArray("bNumControlUnit");
             bStillCaptureMethod = bundle.getByte("bStillCaptureMethod", (byte)0);
+            if (bundle.getIntArray("mJpegResolutionsOne") != null) {
+                mJpegResolutions = new int [2] [];
+                mJpegResolutions[0] = bundle.getIntArray("mJpegResolutionsOne");
+                mJpegResolutions[1] = bundle.getIntArray("mJpegResolutionsTwo");
+            } if (bundle.getIntArray("arrayToResolutionFrameInterValArrayMjpegOne") != null) {
+                arrayToResolutionFrameInterValArrayMjpeg = new int [2] [];
+                arrayToResolutionFrameInterValArrayMjpeg[0] = bundle.getIntArray("arrayToResolutionFrameInterValArrayMjpegOne");
+                arrayToResolutionFrameInterValArrayMjpeg[1] = bundle.getIntArray("arrayToResolutionFrameInterValArrayMjpegTwo");
+            } if (bundle.getIntArray("yuvResolutionsOne") != null) {
+                yuvResolutions = new int [2] [];
+                yuvResolutions[0] = bundle.getIntArray("yuvResolutionsOne");
+                yuvResolutions[1] = bundle.getIntArray("yuvResolutionsTwo");
+            } if (bundle.getIntArray("arrayToResolutionFrameInterValArrayYuvOne") != null) {
+                arrayToResolutionFrameInterValArrayYuv = new int [2] [];
+                arrayToResolutionFrameInterValArrayYuv[0] = bundle.getIntArray("arrayToResolutionFrameInterValArrayYuvOne");
+                arrayToResolutionFrameInterValArrayYuv[1] = bundle.getIntArray("arrayToResolutionFrameInterValArrayYuvTwo");
+            }
+
+
         } else {
             //stf = new SaveToFile(this, this);
             stf.restoreValuesFromFile();
@@ -1737,9 +1734,7 @@ public class SetUpTheUsbDevice extends Activity {
 
 
     private void writeTheValues(){
-
         Intent resultIntent = new Intent();
-
         resultIntent.putExtra("camStreamingAltSetting", camStreamingAltSetting);
         resultIntent.putExtra("videoformat", videoformat);
         resultIntent.putExtra("camFormatIndex", camFormatIndex);
@@ -1756,6 +1751,31 @@ public class SetUpTheUsbDevice extends Activity {
         resultIntent.putExtra("bNumControlTerminal", bNumControlTerminal);
         resultIntent.putExtra("bNumControlUnit", bNumControlUnit);
         resultIntent.putExtra("bStillCaptureMethod", bStillCaptureMethod);
+        if (mJpegResolutions != null) {
+            resultIntent.putExtra("mJpegResolutionsOne", mJpegResolutions[0]);
+            resultIntent.putExtra("mJpegResolutionsTwo", mJpegResolutions[1]);
+        } if (arrayToResolutionFrameInterValArrayMjpeg != null) {
+            resultIntent.putExtra("arrayToResolutionFrameInterValArrayMjpegOne", arrayToResolutionFrameInterValArrayMjpeg[0]);
+            resultIntent.putExtra("arrayToResolutionFrameInterValArrayMjpegTwo", arrayToResolutionFrameInterValArrayMjpeg[1]);
+        } if (yuvResolutions != null) {
+            resultIntent.putExtra("yuvResolutionsOne", yuvResolutions[0]);
+            resultIntent.putExtra("yuvResolutionsTwo", yuvResolutions[1]);
+        } if (arrayToResolutionFrameInterValArrayYuv != null) {
+            resultIntent.putExtra("arrayToResolutionFrameInterValArrayYuvOne", arrayToResolutionFrameInterValArrayYuv[0]);
+            resultIntent.putExtra("arrayToResolutionFrameInterValArrayYuvTwo", arrayToResolutionFrameInterValArrayYuv[1]);
+        }
+        if (mJpegResolutions != null) log("mJpegResolutions != null"); else log("mJpegResolutions == null");
+        if (arrayToResolutionFrameInterValArrayMjpeg != null) {
+            log("arrayToResolutionFrameInterValArrayMjpeg.length = " + arrayToResolutionFrameInterValArrayMjpeg.length);
+            log("arrayToResolutionFrameInterValArrayMjpeg[0].length = " + arrayToResolutionFrameInterValArrayMjpeg[0].length);
+            log("arrayToResolutionFrameInterValArrayMjpeg[1].length = " + arrayToResolutionFrameInterValArrayMjpeg[1].length);
+
+            log("arrayToResolutionFrameInterValArrayMjpeg != null");
+        } else log("arrayToResolutionFrameInterValArrayMjpeg == null");
+        if (yuvResolutions != null) log("yuvResolutions != null"); else log("yuvResolutions == null");
+        if (arrayToResolutionFrameInterValArrayYuv != null) log("arrayToResolutionFrameInterValArrayYuv != null"); else log("arrayToResolutionFrameInterValArrayYuv == null");
+
+
 
 
         setResult(Activity.RESULT_OK, resultIntent);

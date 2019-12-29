@@ -20,7 +20,7 @@ This Repository is provided "as is", without warranties of any kind.
 
 */
 
-package humer.uvc_camera;
+package humer.uvc_camera.UVC_Descriptor;
 
 import android.util.Log;
 
@@ -269,10 +269,10 @@ public class UVC_Descriptor {
 
         public static class FrameIndex{
 
-            int frameIndex;
-            int [] dwFrameInterval;
-            int wWidth;
-            int wHeight;
+            public int frameIndex;
+            public int [] dwFrameInterval;
+            public int wWidth;
+            public int wHeight;
 
             public FrameIndex(int index, int width, int height, int[] frameInterval){
                 this.frameIndex = index;

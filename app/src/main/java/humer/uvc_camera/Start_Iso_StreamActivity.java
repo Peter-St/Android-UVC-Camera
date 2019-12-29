@@ -74,6 +74,8 @@ import java.util.HashMap;
 
 import com.sample.timelapse.MJPEGGenerator ;
 
+import humer.uvc_camera.UVC_Descriptor.IUVC_Descriptor;
+import humer.uvc_camera.UVC_Descriptor.UVC_Initializer;
 import humer.uvc_camera.UsbIso64.USBIso;
 import humer.uvc_camera.UsbIso64.usbdevice_fs_util;
 import io.github.yavski.fabspeeddial.FabSpeedDial;
@@ -136,6 +138,12 @@ public class Start_Iso_StreamActivity extends Activity {
     public static byte bStillCaptureMethod;
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
+    // MJpeg
+    public static int [] [] mJpegResolutions = null;
+    public static int [] [] arrayToResolutionFrameInterValArrayMjpeg = null;
+    // Yuv
+    public static int [] [] yuvResolutions = null;
+    public static int [] [] arrayToResolutionFrameInterValArrayYuv = null;
 
     // Vales for debuging the camera
     private boolean bildaufnahme = false;
@@ -152,7 +160,6 @@ public class Start_Iso_StreamActivity extends Activity {
     private int [] convertedMaxPacketSize;
     private boolean lowerResolution;
     private static enum Videoformat {yuv, mjpeg, YUY2, YV12, YUV_422_888, YUV_420_888}
-
 
     // Buttons & Views
     protected ImageView imageView;
@@ -185,12 +192,15 @@ public class Start_Iso_StreamActivity extends Activity {
     private boolean focusAutoState;
     private boolean exposureAutoState;
 
-
     float discrete=0;
     static float start;
     static float end;
     float start_pos;
     int start_position=0;
+
+    // UVC Interface
+    IUVC_Descriptor iuvcDescriptor;
+
 
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -552,6 +562,23 @@ public class Start_Iso_StreamActivity extends Activity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        if (mJpegResolutions != null) log("mJpegResolutions != null"); else log("mJpegResolutions == null");
+        if (arrayToResolutionFrameInterValArrayMjpeg != null) log("arrayToResolutionFrameInterValArrayMjpeg != null"); else log("arrayToResolutionFrameInterValArrayMjpeg == null");
+        if (yuvResolutions != null) log("yuvResolutions != null"); else log("yuvResolutions == null");
+        if (arrayToResolutionFrameInterValArrayYuv != null) log("arrayToResolutionFrameInterValArrayYuv != null"); else log("arrayToResolutionFrameInterValArrayYuv == null");
+
+
+        IUVC_Descriptor iuvcDescriptor = new UVC_Initializer(mJpegResolutions, arrayToResolutionFrameInterValArrayMjpeg, yuvResolutions, arrayToResolutionFrameInterValArrayYuv);
+
+        log("iuvcDescriptor initialised");
+        if (videoformat.equals("mjpeg")) {
+            log("Resolutions could be: \n" + Arrays.toString(iuvcDescriptor.findDifferentResolutions(true)));
+            log("FrameInterval could be:   -->  " + Arrays.toString( iuvcDescriptor.findDifferentFrameIntervals(true, new int [] {imageWidth, imageHeight})));
+        }
+
+
+
+
     }
 
     @Override
@@ -1066,21 +1093,15 @@ public class Start_Iso_StreamActivity extends Activity {
             displayMessage("No Camera connected\nPlease connect a camera");
             return;
         }
-
         else {
-
-
             ((Button) findViewById(R.id.startStream)).setEnabled(false);
             stopStreamButton.getBackground().setAlpha(180);  // 25% transparent
             startStream.getBackground().setAlpha(20);  // 95% transparent
             ((Button) findViewById(R.id.stopKameraknopf)).setEnabled(true);
             photoButton.setEnabled(true);
             photoButton.setBackgroundResource(R.drawable.bg_button_bildaufnahme);
-
             videoButton.setEnabled(true);
             videoButton.setAlpha(1); // 100% transparent
-
-
             stopKamera = false;
             try {
                 openCam(true);
@@ -1722,7 +1743,7 @@ public class Start_Iso_StreamActivity extends Activity {
     }
 
     public void log(String msg) {
-        Log.i("UVC_Camera", msg);
+        Log.i("UVC_Camera_Start_Iso_Stream", msg);
     }
 
     public void logError(String msg) {
@@ -1907,7 +1928,6 @@ public class Start_Iso_StreamActivity extends Activity {
 
     private void fetchTheValues(){
 
-
         Intent intent=getIntent();
         Bundle bundle=intent.getBundleExtra("bun");
         camStreamingAltSetting=bundle.getInt("camStreamingAltSetting",0);
@@ -1925,6 +1945,23 @@ public class Start_Iso_StreamActivity extends Activity {
         bNumControlTerminal = bundle.getByteArray("bNumControlTerminal");
         bNumControlUnit = bundle.getByteArray("bNumControlUnit");
         bStillCaptureMethod = bundle.getByte("bStillCaptureMethod", (byte)0);
+        if (bundle.getIntArray("mJpegResolutionsOne") != null) {
+            mJpegResolutions = new int [2] [];
+            mJpegResolutions[0] = bundle.getIntArray("mJpegResolutionsOne");
+            mJpegResolutions[1] = bundle.getIntArray("mJpegResolutionsTwo");
+        } if (bundle.getIntArray("arrayToResolutionFrameInterValArrayMjpegOne") != null) {
+            arrayToResolutionFrameInterValArrayMjpeg = new int [2] [];
+            arrayToResolutionFrameInterValArrayMjpeg[0] = bundle.getIntArray("arrayToResolutionFrameInterValArrayMjpegOne");
+            arrayToResolutionFrameInterValArrayMjpeg[1] = bundle.getIntArray("arrayToResolutionFrameInterValArrayMjpegTwo");
+        } if (bundle.getIntArray("yuvResolutionsOne") != null) {
+            yuvResolutions = new int [2] [];
+            yuvResolutions[0] = bundle.getIntArray("yuvResolutionsOne");
+            yuvResolutions[1] = bundle.getIntArray("yuvResolutionsTwo");
+        } if (bundle.getIntArray("arrayToResolutionFrameInterValArrayYuvOne") != null) {
+            arrayToResolutionFrameInterValArrayYuv = new int [2] [];
+            arrayToResolutionFrameInterValArrayYuv[0] = bundle.getIntArray("arrayToResolutionFrameInterValArrayYuvOne");
+            arrayToResolutionFrameInterValArrayYuv[1] = bundle.getIntArray("arrayToResolutionFrameInterValArrayYuvTwo");
+        }
     }
 
     private int round(double d){
@@ -1962,13 +1999,11 @@ public class Start_Iso_StreamActivity extends Activity {
     }
 
     private static void printData (byte [] formatData) {
-
         Formatter formatter = new Formatter();
         for (byte b : formatData) {
             formatter.format("0x%02x ", b);
         }
         String hex = formatter.toString();
-
         System.out.println("hex " + hex);
     }
 
