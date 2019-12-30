@@ -130,15 +130,8 @@ public class SetUpTheUsbDevice extends Activity {
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
     public static byte bStillCaptureMethod;
-    // MJpeg
-    public static int [] [] mJpegResolutions = null;
-    public static int [] [] arrayToResolutionFrameInterValArrayMjpeg = null;
-    // Yuv
-    public static int [] [] yuvResolutions = null;
-    public static int [] [] arrayToResolutionFrameInterValArrayYuv = null;
 
     // Vales for debuging the camera
-
     private String controlltransfer;
     private String initStreamingParmsResult;
     private String initStreamingParms;
@@ -1703,25 +1696,6 @@ public class SetUpTheUsbDevice extends Activity {
             bNumControlTerminal = bundle.getByteArray("bNumControlTerminal");
             bNumControlUnit = bundle.getByteArray("bNumControlUnit");
             bStillCaptureMethod = bundle.getByte("bStillCaptureMethod", (byte)0);
-            if (bundle.getIntArray("mJpegResolutionsOne") != null) {
-                mJpegResolutions = new int [2] [];
-                mJpegResolutions[0] = bundle.getIntArray("mJpegResolutionsOne");
-                mJpegResolutions[1] = bundle.getIntArray("mJpegResolutionsTwo");
-            } if (bundle.getIntArray("arrayToResolutionFrameInterValArrayMjpegOne") != null) {
-                arrayToResolutionFrameInterValArrayMjpeg = new int [2] [];
-                arrayToResolutionFrameInterValArrayMjpeg[0] = bundle.getIntArray("arrayToResolutionFrameInterValArrayMjpegOne");
-                arrayToResolutionFrameInterValArrayMjpeg[1] = bundle.getIntArray("arrayToResolutionFrameInterValArrayMjpegTwo");
-            } if (bundle.getIntArray("yuvResolutionsOne") != null) {
-                yuvResolutions = new int [2] [];
-                yuvResolutions[0] = bundle.getIntArray("yuvResolutionsOne");
-                yuvResolutions[1] = bundle.getIntArray("yuvResolutionsTwo");
-            } if (bundle.getIntArray("arrayToResolutionFrameInterValArrayYuvOne") != null) {
-                arrayToResolutionFrameInterValArrayYuv = new int [2] [];
-                arrayToResolutionFrameInterValArrayYuv[0] = bundle.getIntArray("arrayToResolutionFrameInterValArrayYuvOne");
-                arrayToResolutionFrameInterValArrayYuv[1] = bundle.getIntArray("arrayToResolutionFrameInterValArrayYuvTwo");
-            }
-
-
         } else {
             //stf = new SaveToFile(this, this);
             stf.restoreValuesFromFile();
@@ -1751,32 +1725,6 @@ public class SetUpTheUsbDevice extends Activity {
         resultIntent.putExtra("bNumControlTerminal", bNumControlTerminal);
         resultIntent.putExtra("bNumControlUnit", bNumControlUnit);
         resultIntent.putExtra("bStillCaptureMethod", bStillCaptureMethod);
-        if (mJpegResolutions != null) {
-            resultIntent.putExtra("mJpegResolutionsOne", mJpegResolutions[0]);
-            resultIntent.putExtra("mJpegResolutionsTwo", mJpegResolutions[1]);
-        } if (arrayToResolutionFrameInterValArrayMjpeg != null) {
-            resultIntent.putExtra("arrayToResolutionFrameInterValArrayMjpegOne", arrayToResolutionFrameInterValArrayMjpeg[0]);
-            resultIntent.putExtra("arrayToResolutionFrameInterValArrayMjpegTwo", arrayToResolutionFrameInterValArrayMjpeg[1]);
-        } if (yuvResolutions != null) {
-            resultIntent.putExtra("yuvResolutionsOne", yuvResolutions[0]);
-            resultIntent.putExtra("yuvResolutionsTwo", yuvResolutions[1]);
-        } if (arrayToResolutionFrameInterValArrayYuv != null) {
-            resultIntent.putExtra("arrayToResolutionFrameInterValArrayYuvOne", arrayToResolutionFrameInterValArrayYuv[0]);
-            resultIntent.putExtra("arrayToResolutionFrameInterValArrayYuvTwo", arrayToResolutionFrameInterValArrayYuv[1]);
-        }
-        if (mJpegResolutions != null) log("mJpegResolutions != null"); else log("mJpegResolutions == null");
-        if (arrayToResolutionFrameInterValArrayMjpeg != null) {
-            log("arrayToResolutionFrameInterValArrayMjpeg.length = " + arrayToResolutionFrameInterValArrayMjpeg.length);
-            log("arrayToResolutionFrameInterValArrayMjpeg[0].length = " + arrayToResolutionFrameInterValArrayMjpeg[0].length);
-            log("arrayToResolutionFrameInterValArrayMjpeg[1].length = " + arrayToResolutionFrameInterValArrayMjpeg[1].length);
-
-            log("arrayToResolutionFrameInterValArrayMjpeg != null");
-        } else log("arrayToResolutionFrameInterValArrayMjpeg == null");
-        if (yuvResolutions != null) log("yuvResolutions != null"); else log("yuvResolutions == null");
-        if (arrayToResolutionFrameInterValArrayYuv != null) log("arrayToResolutionFrameInterValArrayYuv != null"); else log("arrayToResolutionFrameInterValArrayYuv == null");
-
-
-
 
         setResult(Activity.RESULT_OK, resultIntent);
         if (camDeviceConnection != null) {

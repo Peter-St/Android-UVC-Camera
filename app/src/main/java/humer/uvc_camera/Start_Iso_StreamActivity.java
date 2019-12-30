@@ -66,6 +66,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -75,6 +76,7 @@ import java.util.HashMap;
 import com.sample.timelapse.MJPEGGenerator ;
 
 import humer.uvc_camera.UVC_Descriptor.IUVC_Descriptor;
+import humer.uvc_camera.UVC_Descriptor.UVC_Descriptor;
 import humer.uvc_camera.UVC_Descriptor.UVC_Initializer;
 import humer.uvc_camera.UsbIso64.USBIso;
 import humer.uvc_camera.UsbIso64.usbdevice_fs_util;
@@ -138,12 +140,6 @@ public class Start_Iso_StreamActivity extends Activity {
     public static byte bStillCaptureMethod;
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
-    // MJpeg
-    public static int [] [] mJpegResolutions = null;
-    public static int [] [] arrayToResolutionFrameInterValArrayMjpeg = null;
-    // Yuv
-    public static int [] [] yuvResolutions = null;
-    public static int [] [] arrayToResolutionFrameInterValArrayYuv = null;
 
     // Vales for debuging the camera
     private boolean bildaufnahme = false;
@@ -199,7 +195,7 @@ public class Start_Iso_StreamActivity extends Activity {
     int start_position=0;
 
     // UVC Interface
-    IUVC_Descriptor iuvcDescriptor;
+    IUVC_Descriptor iuvc_descriptor;
 
 
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
@@ -562,23 +558,6 @@ public class Start_Iso_StreamActivity extends Activity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (mJpegResolutions != null) log("mJpegResolutions != null"); else log("mJpegResolutions == null");
-        if (arrayToResolutionFrameInterValArrayMjpeg != null) log("arrayToResolutionFrameInterValArrayMjpeg != null"); else log("arrayToResolutionFrameInterValArrayMjpeg == null");
-        if (yuvResolutions != null) log("yuvResolutions != null"); else log("yuvResolutions == null");
-        if (arrayToResolutionFrameInterValArrayYuv != null) log("arrayToResolutionFrameInterValArrayYuv != null"); else log("arrayToResolutionFrameInterValArrayYuv == null");
-
-
-        IUVC_Descriptor iuvcDescriptor = new UVC_Initializer(mJpegResolutions, arrayToResolutionFrameInterValArrayMjpeg, yuvResolutions, arrayToResolutionFrameInterValArrayYuv);
-
-        log("iuvcDescriptor initialised");
-        if (videoformat.equals("mjpeg")) {
-            log("Resolutions could be: \n" + Arrays.toString(iuvcDescriptor.findDifferentResolutions(true)));
-            log("FrameInterval could be:   -->  " + Arrays.toString( iuvcDescriptor.findDifferentFrameIntervals(true, new int [] {imageWidth, imageHeight})));
-        }
-
-
-
-
     }
 
     @Override
@@ -1116,15 +1095,21 @@ public class Start_Iso_StreamActivity extends Activity {
                 }
                 runningStream = new Start_Iso_StreamActivity.IsochronousStream(this);
                 runningStream.start();
-
-
+                byte[] a = camDeviceConnection.getRawDescriptors();
+                ByteBuffer uvcData = ByteBuffer.wrap(a);
+                UVC_Descriptor uvc_descriptor = new UVC_Descriptor(uvcData);
+                if (uvc_descriptor.phraseUvcData() == 0) {
+                    iuvc_descriptor = new UVC_Initializer(uvc_descriptor);
+                    log ("Arrays.deepToString(iuvc_descriptor.findDifferentResolutions(false)) = " + Arrays.deepToString(iuvc_descriptor.findDifferentResolutions(false)));
+                    log ("");
+                    log ("iuvc_descriptor.findDifferentFrameIntervals( = " + Arrays.toString(iuvc_descriptor.findDifferentFrameIntervals(false, new int[] {imageWidth, imageHeight})));
+                    log ("");
+                } else displayMessage("Interface initialization for the Descriptor failed.");
             } else {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         displayMessage("Failed to start the Camera Stream");
-                        //tv = (TextView) findViewById(R.id.textDarstellung);
-                        //tv.setText("Failed to initialize the camera device.");
                     }
                 });
 
@@ -1743,7 +1728,7 @@ public class Start_Iso_StreamActivity extends Activity {
     }
 
     public void log(String msg) {
-        Log.i("UVC_Camera_Start_Iso_Stream", msg);
+        Log.i("UVC_Camera_Iso_Stream", msg);
     }
 
     public void logError(String msg) {
@@ -1945,23 +1930,6 @@ public class Start_Iso_StreamActivity extends Activity {
         bNumControlTerminal = bundle.getByteArray("bNumControlTerminal");
         bNumControlUnit = bundle.getByteArray("bNumControlUnit");
         bStillCaptureMethod = bundle.getByte("bStillCaptureMethod", (byte)0);
-        if (bundle.getIntArray("mJpegResolutionsOne") != null) {
-            mJpegResolutions = new int [2] [];
-            mJpegResolutions[0] = bundle.getIntArray("mJpegResolutionsOne");
-            mJpegResolutions[1] = bundle.getIntArray("mJpegResolutionsTwo");
-        } if (bundle.getIntArray("arrayToResolutionFrameInterValArrayMjpegOne") != null) {
-            arrayToResolutionFrameInterValArrayMjpeg = new int [2] [];
-            arrayToResolutionFrameInterValArrayMjpeg[0] = bundle.getIntArray("arrayToResolutionFrameInterValArrayMjpegOne");
-            arrayToResolutionFrameInterValArrayMjpeg[1] = bundle.getIntArray("arrayToResolutionFrameInterValArrayMjpegTwo");
-        } if (bundle.getIntArray("yuvResolutionsOne") != null) {
-            yuvResolutions = new int [2] [];
-            yuvResolutions[0] = bundle.getIntArray("yuvResolutionsOne");
-            yuvResolutions[1] = bundle.getIntArray("yuvResolutionsTwo");
-        } if (bundle.getIntArray("arrayToResolutionFrameInterValArrayYuvOne") != null) {
-            arrayToResolutionFrameInterValArrayYuv = new int [2] [];
-            arrayToResolutionFrameInterValArrayYuv[0] = bundle.getIntArray("arrayToResolutionFrameInterValArrayYuvOne");
-            arrayToResolutionFrameInterValArrayYuv[1] = bundle.getIntArray("arrayToResolutionFrameInterValArrayYuvTwo");
-        }
     }
 
     private int round(double d){

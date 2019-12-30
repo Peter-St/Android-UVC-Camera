@@ -2,8 +2,6 @@ package humer.uvc_camera.UVC_Descriptor;
 
 import android.util.Log;
 
-import static humer.uvc_camera.UVC_Descriptor.UVC_Descriptor.log;
-
 public class UVC_Initializer implements IUVC_Descriptor {
 
     // MJpeg
@@ -15,10 +13,8 @@ public class UVC_Initializer implements IUVC_Descriptor {
     public static int [] [] arrayToResolutionFrameInterValArrayYuv = null;
 
     public UVC_Initializer (UVC_Descriptor uvc_desc) {
-
         UVC_Descriptor.FormatIndex mJpegFormatIndex = null;
         UVC_Descriptor.FormatIndex yUvFormatIndex = null;
-
         for (int i = 0; i < uvc_desc.formatIndex.size() ; i++) {
             if (uvc_desc.formatIndex.get(i).videoformat == UVC_Descriptor.FormatIndex.Videoformat.mjpeg)
                 mJpegFormatIndex = uvc_desc.getFormatIndex(i);
@@ -43,14 +39,6 @@ public class UVC_Initializer implements IUVC_Descriptor {
                 arrayToResolutionFrameInterValArrayYuv[i] = yUvFormatIndex.getFrameIndex(i).dwFrameInterval;
             }
         }
-
-
-        log("arrayToResolutionFrameInterValArrayMjpeg.length = " + arrayToResolutionFrameInterValArrayMjpeg.length);
-        log("arrayToResolutionFrameInterValArrayMjpeg[0].length = " + arrayToResolutionFrameInterValArrayMjpeg[0].length);
-        log("arrayToResolutionFrameInterValArrayMjpeg[1].length = " + arrayToResolutionFrameInterValArrayMjpeg[1].length);
-
-
-
     }
 
     public UVC_Initializer (int [] [] mJpegResolutions, int [] [] arrayToResolutionFrameInterValArrayMjpeg,
@@ -73,28 +61,21 @@ public class UVC_Initializer implements IUVC_Descriptor {
     @Override
     public int [] findDifferentFrameIntervals(boolean Mjpeg, int[] widthHight) {
         if (Mjpeg) {
-            Log.d("Initializer", "arrayToResolutionFrameInterValArrayMjpeg[0].length: " + arrayToResolutionFrameInterValArrayMjpeg[0].length);
-            Log.d("Initializer", "arrayToResolutionFrameInterValArrayMjpeg[].length: " + arrayToResolutionFrameInterValArrayMjpeg[1].length);
+            for (int i = 0; i < mJpegResolutions.length ; i++) {
 
-            for (int i = 0; i < mJpegResolutions[0].length ; i++) {
-                if (arrayToResolutionFrameInterValArrayMjpeg[i][0] == widthHight[0] &&
-                        arrayToResolutionFrameInterValArrayMjpeg[i][1] == widthHight[1] )
-                    return new int [] {arrayToResolutionFrameInterValArrayMjpeg[i][0], arrayToResolutionFrameInterValArrayMjpeg[i][1]};
+                if (mJpegResolutions[i][0] == widthHight[0] &&
+                        mJpegResolutions[i][1] == widthHight[1] )
+                    return arrayToResolutionFrameInterValArrayMjpeg[i];
             }
+            Log.e("Initializer","Resolution Format MJPEG not found");
         } else {
-            for (int i = 0; i < yuvResolutions[0].length ; i++) {
-                if (arrayToResolutionFrameInterValArrayYuv[i][0] == widthHight[0] &&
-                        arrayToResolutionFrameInterValArrayYuv[i][1] == widthHight[1] )
-                    return new int [] {arrayToResolutionFrameInterValArrayYuv[i][0], arrayToResolutionFrameInterValArrayYuv[i][1]};
+            for (int i = 0; i < yuvResolutions.length ; i++) {
+                if (yuvResolutions[i][0] == widthHight[0] &&
+                        yuvResolutions[i][1] == widthHight[1] )
+                    return arrayToResolutionFrameInterValArrayYuv[i];
             }
+            Log.e("Initializer","Resolution Format YUV not found");
         }
         return null;
     }
-
-
-
-
-
-
-
 }

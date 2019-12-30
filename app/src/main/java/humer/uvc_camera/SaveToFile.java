@@ -70,13 +70,6 @@ public class SaveToFile  {
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
     public static byte bStillCaptureMethod;
-    // MJpeg
-    public static int [] [] mJpegResolutions = null;
-    public static int [] [] arrayToResolutionFrameInterValArrayMjpeg = null;
-    // Yuv
-    public static int [] [] yuvResolutions = null;
-    public static int [] [] arrayToResolutionFrameInterValArrayYuv = null;
-
     private static String saveFilePathFolder = "UVC_Camera/save";
     private TextInputLayout valueInput;
     private boolean init = false;
@@ -390,14 +383,6 @@ public class SaveToFile  {
         bNumControlTerminal = setUpTheUsbDevice.bNumControlTerminal;
         bNumControlUnit = setUpTheUsbDevice.bNumControlUnit;
         bStillCaptureMethod = setUpTheUsbDevice.bStillCaptureMethod;
-
-        mJpegResolutions = setUpTheUsbDevice.mJpegResolutions;
-        arrayToResolutionFrameInterValArrayMjpeg = setUpTheUsbDevice.arrayToResolutionFrameInterValArrayMjpeg;
-        yuvResolutions = setUpTheUsbDevice.yuvResolutions;
-        arrayToResolutionFrameInterValArrayYuv = setUpTheUsbDevice.arrayToResolutionFrameInterValArrayYuv;
-
-
-
     }
 
     private void writeTheValues(){
@@ -418,11 +403,6 @@ public class SaveToFile  {
             uvc_camera.bNumControlUnit = bNumControlUnit;
             uvc_camera.bNumControlTerminal = bNumControlTerminal;
             uvc_camera.bStillCaptureMethod = bStillCaptureMethod;
-            uvc_camera.mJpegResolutions = mJpegResolutions;
-            uvc_camera.arrayToResolutionFrameInterValArrayMjpeg = arrayToResolutionFrameInterValArrayMjpeg;
-            uvc_camera.yuvResolutions = yuvResolutions;
-            uvc_camera.arrayToResolutionFrameInterValArrayYuv = arrayToResolutionFrameInterValArrayYuv;
-
         } else {
             setUpTheUsbDevice.camStreamingAltSetting = sALT_SETTING;
             setUpTheUsbDevice.videoformat = svideoformat;
@@ -440,29 +420,7 @@ public class SaveToFile  {
             setUpTheUsbDevice.bNumControlTerminal = bNumControlTerminal;
             setUpTheUsbDevice.bNumControlUnit = bNumControlUnit;
             setUpTheUsbDevice.bStillCaptureMethod = bStillCaptureMethod;
-            setUpTheUsbDevice.mJpegResolutions = mJpegResolutions;
-            setUpTheUsbDevice.arrayToResolutionFrameInterValArrayMjpeg = arrayToResolutionFrameInterValArrayMjpeg;
-            setUpTheUsbDevice.yuvResolutions = yuvResolutions;
-            setUpTheUsbDevice.arrayToResolutionFrameInterValArrayYuv = arrayToResolutionFrameInterValArrayYuv;
-
         }
-
-        if (mJpegResolutions != null) log("mJpegResolutions != null"); else log("mJpegResolutions == null");
-        if (arrayToResolutionFrameInterValArrayMjpeg != null) {
-            ;
-            log("arrayToResolutionFrameInterValArrayMjpeg.length = " + arrayToResolutionFrameInterValArrayMjpeg.length);
-            log("arrayToResolutionFrameInterValArrayMjpeg[0].length = " + arrayToResolutionFrameInterValArrayMjpeg[0].length);
-            log("arrayToResolutionFrameInterValArrayMjpeg[1].length = " + arrayToResolutionFrameInterValArrayMjpeg[1].length);
-
-
-
-            log("arrayToResolutionFrameInterValArrayMjpeg != null");
-        } else log("arrayToResolutionFrameInterValArrayMjpeg == null");
-        if (yuvResolutions != null) log("yuvResolutions != null"); else log("yuvResolutions == null");
-        if (arrayToResolutionFrameInterValArrayYuv != null) log("arrayToResolutionFrameInterValArrayYuv != null"); else log("arrayToResolutionFrameInterValArrayYuv == null");
-
-
-
     }
 
 
@@ -673,11 +631,6 @@ public class SaveToFile  {
             save.writeObject(bNumControlTerminal);
             save.writeObject(bNumControlUnit);
             save.writeObject(bStillCaptureMethod);
-            save.writeObject(mJpegResolutions);
-            save.writeObject(arrayToResolutionFrameInterValArrayMjpeg);
-            save.writeObject(yuvResolutions);
-            save.writeObject(arrayToResolutionFrameInterValArrayYuv);
-
             // Close the file.
             save.close(); // This also closes saveFile.
         } catch (Exception e) { log("Error"); e.printStackTrace();}
@@ -710,10 +663,6 @@ public class SaveToFile  {
             bNumControlTerminal  = (byte[]) save.readObject();
             bNumControlUnit  = (byte[]) save.readObject();
             bStillCaptureMethod = (Byte) save.readObject();
-            mJpegResolutions  = (int[] []) save.readObject();
-            arrayToResolutionFrameInterValArrayMjpeg  = (int[] []) save.readObject();
-            yuvResolutions  = (int[] []) save.readObject();
-            arrayToResolutionFrameInterValArrayYuv  = (int[] []) save.readObject();
             save.close();
         }
         catch(Exception exc){
@@ -766,40 +715,6 @@ public class SaveToFile  {
 
     public void setUpWithUvcValues(UVC_Descriptor uvc_desc, int[] maxPacketSizeArray) {
         fetchTheValues();
-        UVC_Initializer initializer = new UVC_Initializer(uvc_desc);
-        // MJpeg
-        this.mJpegResolutions = initializer.mJpegResolutions;
-        this.arrayToResolutionFrameInterValArrayMjpeg = initializer.arrayToResolutionFrameInterValArrayMjpeg;
-        // Yuv
-        this.yuvResolutions = initializer.yuvResolutions;
-        this.arrayToResolutionFrameInterValArrayYuv = initializer.arrayToResolutionFrameInterValArrayYuv;
-
-
-
-        IUVC_Descriptor iuvcDescriptor = new UVC_Initializer(mJpegResolutions, arrayToResolutionFrameInterValArrayMjpeg, yuvResolutions, arrayToResolutionFrameInterValArrayYuv);
-
-        log("iuvcDescriptor initialised");
-
-
-        log("Resolutions could be: \n" + Arrays.deepToString(iuvcDescriptor.findDifferentResolutions(true)));
-
-        log("FrameInterval could be:   -->  " + iuvcDescriptor.findDifferentFrameIntervals(true, new int [] {1920, 1080}));
-
-        int [] differentRes = iuvcDescriptor.findDifferentFrameIntervals(true, new int [] {1920, 1080});
-
-
-        for (int i: differentRes) {
-            System.out.print(i);
-            System.out.print(" ");
-        }
-
-
-
-
-
-
-
-
         this.uvc_descriptor = uvc_desc;
         bUnitID = uvc_desc.bUnitID;
         bTerminalID = uvc_desc.bTerminalID;
@@ -1037,9 +952,7 @@ public class SaveToFile  {
         builderSingle.show();
     }
 
-
     private void selectDWFrameIntervall(){
-
         dwFrameIntervalArray = new String [frameIndex.dwFrameInterval.length];
         for (int k=0; k<dwFrameIntervalArray.length; k++) {
             dwFrameIntervalArray[k] = Integer.toString(frameIndex.dwFrameInterval[k]);
@@ -1102,7 +1015,6 @@ public class SaveToFile  {
         builder.setMessage("Do you want to save the values to a file?").setPositiveButton("Yes, Save", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener).show();
     }
-
 
     public void writeMsgMain(final String msg) {
         activity.runOnUiThread(new Runnable() {
