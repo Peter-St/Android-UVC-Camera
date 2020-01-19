@@ -66,7 +66,9 @@ public class Main extends Activity {
     public Button menu;
     private ZoomTextView tv;
 
-    private final int REQUEST_PERMISSION_STORAGE=1;
+    private final int REQUEST_PERMISSION_STORAGE_READ=1;
+    private final int REQUEST_PERMISSION_STORAGE_WRITE=2;
+    private final int REQUEST_PERMISSION_CAMERA=3;
     private static int ActivitySetUpTheUsbDeviceRequestCode = 1;
     private static int ActivityStartIsoStreamRequestCode = 2;
 
@@ -97,13 +99,30 @@ public class Main extends Activity {
             String permissions[],
             int[] grantResults) {
         switch (requestCode) {
-            case REQUEST_PERMISSION_STORAGE:
+            case REQUEST_PERMISSION_STORAGE_READ:
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(Main.this, "Permission Granted!", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(Main.this, "Permission Denied!", Toast.LENGTH_SHORT).show();
                 }
+                break;
+            case REQUEST_PERMISSION_STORAGE_WRITE:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(Main.this, "Permission Granted!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(Main.this, "Permission Denied!", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case REQUEST_PERMISSION_CAMERA:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(Main.this, "Permission Granted!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(Main.this, "Permission Denied!", Toast.LENGTH_SHORT).show();
+                }
+                break;
         }
     }
 
@@ -161,7 +180,36 @@ public class Main extends Activity {
 
 
     public void setUpTheUsbDevice(View view){
-        if (showStoragePermissionRead() && showStoragePermissionWrite()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (showStoragePermissionRead() && showStoragePermissionWrite() && showCameraPermissionCamera()) {
+
+                Intent intent = new Intent(this, SetUpTheUsbDevice.class);
+                Bundle bundle=new Bundle();
+                bundle.putBoolean("edit", true);
+                bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
+                bundle.putString("videoformat",videoformat);
+                bundle.putInt("camFormatIndex",camFormatIndex);
+                bundle.putInt("imageWidth",imageWidth);
+                bundle.putInt("imageHeight",imageHeight);
+                bundle.putInt("camFrameIndex",camFrameIndex);
+                bundle.putInt("camFrameInterval",camFrameInterval);
+                bundle.putInt("packetsPerRequest",packetsPerRequest);
+                bundle.putInt("maxPacketSize",maxPacketSize);
+                bundle.putInt("activeUrbs",activeUrbs);
+                bundle.putString("deviceName",deviceName);
+                bundle.putByte("bUnitID",bUnitID);
+                bundle.putByte("bTerminalID",bTerminalID);
+                bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
+                bundle.putByteArray("bNumControlUnit", bNumControlUnit);
+                bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
+
+                intent.putExtra("bun",bundle);
+                super.onResume();
+                startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
+            }
+
+        }
+        else if (showStoragePermissionRead() && showStoragePermissionWrite()) {
 
             Intent intent = new Intent(this, SetUpTheUsbDevice.class);
             Bundle bundle=new Bundle();
@@ -238,8 +286,13 @@ public class Main extends Activity {
 
 
 
+
     public void isoStream(View view){
+
         if (showStoragePermissionRead() && showStoragePermissionWrite()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                if(!showCameraPermissionCamera()) return;
+            }
             if (camFormatIndex == 0 || camFrameIndex == 0 ||camFrameInterval == 0 ||packetsPerRequest == 0 ||maxPacketSize == 0 ||imageWidth == 0 || activeUrbs == 0 ) {
                 runOnUiThread(new Runnable() {
                     @Override
@@ -328,10 +381,10 @@ public class Main extends Activity {
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                showExplanation("Permission Needed:", "Storage", Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_PERMISSION_STORAGE);
+                showExplanation("Permission Needed:", "Read External Storage", Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_PERMISSION_STORAGE_READ);
                 return false;
             } else {
-                requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_PERMISSION_STORAGE);
+                requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_PERMISSION_STORAGE_READ);
                 return false;
             }
         } else {
@@ -340,17 +393,34 @@ public class Main extends Activity {
         }
     }
 
-
     private boolean showStoragePermissionWrite() {
         int permissionCheck = ContextCompat.checkSelfPermission(
                 this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                showExplanation("Permission Needed:", "Storage", Manifest.permission.WRITE_EXTERNAL_STORAGE, REQUEST_PERMISSION_STORAGE);
+                showExplanation("Permission Needed:", "Write to External Storage", Manifest.permission.WRITE_EXTERNAL_STORAGE, REQUEST_PERMISSION_STORAGE_WRITE);
                 return false;
             } else {
-                requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, REQUEST_PERMISSION_STORAGE);
+                requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, REQUEST_PERMISSION_STORAGE_WRITE);
+                return false;
+            }
+        } else {
+            //Toast.makeText(Main.this, "Permission (already) Granted!", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+    }
+
+    private boolean showCameraPermissionCamera() {
+        int permissionCheck = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.CAMERA);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.CAMERA)) {
+                showExplanation("Permission Needed:", "Camera", Manifest.permission.CAMERA, REQUEST_PERMISSION_CAMERA);
+                return false;
+            } else {
+                requestPermission(Manifest.permission.CAMERA, REQUEST_PERMISSION_CAMERA);
                 return false;
             }
         } else {
