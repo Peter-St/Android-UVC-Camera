@@ -141,7 +141,7 @@ public class SetUpTheUsbDevice extends Activity {
     private String finalStreamingParms;
     private int[] finalStreamingParmsIntArray;
     public StringBuilder stringBuilder;
-    int [] convertedMaxPacketSize;
+    public int [] convertedMaxPacketSize;
     public static boolean camIsOpen;
     private boolean bulkMode;
     private enum Options { searchTheCamera, testrun, listdevice, showTestRunMenu, setUpWithUvcSettings };
@@ -157,11 +157,20 @@ public class SetUpTheUsbDevice extends Activity {
     private volatile IsochronousRead runningTransfer;
     private volatile IsochronousRead1Frame runningTransfer1Frame;
 
-
     // Brightness Values
     private static int brightnessMax;
     private static int brightnessMin;
 
+    // Values for Auto Detection
+    public static boolean completed;
+    public static boolean lowQuality;
+    public static boolean raiseMaxPacketSize;
+    public static boolean lowerMaxPacketSize;
+    public static boolean raisePacketsPerRequest;
+    public static boolean raiseActiveUrbs;
+
+    public static boolean highestMaxPacketSizeDone;
+    public static boolean lowestMaxPacketSizeDone;
 
 
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
@@ -465,7 +474,6 @@ public class SetUpTheUsbDevice extends Activity {
 
     public void editCameraSettings (View view) {
         stf.startEditSave();
-
     }
 
     public void returnToConfigScreen(View view) {
@@ -819,24 +827,31 @@ public class SetUpTheUsbDevice extends Activity {
             DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    int a;
                     switch (which){
                         case DialogInterface.BUTTON_POSITIVE:
-                            int a = uvc_descriptor.phraseUvcData();
+                            // Set up from UVC manually
+                            a = uvc_descriptor.phraseUvcData();
                             if (a == 0) {
                                 if (convertedMaxPacketSize == null) listDevice(camDevice);
-                                stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize);
+                                stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize, false);
                             }
                             break;
 
                         case DialogInterface.BUTTON_NEGATIVE:
-
+                            // Automatic UVC DetectionAutomatic UVC Detection
+                            a = uvc_descriptor.phraseUvcData();
+                            if (a == 0) {
+                                if (convertedMaxPacketSize == null) listDevice(camDevice);
+                                stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize, true);
+                            }
                             break;
                     }
                 }
             };
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("Do you want to set up from UVC values ?").setPositiveButton("Yes, set up from UVC", dialogClickListener)
-                    .setNegativeButton("No", dialogClickListener).show();
+            builder.setMessage("UVC Setup !").setPositiveButton("Set up from UVC manually", dialogClickListener)
+                    .setNegativeButton("Automatic UVC Detection", dialogClickListener).show();
         }
 
 

@@ -71,6 +71,7 @@ public class SaveToFile  {
     public static byte[] bNumControlUnit;
     public static byte bStillCaptureMethod;
     private static String saveFilePathFolder = "UVC_Camera/save";
+    private static String autoFilePathFolder = "UVC_Camera/save/autoDetection";
     private TextInputLayout valueInput;
     private boolean init = false;
 
@@ -97,6 +98,8 @@ public class SaveToFile  {
     private enum OptionForSaveFile {savetofile, restorefromfile}
     OptionForSaveFile optionForSaveFile;
     static ArrayList<String> paths = new ArrayList<>(50);
+    static String autoDetectFileOrdersString;
+    static String autoDetectFileValuesString;
 
     TextView tv;
 
@@ -117,6 +120,18 @@ public class SaveToFile  {
     float mRatio = 1.0f;
     int mBaseDist;
     float mBaseRatio;
+
+    // Values for Auto Detection
+    public static boolean completed;
+    public static boolean lowQuality;
+    public static boolean raiseMaxPacketSize;
+    public static boolean lowerMaxPacketSize;
+    public static boolean raisePacketsPerRequest;
+    public static boolean raiseActiveUrbs;
+
+    public static boolean highestMaxPacketSizeDone;
+    public static boolean lowestMaxPacketSizeDone;
+
 
 
 
@@ -429,15 +444,12 @@ public class SaveToFile  {
     }
 
 
-
     private void checkTheSaveFileName(final OptionForSaveFile option){
         fileName = null;
         name = null;
         rootdirStr = null;
         stringBuilder = new StringBuilder();
         paths = new ArrayList<>(50);
-
-
         final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() ;
         final File file = new File(rootPath, "/" + saveFilePathFolder);
         if (!file.exists()) {
@@ -448,12 +460,14 @@ public class SaveToFile  {
 
             file.mkdirs();
         }
-
         log("Path: " + rootPath.toString());
         rootdirStr = file.toString();
         rootdirStr += "/";
         //final File folder = new File("/home/you/Desktop");
         listFilesForFolder(file);
+
+
+
         if (paths.isEmpty() == true && optionForSaveFile == OptionForSaveFile.restorefromfile) {
             returnToMainLayout(String.format("No savefiles found in the save directory.\nDirectory: &s", rootdirStr ));
         } else {
@@ -492,12 +506,11 @@ public class SaveToFile  {
                         String strName = arrayAdapter.getItem(which);
                         String path = rootdirStr;
                         path += strName;
-                        restorFromFile(path);
+                        restoreFromFile(path);
                     }
 
                 });
                 builderSingle.show();
-
             } else {
                 AlertDialog.Builder builder2 = new AlertDialog.Builder(mContext);
                 builder2.setTitle("Input a value");
@@ -523,7 +536,7 @@ public class SaveToFile  {
                                 case savetofile: saveValuesToFile(rootdirStr += sdeviceName += ".sav");
                                     log("sdeviceName = " + sdeviceName);
                                     break;
-                                case restorefromfile: restorFromFile(rootdirStr += sdeviceName += ".sav");
+                                case restorefromfile: restoreFromFile(rootdirStr += sdeviceName += ".sav");
                                     break;
                             }
                         }
@@ -540,7 +553,7 @@ public class SaveToFile  {
                                     catch (Exception e) { log("Save Failed ; Exception = " + e); e.printStackTrace();}
                                     break;
                                 case restorefromfile:
-                                    restorFromFile(paths.get((Integer.parseInt(name) - 1)));
+                                    restoreFromFile(paths.get((Integer.parseInt(name) - 1)));
                                     break;
                             }
                         } else {
@@ -549,7 +562,7 @@ public class SaveToFile  {
                                     saveValuesToFile((rootdirStr += name += ".sav"));      log("Saving ...");
                                     break;
                                 case restorefromfile:
-                                    restorFromFile((rootdirStr += name += ".sav"));      log("Saving ...");
+                                    restoreFromFile((rootdirStr += name += ".sav"));      log("Saving ...");
                                     break;
                             }
                         }
@@ -592,7 +605,6 @@ public class SaveToFile  {
                 builder2.show();
             }
         }
-
     }
 
 
@@ -635,14 +647,11 @@ public class SaveToFile  {
             save.close(); // This also closes saveFile.
         } catch (Exception e) { log("Error"); e.printStackTrace();}
 
-
         returnToMainLayout(String.format("Values edited and saved\nSavefile = %s", savePath));
-
-
     }
 
 
-    public void restorFromFile(String pathToFile){
+    public void restoreFromFile(String pathToFile){
         try{
             FileInputStream saveFile = new FileInputStream(pathToFile);
             ObjectInputStream save = new ObjectInputStream(saveFile);
@@ -713,7 +722,7 @@ public class SaveToFile  {
         }
     }
 
-    public void setUpWithUvcValues(UVC_Descriptor uvc_desc, int[] maxPacketSizeArray) {
+    public void setUpWithUvcValues(UVC_Descriptor uvc_desc, int[] maxPacketSizeArray, boolean automatic) {
         fetchTheValues();
         this.uvc_descriptor = uvc_desc;
         bUnitID = uvc_desc.bUnitID;
@@ -734,7 +743,21 @@ public class SaveToFile  {
         for (int a =0; a<maxPacketSizeArray.length; a++) {
             maxPacketSizeStr[a] = Integer.toString(maxPacketSizeArray[a]);
         }
-        selectMaxPacketSize();
+        if (!automatic)  selectMaxPacketSize(automatic);
+        else {
+
+            spacketsPerRequest = 1;
+            sactiveUrbs = 1;
+
+            completed = false;
+            lowQuality = true;
+            raiseMaxPacketSize = false;
+            lowerMaxPacketSize = false;
+            raisePacketsPerRequest = false;
+            raiseActiveUrbs = false;
+            selectMaxPacketSize(true);
+
+        }
     }
 
     private int returnConvertedValue(int wSize){
@@ -757,238 +780,336 @@ public class SaveToFile  {
         }
     }
 
-    private void selectMaxPacketSize(){
-        AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
-        builderSingle.setIcon(R.drawable.ic_menu_camera);
-        builderSingle.setTitle("Select the maximal Packet Size:");
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
-        for (int i = 0; i<maxPacketSizeStr.length; i++){
-            arrayAdapter.add(maxPacketSizeStr[i]);
-        }
-        builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                writeMsgMain("UVC values canceled");
-                dialog.dismiss();
+    private void selectMaxPacketSize(boolean automatic){
+        if (!automatic) {
+            AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
+            builderSingle.setIcon(R.drawable.ic_menu_camera);
+            builderSingle.setTitle("Select the maximal Packet Size:");
+            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
+            for (int i = 0; i<maxPacketSizeStr.length; i++){
+                arrayAdapter.add(maxPacketSizeStr[i]);
             }
-        });
-        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String input = arrayAdapter.getItem(which);
-                smaxPacketSize = Integer.parseInt(input.toString());
-                for (int i=1; i<(maxPacketSizeStr.length +1); i++) {
-                    if (input.matches(maxPacketSizeStr[i-1]) ) {
-                        sALT_SETTING = i;
+            builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    writeMsgMain("UVC values canceled");
+                    dialog.dismiss();
+                }
+            });
+            builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String input = arrayAdapter.getItem(which);
+                    smaxPacketSize = Integer.parseInt(input.toString());
+                    for (int i=1; i<(maxPacketSizeStr.length +1); i++) {
+                        if (input.matches(maxPacketSizeStr[i-1]) ) {
+                            sALT_SETTING = i;
+                        }
+                    }
+                    System.out.println("sALT_SETTING = " + sALT_SETTING);
+                    System.out.println("smaxPacketSize = " + smaxPacketSize);
+                    selectPackets(automatic);
+                }
+            });
+            builderSingle.show();
+        } else {
+
+
+
+
+            // Select highest Max Packet Size
+            if (!highestMaxPacketSizeDone) {
+
+                int[] maxPacketsSizeArray = setUpTheUsbDevice.convertedMaxPacketSize.clone();
+
+                // find greatest MaxPacketSize:
+                int maxValue = maxPacketsSizeArray[0];
+                int maxPos = 0;
+                for (int i = 0; i < maxPacketsSizeArray.length; i++) {
+                    if (maxPacketsSizeArray[i] > maxValue) {
+                        maxValue = maxPacketsSizeArray[i];
+                        maxPos = i;
                     }
                 }
-                System.out.println("sALT_SETTING = " + sALT_SETTING);
+
+                smaxPacketSize = maxPacketsSizeArray[maxPos];
                 System.out.println("smaxPacketSize = " + smaxPacketSize);
-                selectPackets();
+                selectPackets(true);
+                return;
             }
-        });
-        builderSingle.show();
+
+
+
+
+
+
+
+
+        }
     }
 
-    public void selectPackets() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle("Packets per Request");
-        builder.setMessage(String.format("Select the Packets per Request: (Number of Packet with a size of: %d)", smaxPacketSize));
+    public void selectPackets(boolean automatic) {
+        if (!automatic) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            builder.setTitle("Packets per Request");
+            builder.setMessage(String.format("Select the Packets per Request: (Number of Packet with a size of: %d)", smaxPacketSize));
 // Set up the input
-        final EditText input = new EditText(mContext);
+            final EditText input = new EditText(mContext);
 // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-        input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
-        builder.setView(input);
+            input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+            builder.setView(input);
 // Set up the buttons
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (input.getText().toString().isEmpty() == false)  spacketsPerRequest = Integer.parseInt(input.getText().toString());
-                selectUrbs();
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                writeMsgMain("UVC values canceled");
-                dialog.cancel();
-            }
-        });
-        builder.show();
-    }
-
-    public void selectUrbs() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle("USB Request Block");
-        builder.setMessage(String.format("Select the URBs: (Select the number of Packet Blocks running in paralell order.)\nOne Block is %d x %d Bytes",smaxPacketSize,  spacketsPerRequest ));
-// Set up the input
-        final EditText input = new EditText(mContext);
-// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-        input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
-        builder.setView(input);
-
-// Set up the buttons
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (input.getText().toString().isEmpty() == false)  sactiveUrbs = Integer.parseInt(input.getText().toString());
-                selectFormatIndex();
-
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                writeMsgMain("UVC values canceled");
-                dialog.cancel();
-            }
-        });
-        builder.show();
-    }
-
-    private void selectFormatIndex () {
-        numberFormatIndexes = new int[uvc_descriptor.formatIndex.size()];
-        final String[] textmsg = new String[uvc_descriptor.formatIndex.size()];
-        for (int a = 0; a < uvc_descriptor.formatIndex.size(); a++) {
-            formatIndex = uvc_descriptor.getFormatIndex(a);
-            System.out.println("formatIndex.videoformat = " + formatIndex.videoformat);
-            numberFormatIndexes[a] = formatIndex.formatIndexNumber;
-            System.out.println("numberFormatIndexes[" + a + "] = " + numberFormatIndexes[a]);
-            textmsg[a] = formatIndex.videoformat.toString();
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (input.getText().toString().isEmpty() == false)  spacketsPerRequest = Integer.parseInt(input.getText().toString());
+                    selectUrbs(automatic);
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    writeMsgMain("UVC values canceled");
+                    dialog.cancel();
+                }
+            });
+            builder.show();
+        } else {
+            if (raisePacketsPerRequest) spacketsPerRequest ++;
+            selectUrbs(true);
         }
 
+    }
 
-        final AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
-        builderSingle.setIcon(R.drawable.ic_menu_camera);
-        builderSingle.setTitle("Camera Format (MJPEG / YUV / ...");
-        //builderSingle.setMessage("Select the camera format (This video formats were supportet)");
+    public void selectUrbs(boolean automatic) {
+        if (!automatic) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            builder.setTitle("USB Request Block");
+            builder.setMessage(String.format("Select the URBs: (Select the number of Packet Blocks running in paralell order.)\nOne Block is %d x %d Bytes",smaxPacketSize,  spacketsPerRequest ));
+// Set up the input
+            final EditText input = new EditText(mContext);
+// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+            input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+            builder.setView(input);
 
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
+// Set up the buttons
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (input.getText().toString().isEmpty() == false)  sactiveUrbs = Integer.parseInt(input.getText().toString());
+                    selectFormatIndex(automatic);
 
-        for (int i = 0; i < textmsg.length; i++) {
-            arrayAdapter.add(textmsg[i]);
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    writeMsgMain("UVC values canceled");
+                    dialog.cancel();
+                }
+            });
+            builder.show();
+        } else {
+            if (raiseActiveUrbs) sactiveUrbs ++;
+            selectFormatIndex(true);
         }
+    }
 
-        builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                writeMsgMain("UVC values canceled");
-                dialog.dismiss();
+    private void selectFormatIndex (boolean automatic) {
+        if (!automatic) {
+            numberFormatIndexes = new int[uvc_descriptor.formatIndex.size()];
+            final String[] textmsg = new String[uvc_descriptor.formatIndex.size()];
+            for (int a = 0; a < uvc_descriptor.formatIndex.size(); a++) {
+                formatIndex = uvc_descriptor.getFormatIndex(a);
+                System.out.println("formatIndex.videoformat = " + formatIndex.videoformat);
+                numberFormatIndexes[a] = formatIndex.formatIndexNumber;
+                System.out.println("numberFormatIndexes[" + a + "] = " + numberFormatIndexes[a]);
+                textmsg[a] = formatIndex.videoformat.toString();
             }
-        });
-        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String strName = arrayAdapter.getItem(which);
-                for (int i = 0; i < textmsg.length; i++) {
-                    if (strName.matches(textmsg[i])) {
-                        scamFormatIndex = numberFormatIndexes[i];
-                        formatIndex = uvc_descriptor.getFormatIndex(i);
-                        svideoformat = formatIndex.videoformat.toString();
-                        String[] textmessage = new String[formatIndex.numberOfFrameDescriptors];
-                        String inp;
+            final AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
+            builderSingle.setIcon(R.drawable.ic_menu_camera);
+            builderSingle.setTitle("Camera Format (MJPEG / YUV / ...");
+            //builderSingle.setMessage("Select the camera format (This video formats were supportet)");
+
+            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
+
+            for (int i = 0; i < textmsg.length; i++) {
+                arrayAdapter.add(textmsg[i]);
+            }
+
+            builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    writeMsgMain("UVC values canceled");
+                    dialog.dismiss();
+                }
+            });
+            builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String strName = arrayAdapter.getItem(which);
+                    for (int i = 0; i < textmsg.length; i++) {
+                        if (strName.matches(textmsg[i])) {
+                            scamFormatIndex = numberFormatIndexes[i];
+                            formatIndex = uvc_descriptor.getFormatIndex(i);
+                            svideoformat = formatIndex.videoformat.toString();
+                            String[] textmessage = new String[formatIndex.numberOfFrameDescriptors];
+                            String inp;
+                            for (int j = 0; j < formatIndex.numberOfFrameDescriptors; j++) {
+                            }
+                        }
+                    }
+                    selectFrameIndex(automatic);
+                }
+            });
+            builderSingle.show();
+        } else {
+            if (uvc_descriptor.formatIndex.size() == 1) {
+                scamFormatIndex = 1;
+                formatIndex = uvc_descriptor.getFormatIndex(0);
+                selectFrameIndex(true);
+                return;
+            }
+            scamFormatIndex = 1;
+            selectFrameIndex(true);
+        }
+    }
+
+    private void selectFrameIndex (boolean automatic) {
+        if (!automatic) {
+            frameDescriptorsResolutionArray = new String[formatIndex.numberOfFrameDescriptors];
+            String inp;
+
+            for (int j = 0; j < formatIndex.numberOfFrameDescriptors; j++) {
+                frameIndex = formatIndex.getFrameIndex(j);
+                StringBuilder stringb = new StringBuilder();
+                stringb.append(Integer.toString(frameIndex.wWidth));
+                stringb.append(" x ");
+                stringb.append(Integer.toString(frameIndex.wHeight));
+                frameDescriptorsResolutionArray[j] = stringb.toString();
+            }
+            final AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
+            builderSingle.setIcon(R.drawable.ic_menu_camera);
+            builderSingle.setTitle("Camera Resolution (Frame Format)");
+            //builderSingle.setMessage("Select the camera Frame Format (Represents the Resolution)");
+            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
+
+            for (int i = 0; i < frameDescriptorsResolutionArray.length; i++) {
+                arrayAdapter.add(frameDescriptorsResolutionArray[i]);
+            }
+
+            builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    writeMsgMain("UVC values canceled");
+                    dialog.dismiss();
+                }
+            });
+            builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String input = arrayAdapter.getItem(which);
+                    for (int i = 0; i < frameDescriptorsResolutionArray.length; i++) {
                         for (int j = 0; j < formatIndex.numberOfFrameDescriptors; j++) {
-
-
+                            if (input.equals(frameDescriptorsResolutionArray[j])) {
+                                frameIndex = formatIndex.getFrameIndex(j);
+                                scamFrameIndex = frameIndex.frameIndex;
+                                System.out.println("scamFrameIndex = " + scamFrameIndex);
+                                simageWidth = frameIndex.wWidth;
+                                simageHeight = frameIndex.wHeight;
+                            }
                         }
                     }
-
+                    selectDWFrameIntervall(automatic);
                 }
-                selectFrameIndex();
-            }
-        });
+            });
+            builderSingle.show();
+        } else {
+            if(lowQuality) {
+                int[] resArray = new int [formatIndex.numberOfFrameDescriptors];
+                for (int j = 0; j < formatIndex.numberOfFrameDescriptors; j++) {
+                    frameIndex = formatIndex.getFrameIndex(j);
+                    resArray[j] = (frameIndex.wWidth * frameIndex.wHeight);
+                }
 
 
-        builderSingle.show();
-    }
-
-    private void selectFrameIndex () {
-     frameDescriptorsResolutionArray = new String[formatIndex.numberOfFrameDescriptors];
-        String inp;
-
-        for (int j = 0; j < formatIndex.numberOfFrameDescriptors; j++) {
-            frameIndex = formatIndex.getFrameIndex(j);
-            StringBuilder stringb = new StringBuilder();
-            stringb.append(Integer.toString(frameIndex.wWidth));
-            stringb.append(" x ");
-            stringb.append(Integer.toString(frameIndex.wHeight));
-            frameDescriptorsResolutionArray[j] = stringb.toString();
-        }
-        final AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
-        builderSingle.setIcon(R.drawable.ic_menu_camera);
-        builderSingle.setTitle("Camera Resolution (Frame Format)");
-        //builderSingle.setMessage("Select the camera Frame Format (Represents the Resolution)");
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
-
-        for (int i = 0; i < frameDescriptorsResolutionArray.length; i++) {
-            arrayAdapter.add(frameDescriptorsResolutionArray[i]);
-        }
-
-        builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                writeMsgMain("UVC values canceled");
-                dialog.dismiss();
-            }
-        });
-        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String input = arrayAdapter.getItem(which);
-                for (int i = 0; i < frameDescriptorsResolutionArray.length; i++) {
-                    for (int j = 0; j < formatIndex.numberOfFrameDescriptors; j++) {
-                        if (input.equals(frameDescriptorsResolutionArray[j])) {
-                            frameIndex = formatIndex.getFrameIndex(j);
-                            scamFrameIndex = frameIndex.frameIndex;
-                            System.out.println("scamFrameIndex = " + scamFrameIndex);
-                            simageWidth = frameIndex.wWidth;
-                            simageHeight = frameIndex.wHeight;
-                        }
+                // find lowest resolution:
+                int minValue = resArray[0];
+                int minPos = 0;
+                for (int i = 1; i < resArray.length; i++) {
+                    if (resArray[i] < minValue) {
+                        minValue = resArray[i];
+                        minPos = i;
                     }
                 }
-                selectDWFrameIntervall();
+                frameIndex = formatIndex.getFrameIndex(minPos);
+                scamFrameIndex = frameIndex.frameIndex;
+                simageWidth = frameIndex.wWidth;
+                simageHeight = frameIndex.wHeight;
+                System.out.println("scamFrameIndex = " + scamFrameIndex);
+                System.out.println("simageWidth = " + simageWidth);
+                System.out.println("simageHeight = " + simageHeight);
+                selectDWFrameIntervall(true);
+                return;
             }
-        });
-        builderSingle.show();
+            selectDWFrameIntervall(true);
+        }
     }
 
-    private void selectDWFrameIntervall(){
-        dwFrameIntervalArray = new String [frameIndex.dwFrameInterval.length];
-        for (int k=0; k<dwFrameIntervalArray.length; k++) {
-            dwFrameIntervalArray[k] = Integer.toString(frameIndex.dwFrameInterval[k]);
-        }
-        final AlertDialog.Builder dwFrameIntervalArraybuilder = new AlertDialog.Builder(mContext);
-        dwFrameIntervalArraybuilder.setIcon(R.drawable.ic_menu_camera);
-        dwFrameIntervalArraybuilder.setTitle("Frameintervall");
-        //dwFrameIntervalArraybuilder.setMessage("Select the camera Frame Intervall\n333333 means 30 Frames per Second\n666666 means 15 Frames per Second\nThe number is in Nano Secounds and every amount of nanao secounds a Frame is sent.");
-        final ArrayAdapter<String> dwFrameIntervalArrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
-
-        for (int i = 0; i < dwFrameIntervalArray.length; i++) {
-            dwFrameIntervalArrayAdapter.add(dwFrameIntervalArray[i]);
-        }
-
-        dwFrameIntervalArraybuilder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                writeMsgMain("UVC values canceled");
-                dialog.dismiss();
+    private void selectDWFrameIntervall(boolean automatic){
+        if (!automatic) {
+            dwFrameIntervalArray = new String [frameIndex.dwFrameInterval.length];
+            for (int k=0; k<dwFrameIntervalArray.length; k++) {
+                dwFrameIntervalArray[k] = Integer.toString(frameIndex.dwFrameInterval[k]);
             }
-        });
-        dwFrameIntervalArraybuilder.setAdapter(dwFrameIntervalArrayAdapter, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String textInput = dwFrameIntervalArrayAdapter.getItem(which);
-                if (textInput != null) {
-                    scamFrameInterval = Integer.parseInt(textInput);
-                    System.out.println("scamFrameInterval = " + scamFrameInterval);
+            final AlertDialog.Builder dwFrameIntervalArraybuilder = new AlertDialog.Builder(mContext);
+            dwFrameIntervalArraybuilder.setIcon(R.drawable.ic_menu_camera);
+            dwFrameIntervalArraybuilder.setTitle("Frameintervall");
+            //dwFrameIntervalArraybuilder.setMessage("Select the camera Frame Intervall\n333333 means 30 Frames per Second\n666666 means 15 Frames per Second\nThe number is in Nano Secounds and every amount of nanao secounds a Frame is sent.");
+            final ArrayAdapter<String> dwFrameIntervalArrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
+
+            for (int i = 0; i < dwFrameIntervalArray.length; i++) {
+                dwFrameIntervalArrayAdapter.add(dwFrameIntervalArray[i]);
+            }
+
+            dwFrameIntervalArraybuilder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    writeMsgMain("UVC values canceled");
+                    dialog.dismiss();
                 }
-                writeTheValues();
-                saveYesNo();
+            });
+            dwFrameIntervalArraybuilder.setAdapter(dwFrameIntervalArrayAdapter, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String textInput = dwFrameIntervalArrayAdapter.getItem(which);
+                    if (textInput != null) {
+                        scamFrameInterval = Integer.parseInt(textInput);
+                        System.out.println("scamFrameInterval = " + scamFrameInterval);
+                    }
+                    writeTheValues();
+                    saveYesNo();
 
+                }
+            });
+            dwFrameIntervalArraybuilder.show();
+
+        } else {
+            if(lowQuality) {
+                int[] intervalArray = frameIndex.dwFrameInterval.clone();
+                Arrays.sort(intervalArray);
+                scamFrameInterval = frameIndex.dwFrameInterval[(intervalArray.length - 1)];
+                System.out.println("scamFrameInterval = " + scamFrameInterval);
+
+                checkAutoDetectFileName(true);
+
+
+
+
+                return;
             }
-        });
-
-        dwFrameIntervalArraybuilder.show();
+            saveYesNo();
+        }
     }
 
 
@@ -1020,9 +1141,7 @@ public class SaveToFile  {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
                 displayMessage(msg);
-
             }
         });
 
@@ -1081,6 +1200,115 @@ public class SaveToFile  {
                 Math.max( (int)(b * factor), 0 ) );
     }
 
+    private void checkAutoDetectFileName(boolean save) {
+        fileName = null;
+        name = null;
+        rootdirStr = null;
+
+        final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+        final File file = new File(rootPath, "/" + autoFilePathFolder);
+        if (!file.exists()) {
+            log("creating directory");
+            if (!file.mkdirs()) {
+                Log.e("TravellerLog :: ", "Problem creating Image folder");
+            }
+            file.mkdirs();
+        }
+        log("Path: " + rootPath.toString());
+        rootdirStr = file.toString();
+        rootdirStr += "/";
+        autoDetectFileValuesString = new String("AutoDetectFileValues");
+        autoDetectFileOrdersString = new String("AutoDetectFileOrders");
+
+        if (save) {
+            saveAutoOrders(rootdirStr += autoDetectFileOrdersString += ".sav");
+            saveValuesToFile(rootdirStr += autoDetectFileOrdersString += ".sav");
+            return;
+        }
+
+        //final File folder = new File("/home/you/Desktop");
+        if (listFilesAutoDetectFolder(file)) {
+            log("checking Auto Values ...");
+            restoreAutoOrders(rootdirStr += autoDetectFileOrdersString += ".sav");
+            restoreFromFile(rootdirStr += autoDetectFileValuesString += ".sav");
+            selectMaxPacketSize(true);
+        }
+    }
+
+
+    public boolean listFilesAutoDetectFolder(final File folder) {
+        boolean autoDetectFileOrders = false;
+        boolean autoDetectFileValues = false;
+        for (final File fileEntry : folder.listFiles()) {
+            if (fileEntry.isDirectory()) {
+                listFilesAutoDetectFolder(fileEntry);
+            } else {
+                System.out.println(fileEntry.getName());
+                if (fileEntry.getName().equals("AutoDetectFileOrders")) autoDetectFileValues = true;
+                else if (fileEntry.getName().equals("AutoDetectFileValues")) autoDetectFileOrders = true;
+            }
+        }
+
+        if (folder.listFiles().length == 2) return true;
+        else return false;
+    }
+
+    public void restoreAutoOrders(String pathToFile){
+        try{
+            FileInputStream saveFile = new FileInputStream(pathToFile);
+            ObjectInputStream save = new ObjectInputStream(saveFile);
+            completed = (Boolean) save.readObject();
+            lowQuality = (Boolean) save.readObject();
+            raiseMaxPacketSize = (Boolean) save.readObject();
+            lowerMaxPacketSize = (Boolean) save.readObject();
+            raisePacketsPerRequest = (Boolean) save.readObject();
+            raiseActiveUrbs = (Boolean) save.readObject();
+
+            highestMaxPacketSizeDone = (Boolean) save.readObject();
+            lowestMaxPacketSizeDone  = (Boolean) save.readObject();
+            save.close();
+        }
+        catch(Exception exc){
+            exc.printStackTrace();
+        }
+        writeTheOrders();
+        log("Orders written to setUpTheUsbDevice");
+    }
+
+    private void saveAutoOrders (String savePath) {
+        try {  // Catch errors in I/O if necessary.
+            File file = new File(savePath);
+            //file = new File(savePath).getAbsoluteFile();
+            log("AbsolutePath = " + file.getAbsolutePath());
+            //file.getParentFile().mkdirs();
+            if (file.exists())  file.delete();
+
+            FileOutputStream saveFile=new FileOutputStream(file.toString());
+            ObjectOutputStream save = new ObjectOutputStream(saveFile);
+
+            save.writeObject(completed);
+            save.writeObject(lowQuality);
+            save.writeObject(raiseMaxPacketSize);
+            save.writeObject(lowerMaxPacketSize);
+            save.writeObject(raisePacketsPerRequest);
+            save.writeObject(raiseActiveUrbs);
+
+            save.writeObject(highestMaxPacketSizeDone);
+            save.writeObject(lowestMaxPacketSizeDone);
+            // Close the file.
+            save.close(); // This also closes saveFile.
+        } catch (Exception e) { log("Error"); e.printStackTrace();}
+    }
+
+    private void writeTheOrders() {
+        setUpTheUsbDevice.completed = completed;
+        setUpTheUsbDevice.lowQuality = lowQuality;
+        setUpTheUsbDevice.raiseMaxPacketSize = raiseMaxPacketSize;
+        setUpTheUsbDevice.lowerMaxPacketSize = lowerMaxPacketSize;
+        setUpTheUsbDevice.raisePacketsPerRequest = raisePacketsPerRequest;
+        setUpTheUsbDevice.raiseActiveUrbs = raiseActiveUrbs;
+
+    }
 
 
 }
