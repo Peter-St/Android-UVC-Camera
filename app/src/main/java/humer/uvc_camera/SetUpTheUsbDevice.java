@@ -39,6 +39,7 @@ import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
@@ -49,11 +50,14 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.concurrent.CountDownLatch;
 
 import humer.uvc_camera.UVC_Descriptor.IUVC_Descriptor;
 import humer.uvc_camera.UVC_Descriptor.UVC_Descriptor;
@@ -156,6 +160,7 @@ public class SetUpTheUsbDevice extends Activity {
     private SaveToFile  stf;
     private volatile IsochronousRead runningTransfer;
     private volatile IsochronousRead1Frame runningTransfer1Frame;
+    private volatile IsochronousAutomaticClass runningAutoTransfer;
 
     // Brightness Values
     private static int brightnessMax;
@@ -171,6 +176,19 @@ public class SetUpTheUsbDevice extends Activity {
 
     public static boolean highestMaxPacketSizeDone;
     public static boolean lowestMaxPacketSizeDone;
+
+    // Values for the Automatic Set Up
+    private static String autoFilePathFolder = "UVC_Camera/autoDetection";
+    public int spacketCnt = 0;
+    public int spacket0Cnt = 0;
+    public int spacket12Cnt = 0;
+    public int spacketDataCnt = 0;
+    public int spacketHdr8Ccnt = 0;
+    public int spacketErrorCnt = 0;
+    public int sframeCnt = 0;
+    public int sframeLen = 0;
+    public int srequestCnt = 0;
+    private CountDownLatch latch;
 
 
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
@@ -844,6 +862,60 @@ public class SetUpTheUsbDevice extends Activity {
                             if (a == 0) {
                                 if (convertedMaxPacketSize == null) listDevice(camDevice);
                                 stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize, true);
+                                latch = new CountDownLatch(1);
+                                makeAnAutomaticTransfer();
+                                try {
+                                    latch.await();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+
+                                //if (sframeLen >= (imageWidth * imageHeight *2)) break;
+                                activeUrbs ++;
+                                
+                                latch = new CountDownLatch(1);
+                                makeAnAutomaticTransfer();
+                                try {
+                                    latch.await();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+
+
+                                activeUrbs ++;
+                                latch = new CountDownLatch(1);
+                                makeAnAutomaticTransfer();
+                                try {
+                                    latch.await();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+
+
+
+
+
+
+/*
+                                String autoDetectFileValuesString = new String("AutoDetectFileValues");
+                                String autoDetectFileOrdersString = new String("AutoDetectFileOrders");
+                                final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+                                final File file = new File(rootPath, "/" + autoFilePathFolder);
+                                String rootdirStr = file.toString();
+                                rootdirStr += "/";
+                                stf.restoreAutoOrders(rootdirStr += autoDetectFileOrdersString += ".sav");
+                                rootdirStr = file.toString();
+                                rootdirStr += "/";
+                                stf.restoreFromFile(rootdirStr += autoDetectFileValuesString += ".sav");
+
+                                stf.writeTheValues();
+                                */
+
+
+
+
+
+
                             }
                             break;
                     }
@@ -1428,6 +1500,172 @@ public class SetUpTheUsbDevice extends Activity {
 
     }
 
+    class IsochronousAutomaticClass extends Thread {
+
+        SetUpTheUsbDevice setUpTheUsbDevice;
+        Context mContext;
+        Activity activity;
+        StringBuilder stringBuilder;
+
+        public IsochronousAutomaticClass(SetUpTheUsbDevice setUpTheUsbDevice, Context mContext) {
+            setPriority(Thread.MAX_PRIORITY);
+            this.setUpTheUsbDevice = setUpTheUsbDevice;
+            this.mContext = mContext;
+            activity = (Activity)mContext;
+        }
+
+        public void run() {
+            try {
+                USBIso usbIso64 = new USBIso(camDeviceConnection.getFileDescriptor(), packetsPerRequest, maxPacketSize, (byte) camStreamingEndpoint.getAddress());
+                usbIso64.preallocateRequests(activeUrbs);
+                //Thread.sleep(500);
+                ArrayList<String> logArray = new ArrayList<>(512);
+                int packetCnt = 0;
+                int packet0Cnt = 0;
+                int packet12Cnt = 0;
+                int packetDataCnt = 0;
+                int packetHdr8Ccnt = 0;
+                int packetErrorCnt = 0;
+                int frameCnt = 0;
+                final long time0 = System.currentTimeMillis();
+                int frameLen = 0;
+                int requestCnt = 0;
+                byte[] data = new byte[maxPacketSize];
+                try {
+                    enableStreaming(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                usbIso64.submitUrbs();
+
+                int cnt = 0;
+                stringBuilder = new StringBuilder();
+                stringBuilder.append("One Frame received:\n\n");
+
+                while (frameCnt < 1) {
+                    boolean stopReq = false;
+                    USBIso.Request req = usbIso64.reapRequest(true);
+                    for (int packetNo = 0; packetNo < req.getNumberOfPackets(); packetNo++) {
+                        packetCnt++;
+                        int packetLen = req.getPacketActualLength(packetNo);
+                        if (packetLen == 0) {
+                            packet0Cnt++;
+                        }
+                        if (packetLen == 12) {
+                            packet12Cnt++;
+                        }
+                        if (packetLen == 0) {
+                            continue;
+                        }
+                        StringBuilder logEntry = new StringBuilder(requestCnt + "/" + packetNo + " len=" + packetLen);
+                        int packetStatus = req.getPacketStatus(packetNo);
+                        if (packetStatus != 0) {
+                            System.out.println("Packet status=" + packetStatus);
+                            stopReq = true;
+                            break;
+                        }
+                        if (packetLen > 0) {
+                            if (packetLen > maxPacketSize) {
+                                //throw new Exception("packetLen > maxPacketSize");
+                            }
+                            req.getPacketData(packetNo, data, packetLen);
+                            logEntry.append("bytes // data = " + hexDump(data, Math.min(32, packetLen)));
+                            int headerLen = data[0] & 0xff;
+
+                            try {
+                                if (headerLen < 2 || headerLen > packetLen) {
+                                    //    skipFrames = 1;
+                                }
+                            } catch (Exception e) {
+                                System.out.println("Invalid payload header length.");
+                            }
+                            int headerFlags = data[1] & 0xff;
+                            if (headerFlags == 0x8c) {
+                                packetHdr8Ccnt++;
+                            }
+                            // logEntry.append(" hdrLen=" + headerLen + " hdr[1]=0x" + Integer.toHexString(headerFlags));
+                            int dataLen = packetLen - headerLen;
+                            if (dataLen > 0) {
+                                packetDataCnt++;
+                            }
+                            frameLen += dataLen;
+                            if ((headerFlags & 0x40) != 0) {
+                                logEntry.append(" *** Error ***");
+                                packetErrorCnt++;
+                            }
+                            if ((headerFlags & 2) != 0) {
+                                logEntry.append(" EOF frameLen=" + frameLen);
+                                frameCnt++;
+                                stringBuilder.append("  -  " + frameLen + "  bytes  - \n\n");
+                                stringBuilder.append(String.format("The first Frame is %d byte long\n", frameLen));
+                                break;
+                            }
+                        }
+                        logArray.add(logEntry.toString());
+                    }
+                    if (frameCnt > 0)  break;
+                    else if (packetErrorCnt > 800) break;
+
+
+                    requestCnt++;
+                    req.initialize();
+                    try {
+                        req.submit();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                try {
+                    enableStreaming(false);
+                } catch (Exception e) {
+                    log("Exception during enableStreaming(false): " + e);
+                }
+                log("requests=" + requestCnt + " packetCnt=" + packetCnt + " packetErrorCnt=" + packetErrorCnt + " packet0Cnt=" + packet0Cnt + ", packet12Cnt=" + packet12Cnt + ", packetDataCnt=" + packetDataCnt + " packetHdr8cCnt=" + packetHdr8Ccnt + " frameCnt=" + frameCnt);
+                spacketCnt = packetCnt;
+                spacket0Cnt = packet0Cnt;
+                spacket12Cnt = packet12Cnt;
+                spacketDataCnt = packetDataCnt;
+                spacketHdr8Ccnt = packetHdr8Ccnt;
+                spacketErrorCnt = packetErrorCnt;
+                sframeCnt = frameCnt;
+                sframeLen = frameLen;
+                srequestCnt = requestCnt;
+
+
+                if (packetErrorCnt > 800) {
+                    stringBuilder = new StringBuilder();
+                    stringBuilder.append("Your Camera only return Error frames!\nPlease change your camera values\n");
+                    stringBuilder.append("\n\nrequests= " + requestCnt +  "  ( one Request has a max. size of: "+ packetsPerRequest + " x " + maxPacketSize+ " bytes )" + "\npacketCnt= " + packetCnt + " (number of packets from this frame)" + "\npacketErrorCnt= " + packetErrorCnt + " (This packets are Error packets)" +  "\npacket0Cnt= " + packet0Cnt + " (Packets with a size of 0 bytes)" + "\npacket12Cnt= " + packet12Cnt+ " (Packets with a size of 12 bytes)" + "\npacketDataCnt= " + packetDataCnt + " (This packets contain valid data)" + "\npacketHdr8cCnt= " + packetHdr8Ccnt + "\nframeCnt= " + frameCnt + " (The number of the counted frames)" + "\n\n");
+
+                }
+
+                stringBuilder.append("\n\nrequests= " + requestCnt +  "  ( one Request has a max. size of: "+ packetsPerRequest + " x " + maxPacketSize+ " bytes )" + "\npacketCnt= " + packetCnt + " (number of packets from this frame)" + "\npacketErrorCnt= " + packetErrorCnt + " (This packets are Error packets)" +  "\npacket0Cnt= " + packet0Cnt + " (Packets with a size of 0 bytes)" + "\npacket12Cnt= " + packet12Cnt+ " (Packets with a size of 12 bytes)" + "\npacketDataCnt= " + packetDataCnt + " (This packets contain valid data)" + "\npacketHdr8cCnt= " + packetHdr8Ccnt + "\nframeCnt= " + frameCnt + " (The number of the counted frames)" + "\n\n");
+
+
+                stringBuilder.append("Explaination: The first number is the Requestnumber and the second number is the data packet from this request.\nThe comes the data length of this packet with: 'len='" +
+                        "\nThe 'data= ' shows the first 20 Hex values wich were stored in this packet\n(There are more values stored in this packet, but not displayed, ...)");
+                stringBuilder.append("Here is the structure of the Frame:\n\n");
+
+
+                for (String s : logArray) {
+                    stringBuilder.append("\n\n");
+                    stringBuilder.append(s);
+                }
+
+                log("sframeLen = " + sframeLen);
+                log("activeUrbs = " + activeUrbs);
+
+                latch.countDown();
+                runningAutoTransfer = null;
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
 
     private void isoRead() {
 
@@ -1790,5 +2028,50 @@ public class SetUpTheUsbDevice extends Activity {
                 Math.max( (int)(r * factor), 0 ),
                 Math.max( (int)(g * factor), 0 ),
                 Math.max( (int)(b * factor), 0 ) );
+    }
+
+    //////////// Automatic Transfer Methods ////////////
+
+    public void makeAnAutomaticTransfer () {
+        int a;
+        if (!usbManager.hasPermission(camDevice)) {
+            PendingIntent permissionIntent = PendingIntent.getBroadcast(SetUpTheUsbDevice.this, 0, new Intent(ACTION_USB_PERMISSION), 0);
+            // IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
+            // registerReceiver(mUsbReceiver, filter);
+            usbManager.requestPermission(camDevice, permissionIntent);
+            while (!usbManager.hasPermission(camDevice)) {
+                long time0 = System.currentTimeMillis();
+                for (a = 0; a < 10; a++) {
+                    while (System.currentTimeMillis() - time0 < 1000) {
+                        if (usbManager.hasPermission(camDevice)) break;
+                    }
+                }
+                if (usbManager.hasPermission(camDevice)) break;
+                if ( a >= 10) break;
+            }
+        }
+        try {
+            closeCameraDevice();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            openCam(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (camIsOpen) {
+            if (runningAutoTransfer != null) {
+                return;
+            }
+            runningAutoTransfer = new IsochronousAutomaticClass(SetUpTheUsbDevice.this, SetUpTheUsbDevice.this);
+            runningAutoTransfer.start();
+            try {
+                runningAutoTransfer.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 }

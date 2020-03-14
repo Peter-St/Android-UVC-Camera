@@ -71,7 +71,7 @@ public class SaveToFile  {
     public static byte[] bNumControlUnit;
     public static byte bStillCaptureMethod;
     private static String saveFilePathFolder = "UVC_Camera/save";
-    private static String autoFilePathFolder = "UVC_Camera/save/autoDetection";
+    private static String autoFilePathFolder = "UVC_Camera/autoDetection";
     private TextInputLayout valueInput;
     private boolean init = false;
 
@@ -400,7 +400,7 @@ public class SaveToFile  {
         bStillCaptureMethod = setUpTheUsbDevice.bStillCaptureMethod;
     }
 
-    private void writeTheValues(){
+    public void writeTheValues(){
         if (uvc_camera != null) {
             uvc_camera.camStreamingAltSetting = sALT_SETTING;
             uvc_camera.videoformat = svideoformat;
@@ -831,9 +831,10 @@ public class SaveToFile  {
                         maxPos = i;
                     }
                 }
-
+                sALT_SETTING = (maxPos + 1);
                 smaxPacketSize = maxPacketsSizeArray[maxPos];
                 System.out.println("smaxPacketSize = " + smaxPacketSize);
+                System.out.println("sALT_SETTING = " + sALT_SETTING);
                 selectPackets(true);
                 return;
             }
@@ -1100,12 +1101,8 @@ public class SaveToFile  {
                 Arrays.sort(intervalArray);
                 scamFrameInterval = frameIndex.dwFrameInterval[(intervalArray.length - 1)];
                 System.out.println("scamFrameInterval = " + scamFrameInterval);
-
                 checkAutoDetectFileName(true);
-
-
-
-
+                writeTheValues();
                 return;
             }
             saveYesNo();
@@ -1221,12 +1218,16 @@ public class SaveToFile  {
         autoDetectFileOrdersString = new String("AutoDetectFileOrders");
 
         if (save) {
+            log("saveAutoOrders Path = " + rootdirStr + autoDetectFileOrdersString + ".sav");
+
+            log("saveValuesToFile Path = " + rootdirStr + autoDetectFileValuesString + ".sav");
+
             saveAutoOrders(rootdirStr += autoDetectFileOrdersString += ".sav");
-            saveValuesToFile(rootdirStr += autoDetectFileOrdersString += ".sav");
+            rootdirStr = file.toString();
+            rootdirStr += "/";
+            saveValuesToFile(rootdirStr += autoDetectFileValuesString += ".sav");
             return;
         }
-
-        //final File folder = new File("/home/you/Desktop");
         if (listFilesAutoDetectFolder(file)) {
             log("checking Auto Values ...");
             restoreAutoOrders(rootdirStr += autoDetectFileOrdersString += ".sav");
@@ -1276,6 +1277,7 @@ public class SaveToFile  {
     }
 
     private void saveAutoOrders (String savePath) {
+        log("savePath AutoOrder = " + savePath);
         try {  // Catch errors in I/O if necessary.
             File file = new File(savePath);
             //file = new File(savePath).getAbsoluteFile();
