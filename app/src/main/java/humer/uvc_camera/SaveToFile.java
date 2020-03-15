@@ -838,14 +838,6 @@ public class SaveToFile  {
                 selectPackets(true);
                 return;
             }
-
-
-
-
-
-
-
-
         }
     }
 
@@ -968,6 +960,7 @@ public class SaveToFile  {
             if (uvc_descriptor.formatIndex.size() == 1) {
                 scamFormatIndex = 1;
                 formatIndex = uvc_descriptor.getFormatIndex(0);
+                svideoformat = formatIndex.videoformat.toString();
                 selectFrameIndex(true);
                 return;
             }

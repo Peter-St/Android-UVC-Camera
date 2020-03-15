@@ -57,7 +57,10 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import humer.uvc_camera.UVC_Descriptor.IUVC_Descriptor;
 import humer.uvc_camera.UVC_Descriptor.UVC_Descriptor;
@@ -161,6 +164,7 @@ public class SetUpTheUsbDevice extends Activity {
     private volatile IsochronousRead runningTransfer;
     private volatile IsochronousRead1Frame runningTransfer1Frame;
     private volatile IsochronousAutomaticClass runningAutoTransfer;
+    private volatile IsochronousAutomaticClass5Frames runningAutoTransfer5frames;
 
     // Brightness Values
     private static int brightnessMax;
@@ -187,7 +191,10 @@ public class SetUpTheUsbDevice extends Activity {
     public int spacketErrorCnt = 0;
     public int sframeCnt = 0;
     public int sframeLen = 0;
+    public int [] sframeLenArray = new int [5];
     public int srequestCnt = 0;
+
+
     private CountDownLatch latch;
 
 
@@ -837,10 +844,13 @@ public class SetUpTheUsbDevice extends Activity {
             displayMessage("Unable to claim camera streaming interface.");
             throw new Exception("Unable to claim camera streaming interface.");
         }
+
         if (!init) {
             byte[] a = camDeviceConnection.getRawDescriptors();
             ByteBuffer uvcData = ByteBuffer.wrap(a);
             uvc_descriptor = new UVC_Descriptor(uvcData);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
             DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                 @Override
@@ -860,40 +870,67 @@ public class SetUpTheUsbDevice extends Activity {
                             // Automatic UVC DetectionAutomatic UVC Detection
                             a = uvc_descriptor.phraseUvcData();
                             if (a == 0) {
+
                                 if (convertedMaxPacketSize == null) listDevice(camDevice);
                                 stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize, true);
-                                latch = new CountDownLatch(1);
-                                makeAnAutomaticTransfer();
-                                try {
-                                    latch.await();
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-
-                                //if (sframeLen >= (imageWidth * imageHeight *2)) break;
-                                activeUrbs ++;
-                                
-                                latch = new CountDownLatch(1);
-                                makeAnAutomaticTransfer();
-                                try {
-                                    latch.await();
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-
-
-                                activeUrbs ++;
-                                latch = new CountDownLatch(1);
-                                makeAnAutomaticTransfer();
-                                try {
-                                    latch.await();
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
+                                sframeLen = 0;
 
 
 
+                                do {
+                                    if (activeUrbs <= 3) activeUrbs ++;
+                                    else activeUrbs = activeUrbs * 2;
+                                    latch = new CountDownLatch(1);
+                                    makeAnAutomaticTransfer(false);
+                                    try {
+                                        latch.await();
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                    log("spacketErrorCnt = " + spacketErrorCnt);
+                                } while (activeUrbs <= 64 && sframeLen < (imageWidth * imageHeight *2));
 
+                                log("sframeLen = " + sframeLen);
+                                //smallerPacketsPresent = true;
+                                log("\n ");
+                                log("Testing the Urbs 5 Packets ...");
+                                log("\n ");
+
+                                do {
+                                    latch = new CountDownLatch(1);
+                                    makeAnAutomaticTransfer(true);
+                                    log("activeUrbs = " + activeUrbs);
+                                    try {
+                                        latch.await();
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                    log("spacketErrorCnt = " + spacketErrorCnt);
+                                    if(activeUrbs <= 64 && !(sframeLenArray[0] >= (imageWidth * imageHeight *1.5 ) & sframeLenArray[1] >= (imageWidth * imageHeight * 1.5 ) )) {
+                                        if (activeUrbs <= 3) activeUrbs ++;
+                                        else activeUrbs = activeUrbs * 2;
+                                    }
+                                } while (activeUrbs <= 64 && !(sframeLenArray[0] >= (imageWidth * imageHeight ) & sframeLenArray[1] >= (imageWidth * imageHeight ) ));
+                                log("\n ");
+                                log("\n" + "Testing the Packets ..." + "\n");
+                                log("\n ");
+
+                                do {
+                                    latch = new CountDownLatch(1);
+                                    makeAnAutomaticTransfer(true);
+                                    log("packetsPerRequest = " + packetsPerRequest);
+                                    try {
+                                        latch.await();
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                    log("spacketErrorCnt = " + spacketErrorCnt);
+
+                                    if(packetsPerRequest <= 64 && !(sframeLenArray[0] >= (imageWidth * imageHeight *2) & sframeLenArray[1] >= (imageWidth * imageHeight *2) & sframeLenArray[2] >= (imageWidth * imageHeight *2) & sframeLenArray[3] >= (imageWidth * imageHeight *2) & sframeLenArray[4] >= (imageWidth * imageHeight *2) )) {
+                                        if (packetsPerRequest <= 3) packetsPerRequest ++;
+                                        else packetsPerRequest = packetsPerRequest * 2;
+                                    }
+                                } while (packetsPerRequest <= 64 && !(sframeLenArray[0] >= (imageWidth * imageHeight *2) & sframeLenArray[1] >= (imageWidth * imageHeight *2) & sframeLenArray[2] >= (imageWidth * imageHeight *2) & sframeLenArray[3] >= (imageWidth * imageHeight *2) & sframeLenArray[4] >= (imageWidth * imageHeight *2) ));
 
 
 /*
@@ -912,6 +949,21 @@ public class SetUpTheUsbDevice extends Activity {
                                 */
 
 
+                                runOnUiThread(new Runnable() {
+                                    String msg = "Automatic Setup:";
+                                    @Override
+                                    public void run() {
+                                        tv = (ZoomTextView) findViewById(R.id.textDarstellung);
+                                        tv.setText(msg + "\n\nYour current Values are:\n\nPackets Per Request = " + packetsPerRequest + "\nActive Urbs = " + activeUrbs +
+                                                "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat + "\nCamera Format Index = " + camFormatIndex + "\n" +
+                                                "Camera FrameIndex = " + camFrameIndex + "\nImage Width = " + imageWidth + "\nImage Height = " + imageHeight + "\nCamera Frame Interval = " + camFrameInterval);
+                                        tv.setTextColor(Color.BLACK);
+
+                                    }
+                                });
+
+
+
 
 
 
@@ -921,14 +973,16 @@ public class SetUpTheUsbDevice extends Activity {
                     }
                 }
             };
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
             builder.setMessage("UVC Setup !").setPositiveButton("Set up from UVC manually", dialogClickListener)
                     .setNegativeButton("Automatic UVC Detection", dialogClickListener).show();
+
         }
 
 
-    }
 
+
+    }
 
 
     private void initCamera() throws Exception {
@@ -1507,11 +1561,8 @@ public class SetUpTheUsbDevice extends Activity {
         Activity activity;
         StringBuilder stringBuilder;
 
-        public IsochronousAutomaticClass(SetUpTheUsbDevice setUpTheUsbDevice, Context mContext) {
-            setPriority(Thread.MAX_PRIORITY);
-            this.setUpTheUsbDevice = setUpTheUsbDevice;
-            this.mContext = mContext;
-            activity = (Activity)mContext;
+        public IsochronousAutomaticClass() {
+
         }
 
         public void run() {
@@ -1539,8 +1590,7 @@ public class SetUpTheUsbDevice extends Activity {
                 usbIso64.submitUrbs();
 
                 int cnt = 0;
-                stringBuilder = new StringBuilder();
-                stringBuilder.append("One Frame received:\n\n");
+
 
                 while (frameCnt < 1) {
                     boolean stopReq = false;
@@ -1596,8 +1646,6 @@ public class SetUpTheUsbDevice extends Activity {
                             if ((headerFlags & 2) != 0) {
                                 logEntry.append(" EOF frameLen=" + frameLen);
                                 frameCnt++;
-                                stringBuilder.append("  -  " + frameLen + "  bytes  - \n\n");
-                                stringBuilder.append(String.format("The first Frame is %d byte long\n", frameLen));
                                 break;
                             }
                         }
@@ -1632,31 +1680,144 @@ public class SetUpTheUsbDevice extends Activity {
                 srequestCnt = requestCnt;
 
 
-                if (packetErrorCnt > 800) {
-                    stringBuilder = new StringBuilder();
-                    stringBuilder.append("Your Camera only return Error frames!\nPlease change your camera values\n");
-                    stringBuilder.append("\n\nrequests= " + requestCnt +  "  ( one Request has a max. size of: "+ packetsPerRequest + " x " + maxPacketSize+ " bytes )" + "\npacketCnt= " + packetCnt + " (number of packets from this frame)" + "\npacketErrorCnt= " + packetErrorCnt + " (This packets are Error packets)" +  "\npacket0Cnt= " + packet0Cnt + " (Packets with a size of 0 bytes)" + "\npacket12Cnt= " + packet12Cnt+ " (Packets with a size of 12 bytes)" + "\npacketDataCnt= " + packetDataCnt + " (This packets contain valid data)" + "\npacketHdr8cCnt= " + packetHdr8Ccnt + "\nframeCnt= " + frameCnt + " (The number of the counted frames)" + "\n\n");
-
-                }
-
-                stringBuilder.append("\n\nrequests= " + requestCnt +  "  ( one Request has a max. size of: "+ packetsPerRequest + " x " + maxPacketSize+ " bytes )" + "\npacketCnt= " + packetCnt + " (number of packets from this frame)" + "\npacketErrorCnt= " + packetErrorCnt + " (This packets are Error packets)" +  "\npacket0Cnt= " + packet0Cnt + " (Packets with a size of 0 bytes)" + "\npacket12Cnt= " + packet12Cnt+ " (Packets with a size of 12 bytes)" + "\npacketDataCnt= " + packetDataCnt + " (This packets contain valid data)" + "\npacketHdr8cCnt= " + packetHdr8Ccnt + "\nframeCnt= " + frameCnt + " (The number of the counted frames)" + "\n\n");
-
-
-                stringBuilder.append("Explaination: The first number is the Requestnumber and the second number is the data packet from this request.\nThe comes the data length of this packet with: 'len='" +
-                        "\nThe 'data= ' shows the first 20 Hex values wich were stored in this packet\n(There are more values stored in this packet, but not displayed, ...)");
-                stringBuilder.append("Here is the structure of the Frame:\n\n");
-
-
-                for (String s : logArray) {
-                    stringBuilder.append("\n\n");
-                    stringBuilder.append(s);
-                }
-
                 log("sframeLen = " + sframeLen);
                 log("activeUrbs = " + activeUrbs);
 
                 latch.countDown();
                 runningAutoTransfer = null;
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    class IsochronousAutomaticClass5Frames extends Thread {
+
+        public IsochronousAutomaticClass5Frames() {
+            setPriority(Thread.MAX_PRIORITY);
+        }
+
+        public void run() {
+            try {
+                USBIso usbIso64 = new USBIso(camDeviceConnection.getFileDescriptor(), packetsPerRequest, maxPacketSize, (byte) camStreamingEndpoint.getAddress());
+                usbIso64.preallocateRequests(activeUrbs);
+                //Thread.sleep(500);
+                ArrayList<String> logArray = new ArrayList<>(512);
+                int packetCnt = 0;
+                int packet0Cnt = 0;
+                int packet12Cnt = 0;
+                int packetDataCnt = 0;
+                int packetHdr8Ccnt = 0;
+                int packetErrorCnt = 0;
+                int frameCnt = 0;
+                final long time0 = System.currentTimeMillis();
+                int frameLen = 0;
+                int requestCnt = 0;
+                byte[] data = new byte[maxPacketSize];
+                try {
+                    enableStreaming(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                usbIso64.submitUrbs();
+
+                while (frameCnt < 5) {
+                    boolean stopReq = false;
+                    USBIso.Request req = usbIso64.reapRequest(true);
+                    for (int packetNo = 0; packetNo < req.getNumberOfPackets(); packetNo++) {
+                        packetCnt++;
+                        int packetLen = req.getPacketActualLength(packetNo);
+                        if (packetLen == 0) {
+                            packet0Cnt++;
+                        }
+                        if (packetLen == 12) {
+                            packet12Cnt++;
+                        }
+                        if (packetLen == 0) {
+                            continue;
+                        }
+                        StringBuilder logEntry = new StringBuilder(requestCnt + "/" + packetNo + " len=" + packetLen);
+                        int packetStatus = req.getPacketStatus(packetNo);
+                        if (packetStatus != 0) {
+                            System.out.println("Packet status=" + packetStatus);
+                            stopReq = true;
+                            break;
+                        }
+                        if (packetLen > 0) {
+                            if (packetLen > maxPacketSize) {
+                                //throw new Exception("packetLen > maxPacketSize");
+                            }
+                            req.getPacketData(packetNo, data, packetLen);
+                            logEntry.append("bytes // data = " + hexDump(data, Math.min(32, packetLen)));
+                            int headerLen = data[0] & 0xff;
+
+                            try {
+                                if (headerLen < 2 || headerLen > packetLen) {
+                                    //    skipFrames = 1;
+                                }
+                            } catch (Exception e) {
+                                System.out.println("Invalid payload header length.");
+                            }
+                            int headerFlags = data[1] & 0xff;
+                            if (headerFlags == 0x8c) {
+                                packetHdr8Ccnt++;
+                            }
+                            // logEntry.append(" hdrLen=" + headerLen + " hdr[1]=0x" + Integer.toHexString(headerFlags));
+                            int dataLen = packetLen - headerLen;
+                            if (dataLen > 0) {
+                                packetDataCnt++;
+                            }
+                            frameLen += dataLen;
+                            if ((headerFlags & 0x40) != 0) {
+                                logEntry.append(" *** Error ***");
+                                packetErrorCnt++;
+                            }
+                            if ((headerFlags & 2) != 0) {
+                                logEntry.append(" EOF frameLen=" + frameLen);
+                                sframeLenArray[frameCnt] = frameLen;
+                                frameCnt++;
+                                frameLen = 0;
+                                if (frameCnt > 4) break;
+                            }
+                        }
+                        logArray.add(logEntry.toString());
+                    }
+                    if (frameCnt > 4)  break;
+                    else if (packetErrorCnt > 800) break;
+
+
+                    requestCnt++;
+                    req.initialize();
+                    try {
+                        req.submit();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                try {
+                    enableStreaming(false);
+                } catch (Exception e) {
+                    log("Exception during enableStreaming(false): " + e);
+                }
+                log("requests=" + requestCnt + " packetCnt=" + packetCnt + " packetErrorCnt=" + packetErrorCnt + " packet0Cnt=" + packet0Cnt + ", packet12Cnt=" + packet12Cnt + ", packetDataCnt=" + packetDataCnt + " packetHdr8cCnt=" + packetHdr8Ccnt + " frameCnt=" + frameCnt);
+                spacketCnt = packetCnt;
+                spacket0Cnt = packet0Cnt;
+                spacket12Cnt = packet12Cnt;
+                spacketDataCnt = packetDataCnt;
+                spacketHdr8Ccnt = packetHdr8Ccnt;
+                spacketErrorCnt = packetErrorCnt;
+                sframeCnt = frameCnt;
+                sframeLen = frameLen;
+                srequestCnt = requestCnt;
+
+
+                log("sframeLenArray[0] = " + sframeLenArray[0] + "  /  sframeLenArray[1] = " + sframeLenArray[1] + "  /  sframeLenArray[2] = " + sframeLenArray[2] + "  /  sframeLenArray[3] = " + sframeLenArray[3] + "  /  sframeLenArray[4] = " + sframeLenArray[4] );
+
+                latch.countDown();
+                runningAutoTransfer5frames = null;
 
 
             } catch (IOException e) {
@@ -2032,7 +2193,12 @@ public class SetUpTheUsbDevice extends Activity {
 
     //////////// Automatic Transfer Methods ////////////
 
-    public void makeAnAutomaticTransfer () {
+
+
+
+
+
+    public void makeAnAutomaticTransfer (boolean fiveFrames) {
         int a;
         if (!usbManager.hasPermission(camDevice)) {
             PendingIntent permissionIntent = PendingIntent.getBroadcast(SetUpTheUsbDevice.this, 0, new Intent(ACTION_USB_PERMISSION), 0);
@@ -2061,15 +2227,19 @@ public class SetUpTheUsbDevice extends Activity {
             e.printStackTrace();
         }
         if (camIsOpen) {
-            if (runningAutoTransfer != null) {
-                return;
-            }
-            runningAutoTransfer = new IsochronousAutomaticClass(SetUpTheUsbDevice.this, SetUpTheUsbDevice.this);
-            runningAutoTransfer.start();
-            try {
-                runningAutoTransfer.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            if (!fiveFrames) {
+                if (runningAutoTransfer != null) {
+                    return;
+                }
+                runningAutoTransfer = new IsochronousAutomaticClass();
+                runningAutoTransfer.start();
+            } else {
+
+                if (runningAutoTransfer5frames != null) {
+                    return;
+                }
+                runningAutoTransfer5frames = new IsochronousAutomaticClass5Frames();
+                runningAutoTransfer5frames.start();
             }
 
         }
