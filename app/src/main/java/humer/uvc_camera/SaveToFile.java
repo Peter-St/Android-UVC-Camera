@@ -39,6 +39,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import java.io.File;
 import java.io.FileInputStream;
@@ -102,6 +103,8 @@ public class SaveToFile  {
     static String autoDetectFileValuesString;
 
     TextView tv;
+    RelativeLayout loadingPanel;
+
 
     private UVC_Descriptor uvc_descriptor;
     private static int [] numberFormatIndexes;
@@ -190,8 +193,8 @@ public class SaveToFile  {
                         setUpTheUsbDevice.showTestRunMenu(view);
                     }
                 });
-
-
+                loadingPanel = activity.findViewById(R.id.loadingPanel);
+                loadingPanel.setVisibility(View.GONE);
             }
         });
 
@@ -381,7 +384,7 @@ public class SaveToFile  {
 
     ////// Buttons  END //////////
 
-    private void fetchTheValues(){
+    public void fetchTheValues(){
         sALT_SETTING = setUpTheUsbDevice.camStreamingAltSetting;
         svideoformat = setUpTheUsbDevice.videoformat;
         scamFormatIndex = setUpTheUsbDevice.camFormatIndex;
@@ -609,7 +612,7 @@ public class SaveToFile  {
 
 
 
-    private void saveValuesToFile (String savePath) {
+    public void saveValuesToFile (String savePath) {
 
         log("savePath = " + savePath);
         try {  // Catch errors in I/O if necessary.

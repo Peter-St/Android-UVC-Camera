@@ -40,6 +40,9 @@ import android.hardware.usb.UsbManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
+import android.os.SystemClock;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
@@ -49,6 +52,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -193,9 +198,12 @@ public class SetUpTheUsbDevice extends Activity {
     public int sframeLen = 0;
     public int [] sframeLenArray = new int [5];
     public int srequestCnt = 0;
+    public int sframeMaximalLen = 0;
 
 
     private CountDownLatch latch;
+    private RelativeLayout loadingPanel;
+    private boolean automaticStart ;
 
 
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
@@ -305,6 +313,10 @@ public class SetUpTheUsbDevice extends Activity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        loadingPanel = findViewById(R.id.loadingPanel);
+        loadingPanel.setVisibility(View.GONE);
+
+
     }
 
 
@@ -852,14 +864,16 @@ public class SetUpTheUsbDevice extends Activity {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
+            // findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+
             DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    int a;
+
                     switch (which){
                         case DialogInterface.BUTTON_POSITIVE:
                             // Set up from UVC manually
-                            a = uvc_descriptor.phraseUvcData();
+                            int a = uvc_descriptor.phraseUvcData();
                             if (a == 0) {
                                 if (convertedMaxPacketSize == null) listDevice(camDevice);
                                 stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize, false);
@@ -867,13 +881,228 @@ public class SetUpTheUsbDevice extends Activity {
                             break;
 
                         case DialogInterface.BUTTON_NEGATIVE:
-                            // Automatic UVC DetectionAutomatic UVC Detection
-                            a = uvc_descriptor.phraseUvcData();
-                            if (a == 0) {
 
-                                if (convertedMaxPacketSize == null) listDevice(camDevice);
-                                stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize, true);
-                                sframeLen = 0;
+                            loadingPanel.setVisibility(View.VISIBLE);
+                            dialog.dismiss();
+                            // Automatic UVC DetectionAutomatic UVC Detection
+
+                            automaticStart = true;
+                            break;
+                    }
+                }
+
+            };
+
+            DialogInterface.OnDismissListener dismissL = new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    if (automaticStart == true) {
+                        int a = uvc_descriptor.phraseUvcData();
+                        if (a == 0) {
+                            if (convertedMaxPacketSize == null) listDevice(camDevice);
+                            stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize, true);
+                            sframeLen = 0;
+                            try {
+                                latch = new CountDownLatch(1);
+                                makeAnAutomaticTransfer(false);
+                                latch.await();
+                                SystemClock.sleep(100);
+                                if (sframeLen > 0 && sframeCnt > 0) {
+                                    if (sframeLen > sframeMaximalLen) sframeMaximalLen = sframeLen;
+
+                                    if (checkOneFrame()) {
+                                        latch = new CountDownLatch(1);
+                                        makeAnAutomaticTransfer(true);
+                                        latch.await();
+                                        SystemClock.sleep(100);
+                                        if (checkFiveFrames()) {
+                                            finalAutoMethod();
+                                            return;
+                                        } else {
+                                            activeUrbs = 4;
+                                            packetsPerRequest = 4;
+                                            latch = new CountDownLatch(1);
+                                            makeAnAutomaticTransfer(true);
+                                            latch.await();
+
+                                            if (checkFiveFrames()) {
+                                                finalAutoMethod();
+                                                return;
+                                            } else {
+                                                activeUrbs = 8;
+                                                packetsPerRequest = 8;
+                                                latch = new CountDownLatch(1);
+                                                makeAnAutomaticTransfer(true);
+                                                latch.await();
+                                                if (checkFiveFrames()) {
+                                                    finalAutoMethod();
+                                                    return;
+                                                } else {
+                                                    activeUrbs = 16;
+                                                    packetsPerRequest = 16;
+                                                    latch = new CountDownLatch(1);
+                                                    makeAnAutomaticTransfer(true);
+                                                    latch.await();
+                                                    if (checkFiveFrames()) {
+                                                        finalAutoMethod();
+                                                        return;
+                                                    } else {
+                                                        activeUrbs = 32;
+                                                        packetsPerRequest = 32;
+                                                        latch = new CountDownLatch(1);
+                                                        makeAnAutomaticTransfer(true);
+                                                        latch.await();
+                                                        if (checkFiveFrames()) {
+                                                            finalAutoMethod();
+                                                            return;
+                                                        } else {
+                                                            ///////////////////////    ????????????????????????    ///////////////////////
+                                                            finalAutoMethod();
+                                                            return;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+
+                                    } else {
+                                        activeUrbs = 4;
+                                        packetsPerRequest = 4;
+
+                                        log("4 / 4");
+                                        latch = new CountDownLatch(1);
+                                        makeAnAutomaticTransfer(false);
+                                        latch.await();
+                                        SystemClock.sleep(100);
+                                        if (checkOneFrame()) {
+                                            latch = new CountDownLatch(1);
+                                            makeAnAutomaticTransfer(true);
+                                            latch.await();
+                                            SystemClock.sleep(100);
+                                            if (checkFiveFrames()) {
+                                                finalAutoMethod();
+                                                return;
+                                            } else {
+                                                activeUrbs = 8;
+                                                packetsPerRequest = 8;
+                                                latch = new CountDownLatch(1);
+                                                makeAnAutomaticTransfer(true);
+                                                latch.await();
+                                                SystemClock.sleep(100);
+                                                if (checkFiveFrames()) {
+                                                    finalAutoMethod();
+                                                    return;
+                                                } else {
+                                                    activeUrbs = 16;
+                                                    packetsPerRequest = 16;
+                                                    latch = new CountDownLatch(1);
+                                                    makeAnAutomaticTransfer(true);
+                                                    latch.await();
+                                                    SystemClock.sleep(100);
+                                                    if (checkFiveFrames()) {
+                                                        finalAutoMethod();
+                                                        return;
+                                                    } else {
+                                                        activeUrbs = 32;
+                                                        packetsPerRequest = 32;
+                                                        latch = new CountDownLatch(1);
+                                                        makeAnAutomaticTransfer(true);
+                                                        latch.await();
+                                                        SystemClock.sleep(100);
+                                                        if (checkFiveFrames()) {
+                                                            finalAutoMethod();
+                                                            return;
+                                                        } else {
+                                                            ///////////////////////    ????????????????????????    ///////////////////////
+                                                            finalAutoMethod();
+                                                            return;
+                                                        }
+                                                    }
+
+                                                }
+
+                                            }
+                                        } else {
+                                            activeUrbs = 8;
+                                            packetsPerRequest = 8;
+                                            latch = new CountDownLatch(1);
+                                            makeAnAutomaticTransfer(false);
+                                            latch.await();
+                                            if (checkOneFrame()) {
+                                                latch = new CountDownLatch(1);
+                                                makeAnAutomaticTransfer(true);
+                                                latch.await();
+                                                if (checkFiveFrames()) {
+                                                    finalAutoMethod();
+                                                    return;
+                                                } else {
+                                                    activeUrbs = 16;
+                                                    packetsPerRequest = 16;
+                                                    latch = new CountDownLatch(1);
+                                                    makeAnAutomaticTransfer(true);
+                                                    latch.await();
+                                                    if (checkFiveFrames()) {
+                                                        finalAutoMethod();
+                                                        return;
+                                                    } else {
+                                                        activeUrbs = 32;
+                                                        packetsPerRequest = 32;
+                                                        latch = new CountDownLatch(1);
+                                                        makeAnAutomaticTransfer(true);
+                                                        latch.await();
+                                                        if (checkFiveFrames()) {
+                                                            finalAutoMethod();
+                                                            return;
+                                                        } else {
+                                                            ///////////////////////    ????????????????????????    ///////////////////////
+                                                            finalAutoMethod();
+                                                            return;
+                                                        }
+                                                    }
+                                                }
+                                            } else {
+                                                activeUrbs = 16;
+                                                packetsPerRequest = 16;
+                                                latch = new CountDownLatch(1);
+                                                makeAnAutomaticTransfer(false);
+                                                latch.await();
+                                                if (checkOneFrame()) {
+                                                    latch = new CountDownLatch(1);
+                                                    makeAnAutomaticTransfer(true);
+                                                    latch.await();
+                                                    if (checkFiveFrames()) {
+                                                        finalAutoMethod();
+                                                        return;
+                                                    } else {
+                                                        activeUrbs = 32;
+                                                        packetsPerRequest = 32;
+                                                        latch = new CountDownLatch(1);
+                                                        makeAnAutomaticTransfer(true);
+                                                        latch.await();
+                                                        if (checkFiveFrames()) {
+                                                            finalAutoMethod();
+                                                            return;
+                                                        } else {
+                                                            ///////////////////////    ????????????????????????    ///////////////////////
+                                                            finalAutoMethod();
+                                                            return;
+                                                        }
+
+                                                    }
+                                                } else {
+
+///////////////////////    ????????????????????????    ///////////////////////
+                                                    finalAutoMethod();
+                                                    return;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+
+
 
 
 
@@ -889,6 +1118,12 @@ public class SetUpTheUsbDevice extends Activity {
                                     }
                                     log("spacketErrorCnt = " + spacketErrorCnt);
                                 } while (activeUrbs <= 64 && sframeLen < (imageWidth * imageHeight *2));
+
+
+
+
+
+
 
                                 log("sframeLen = " + sframeLen);
                                 //smallerPacketsPresent = true;
@@ -919,11 +1154,8 @@ public class SetUpTheUsbDevice extends Activity {
                                     latch = new CountDownLatch(1);
                                     makeAnAutomaticTransfer(true);
                                     log("packetsPerRequest = " + packetsPerRequest);
-                                    try {
-                                        latch.await();
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
+                                    latch.await();
+
                                     log("spacketErrorCnt = " + spacketErrorCnt);
 
                                     if(packetsPerRequest <= 64 && !(sframeLenArray[0] >= (imageWidth * imageHeight *2) & sframeLenArray[1] >= (imageWidth * imageHeight *2) & sframeLenArray[2] >= (imageWidth * imageHeight *2) & sframeLenArray[3] >= (imageWidth * imageHeight *2) & sframeLenArray[4] >= (imageWidth * imageHeight *2) )) {
@@ -932,8 +1164,7 @@ public class SetUpTheUsbDevice extends Activity {
                                     }
                                 } while (packetsPerRequest <= 64 && !(sframeLenArray[0] >= (imageWidth * imageHeight *2) & sframeLenArray[1] >= (imageWidth * imageHeight *2) & sframeLenArray[2] >= (imageWidth * imageHeight *2) & sframeLenArray[3] >= (imageWidth * imageHeight *2) & sframeLenArray[4] >= (imageWidth * imageHeight *2) ));
 
-
-/*
+                            /*
                                 String autoDetectFileValuesString = new String("AutoDetectFileValues");
                                 String autoDetectFileOrdersString = new String("AutoDetectFileOrders");
                                 final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -949,39 +1180,30 @@ public class SetUpTheUsbDevice extends Activity {
                                 */
 
 
-                                runOnUiThread(new Runnable() {
-                                    String msg = "Automatic Setup:";
-                                    @Override
-                                    public void run() {
-                                        tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                                        tv.setText(msg + "\n\nYour current Values are:\n\nPackets Per Request = " + packetsPerRequest + "\nActive Urbs = " + activeUrbs +
-                                                "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat + "\nCamera Format Index = " + camFormatIndex + "\n" +
-                                                "Camera FrameIndex = " + camFrameIndex + "\nImage Width = " + imageWidth + "\nImage Height = " + imageHeight + "\nCamera Frame Interval = " + camFrameInterval);
-                                        tv.setTextColor(Color.BLACK);
 
-                                    }
-                                });
-
-
-
-
-
-
-
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
                             }
-                            break;
+
+
+
+
+
+
+                        }
+
                     }
                 }
             };
 
-            builder.setMessage("UVC Setup !").setPositiveButton("Set up from UVC manually", dialogClickListener)
-                    .setNegativeButton("Automatic UVC Detection", dialogClickListener).show();
 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                builder.setMessage("UVC Setup !").setPositiveButton("Set up from UVC manually", dialogClickListener)
+                        .setNegativeButton("Automatic UVC Detection", dialogClickListener).setOnDismissListener(dismissL).show();
+            } else {
+                builder.setMessage("UVC Setup !").setPositiveButton("Set up from UVC manually", dialogClickListener).show();
+            }
         }
-
-
-
-
     }
 
 
@@ -1588,12 +1810,7 @@ public class SetUpTheUsbDevice extends Activity {
                     e.printStackTrace();
                 }
                 usbIso64.submitUrbs();
-
-                int cnt = 0;
-
-
                 while (frameCnt < 1) {
-                    boolean stopReq = false;
                     USBIso.Request req = usbIso64.reapRequest(true);
                     for (int packetNo = 0; packetNo < req.getNumberOfPackets(); packetNo++) {
                         packetCnt++;
@@ -1611,7 +1828,6 @@ public class SetUpTheUsbDevice extends Activity {
                         int packetStatus = req.getPacketStatus(packetNo);
                         if (packetStatus != 0) {
                             System.out.println("Packet status=" + packetStatus);
-                            stopReq = true;
                             break;
                         }
                         if (packetLen > 0) {
@@ -1682,6 +1898,7 @@ public class SetUpTheUsbDevice extends Activity {
 
                 log("sframeLen = " + sframeLen);
                 log("activeUrbs = " + activeUrbs);
+                log("packetsPerRequest = " + packetsPerRequest);
 
                 latch.countDown();
                 runningAutoTransfer = null;
@@ -1815,6 +2032,8 @@ public class SetUpTheUsbDevice extends Activity {
 
 
                 log("sframeLenArray[0] = " + sframeLenArray[0] + "  /  sframeLenArray[1] = " + sframeLenArray[1] + "  /  sframeLenArray[2] = " + sframeLenArray[2] + "  /  sframeLenArray[3] = " + sframeLenArray[3] + "  /  sframeLenArray[4] = " + sframeLenArray[4] );
+                log("activeUrbs = " + activeUrbs);
+                log("packetsPerRequest = " + packetsPerRequest);
 
                 latch.countDown();
                 runningAutoTransfer5frames = null;
@@ -2195,6 +2414,53 @@ public class SetUpTheUsbDevice extends Activity {
 
 
 
+    private void finalAutoMethod () {
+        runOnUiThread(new Runnable() {
+            String msg = "Automatic Setup Completed:";
+            @Override
+            public void run() {
+                tv = (ZoomTextView) findViewById(R.id.textDarstellung);
+                tv.setText(msg + "\n\nYour current Values are:\n\nPackets Per Request = " + packetsPerRequest + "\nActive Urbs = " + activeUrbs +
+                        "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat + "\nCamera Format Index = " + camFormatIndex + "\n" +
+                        "Camera FrameIndex = " + camFrameIndex + "\nImage Width = " + imageWidth + "\nImage Height = " + imageHeight + "\nCamera Frame Interval = " + camFrameInterval);
+                tv.setTextColor(Color.BLACK);
+
+            }
+        });
+        loadingPanel = findViewById(R.id.loadingPanel);
+        loadingPanel.setVisibility(View.GONE);
+        automaticStart = false;
+
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+                        final String saveFilePathFolder = "UVC_Camera/save";
+                        final File file = new File(rootPath, "/" + saveFilePathFolder);
+                        if (!file.exists()) {
+                            log("creating directory");
+                            if (!file.mkdirs()) {
+                                Log.e("TravellerLog :: ", "Problem creating Image folder");
+                            }
+
+                            file.mkdirs();
+                        }
+                        String rootdirStr = file.toString();
+                        stf.fetchTheValues();
+                        stf.saveValuesToFile(rootdirStr += deviceName += ".sav");
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                }
+            }
+        };
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Automatic Setup Finished").setMessage("Do you want to save the values to a file?").setPositiveButton("Yes, Save", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
+    }
 
 
 
@@ -2244,4 +2510,36 @@ public class SetUpTheUsbDevice extends Activity {
 
         }
     }
+
+    private boolean checkOneFrame () {
+        if (sframeLen == imageWidth * imageHeight * 2 ) return true;
+        else return false;
+    }
+    private boolean checkFiveFrames () {
+
+        if ((sframeLenArray[0] >= (imageWidth * imageHeight *2) & sframeLenArray[1] >= (imageWidth * imageHeight *2) & sframeLenArray[2] >= (imageWidth * imageHeight *2) & sframeLenArray[3] >= (imageWidth * imageHeight *2) & sframeLenArray[4] >= (imageWidth * imageHeight *2) )) return true;
+        else return false;
+    }
+
+
+
+
+
 }
+
+/*
+
+                            private static String autoFilePathFolder = "UVC_Camera/autoDetection";
+                            public int spacketCnt = 0;
+                            public int spacket0Cnt = 0;
+                            public int spacket12Cnt = 0;
+
+
+    public int spacketDataCnt = 0;
+    public int spacketHdr8Ccnt = 0;
+    public int spacketErrorCnt = 0;
+    public int sframeCnt = 0;
+    public int sframeLen = 0;
+    public int [] sframeLenArray = new int [5];
+    public int srequestCnt = 0;
+                             */
