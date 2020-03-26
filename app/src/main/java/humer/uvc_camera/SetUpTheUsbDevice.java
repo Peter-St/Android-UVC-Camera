@@ -75,6 +75,7 @@ import humer.uvc_camera.UsbIso64.usbdevice_fs_util;
 import noman.zoomtextview.ZoomTextView;
 
 
+
 public class SetUpTheUsbDevice extends Activity {
 
     private static final String ACTION_USB_PERMISSION = "humer.uvc_camera.USB_PERMISSION";
@@ -204,6 +205,7 @@ public class SetUpTheUsbDevice extends Activity {
     private CountDownLatch latch;
     private RelativeLayout loadingPanel;
     private boolean automaticStart ;
+    private boolean highQualityStreamSucessful ;
 
 
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
@@ -885,7 +887,6 @@ public class SetUpTheUsbDevice extends Activity {
                             loadingPanel.setVisibility(View.VISIBLE);
                             dialog.dismiss();
                             // Automatic UVC DetectionAutomatic UVC Detection
-
                             automaticStart = true;
                             break;
                     }
@@ -897,6 +898,20 @@ public class SetUpTheUsbDevice extends Activity {
                 @Override
                 public void onDismiss(DialogInterface dialog) {
                     if (automaticStart == true) {
+                        testrun = findViewById(R.id.testrun);
+                        testrun.setEnabled(false);
+                        Button button = findViewById(R.id.returnToMainScreen);
+                        button.setEnabled(false);
+                        button = findViewById(R.id.findTheCamera);
+                        button.setEnabled(false);
+                        button = findViewById(R.id.listTheCamera);
+                        button.setEnabled(false);
+                        button = findViewById(R.id.setUpWithUVC);
+                        button.setEnabled(false);
+                        button = findViewById(R.id.editSaveTheValues);
+                        button.setEnabled(false);
+
+
                         int a = uvc_descriptor.phraseUvcData();
                         if (a == 0) {
                             if (convertedMaxPacketSize == null) listDevice(camDevice);
@@ -906,7 +921,6 @@ public class SetUpTheUsbDevice extends Activity {
                                 latch = new CountDownLatch(1);
                                 makeAnAutomaticTransfer(false);
                                 latch.await();
-                                SystemClock.sleep(100);
                                 if (sframeLen > 0 && sframeCnt > 0) {
                                     if (sframeLen > sframeMaximalLen) sframeMaximalLen = sframeLen;
 
@@ -914,7 +928,6 @@ public class SetUpTheUsbDevice extends Activity {
                                         latch = new CountDownLatch(1);
                                         makeAnAutomaticTransfer(true);
                                         latch.await();
-                                        SystemClock.sleep(100);
                                         if (checkFiveFrames()) {
                                             finalAutoMethod();
                                             return;
@@ -974,12 +987,10 @@ public class SetUpTheUsbDevice extends Activity {
                                         latch = new CountDownLatch(1);
                                         makeAnAutomaticTransfer(false);
                                         latch.await();
-                                        SystemClock.sleep(100);
                                         if (checkOneFrame()) {
                                             latch = new CountDownLatch(1);
                                             makeAnAutomaticTransfer(true);
                                             latch.await();
-                                            SystemClock.sleep(100);
                                             if (checkFiveFrames()) {
                                                 finalAutoMethod();
                                                 return;
@@ -989,7 +1000,6 @@ public class SetUpTheUsbDevice extends Activity {
                                                 latch = new CountDownLatch(1);
                                                 makeAnAutomaticTransfer(true);
                                                 latch.await();
-                                                SystemClock.sleep(100);
                                                 if (checkFiveFrames()) {
                                                     finalAutoMethod();
                                                     return;
@@ -999,7 +1009,6 @@ public class SetUpTheUsbDevice extends Activity {
                                                     latch = new CountDownLatch(1);
                                                     makeAnAutomaticTransfer(true);
                                                     latch.await();
-                                                    SystemClock.sleep(100);
                                                     if (checkFiveFrames()) {
                                                         finalAutoMethod();
                                                         return;
@@ -1009,7 +1018,6 @@ public class SetUpTheUsbDevice extends Activity {
                                                         latch = new CountDownLatch(1);
                                                         makeAnAutomaticTransfer(true);
                                                         latch.await();
-                                                        SystemClock.sleep(100);
                                                         if (checkFiveFrames()) {
                                                             finalAutoMethod();
                                                             return;
@@ -1100,12 +1108,6 @@ public class SetUpTheUsbDevice extends Activity {
                                         }
                                     }
                                 }
-
-
-
-
-
-
                                 do {
                                     if (activeUrbs <= 3) activeUrbs ++;
                                     else activeUrbs = activeUrbs * 2;
@@ -1118,13 +1120,6 @@ public class SetUpTheUsbDevice extends Activity {
                                     }
                                     log("spacketErrorCnt = " + spacketErrorCnt);
                                 } while (activeUrbs <= 64 && sframeLen < (imageWidth * imageHeight *2));
-
-
-
-
-
-
-
                                 log("sframeLen = " + sframeLen);
                                 //smallerPacketsPresent = true;
                                 log("\n ");
@@ -1164,45 +1159,16 @@ public class SetUpTheUsbDevice extends Activity {
                                     }
                                 } while (packetsPerRequest <= 64 && !(sframeLenArray[0] >= (imageWidth * imageHeight *2) & sframeLenArray[1] >= (imageWidth * imageHeight *2) & sframeLenArray[2] >= (imageWidth * imageHeight *2) & sframeLenArray[3] >= (imageWidth * imageHeight *2) & sframeLenArray[4] >= (imageWidth * imageHeight *2) ));
 
-                            /*
-                                String autoDetectFileValuesString = new String("AutoDetectFileValues");
-                                String autoDetectFileOrdersString = new String("AutoDetectFileOrders");
-                                final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
-                                final File file = new File(rootPath, "/" + autoFilePathFolder);
-                                String rootdirStr = file.toString();
-                                rootdirStr += "/";
-                                stf.restoreAutoOrders(rootdirStr += autoDetectFileOrdersString += ".sav");
-                                rootdirStr = file.toString();
-                                rootdirStr += "/";
-                                stf.restoreFromFile(rootdirStr += autoDetectFileValuesString += ".sav");
-
-                                stf.writeTheValues();
-                                */
-
-
 
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-
-
-
-
-
-
                         }
 
                     }
                 }
             };
-
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                builder.setMessage("UVC Setup !").setPositiveButton("Set up from UVC manually", dialogClickListener)
-                        .setNegativeButton("Automatic UVC Detection", dialogClickListener).setOnDismissListener(dismissL).show();
-            } else {
-                builder.setMessage("UVC Setup !").setPositiveButton("Set up from UVC manually", dialogClickListener).show();
-            }
+            builder.setMessage("UVC Setup !").setPositiveButton("Set up from UVC manually", dialogClickListener).show();
         }
     }
 
@@ -2415,6 +2381,10 @@ public class SetUpTheUsbDevice extends Activity {
 
 
     private void finalAutoMethod () {
+        if (lowQuality) {
+            raiseTheQuality();
+        }
+
         runOnUiThread(new Runnable() {
             String msg = "Automatic Setup Completed:";
             @Override
@@ -2424,7 +2394,24 @@ public class SetUpTheUsbDevice extends Activity {
                         "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat + "\nCamera Format Index = " + camFormatIndex + "\n" +
                         "Camera FrameIndex = " + camFrameIndex + "\nImage Width = " + imageWidth + "\nImage Height = " + imageHeight + "\nCamera Frame Interval = " + camFrameInterval);
                 tv.setTextColor(Color.BLACK);
-
+                testrun = findViewById(R.id.testrun);
+                testrun.setEnabled(true);
+                testrun.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        showTestRunMenu(view);
+                    }
+                });
+                Button button = findViewById(R.id.returnToMainScreen);
+                button.setEnabled(true);
+                button = findViewById(R.id.findTheCamera);
+                button.setEnabled(true);
+                button = findViewById(R.id.listTheCamera);
+                button.setEnabled(true);
+                button = findViewById(R.id.setUpWithUVC);
+                button.setEnabled(true);
+                button = findViewById(R.id.editSaveTheValues);
+                button.setEnabled(true);
             }
         });
         loadingPanel = findViewById(R.id.loadingPanel);
@@ -2444,14 +2431,12 @@ public class SetUpTheUsbDevice extends Activity {
                             if (!file.mkdirs()) {
                                 Log.e("TravellerLog :: ", "Problem creating Image folder");
                             }
-
                             file.mkdirs();
                         }
                         String rootdirStr = file.toString();
                         stf.fetchTheValues();
                         stf.saveValuesToFile(rootdirStr += deviceName += ".sav");
                         break;
-
                     case DialogInterface.BUTTON_NEGATIVE:
                         break;
                 }
@@ -2500,14 +2485,12 @@ public class SetUpTheUsbDevice extends Activity {
                 runningAutoTransfer = new IsochronousAutomaticClass();
                 runningAutoTransfer.start();
             } else {
-
                 if (runningAutoTransfer5frames != null) {
                     return;
                 }
                 runningAutoTransfer5frames = new IsochronousAutomaticClass5Frames();
                 runningAutoTransfer5frames.start();
             }
-
         }
     }
 
@@ -2516,17 +2499,81 @@ public class SetUpTheUsbDevice extends Activity {
         else return false;
     }
     private boolean checkFiveFrames () {
-
         if ((sframeLenArray[0] >= (imageWidth * imageHeight *2) & sframeLenArray[1] >= (imageWidth * imageHeight *2) & sframeLenArray[2] >= (imageWidth * imageHeight *2) & sframeLenArray[3] >= (imageWidth * imageHeight *2) & sframeLenArray[4] >= (imageWidth * imageHeight *2) )) return true;
         else return false;
     }
+    private void raiseTheQuality() {
+
+        UVC_Descriptor.FormatIndex formatIndex;
+        formatIndex = stf.formatIndex;
+        UVC_Descriptor.FormatIndex.FrameIndex frameIndex;
+
+        int[] resArray = new int [formatIndex.numberOfFrameDescriptors];
+        for (int j = 0; j < formatIndex.numberOfFrameDescriptors; j++) {
+            frameIndex = formatIndex.getFrameIndex(j);
+            resArray[j] = (frameIndex.wWidth * frameIndex.wHeight);
+        }
+        // find lowest resolution:
+        int maxValue = resArray[0];
+        int maxPos = 0;
+        for (int i = 1; i < resArray.length; i++) {
+            if (resArray[i] > maxValue) {
+                maxValue = resArray[i];
+                maxPos = i;
+            }
+        }
+        frameIndex = formatIndex.getFrameIndex(maxPos);
+        camFrameIndex = frameIndex.frameIndex;
+        imageWidth = frameIndex.wWidth;
+        imageHeight = frameIndex.wHeight;
+        System.out.println("camFrameIndex = " + camFrameIndex);
+        System.out.println("imageWidth = " + imageWidth);
+        System.out.println("imageHeight = " + imageHeight);
+
+        int[] intervalArray = frameIndex.dwFrameInterval.clone();
+        // sorting the array to smalest Value first
+        Arrays.sort(intervalArray);
+        // Selecting the secound biggest Frame Interval
+        if(intervalArray.length == 1) camFrameInterval = frameIndex.dwFrameInterval[(0)];
+        else camFrameInterval = frameIndex.dwFrameInterval[(1)];
+        lowQuality = false;
+        performAnotherAutomaticTest();
 
 
 
+    }
 
+    private void performAnotherAutomaticTest() {
+        try {
+            latch = new CountDownLatch(1);
+            makeAnAutomaticTransfer(true);
+            latch.await();
 
+            log("High Quality Stream:");
+            log("sframeLenArray[0] = " + sframeLenArray[0] + "  /  sframeLenArray[1] = " + sframeLenArray[1] + "  /  sframeLenArray[2] = " + sframeLenArray[2] + "  /  sframeLenArray[3] = " + sframeLenArray[3] + "  /  sframeLenArray[4] = " + sframeLenArray[4] );
+            if ((sframeLenArray[0] >= (imageWidth * imageHeight *2) & sframeLenArray[1] >= (imageWidth * imageHeight *2) & sframeLenArray[2] >= (imageWidth * imageHeight *2) & sframeLenArray[3] >= (imageWidth * imageHeight *2) & sframeLenArray[4] >= (imageWidth * imageHeight *2) )) highQualityStreamSucessful = true;
+            log("highQualityStreamSucessful = " + highQualityStreamSucessful);
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
 }
+ /*
+                                String autoDetectFileValuesString = new String("AutoDetectFileValues");
+                                String autoDetectFileOrdersString = new String("AutoDetectFileOrders");
+                                final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+                                final File file = new File(rootPath, "/" + autoFilePathFolder);
+                                String rootdirStr = file.toString();
+                                rootdirStr += "/";
+                                stf.restoreAutoOrders(rootdirStr += autoDetectFileOrdersString += ".sav");
+                                rootdirStr = file.toString();
+                                rootdirStr += "/";
+                                stf.restoreFromFile(rootdirStr += autoDetectFileValuesString += ".sav");
 
+                                stf.writeTheValues();
+                                */
 /*
 
                             private static String autoFilePathFolder = "UVC_Camera/autoDetection";

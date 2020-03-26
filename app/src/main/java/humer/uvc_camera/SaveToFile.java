@@ -108,8 +108,8 @@ public class SaveToFile  {
 
     private UVC_Descriptor uvc_descriptor;
     private static int [] numberFormatIndexes;
-    private UVC_Descriptor.FormatIndex formatIndex;
-    private UVC_Descriptor.FormatIndex.FrameIndex frameIndex;
+    public UVC_Descriptor.FormatIndex formatIndex;
+    public UVC_Descriptor.FormatIndex.FrameIndex frameIndex;
     private static String[] frameDescriptorsResolutionArray;
     private static String [] dwFrameIntervalArray;
     private static String [] maxPacketSizeStr;
@@ -1094,6 +1094,7 @@ public class SaveToFile  {
         } else {
             if(lowQuality) {
                 int[] intervalArray = frameIndex.dwFrameInterval.clone();
+                // sorting the array to smalest Value first
                 Arrays.sort(intervalArray);
                 scamFrameInterval = frameIndex.dwFrameInterval[(intervalArray.length - 1)];
                 System.out.println("scamFrameInterval = " + scamFrameInterval);
