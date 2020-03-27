@@ -20,6 +20,8 @@
 
 package humer.uvc_camera.UsbIso64;
 
+import android.util.Log;
+
 import com.sun.jna.LastErrorException;
 import com.sun.jna.Memory;
 import com.sun.jna.ptr.PointerByReference;
@@ -351,14 +353,21 @@ public class USBIso {
             // System.out.println("vor IOCTL Submit URBAdresse = " + urb.getNativeUrbAddr());
            // urbAddr = urb.getNativeUrbAddr();
             //System.out.println("nach native get URBAdresse = " +urbAddr);
-            int rc = (Libc.INSTANCE).ioctl(fileDescriptor, USBDEVFS_SUBMITURB, getNativeUrbAddr());
+            int rc;
+            try {
+                rc = (Libc.INSTANCE).ioctl(fileDescriptor, USBDEVFS_SUBMITURB, getNativeUrbAddr());
+                if (rc != 0) {
+                    throw new IOException("ioctl(USBDEVFS_SUBMITURB) failed, rc=" + rc + ".");
+                }
+            } catch (Exception e) {
+                Log.d("ERROR", "ERROR: " + e);
+            }
+
 
             //int rc = nativeIOCTLsenden(fileDescriptor, USBDEVFS_SUBMITURB);
             //System.out.println("nach URBAdresse = " +urbAddr);
            // System.out.println("URBAdresse");
-            if (rc != 0) {
-                throw new IOException("ioctl(USBDEVFS_SUBMITURB) failed, rc=" + rc + ".");
-            }
+
             queued = true;
         }
 

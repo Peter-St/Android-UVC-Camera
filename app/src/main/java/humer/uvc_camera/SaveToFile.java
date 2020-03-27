@@ -1091,6 +1091,7 @@ public class SaveToFile  {
             });
             dwFrameIntervalArraybuilder.show();
 
+
         } else {
             if(lowQuality) {
                 int[] intervalArray = frameIndex.dwFrameInterval.clone();
@@ -1099,6 +1100,7 @@ public class SaveToFile  {
                 scamFrameInterval = frameIndex.dwFrameInterval[(intervalArray.length - 1)];
                 System.out.println("scamFrameInterval = " + scamFrameInterval);
                 checkAutoDetectFileName(true);
+                writeTheOrders();
                 writeTheValues();
                 return;
             }

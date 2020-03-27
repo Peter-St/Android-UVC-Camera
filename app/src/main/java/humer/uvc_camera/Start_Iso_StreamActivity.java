@@ -266,8 +266,7 @@ public class Start_Iso_StreamActivity extends Activity {
             @Override
             public boolean onMenuItemSelected(MenuItem menuItem) {
                 log("click");
-                Snackbar.make(findViewById(R.id.rootView), getString(R.string.selected_menu_item,
-                        menuItem.getTitle()), Snackbar.LENGTH_SHORT).show();
+                //Snackbar.make(findViewById(R.id.rootView), getString(R.string.selected_menu_item, menuItem.getTitle()), Snackbar.LENGTH_SHORT).show();
 
                 switch (menuItem.getItemId()) {
                     case R.id.adjustValuesUnit:
@@ -318,8 +317,6 @@ public class Start_Iso_StreamActivity extends Activity {
         });
         photoButton.setEnabled(false);
         photoButton.setBackgroundResource(R.drawable.photo_clear);
-
-
         stopStreamButton = (Button) findViewById(R.id.stopKameraknopf);
         stopStreamButton.getBackground().setAlpha(20);  // 95% transparent
         stopStreamButton.setEnabled(false);
@@ -1100,10 +1097,19 @@ public class Start_Iso_StreamActivity extends Activity {
                 UVC_Descriptor uvc_descriptor = new UVC_Descriptor(uvcData);
                 if (uvc_descriptor.phraseUvcData() == 0) {
                     iuvc_descriptor = new UVC_Initializer(uvc_descriptor);
-                    log ("Arrays.deepToString(iuvc_descriptor.findDifferentResolutions(false)) = " + Arrays.deepToString(iuvc_descriptor.findDifferentResolutions(false)));
-                    log ("");
-                    log ("iuvc_descriptor.findDifferentFrameIntervals( = " + Arrays.toString(iuvc_descriptor.findDifferentFrameIntervals(false, new int[] {imageWidth, imageHeight})));
-                    log ("");
+                    log("videoformat = " + videoformat);
+                    if (videoformat.equals("mjpeg") ) {
+                        log ("Arrays.deepToString(iuvc_descriptor.findDifferentResolutions(false)) = " + Arrays.deepToString(iuvc_descriptor.findDifferentResolutions(true)));
+                        log ("");
+                        log ("iuvc_descriptor.findDifferentFrameIntervals( = " + Arrays.toString(iuvc_descriptor.findDifferentFrameIntervals(true, new int[] {imageWidth, imageHeight})));
+                        log ("");
+                    } else {
+                        log ("Arrays.deepToString(iuvc_descriptor.findDifferentResolutions(false)) = " + Arrays.deepToString(iuvc_descriptor.findDifferentResolutions(false)));
+                        log ("");
+                        log ("iuvc_descriptor.findDifferentFrameIntervals( = " + Arrays.toString(iuvc_descriptor.findDifferentFrameIntervals(false, new int[] {imageWidth, imageHeight})));
+                        log ("");
+                    }
+
                 } else displayMessage("Interface initialization for the Descriptor failed.");
             } else {
                 runOnUiThread(new Runnable() {
@@ -1788,10 +1794,9 @@ public class Start_Iso_StreamActivity extends Activity {
 
     class IsochronousStream extends Thread {
 
-        Main uvc_camera;
-        Context mContext;
-        Activity activity;
-        StringBuilder stringBuilder;
+        private Activity activity;
+        private boolean reapTheLastFrames;
+        private int lastReapedFrames = 0;
 
         public IsochronousStream(Context mContext) {
             setPriority(Thread.MAX_PRIORITY);
@@ -1804,9 +1809,7 @@ public class Start_Iso_StreamActivity extends Activity {
                 usbIso64.preallocateRequests(activeUrbs);
                 ByteArrayOutputStream frameData = new ByteArrayOutputStream(0x20000);
                 int skipFrames = 0;
-                // if (cameraType == CameraType.wellta) {
-                //    skipFrames = 1; }                                // first frame may look intact but it is not always intact
-                boolean frameComplete = false;
+
                 byte[] data = new byte[maxPacketSize];
                 enableStreaming(true);
                 usbIso64.submitUrbs();
@@ -1819,8 +1822,6 @@ public class Start_Iso_StreamActivity extends Activity {
                             int packetStatus = req.getPacketStatus(packetNo);
                             try {if (packetStatus != 0) {
                                 skipFrames = 1;}
-
-                                //    throw new IOException("Camera read error, packet status=" + packetStatus);
                             } catch (Exception e){
                                 log("Camera read error, packet status=" + packetStatus);
                             }
@@ -1843,15 +1844,8 @@ public class Start_Iso_StreamActivity extends Activity {
                             int headerFlags = data[1] & 0xff;
                             int dataLen = packetLen - headerLen;
                             boolean error = (headerFlags & 0x40) != 0;
-                            if (error && skipFrames == 0) {
-                                // throw new IOException("Error flag set in payload header.");
-//                    log("Error flag detected, ignoring frame.");
-                                skipFrames = 1;
-                            }
-                            if (dataLen > 0 && skipFrames == 0) {
-                                frameData.write(data, headerLen, dataLen);
-                            }
-
+                            if (error && skipFrames == 0) skipFrames = 1;
+                            if (dataLen > 0 && skipFrames == 0) frameData.write(data, headerLen, dataLen);
                             if ((headerFlags & 2) != 0) {
                                 if (skipFrames > 0) {
                                     log("Skipping frame, len= " + frameData.size());
@@ -1890,14 +1884,17 @@ public class Start_Iso_StreamActivity extends Activity {
                                 }
                             }
                         }
-                        req.initialize();
-                        req.submit();
+                        if (reapTheLastFrames) {
+                            if (++ lastReapedFrames == activeUrbs) break;
+                        } else {
+                            req.initialize();
+                            req.submit();
+                        }
                         if (stopKamera == true) {
+                            reapTheLastFrames = true;
                             break;
                         }
                     }
-
-
                 }
                 //enableStreaming(false);
                 //processReceivedMJpegVideoFrame(frameData.toByteArray());

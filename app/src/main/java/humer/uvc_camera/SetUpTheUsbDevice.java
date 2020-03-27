@@ -205,7 +205,8 @@ public class SetUpTheUsbDevice extends Activity {
     private CountDownLatch latch;
     private RelativeLayout loadingPanel;
     private boolean automaticStart ;
-    private boolean highQualityStreamSucessful ;
+    private boolean highQualityStreamSucessful;
+
 
 
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
@@ -496,7 +497,6 @@ public class SetUpTheUsbDevice extends Activity {
                 displayErrorMessage(e);
                 return;
             }
-            displayMessage("OK");
             if (camIsOpen) {
                 runOnUiThread(new Runnable() {
                     @Override
@@ -881,9 +881,8 @@ public class SetUpTheUsbDevice extends Activity {
                                 stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize, false);
                             }
                             break;
-
                         case DialogInterface.BUTTON_NEGATIVE:
-
+                            loadingPanel = findViewById(R.id.loadingPanel);
                             loadingPanel.setVisibility(View.VISIBLE);
                             dialog.dismiss();
                             // Automatic UVC DetectionAutomatic UVC Detection
@@ -891,7 +890,6 @@ public class SetUpTheUsbDevice extends Activity {
                             break;
                     }
                 }
-
             };
 
             DialogInterface.OnDismissListener dismissL = new DialogInterface.OnDismissListener() {
@@ -900,6 +898,7 @@ public class SetUpTheUsbDevice extends Activity {
                     if (automaticStart == true) {
                         testrun = findViewById(R.id.testrun);
                         testrun.setEnabled(false);
+                        testrun.setVisibility(View.GONE);
                         Button button = findViewById(R.id.returnToMainScreen);
                         button.setEnabled(false);
                         button = findViewById(R.id.findTheCamera);
@@ -910,8 +909,6 @@ public class SetUpTheUsbDevice extends Activity {
                         button.setEnabled(false);
                         button = findViewById(R.id.editSaveTheValues);
                         button.setEnabled(false);
-
-
                         int a = uvc_descriptor.phraseUvcData();
                         if (a == 0) {
                             if (convertedMaxPacketSize == null) listDevice(camDevice);
@@ -937,7 +934,6 @@ public class SetUpTheUsbDevice extends Activity {
                                             latch = new CountDownLatch(1);
                                             makeAnAutomaticTransfer(true);
                                             latch.await();
-
                                             if (checkFiveFrames()) {
                                                 finalAutoMethod();
                                                 return;
@@ -977,8 +973,6 @@ public class SetUpTheUsbDevice extends Activity {
                                                 }
                                             }
                                         }
-
-
                                     } else {
                                         activeUrbs = 4;
                                         packetsPerRequest = 4;
@@ -1099,6 +1093,8 @@ public class SetUpTheUsbDevice extends Activity {
 
                                                     }
                                                 } else {
+                                                    findHighestFrameLengths();
+
 
 ///////////////////////    ????????????????????????    ///////////////////////
                                                     finalAutoMethod();
@@ -1168,7 +1164,11 @@ public class SetUpTheUsbDevice extends Activity {
                     }
                 }
             };
-            builder.setMessage("UVC Setup !").setPositiveButton("Set up from UVC manually", dialogClickListener).show();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                builder.setMessage("UVC Setup !").setPositiveButton("Set up from UVC manually", dialogClickListener).setNegativeButton("UVC Automatic Detection", dialogClickListener).setOnDismissListener(dismissL).show();
+            } else {
+                builder.setMessage("UVC Setup !").setPositiveButton("Set up from UVC manually", dialogClickListener).show();
+            }
         }
     }
 
@@ -1744,10 +1744,8 @@ public class SetUpTheUsbDevice extends Activity {
 
     class IsochronousAutomaticClass extends Thread {
 
-        SetUpTheUsbDevice setUpTheUsbDevice;
-        Context mContext;
-        Activity activity;
-        StringBuilder stringBuilder;
+        private boolean reapTheLastFrames;
+        private int lastReapedFrames = 0;
 
         public IsochronousAutomaticClass() {
 
@@ -1755,9 +1753,9 @@ public class SetUpTheUsbDevice extends Activity {
 
         public void run() {
             try {
+                reapTheLastFrames = false;
                 USBIso usbIso64 = new USBIso(camDeviceConnection.getFileDescriptor(), packetsPerRequest, maxPacketSize, (byte) camStreamingEndpoint.getAddress());
                 usbIso64.preallocateRequests(activeUrbs);
-                //Thread.sleep(500);
                 ArrayList<String> logArray = new ArrayList<>(512);
                 int packetCnt = 0;
                 int packet0Cnt = 0;
@@ -1766,7 +1764,6 @@ public class SetUpTheUsbDevice extends Activity {
                 int packetHdr8Ccnt = 0;
                 int packetErrorCnt = 0;
                 int frameCnt = 0;
-                final long time0 = System.currentTimeMillis();
                 int frameLen = 0;
                 int requestCnt = 0;
                 byte[] data = new byte[maxPacketSize];
@@ -1827,22 +1824,22 @@ public class SetUpTheUsbDevice extends Activity {
                             }
                             if ((headerFlags & 2) != 0) {
                                 logEntry.append(" EOF frameLen=" + frameLen);
+                                reapTheLastFrames = true;
                                 frameCnt++;
-                                break;
+                                //break;
                             }
                         }
                         logArray.add(logEntry.toString());
                     }
-                    if (frameCnt > 0)  break;
+                    if (frameCnt > 0)  reapTheLastFrames = true;
                     else if (packetErrorCnt > 800) break;
 
-
                     requestCnt++;
-                    req.initialize();
-                    try {
+                    if (reapTheLastFrames) {
+                        if (++ lastReapedFrames == activeUrbs) break;
+                    } else {
+                        req.initialize();
                         req.submit();
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
                 }
                 try {
@@ -1878,6 +1875,9 @@ public class SetUpTheUsbDevice extends Activity {
     }
 
     class IsochronousAutomaticClass5Frames extends Thread {
+
+        private boolean reapTheLastFrames;
+        private int lastReapedFrames = 0;
 
         public IsochronousAutomaticClass5Frames() {
             setPriority(Thread.MAX_PRIORITY);
@@ -1963,21 +1963,22 @@ public class SetUpTheUsbDevice extends Activity {
                                 sframeLenArray[frameCnt] = frameLen;
                                 frameCnt++;
                                 frameLen = 0;
-                                if (frameCnt > 4) break;
+                                if (frameCnt > 4) reapTheLastFrames = true;;
                             }
                         }
                         logArray.add(logEntry.toString());
                     }
-                    if (frameCnt > 4)  break;
+                    if (frameCnt > 4)  reapTheLastFrames = true;
                     else if (packetErrorCnt > 800) break;
 
 
                     requestCnt++;
-                    req.initialize();
-                    try {
+
+                    if (reapTheLastFrames) {
+                        if (++ lastReapedFrames == activeUrbs) break;
+                    } else {
+                        req.initialize();
                         req.submit();
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
                 }
                 try {
@@ -2384,7 +2385,6 @@ public class SetUpTheUsbDevice extends Activity {
         if (lowQuality) {
             raiseTheQuality();
         }
-
         runOnUiThread(new Runnable() {
             String msg = "Automatic Setup Completed:";
             @Override
@@ -2435,7 +2435,11 @@ public class SetUpTheUsbDevice extends Activity {
                         }
                         String rootdirStr = file.toString();
                         stf.fetchTheValues();
-                        stf.saveValuesToFile(rootdirStr += deviceName += ".sav");
+                        rootdirStr += "/";
+                        rootdirStr += deviceName;
+                        rootdirStr += ".sav";
+                        stf.saveValuesToFile(rootdirStr);
+                        displayMessage("Saved under: -->  " + deviceName);
                         break;
                     case DialogInterface.BUTTON_NEGATIVE:
                         break;
@@ -2504,6 +2508,7 @@ public class SetUpTheUsbDevice extends Activity {
     }
     private void raiseTheQuality() {
 
+        log("Method: raiseTheQuality");
         UVC_Descriptor.FormatIndex formatIndex;
         formatIndex = stf.formatIndex;
         UVC_Descriptor.FormatIndex.FrameIndex frameIndex;
@@ -2557,6 +2562,11 @@ public class SetUpTheUsbDevice extends Activity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+    }
+
+    private void findHighestFrameLengths() {
+
 
     }
 }
