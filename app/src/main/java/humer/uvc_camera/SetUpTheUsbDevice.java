@@ -41,8 +41,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Message;
-import android.os.SystemClock;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
@@ -56,16 +54,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crowdfire.cfalertdialog.CFAlertDialog;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import humer.uvc_camera.UVC_Descriptor.IUVC_Descriptor;
 import humer.uvc_camera.UVC_Descriptor.UVC_Descriptor;
@@ -206,7 +203,8 @@ public class SetUpTheUsbDevice extends Activity {
     private RelativeLayout loadingPanel;
     private boolean automaticStart ;
     private boolean highQualityStreamSucessful;
-
+    private CountDownLatch percentageLatch;
+    private CountDownLatch percentageLatchCounted;
 
 
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
@@ -318,6 +316,7 @@ public class SetUpTheUsbDevice extends Activity {
         }
         loadingPanel = findViewById(R.id.loadingPanel);
         loadingPanel.setVisibility(View.GONE);
+
 
 
     }
@@ -829,6 +828,8 @@ public class SetUpTheUsbDevice extends Activity {
     }
 
 
+
+
     private void openCameraDevice(boolean init) throws Exception {
 
         // (For transfer buffer sizes > 196608 the kernel file drivers/usb/core/devio.c must be patched.)
@@ -864,6 +865,23 @@ public class SetUpTheUsbDevice extends Activity {
             ByteBuffer uvcData = ByteBuffer.wrap(a);
             uvc_descriptor = new UVC_Descriptor(uvcData);
 
+
+
+
+            // Create Alert using Builder
+            CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
+
+            builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+            builder.setTitle("You've hit the limit");
+            builder.setMessage("Looks like you've hit your usage limit. Upgrade to our paid plan to continue without any limits.");
+            builder.addButton("UPGRADE", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.END, (dialog, which) -> {
+                Toast.makeText(this, "Upgrade tapped", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            });
+            builder.setHeaderView(R.layout.dialog_header_layout);
+// Show the alert
+            builder.show();
+/*
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
             // findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
@@ -884,8 +902,11 @@ public class SetUpTheUsbDevice extends Activity {
                         case DialogInterface.BUTTON_NEGATIVE:
                             loadingPanel = findViewById(R.id.loadingPanel);
                             loadingPanel.setVisibility(View.VISIBLE);
-                            dialog.dismiss();
+                            activeUrbs = 1;
                             // Automatic UVC DetectionAutomatic UVC Detection
+
+                            UpdatePercentageClass updatePercentage = new UpdatePercentageClass() ;
+                            updatePercentage.start();
                             automaticStart = true;
                             break;
                     }
@@ -918,6 +939,11 @@ public class SetUpTheUsbDevice extends Activity {
                                 latch = new CountDownLatch(1);
                                 makeAnAutomaticTransfer(false);
                                 latch.await();
+                                percentageLatch.countDown();
+
+                                percentageLatchCounted = new CountDownLatch(1);
+                                percentageLatchCounted.await();
+
                                 if (sframeLen > 0 && sframeCnt > 0) {
                                     if (sframeLen > sframeMaximalLen) sframeMaximalLen = sframeLen;
 
@@ -1164,11 +1190,18 @@ public class SetUpTheUsbDevice extends Activity {
                     }
                 }
             };
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                builder.setMessage("UVC Setup !").setPositiveButton("Set up from UVC manually", dialogClickListener).setNegativeButton("UVC Automatic Detection", dialogClickListener).setOnDismissListener(dismissL).show();
-            } else {
-                builder.setMessage("UVC Setup !").setPositiveButton("Set up from UVC manually", dialogClickListener).show();
-            }
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                        builder.setMessage("UVC Setup !").setPositiveButton("Set up from UVC manually", dialogClickListener).setNegativeButton("UVC Automatic Detection", dialogClickListener).setOnDismissListener(dismissL).show();
+                    } else {
+                        builder.setMessage("UVC Setup !").setPositiveButton("Set up from UVC manually", dialogClickListener).show();
+                    }
+                }
+            });
+
+*/
+
         }
     }
 
@@ -2569,6 +2602,50 @@ public class SetUpTheUsbDevice extends Activity {
 
 
     }
+
+    class UpdatePercentageClass extends Thread {
+
+        public UpdatePercentageClass() {
+            setPriority(Thread.MAX_PRIORITY);
+
+        }
+        public void run() {
+
+            TextView percentage = findViewById(R.id.progressBarText);
+            try {
+                percentage.setText("1%");
+                percentageLatch = new CountDownLatch(1);
+                percentageLatch.await();
+                percentage.setText("10%");
+                percentageLatchCounted.countDown();
+                percentageLatch = new CountDownLatch(1);
+                percentageLatch.await();
+                percentage.setText("20%");
+                percentageLatchCounted.countDown();
+                percentageLatch = new CountDownLatch(1);
+                percentageLatch.await();
+                percentage.setText("30%");
+                percentageLatchCounted.countDown();
+                percentageLatch = new CountDownLatch(1);
+                percentageLatch.await();
+                percentage.setText("40%");
+                percentageLatchCounted.countDown();
+                percentageLatch = new CountDownLatch(1);
+                percentageLatch.await();
+                percentage.setText("50%");
+                percentageLatchCounted.countDown();
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
+
+    }
+
+
 }
  /*
                                 String autoDetectFileValuesString = new String("AutoDetectFileValues");
