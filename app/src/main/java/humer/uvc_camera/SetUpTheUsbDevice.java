@@ -50,6 +50,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -195,17 +196,18 @@ public class SetUpTheUsbDevice extends Activity {
     public int sframeCnt = 0;
     public int sframeLen = 0;
     public int [] sframeLenArray = new int [5];
+    public int [] [] shighestFramesCube = new int [10] [5] ;
     public int srequestCnt = 0;
     public int sframeMaximalLen = 0;
 
 
     private CountDownLatch latch;
-    private RelativeLayout loadingPanel;
     private boolean automaticStart ;
     private boolean highQualityStreamSucessful;
-    private CountDownLatch percentageLatch;
-    private CountDownLatch percentageLatchCounted;
+    private CFAlertDialog percentageBuilder;
+    private CFAlertDialog percentageBuilder2;
 
+    private int number = 0;
 
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -314,10 +316,9 @@ public class SetUpTheUsbDevice extends Activity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        loadingPanel = findViewById(R.id.loadingPanel);
-        loadingPanel.setVisibility(View.GONE);
 
-
+        //loadingPanel = findViewById(R.id.loadingPanel);
+        //loadingPanel.setVisibility(View.GONE);
 
     }
 
@@ -870,53 +871,52 @@ public class SetUpTheUsbDevice extends Activity {
 
             // Create Alert using Builder
             CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
-
             builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
-            builder.setTitle("You've hit the limit");
-            builder.setMessage("Looks like you've hit your usage limit. Upgrade to our paid plan to continue without any limits.");
-            builder.addButton("UPGRADE", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.END, (dialog, which) -> {
-                Toast.makeText(this, "Upgrade tapped", Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
-            });
-            builder.setHeaderView(R.layout.dialog_header_layout);
-// Show the alert
-            builder.show();
-/*
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("UVC Setup !");
+            builder.setMessage("Select the Automatic or Manual Method");
 
-            // findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
-
-            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            builder.addButton("Manual", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.END, new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
-
-                    switch (which){
-                        case DialogInterface.BUTTON_POSITIVE:
-                            // Set up from UVC manually
-                            int a = uvc_descriptor.phraseUvcData();
-                            if (a == 0) {
-                                if (convertedMaxPacketSize == null) listDevice(camDevice);
-                                stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize, false);
-                            }
-                            break;
-                        case DialogInterface.BUTTON_NEGATIVE:
-                            loadingPanel = findViewById(R.id.loadingPanel);
-                            loadingPanel.setVisibility(View.VISIBLE);
-                            activeUrbs = 1;
-                            // Automatic UVC DetectionAutomatic UVC Detection
-
-                            UpdatePercentageClass updatePercentage = new UpdatePercentageClass() ;
-                            updatePercentage.start();
-                            automaticStart = true;
-                            break;
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    // Set up from UVC manually
+                    if (uvc_descriptor.phraseUvcData() == 0) {
+                        if (convertedMaxPacketSize == null) listDevice(camDevice);
+                        stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize, false);
                     }
+                    dialogInterface.dismiss();
                 }
-            };
+            });
+            builder.addButton("Automatic", -1, -1, CFAlertDialog.CFAlertActionStyle.NEGATIVE, CFAlertDialog.CFAlertActionAlignment.START, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    builder.setHeaderView(R.layout.dialog_header_layout);
+                    automaticStart = true;
 
-            DialogInterface.OnDismissListener dismissL = new DialogInterface.OnDismissListener() {
+                    //renewTheProgressbar();
+                    CFAlertDialog.Builder percentageB = new CFAlertDialog.Builder(SetUpTheUsbDevice.this);
+                    percentageB.setHeaderView(R.layout.dialog_header_layout);
+                    percentageBuilder = percentageB.show();
+                    percentageBuilder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            renewTheProgressbar();
+                        }
+                    });
+                    dialogInterface.dismiss();
+                }
+            });
+
+
+
+            //builder.setHeaderView(R.layout.dialog_header_layout);
+            // findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+            CFAlertDialog alertDialog = builder.show();
+            alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
                 public void onDismiss(DialogInterface dialog) {
-                    if (automaticStart == true) {
+                    if (automaticStart) {
+                        activeUrbs = 1;
+                        // Automatic UVC DetectionAutomatic UVC Detection
                         testrun = findViewById(R.id.testrun);
                         testrun.setEnabled(false);
                         testrun.setVisibility(View.GONE);
@@ -935,273 +935,20 @@ public class SetUpTheUsbDevice extends Activity {
                             if (convertedMaxPacketSize == null) listDevice(camDevice);
                             stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize, true);
                             sframeLen = 0;
+                            number = 0;
                             try {
                                 latch = new CountDownLatch(1);
-                                makeAnAutomaticTransfer(false);
+                                makeAnAutomaticTransfer(false, 0);
                                 latch.await();
-                                percentageLatch.countDown();
-
-                                percentageLatchCounted = new CountDownLatch(1);
-                                percentageLatchCounted.await();
-
-                                if (sframeLen > 0 && sframeCnt > 0) {
-                                    if (sframeLen > sframeMaximalLen) sframeMaximalLen = sframeLen;
-
-                                    if (checkOneFrame()) {
-                                        latch = new CountDownLatch(1);
-                                        makeAnAutomaticTransfer(true);
-                                        latch.await();
-                                        if (checkFiveFrames()) {
-                                            finalAutoMethod();
-                                            return;
-                                        } else {
-                                            activeUrbs = 4;
-                                            packetsPerRequest = 4;
-                                            latch = new CountDownLatch(1);
-                                            makeAnAutomaticTransfer(true);
-                                            latch.await();
-                                            if (checkFiveFrames()) {
-                                                finalAutoMethod();
-                                                return;
-                                            } else {
-                                                activeUrbs = 8;
-                                                packetsPerRequest = 8;
-                                                latch = new CountDownLatch(1);
-                                                makeAnAutomaticTransfer(true);
-                                                latch.await();
-                                                if (checkFiveFrames()) {
-                                                    finalAutoMethod();
-                                                    return;
-                                                } else {
-                                                    activeUrbs = 16;
-                                                    packetsPerRequest = 16;
-                                                    latch = new CountDownLatch(1);
-                                                    makeAnAutomaticTransfer(true);
-                                                    latch.await();
-                                                    if (checkFiveFrames()) {
-                                                        finalAutoMethod();
-                                                        return;
-                                                    } else {
-                                                        activeUrbs = 32;
-                                                        packetsPerRequest = 32;
-                                                        latch = new CountDownLatch(1);
-                                                        makeAnAutomaticTransfer(true);
-                                                        latch.await();
-                                                        if (checkFiveFrames()) {
-                                                            finalAutoMethod();
-                                                            return;
-                                                        } else {
-                                                            ///////////////////////    ????????????????????????    ///////////////////////
-                                                            finalAutoMethod();
-                                                            return;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    } else {
-                                        activeUrbs = 4;
-                                        packetsPerRequest = 4;
-
-                                        log("4 / 4");
-                                        latch = new CountDownLatch(1);
-                                        makeAnAutomaticTransfer(false);
-                                        latch.await();
-                                        if (checkOneFrame()) {
-                                            latch = new CountDownLatch(1);
-                                            makeAnAutomaticTransfer(true);
-                                            latch.await();
-                                            if (checkFiveFrames()) {
-                                                finalAutoMethod();
-                                                return;
-                                            } else {
-                                                activeUrbs = 8;
-                                                packetsPerRequest = 8;
-                                                latch = new CountDownLatch(1);
-                                                makeAnAutomaticTransfer(true);
-                                                latch.await();
-                                                if (checkFiveFrames()) {
-                                                    finalAutoMethod();
-                                                    return;
-                                                } else {
-                                                    activeUrbs = 16;
-                                                    packetsPerRequest = 16;
-                                                    latch = new CountDownLatch(1);
-                                                    makeAnAutomaticTransfer(true);
-                                                    latch.await();
-                                                    if (checkFiveFrames()) {
-                                                        finalAutoMethod();
-                                                        return;
-                                                    } else {
-                                                        activeUrbs = 32;
-                                                        packetsPerRequest = 32;
-                                                        latch = new CountDownLatch(1);
-                                                        makeAnAutomaticTransfer(true);
-                                                        latch.await();
-                                                        if (checkFiveFrames()) {
-                                                            finalAutoMethod();
-                                                            return;
-                                                        } else {
-                                                            ///////////////////////    ????????????????????????    ///////////////////////
-                                                            finalAutoMethod();
-                                                            return;
-                                                        }
-                                                    }
-
-                                                }
-
-                                            }
-                                        } else {
-                                            activeUrbs = 8;
-                                            packetsPerRequest = 8;
-                                            latch = new CountDownLatch(1);
-                                            makeAnAutomaticTransfer(false);
-                                            latch.await();
-                                            if (checkOneFrame()) {
-                                                latch = new CountDownLatch(1);
-                                                makeAnAutomaticTransfer(true);
-                                                latch.await();
-                                                if (checkFiveFrames()) {
-                                                    finalAutoMethod();
-                                                    return;
-                                                } else {
-                                                    activeUrbs = 16;
-                                                    packetsPerRequest = 16;
-                                                    latch = new CountDownLatch(1);
-                                                    makeAnAutomaticTransfer(true);
-                                                    latch.await();
-                                                    if (checkFiveFrames()) {
-                                                        finalAutoMethod();
-                                                        return;
-                                                    } else {
-                                                        activeUrbs = 32;
-                                                        packetsPerRequest = 32;
-                                                        latch = new CountDownLatch(1);
-                                                        makeAnAutomaticTransfer(true);
-                                                        latch.await();
-                                                        if (checkFiveFrames()) {
-                                                            finalAutoMethod();
-                                                            return;
-                                                        } else {
-                                                            ///////////////////////    ????????????????????????    ///////////////////////
-                                                            finalAutoMethod();
-                                                            return;
-                                                        }
-                                                    }
-                                                }
-                                            } else {
-                                                activeUrbs = 16;
-                                                packetsPerRequest = 16;
-                                                latch = new CountDownLatch(1);
-                                                makeAnAutomaticTransfer(false);
-                                                latch.await();
-                                                if (checkOneFrame()) {
-                                                    latch = new CountDownLatch(1);
-                                                    makeAnAutomaticTransfer(true);
-                                                    latch.await();
-                                                    if (checkFiveFrames()) {
-                                                        finalAutoMethod();
-                                                        return;
-                                                    } else {
-                                                        activeUrbs = 32;
-                                                        packetsPerRequest = 32;
-                                                        latch = new CountDownLatch(1);
-                                                        makeAnAutomaticTransfer(true);
-                                                        latch.await();
-                                                        if (checkFiveFrames()) {
-                                                            finalAutoMethod();
-                                                            return;
-                                                        } else {
-                                                            ///////////////////////    ????????????????????????    ///////////////////////
-                                                            finalAutoMethod();
-                                                            return;
-                                                        }
-
-                                                    }
-                                                } else {
-                                                    findHighestFrameLengths();
-
-
-///////////////////////    ????????????????????????    ///////////////////////
-                                                    finalAutoMethod();
-                                                    return;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                do {
-                                    if (activeUrbs <= 3) activeUrbs ++;
-                                    else activeUrbs = activeUrbs * 2;
-                                    latch = new CountDownLatch(1);
-                                    makeAnAutomaticTransfer(false);
-                                    try {
-                                        latch.await();
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                    log("spacketErrorCnt = " + spacketErrorCnt);
-                                } while (activeUrbs <= 64 && sframeLen < (imageWidth * imageHeight *2));
-                                log("sframeLen = " + sframeLen);
-                                //smallerPacketsPresent = true;
-                                log("\n ");
-                                log("Testing the Urbs 5 Packets ...");
-                                log("\n ");
-
-                                do {
-                                    latch = new CountDownLatch(1);
-                                    makeAnAutomaticTransfer(true);
-                                    log("activeUrbs = " + activeUrbs);
-                                    try {
-                                        latch.await();
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                    log("spacketErrorCnt = " + spacketErrorCnt);
-                                    if(activeUrbs <= 64 && !(sframeLenArray[0] >= (imageWidth * imageHeight *1.5 ) & sframeLenArray[1] >= (imageWidth * imageHeight * 1.5 ) )) {
-                                        if (activeUrbs <= 3) activeUrbs ++;
-                                        else activeUrbs = activeUrbs * 2;
-                                    }
-                                } while (activeUrbs <= 64 && !(sframeLenArray[0] >= (imageWidth * imageHeight ) & sframeLenArray[1] >= (imageWidth * imageHeight ) ));
-                                log("\n ");
-                                log("\n" + "Testing the Packets ..." + "\n");
-                                log("\n ");
-
-                                do {
-                                    latch = new CountDownLatch(1);
-                                    makeAnAutomaticTransfer(true);
-                                    log("packetsPerRequest = " + packetsPerRequest);
-                                    latch.await();
-
-                                    log("spacketErrorCnt = " + spacketErrorCnt);
-
-                                    if(packetsPerRequest <= 64 && !(sframeLenArray[0] >= (imageWidth * imageHeight *2) & sframeLenArray[1] >= (imageWidth * imageHeight *2) & sframeLenArray[2] >= (imageWidth * imageHeight *2) & sframeLenArray[3] >= (imageWidth * imageHeight *2) & sframeLenArray[4] >= (imageWidth * imageHeight *2) )) {
-                                        if (packetsPerRequest <= 3) packetsPerRequest ++;
-                                        else packetsPerRequest = packetsPerRequest * 2;
-                                    }
-                                } while (packetsPerRequest <= 64 && !(sframeLenArray[0] >= (imageWidth * imageHeight *2) & sframeLenArray[1] >= (imageWidth * imageHeight *2) & sframeLenArray[2] >= (imageWidth * imageHeight *2) & sframeLenArray[3] >= (imageWidth * imageHeight *2) & sframeLenArray[4] >= (imageWidth * imageHeight *2) ));
-
-
+                                percentageBuilder.dismiss();
+                                //renewTheProgressbar();
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
                         }
-
-                    }
-                }
-            };
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                        builder.setMessage("UVC Setup !").setPositiveButton("Set up from UVC manually", dialogClickListener).setNegativeButton("UVC Automatic Detection", dialogClickListener).setOnDismissListener(dismissL).show();
-                    } else {
-                        builder.setMessage("UVC Setup !").setPositiveButton("Set up from UVC manually", dialogClickListener).show();
                     }
                 }
             });
-
-*/
-
         }
     }
 
@@ -1911,9 +1658,11 @@ public class SetUpTheUsbDevice extends Activity {
 
         private boolean reapTheLastFrames;
         private int lastReapedFrames = 0;
+        private int number;
 
-        public IsochronousAutomaticClass5Frames() {
+        public IsochronousAutomaticClass5Frames(int number) {
             setPriority(Thread.MAX_PRIORITY);
+            this.number = number;
         }
 
         public void run() {
@@ -2034,7 +1783,7 @@ public class SetUpTheUsbDevice extends Activity {
                 log("sframeLenArray[0] = " + sframeLenArray[0] + "  /  sframeLenArray[1] = " + sframeLenArray[1] + "  /  sframeLenArray[2] = " + sframeLenArray[2] + "  /  sframeLenArray[3] = " + sframeLenArray[3] + "  /  sframeLenArray[4] = " + sframeLenArray[4] );
                 log("activeUrbs = " + activeUrbs);
                 log("packetsPerRequest = " + packetsPerRequest);
-
+                shighestFramesCube [number] = sframeLenArray;
                 latch.countDown();
                 runningAutoTransfer5frames = null;
 
@@ -2418,6 +2167,17 @@ public class SetUpTheUsbDevice extends Activity {
         if (lowQuality) {
             raiseTheQuality();
         }
+        if (percentageBuilder != null) {
+            percentageBuilder.hide();
+            percentageBuilder.dismiss();;
+            percentageBuilder = null;
+        }
+        if (percentageBuilder2 != null) {
+            percentageBuilder2.hide();
+            percentageBuilder2.dismiss();
+            percentageBuilder2 = null;
+        }
+
         runOnUiThread(new Runnable() {
             String msg = "Automatic Setup Completed:";
             @Override
@@ -2447,11 +2207,10 @@ public class SetUpTheUsbDevice extends Activity {
                 button.setEnabled(true);
             }
         });
-        loadingPanel = findViewById(R.id.loadingPanel);
-        loadingPanel.setVisibility(View.GONE);
+
         automaticStart = false;
 
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (which){
@@ -2486,7 +2245,7 @@ public class SetUpTheUsbDevice extends Activity {
 
 
 
-    public void makeAnAutomaticTransfer (boolean fiveFrames) {
+    public void makeAnAutomaticTransfer (boolean fiveFrames, int number) {
         int a;
         if (!usbManager.hasPermission(camDevice)) {
             PendingIntent permissionIntent = PendingIntent.getBroadcast(SetUpTheUsbDevice.this, 0, new Intent(ACTION_USB_PERMISSION), 0);
@@ -2525,7 +2284,7 @@ public class SetUpTheUsbDevice extends Activity {
                 if (runningAutoTransfer5frames != null) {
                     return;
                 }
-                runningAutoTransfer5frames = new IsochronousAutomaticClass5Frames();
+                runningAutoTransfer5frames = new IsochronousAutomaticClass5Frames(number);
                 runningAutoTransfer5frames.start();
             }
         }
@@ -2584,7 +2343,7 @@ public class SetUpTheUsbDevice extends Activity {
     private void performAnotherAutomaticTest() {
         try {
             latch = new CountDownLatch(1);
-            makeAnAutomaticTransfer(true);
+            makeAnAutomaticTransfer(true, number);
             latch.await();
 
             log("High Quality Stream:");
@@ -2598,56 +2357,385 @@ public class SetUpTheUsbDevice extends Activity {
 
     }
 
-    private void findHighestFrameLengths() {
 
 
+    private void renewTheProgressbar() {
+
+        if(percentageBuilder == null) {
+
+        } else {
+
+            CFAlertDialog.Builder percentageB = new CFAlertDialog.Builder(SetUpTheUsbDevice.this);
+            percentageB.setHeaderView(R.layout.dialog_header_layout_20);
+            percentageBuilder2 = percentageB.create();
+            percentageBuilder2.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface dialog) {
+
+                    CFAlertDialog.Builder percentageB = new CFAlertDialog.Builder(SetUpTheUsbDevice.this);
+                    percentageB.setHeaderView(R.layout.dialog_header_layout_20);
+                    percentageBuilder = percentageB.show();
+                    dialog.dismiss();
+
+                }
+            });
+            percentageBuilder2.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+
+
+                    try {
+                        if (sframeLen > 0 && sframeCnt > 0) {
+                            if (sframeLen > sframeMaximalLen) sframeMaximalLen = sframeLen;
+                            if (checkOneFrame()) {
+                                latch = new CountDownLatch(1);
+                                makeAnAutomaticTransfer(true, number);
+                                latch.await();
+                                if (checkFiveFrames()) {
+                                    finalAutoMethod();
+                                    return;
+                                } else {
+                                    activeUrbs = 4;
+                                    packetsPerRequest = 4;
+                                    latch = new CountDownLatch(1);
+                                    makeAnAutomaticTransfer(true, ++number);
+                                    latch.await();
+                                    if (checkFiveFrames()) {
+                                        finalAutoMethod();
+                                        return;
+                                    } else {
+                                        activeUrbs = 8;
+                                        packetsPerRequest = 8;
+                                        latch = new CountDownLatch(1);
+                                        makeAnAutomaticTransfer(true, ++number);
+                                        latch.await();
+                                        if (checkFiveFrames()) {
+                                            finalAutoMethod();
+                                            return;
+                                        } else {
+                                            activeUrbs = 16;
+                                            packetsPerRequest = 16;
+                                            latch = new CountDownLatch(1);
+                                            makeAnAutomaticTransfer(true, ++number);
+                                            latch.await();
+                                            if (checkFiveFrames()) {
+                                                finalAutoMethod();
+                                                return;
+                                            } else {
+                                                activeUrbs = 32;
+                                                packetsPerRequest = 32;
+                                                latch = new CountDownLatch(1);
+                                                makeAnAutomaticTransfer(true, ++number);
+                                                latch.await();
+                                                if (checkFiveFrames()) {
+                                                    finalAutoMethod();
+                                                    return;
+                                                } else {
+                                                    ///////////////////////    ????????????????????????    ///////////////////////
+                                                    finalAutoMethod();
+                                                    return;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                activeUrbs = 4;
+                                packetsPerRequest = 4;
+                                log("4 / 4");
+                                latch = new CountDownLatch(1);
+                                makeAnAutomaticTransfer(false, 0);
+                                latch.await();
+                                if (checkOneFrame()) {
+                                    latch = new CountDownLatch(1);
+                                    makeAnAutomaticTransfer(true, number);
+                                    latch.await();
+                                    if (checkFiveFrames()) {
+                                        finalAutoMethod();
+                                        return;
+                                    } else {
+                                        activeUrbs = 8;
+                                        packetsPerRequest = 8;
+                                        latch = new CountDownLatch(1);
+                                        makeAnAutomaticTransfer(true, ++number);
+                                        latch.await();
+                                        if (checkFiveFrames()) {
+                                            finalAutoMethod();
+                                            return;
+                                        } else {
+                                            activeUrbs = 16;
+                                            packetsPerRequest = 16;
+                                            latch = new CountDownLatch(1);
+                                            makeAnAutomaticTransfer(true, ++number);
+                                            latch.await();
+                                            if (checkFiveFrames()) {
+                                                finalAutoMethod();
+                                                return;
+                                            } else {
+                                                activeUrbs = 32;
+                                                packetsPerRequest = 32;
+                                                latch = new CountDownLatch(1);
+                                                makeAnAutomaticTransfer(true, ++number);
+                                                latch.await();
+                                                if (checkFiveFrames()) {
+                                                    finalAutoMethod();
+                                                    return;
+                                                } else {
+                                                    findHighestFrameLengths();
+                                                    return;
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    activeUrbs = 8;
+                                    packetsPerRequest = 8;
+                                    latch = new CountDownLatch(1);
+                                    makeAnAutomaticTransfer(false, 0);
+                                    latch.await();
+                                    if (checkOneFrame()) {
+                                        latch = new CountDownLatch(1);
+                                        makeAnAutomaticTransfer(true, number);
+                                        latch.await();
+                                        if (checkFiveFrames()) {
+                                            finalAutoMethod();
+                                            return;
+                                        } else {
+                                            activeUrbs = 16;
+                                            packetsPerRequest = 16;
+                                            latch = new CountDownLatch(1);
+                                            makeAnAutomaticTransfer(true, ++number);
+                                            latch.await();
+                                            if (checkFiveFrames()) {
+                                                finalAutoMethod();
+                                                return;
+                                            } else {
+                                                activeUrbs = 32;
+                                                packetsPerRequest = 32;
+                                                latch = new CountDownLatch(1);
+                                                makeAnAutomaticTransfer(true, ++number);
+                                                latch.await();
+                                                if (checkFiveFrames()) {
+                                                    finalAutoMethod();
+                                                    return;
+                                                } else {
+                                                    ///////////////////////    ????????????????????????    ///////////////////////
+                                                    finalAutoMethod();
+                                                    return;
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        activeUrbs = 16;
+                                        packetsPerRequest = 16;
+                                        latch = new CountDownLatch(1);
+                                        makeAnAutomaticTransfer(false, number);
+                                        latch.await();
+                                        if (checkOneFrame()) {
+                                            latch = new CountDownLatch(1);
+                                            makeAnAutomaticTransfer(true, ++number);
+                                            latch.await();
+                                            if (checkFiveFrames()) {
+                                                finalAutoMethod();
+                                                return;
+                                            } else {
+                                                activeUrbs = 32;
+                                                packetsPerRequest = 32;
+                                                latch = new CountDownLatch(1);
+                                                makeAnAutomaticTransfer(true, ++number);
+                                                latch.await();
+                                                if (checkFiveFrames()) {
+                                                    finalAutoMethod();
+                                                    return;
+                                                } else {
+                                                    findHighestFrameLengths();
+                                                    finalAutoMethod();
+                                                    return;
+                                                }
+                                            }
+                                        } else {
+                                            findHighestFrameLengths();
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            percentageBuilder2.show();
+        }
     }
 
-    class UpdatePercentageClass extends Thread {
 
-        public UpdatePercentageClass() {
-            setPriority(Thread.MAX_PRIORITY);
 
-        }
-        public void run() {
+    private void findHighestFrameLengths() {
+        percentageBuilder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                CFAlertDialog.Builder percentageB = new CFAlertDialog.Builder(SetUpTheUsbDevice.this);
+                percentageB.setHeaderView(R.layout.dialog_header_layout_40);
+                percentageBuilder2 = percentageB.create();
+                percentageBuilder2.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface dialog) {
+                        CFAlertDialog.Builder percentageB = new CFAlertDialog.Builder(SetUpTheUsbDevice.this);
+                        percentageB.setHeaderView(R.layout.dialog_header_layout_40);
+                        percentageBuilder = percentageB.show();
+                        dialog.dismiss();
+                    }
+                });
+                percentageBuilder2.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        try {
+                            int doneTransfers = number;
 
-            TextView percentage = findViewById(R.id.progressBarText);
-            try {
-                percentage.setText("1%");
-                percentageLatch = new CountDownLatch(1);
-                percentageLatch.await();
-                percentage.setText("10%");
-                percentageLatchCounted.countDown();
-                percentageLatch = new CountDownLatch(1);
-                percentageLatch.await();
-                percentage.setText("20%");
-                percentageLatchCounted.countDown();
-                percentageLatch = new CountDownLatch(1);
-                percentageLatch.await();
-                percentage.setText("30%");
-                percentageLatchCounted.countDown();
-                percentageLatch = new CountDownLatch(1);
-                percentageLatch.await();
-                percentage.setText("40%");
-                percentageLatchCounted.countDown();
-                percentageLatch = new CountDownLatch(1);
-                percentageLatch.await();
-                percentage.setText("50%");
-                percentageLatchCounted.countDown();
+                            log("40 % Status");
+                            // find the highest Transferlength:
+                            int [] lengthOne = findHighestLength();
+                            if(lengthOne[1] == 0) {
+                                activeUrbs = 4;
+                                packetsPerRequest = 4;
+                                log("4 / 4");
+                                latch = new CountDownLatch(1);
+                                makeAnAutomaticTransfer(true, number);
+                                latch.await();
+                                //
+                                activeUrbs = 16;
+                                packetsPerRequest = 16;
+                                latch = new CountDownLatch(1);
+                                makeAnAutomaticTransfer(true, ++number);
+                                latch.await();
+                                lengthOne = findHighestLength();
+                            }
+                            log ("lengthOne[0] = " + lengthOne[0] );
+                            // Test lowest package size ...
+                            setTheMaxPacketSize(false, true, 0);
 
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                            number = 0;
+                            latch = new CountDownLatch(1);
+                            makeAnAutomaticTransfer(true, number);
+                            latch.await();
+
+
+                            if (activeUrbs == 4) {
+                                activeUrbs = 16;
+                                packetsPerRequest =16;
+                            } else if (activeUrbs == 16) {
+                                activeUrbs = 4;
+                                packetsPerRequest =4;
+                            } else {
+                                activeUrbs = 2;
+                                packetsPerRequest =2;
+                            }
+                            latch = new CountDownLatch(1);
+                            makeAnAutomaticTransfer(true, ++number);
+                            latch.await();
+
+                            int [] lengthTwo = findHighestLength();
+                            log ("lengthTwo[0] = " + lengthTwo[0] );
+
+
+                            if (lengthOne[0] > lengthTwo[0]) {
+                                log("lengthOne[0] > lengthTwo[0]  -->  " + lengthOne[0]  + " > "+ lengthTwo[0]);
+                                setTheMaxPacketSize(true, false, 0);
+                                if (lengthOne[1] == 0) {
+                                    activeUrbs = 16;
+                                    packetsPerRequest =16;
+                                } else if (lengthOne[1] == 1) {
+                                    activeUrbs = 4;
+                                    packetsPerRequest =4;
+                                }
+
+                            } else {
+                                log("lengthOneo[0] < lengthTwo[0]  -->  " + lengthOne[0]  + " > "+ lengthTwo[0]);
+                                if (lengthTwo[1] == 0) {
+                                    activeUrbs = 16;
+                                    packetsPerRequest =16;
+                                } else if (lengthTwo[1] == 1) {
+                                    activeUrbs = 4;
+                                    packetsPerRequest =4;
+                                }
+
+                            }
+
+
+                            finalAutoMethod();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                percentageBuilder2.show();
+            }
+
+        });
+        percentageBuilder.dismiss();
+    }
+
+    private int [] findHighestLength () {
+        int lenght;
+        int highestlength = 0;
+        int num = 0;
+        for (int i = 0; i < number; i++) {
+            lenght = shighestFramesCube[i][0] + shighestFramesCube[i][1] + shighestFramesCube[i][2] + shighestFramesCube[i][3] + shighestFramesCube[i][4];
+            if(lenght > highestlength) {
+                highestlength = lenght;
+                num = i;
             }
         }
+        int [] ret = new int [2];
+        ret[0] = highestlength;
+        ret[1] = num;
+        return ret;
+    }
+    private void setTheMaxPacketSize (boolean highest, boolean lowest, int value) {
 
+        if (highest) {
+            int[] maxPacketsSizeArray = convertedMaxPacketSize.clone();
+            int minValue = maxPacketsSizeArray[0];
+            int minPos = 0;
+            for (int i = 0; i < maxPacketsSizeArray.length; i++) {
+                if (maxPacketsSizeArray[i] < minValue) {
+                    minValue = maxPacketsSizeArray[i];
+                    minPos = i;
+                }
+            }
+            camStreamingAltSetting = (minPos + 1);
+            maxPacketSize = maxPacketsSizeArray[minPos];
+        } else if (lowest) {
+            int[] maxPacketsSizeArray = convertedMaxPacketSize.clone();
+            int maxValue = maxPacketsSizeArray[0];
+            int maxPos = 0;
+            for (int i = 0; i < maxPacketsSizeArray.length; i++) {
+                if (maxPacketsSizeArray[i] < maxValue) {
+                    maxValue = maxPacketsSizeArray[i];
+                    maxPos = i;
+                }
+            }
+            camStreamingAltSetting = (maxPos + 1);
+            maxPacketSize = maxPacketsSizeArray[maxPos];
+        } else {
+            int[] maxPacketsSizeArray = convertedMaxPacketSize.clone();
+            if (maxPacketsSizeArray.length >= value) {
+                camStreamingAltSetting = (value + 1);
+                maxPacketSize = maxPacketsSizeArray[value];
+            }
+
+        }
 
 
 
     }
-
 
 }
  /*
+
+
                                 String autoDetectFileValuesString = new String("AutoDetectFileValues");
                                 String autoDetectFileOrdersString = new String("AutoDetectFileOrders");
                                 final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -2676,4 +2764,59 @@ public class SetUpTheUsbDevice extends Activity {
     public int sframeLen = 0;
     public int [] sframeLenArray = new int [5];
     public int srequestCnt = 0;
+
+
+                        do {
+                            if (activeUrbs <= 3) activeUrbs ++;
+                            else activeUrbs = activeUrbs * 2;
+                            latch = new CountDownLatch(1);
+                            makeAnAutomaticTransfer(false);
+                            try {
+                                latch.await();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            log("spacketErrorCnt = " + spacketErrorCnt);
+                        } while (activeUrbs <= 64 && sframeLen < (imageWidth * imageHeight *2));
+                        log("sframeLen = " + sframeLen);
+                        //smallerPacketsPresent = true;
+                        log("\n ");
+                        log("Testing the Urbs 5 Packets ...");
+                        log("\n ");
+
+                        do {
+                            latch = new CountDownLatch(1);
+                            makeAnAutomaticTransfer(true);
+                            log("activeUrbs = " + activeUrbs);
+                            try {
+                                latch.await();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            log("spacketErrorCnt = " + spacketErrorCnt);
+                            if(activeUrbs <= 64 && !(sframeLenArray[0] >= (imageWidth * imageHeight *1.5 ) & sframeLenArray[1] >= (imageWidth * imageHeight * 1.5 ) )) {
+                                if (activeUrbs <= 3) activeUrbs ++;
+                                else activeUrbs = activeUrbs * 2;
+                            }
+                        } while (activeUrbs <= 64 && !(sframeLenArray[0] >= (imageWidth * imageHeight ) & sframeLenArray[1] >= (imageWidth * imageHeight ) ));
+                        log("\n ");
+                        log("\n" + "Testing the Packets ..." + "\n");
+                        log("\n ");
+
+                        do {
+                            latch = new CountDownLatch(1);
+                            makeAnAutomaticTransfer(true);
+                            log("packetsPerRequest = " + packetsPerRequest);
+                            latch.await();
+
+                            log("spacketErrorCnt = " + spacketErrorCnt);
+
+                            if(packetsPerRequest <= 64 && !(sframeLenArray[0] >= (imageWidth * imageHeight *2) & sframeLenArray[1] >= (imageWidth * imageHeight *2) & sframeLenArray[2] >= (imageWidth * imageHeight *2) & sframeLenArray[3] >= (imageWidth * imageHeight *2) & sframeLenArray[4] >= (imageWidth * imageHeight *2) )) {
+                                if (packetsPerRequest <= 3) packetsPerRequest ++;
+                                else packetsPerRequest = packetsPerRequest * 2;
+                            }
+                        } while (packetsPerRequest <= 64 && !(sframeLenArray[0] >= (imageWidth * imageHeight *2) & sframeLenArray[1] >= (imageWidth * imageHeight *2) & sframeLenArray[2] >= (imageWidth * imageHeight *2) & sframeLenArray[3] >= (imageWidth * imageHeight *2) & sframeLenArray[4] >= (imageWidth * imageHeight *2) ));
+
+
+
                              */

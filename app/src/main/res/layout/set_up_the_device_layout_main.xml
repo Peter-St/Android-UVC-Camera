@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     android:background="@drawable/main_background">
 
+
+
     <Button
         android:id="@+id/returnToMainScreen"
         android:layout_width="wrap_content"
@@ -132,31 +134,7 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="1" />
 
-    <RelativeLayout
-        android:id="@+id/loadingPanel"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center" >
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:indeterminate="true"
-            android:layout_centerInParent="true"
-            android:gravity="center"/>
-
-        <TextView
-            android:id="@+id/progressBarText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-
-            android:text="0%"
-            android:textSize="40dp" />
-
-
-    </RelativeLayout>
 
 
     <ScrollView
@@ -195,6 +173,8 @@
             />
 
     </ScrollView>
+
+
 
 
 </android.support.constraint.ConstraintLayout>

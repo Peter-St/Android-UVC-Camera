@@ -103,8 +103,6 @@ public class SaveToFile  {
     static String autoDetectFileValuesString;
 
     TextView tv;
-    RelativeLayout loadingPanel;
-
 
     private UVC_Descriptor uvc_descriptor;
     private static int [] numberFormatIndexes;
@@ -193,8 +191,7 @@ public class SaveToFile  {
                         setUpTheUsbDevice.showTestRunMenu(view);
                     }
                 });
-                loadingPanel = activity.findViewById(R.id.loadingPanel);
-                loadingPanel.setVisibility(View.GONE);
+
             }
         });
 
@@ -816,10 +813,6 @@ public class SaveToFile  {
             });
             builderSingle.show();
         } else {
-
-
-
-
             // Select highest Max Packet Size
             if (!highestMaxPacketSizeDone) {
 
