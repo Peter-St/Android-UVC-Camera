@@ -27,10 +27,12 @@ import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
@@ -72,7 +74,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
+import java.util.concurrent.CountDownLatch;
 
+import com.crowdfire.cfalertdialog.CFAlertDialog;
+import com.crowdfire.cfalertdialog.views.CFPushButton;
 import com.sample.timelapse.MJPEGGenerator ;
 
 import humer.uvc_camera.UVC_Descriptor.IUVC_Descriptor;
@@ -126,12 +131,12 @@ public class Start_Iso_StreamActivity extends Activity {
     // Camera Values
     private static int camStreamingAltSetting;
     private static int camFormatIndex;
-    private static int camFrameIndex;
+    private int camFrameIndex;
     private static int camFrameInterval;
     private static int packetsPerRequest;
     private static int maxPacketSize;
-    private static int imageWidth;
-    private static int imageHeight;
+    private int imageWidth;
+    private int imageHeight;
     private static int activeUrbs;
     private static String videoformat;
     private static boolean camIsOpen;
@@ -196,6 +201,7 @@ public class Start_Iso_StreamActivity extends Activity {
 
     // UVC Interface
     IUVC_Descriptor iuvc_descriptor;
+    CFAlertDialog alertDialog;
 
 
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
@@ -249,19 +255,7 @@ public class Start_Iso_StreamActivity extends Activity {
         FabSpeedDial fabSpeedDial = (FabSpeedDial) findViewById(R.id.settingsButton);
         fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
 
-            @Override
-            public boolean onPrepareMenu(NavigationMenu navigationMenu) {
-                if (lowerResolution) {
-                    MenuItem menuItem = navigationMenu.findItem(R.id.lowerRes);
-                    menuItem.setTitle("Lower Resolution (Activated)");
-                    menuItem.setIcon(R.drawable.lower_resolution_not_activated_24dp);
-                } else {
-                    MenuItem menuItem = navigationMenu.findItem(R.id.lowerRes);
-                    menuItem.setTitle("Lower Resolution (Disabled)");
-                    menuItem.setIcon(R.drawable.ic_wallpaper_lower_resolution_24dp);
-                }
-                return true;
-            }
+
 
             @Override
             public boolean onMenuItemSelected(MenuItem menuItem) {
@@ -275,8 +269,8 @@ public class Start_Iso_StreamActivity extends Activity {
                     case R.id.adjustValuesTerminal:
                         showAdjustValuesTerminalMenu(findViewById(R.id.startStream));
                         return false;
-                    case R.id.lowerRes:
-                        lowerResolutionClickButtonEvent();
+                    case R.id.resolutionFrameInterval:
+                        resolutionFrameIntervalClickButtonEvent();
                         return false;
                     case R.id.returnToConfigScreen:
                         returnToConfigScreen();
@@ -993,47 +987,33 @@ public class Start_Iso_StreamActivity extends Activity {
         popup.show();
     }
 
-    public void lowerResolutionClickButtonEvent () {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                final FrameLayout layout = (FrameLayout)findViewById(R.id.switch_view);
-                layout.setVisibility(View.VISIBLE);
-                final SwitchCompat switchView = (SwitchCompat) findViewById(R.id.switch_lowerResolution);
-                if (lowerResolution) switchView.setChecked(true);
-                else switchView.setChecked(false);
-                Runnable myRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        layout.setVisibility (View.GONE);
-                    }
-                };
-                Handler myHandler = new Handler();
-                final int TIME_TO_WAIT = 3500;
+    public void resolutionFrameIntervalClickButtonEvent () {
+
+// Create Alert using Builder
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+        // red  = #FF0000
+        // transparent red = #00ff0000
+
+        String red = "#11ff0000";
+        int redInt = Color.parseColor(red);
+        //builder.setBackgroundColor(redInt);
 
 
-                switchView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                        Log.v("Switch State=", ""+isChecked);
-                        if (isChecked) {
-                            lowerResolution = true;
-                            myHandler.removeCallbacks(myRunnable);
-                            myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
-                        } else {
-                            lowerResolution = false;
-                            myHandler.removeCallbacks(myRunnable);
-                            myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
-                        }
-                    }
 
-                });
-                myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
-            }
-        });
+        //builder.setHeaderView(R.layout.dialog_header_layout);
+        // findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+        builder.setFooterView(R.layout.dialog_footer_layout);
 
+
+        alertDialog = builder.show();
     }
+
+
+
+
+
 
     public void returnToConfigScreen() {
         stopKamera = true;
@@ -1064,6 +1044,10 @@ public class Start_Iso_StreamActivity extends Activity {
     }
 
     public void isoStream(MenuItem Item) {
+        log("imageHight = " + imageHeight);
+        log("imageWidth = " + imageWidth);
+        log("camFrameIndex = " + camFrameIndex);
+
 
         if (camDevice == null) {
             displayMessage("No Camera connected\nPlease connect a camera");
@@ -1261,6 +1245,9 @@ public class Start_Iso_StreamActivity extends Activity {
         displayMessage("Image saved");
     }
 
+    //////////////////// Buttons  ///////////////
+
+
     public void stopTheCameraStreamClickEvent(View view) {
         startStream.getBackground().setAlpha(180);  // 25% transparent
         startStream.setEnabled(true);
@@ -1288,6 +1275,102 @@ public class Start_Iso_StreamActivity extends Activity {
         displayMessage("Stopped ");
         log("Stopped");
         runningStream = null;
+    }
+
+    public void resolutionButtonClickEvent(View v) {
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(Start_Iso_StreamActivity.this);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+        builder.setTitle("Select your Resolution");
+        builder.setMessage("Current Resolution: " + imageWidth + "x" + imageHeight);
+
+        if (iuvc_descriptor == null)  {
+            alertDialog.dismiss();
+            alertDialog = null;
+            displayMessage("Start the Camera Stream first !");
+            return;
+        }
+        int [] [] resolutions;
+
+        if (videoformat.equals("mjpeg")) resolutions = iuvc_descriptor.findDifferentResolutions(true);
+        else resolutions = iuvc_descriptor.findDifferentResolutions(false);
+
+        log("resolutions.length = " + resolutions.length);
+        String [] resString = new String [resolutions.length];
+        for (int a = 0; a < resolutions.length; a++) resString[a] = Arrays.toString(resolutions[a]);
+        for (int a = 0; a < resolutions.length; a++) log("Arrays.toString(resolutions[" + a + "]  =  " + Arrays.toString(resolutions[a]));
+
+
+
+
+        builder.setItems(resString , new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int index) {
+
+                log("resolutions[index][0] = " + resolutions[index][0]);
+                log("resolutions[index][1] = " + resolutions[index][1]);
+                imageWidth = resolutions[index][0];
+                imageHeight = resolutions[index][1];
+                camFrameIndex = index + 1;
+                displayMessage("Resolution selected.\nPlease restart the camera stream!");
+                if (runningStream != null) {
+                    View v = null;
+                    stopTheCameraStreamClickEvent(v);
+                }
+                dialogInterface.dismiss();
+            }
+        });
+        builder.show();
+
+        alertDialog.dismiss();
+        alertDialog = null;
+
+    }
+
+    public void frameIntervalClickEvent(View v) {
+
+        if (iuvc_descriptor == null) {
+            alertDialog.dismiss();
+            alertDialog = null;
+            displayMessage("Start the Camera Stream first !");
+            return;
+        }
+        int [] intervals;
+        if (videoformat.equals("mjpeg")) intervals = iuvc_descriptor.findDifferentFrameIntervals(true, new int [] {imageWidth, imageHeight});
+        else intervals = iuvc_descriptor.findDifferentFrameIntervals(false, new int [] {imageWidth, imageHeight});
+
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(Start_Iso_StreamActivity.this);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+        builder.setTitle("Select your FrameInterval");
+        builder.setMessage("Current Interval: " + camFrameInterval );
+
+
+
+        String [] intervalString = new String [intervals.length];
+        for (int a = 0; a < intervalString.length; a++) intervalString[a] = Integer.toString(intervals[a]);
+
+            builder.setItems(intervalString , new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int index) {
+
+                log("intervals[index] = " + intervals[index]);
+                camFrameInterval = intervals[index];
+                displayMessage("FrameInterval selected.\nPlease restart the camera stream!");
+                if (runningStream != null) {
+                    View v = null;
+                    stopTheCameraStreamClickEvent(v);
+                }
+                dialogInterface.dismiss();
+            }
+        });
+        builder.show();
+
+
+
+
+        alertDialog.dismiss();
+        alertDialog = null;
+
+
     }
 
     private void writeBytesToFile(String fileName, byte[] data) throws IOException {
@@ -1904,6 +1987,7 @@ public class Start_Iso_StreamActivity extends Activity {
                 e.printStackTrace();
             }
 
+            runningStream = null;
 
         }
     }
@@ -1973,3 +2057,47 @@ public class Start_Iso_StreamActivity extends Activity {
     }
 
 }
+
+/*
+public void lowerResolutionClickButtonEvent () {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                final FrameLayout layout = (FrameLayout)findViewById(R.id.switch_view);
+                layout.setVisibility(View.VISIBLE);
+                final SwitchCompat switchView = (SwitchCompat) findViewById(R.id.switch_lowerResolution);
+                if (lowerResolution) switchView.setChecked(true);
+                else switchView.setChecked(false);
+                Runnable myRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        layout.setVisibility (View.GONE);
+                    }
+                };
+                Handler myHandler = new Handler();
+                final int TIME_TO_WAIT = 3500;
+
+
+                switchView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                        Log.v("Switch State=", ""+isChecked);
+                        if (isChecked) {
+                            lowerResolution = true;
+                            myHandler.removeCallbacks(myRunnable);
+                            myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                        } else {
+                            lowerResolution = false;
+                            myHandler.removeCallbacks(myRunnable);
+                            myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                        }
+                    }
+
+                });
+                myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+            }
+        });
+
+    }
+ */

@@ -23,18 +23,15 @@
         android:orderInCategory="1"
         />
 
-    <group android:checkableBehavior="all">
-        <item
-            android:icon="@drawable/ic_wallpaper_lower_resolution_24dp"
-            app:iconTint="@color/white"
-            android:id="@+id/lowerRes"
-            android:title="Lower Resolution"
-            android:checkable="true"
-            app:showAsAction="ifRoom"
-            app:touchGuard="false"
-            android:orderInCategory="2"
-            />
-    </group>
+    <item
+        android:id="@+id/resolutionFrameInterval"
+        android:icon="@drawable/ic_brightness_2green_24dp"
+        app:iconTint="@color/green"
+        android:title="Change Resoltion / FrameInterval"
+        app:showAsAction="ifRoom"
+        app:touchGuard="false"
+        android:orderInCategory="1"
+        />
 
     <item
         android:icon="@drawable/return_main_screen_24dp"

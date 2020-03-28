@@ -426,7 +426,8 @@ public class SetUpTheUsbDevice extends Activity {
                     @Override
                     public void run() {
                         tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                        tv.setText("No camera found\nSolutions:\n- Connect a camera and try again ...");
+                        tv.setText("No camera found\n\nIf your Android Device is on PIE or Q, it could be, that your Device does not support Usb Cameras\n\nSolutions:" +
+                                "\n- Connect a camera and try again ...\n- Use a Android Device with a lower Android Version (e.g. Oreo or lower");
                         displayMessage("No camera found\nSolutions:\n- Connect a camera and try again ...");
                         tv.setTextColor(darker(Color.RED, 50));
                     }
@@ -568,8 +569,11 @@ public class SetUpTheUsbDevice extends Activity {
 
     private UsbInterface findInterface(UsbDevice usbDevice, int interfaceClass, int interfaceSubclass, boolean withEndpoint) {
         int interfaces = usbDevice.getInterfaceCount();
+        log("So many Interfaces found: " + interfaces);
         for (int i = 0; i < interfaces; i++) {
             UsbInterface usbInterface = usbDevice.getInterface(i);
+            log("usbInterface.getInterfaceClass() =  " + usbInterface.getInterfaceClass() + "  /  usbInterface.getInterfaceSubclass() = " + usbInterface.getInterfaceSubclass() + "  /  +  " +
+                    "usbInterface.getEndpointCount() = "  + usbInterface.getEndpointCount());
             if (usbInterface.getInterfaceClass() == interfaceClass && usbInterface.getInterfaceSubclass() == interfaceSubclass && (!withEndpoint || usbInterface.getEndpointCount() > 0)) {
                 return usbInterface;
             }
