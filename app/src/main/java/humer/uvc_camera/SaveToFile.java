@@ -39,8 +39,10 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.crowdfire.cfalertdialog.CFAlertDialog;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -49,9 +51,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import humer.uvc_camera.UVC_Descriptor.IUVC_Descriptor;
 import humer.uvc_camera.UVC_Descriptor.UVC_Descriptor;
-import humer.uvc_camera.UVC_Descriptor.UVC_Initializer;
 
 public class SaveToFile  {
 
@@ -132,7 +132,7 @@ public class SaveToFile  {
 
     public static boolean highestMaxPacketSizeDone;
     public static boolean lowestMaxPacketSizeDone;
-
+    public CFAlertDialog alertDialog;
 
 
 
@@ -782,36 +782,38 @@ public class SaveToFile  {
 
     private void selectMaxPacketSize(boolean automatic){
         if (!automatic) {
-            AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
-            builderSingle.setIcon(R.drawable.ic_menu_camera);
-            builderSingle.setTitle("Select the maximal Packet Size:");
-            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
-            for (int i = 0; i<maxPacketSizeStr.length; i++){
-                arrayAdapter.add(maxPacketSizeStr[i]);
+            int[] maxPacketsSizeArray = setUpTheUsbDevice.convertedMaxPacketSize.clone();
+
+            CFAlertDialog.Builder builder = new CFAlertDialog.Builder(mContext);
+            builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+            builder.setTitle("Select the maximal Packet Size:");
+            builder.setMessage("Your current MaxPacketSize: " + smaxPacketSize);
+            int selectedItem = 0;
+            for (int a =0; a<maxPacketsSizeArray.length; a++) {
+                if (maxPacketsSizeArray[a] == smaxPacketSize) selectedItem = a;
             }
-            builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            int coise;
+            builder.setSingleChoiceItems(maxPacketSizeStr, selectedItem, new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    writeMsgMain("UVC values canceled");
-                    dialog.dismiss();
-                }
-            });
-            builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    String input = arrayAdapter.getItem(which);
-                    smaxPacketSize = Integer.parseInt(input.toString());
-                    for (int i=1; i<(maxPacketSizeStr.length +1); i++) {
-                        if (input.matches(maxPacketSizeStr[i-1]) ) {
-                            sALT_SETTING = i;
-                        }
-                    }
+                public void onClick(DialogInterface dialogInterface, int index) {
+                    smaxPacketSize = Integer.parseInt(maxPacketSizeStr[index]);
+                    sALT_SETTING = index +1;
                     System.out.println("sALT_SETTING = " + sALT_SETTING);
                     System.out.println("smaxPacketSize = " + smaxPacketSize);
-                    selectPackets(automatic);
                 }
             });
-            builderSingle.show();
+
+            builder.addButton("DONE", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.END, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int index) {
+                    if(sALT_SETTING == 0) sALT_SETTING = index +1;
+                    if(smaxPacketSize == 0) smaxPacketSize = Integer.parseInt(maxPacketSizeStr[index]);
+                    selectPackets(automatic);
+                    dialogInterface.dismiss();
+                }
+            });
+            builder.show();
+
         } else {
             // Select highest Max Packet Size
             if (!highestMaxPacketSizeDone) {
@@ -839,30 +841,34 @@ public class SaveToFile  {
 
     public void selectPackets(boolean automatic) {
         if (!automatic) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-            builder.setTitle("Packets per Request");
-            builder.setMessage(String.format("Select the Packets per Request: (Number of Packet with a size of: %d)", smaxPacketSize));
+            CFAlertDialog.Builder builder = new CFAlertDialog.Builder(mContext);
+            builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+            builder.setTitle("Select your Packets per Request");
+            builder.setMessage("Your current Value = " + spacketsPerRequest);
+            builder.setHeaderView(R.layout.stf_select_max_package_layout);
 // Set up the input
             final EditText input = new EditText(mContext);
 // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
             input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
-            builder.setView(input);
-// Set up the buttons
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            builder.setFooterView(input);
+
+            builder.addButton("Ok", Color.parseColor("#FFFFFF"), Color.parseColor("#429ef4"), CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    if (input.getText().toString().isEmpty() == false)  spacketsPerRequest = Integer.parseInt(input.getText().toString());
-                    selectUrbs(automatic);
+                    if (input.getText().toString().isEmpty() == false) {
+                        spacketsPerRequest = Integer.parseInt(input.getText().toString());
+                        selectUrbs(automatic);
+                        dialog.dismiss();
+                    }
+                    else if (spacketsPerRequest != 0) {
+                        selectUrbs(automatic);
+                        dialog.dismiss();
+                    }
+                    else displayMessage("Select a Number, or type in a Value");
                 }
             });
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    writeMsgMain("UVC values canceled");
-                    dialog.cancel();
-                }
-            });
-            builder.show();
+            alertDialog = builder.show();
+
         } else {
             if (raisePacketsPerRequest) spacketsPerRequest ++;
             selectUrbs(true);
@@ -872,39 +878,41 @@ public class SaveToFile  {
 
     public void selectUrbs(boolean automatic) {
         if (!automatic) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-            builder.setTitle("USB Request Block");
-            builder.setMessage(String.format("Select the URBs: (Select the number of Packet Blocks running in paralell order.)\nOne Block is %d x %d Bytes",smaxPacketSize,  spacketsPerRequest ));
+
+            CFAlertDialog.Builder builder = new CFAlertDialog.Builder(mContext);
+            builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+            builder.setTitle("Select your active Usb Request Blocks");
+            builder.setMessage("Your current Value = " + sactiveUrbs);
+            builder.setHeaderView(R.layout.stf_select_active_urbs);
 // Set up the input
             final EditText input = new EditText(mContext);
 // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
             input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
-            builder.setView(input);
+            builder.setFooterView(input);
 
-// Set up the buttons
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            builder.addButton("Ok", Color.parseColor("#FFFFFF"), Color.parseColor("#429ef4"), CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    if (input.getText().toString().isEmpty() == false)  sactiveUrbs = Integer.parseInt(input.getText().toString());
-                    selectFormatIndex(automatic);
-
+                    if (input.getText().toString().isEmpty() == false) {
+                        sactiveUrbs = Integer.parseInt(input.getText().toString());
+                        selectFormatIndex(automatic);
+                        dialog.dismiss();
+                    }
+                    else if (sactiveUrbs != 0) {
+                        selectFormatIndex(automatic);
+                        dialog.dismiss();
+                    }
+                    else displayMessage("Select a Number, or type in a Value");
                 }
             });
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    writeMsgMain("UVC values canceled");
-                    dialog.cancel();
-                }
-            });
-            builder.show();
+            alertDialog = builder.show();
         } else {
             if (raiseActiveUrbs) sactiveUrbs ++;
             selectFormatIndex(true);
         }
     }
 
-    private void selectFormatIndex (boolean automatic) {
+    public void selectFormatIndex (boolean automatic) {
         if (!automatic) {
             numberFormatIndexes = new int[uvc_descriptor.formatIndex.size()];
             final String[] textmsg = new String[uvc_descriptor.formatIndex.size()];
@@ -915,43 +923,37 @@ public class SaveToFile  {
                 System.out.println("numberFormatIndexes[" + a + "] = " + numberFormatIndexes[a]);
                 textmsg[a] = formatIndex.videoformat.toString();
             }
-            final AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
-            builderSingle.setIcon(R.drawable.ic_menu_camera);
-            builderSingle.setTitle("Camera Format (MJPEG / YUV / ...");
-            //builderSingle.setMessage("Select the camera format (This video formats were supportet)");
+            final CFAlertDialog.Builder builder = new CFAlertDialog.Builder(mContext);
+            builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+            builder.setTitle("Select the Camera Format (MJPEG / YUV / ...)");
 
-            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
+            if (svideoformat != null) builder.setMessage("Your current format: " + svideoformat);
 
-            for (int i = 0; i < textmsg.length; i++) {
-                arrayAdapter.add(textmsg[i]);
+            int selectedItem = 0;
+            for (int a =0; a<numberFormatIndexes.length; a++) {
+                if (numberFormatIndexes[a] == scamFormatIndex) selectedItem = a;
             }
-
-            builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            builder.setSingleChoiceItems(textmsg, selectedItem, new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    writeMsgMain("UVC values canceled");
-                    dialog.dismiss();
+                public void onClick(DialogInterface dialogInterface, int index) {
+                    scamFormatIndex = numberFormatIndexes[index];
+                    formatIndex = uvc_descriptor.getFormatIndex(index);
+                    svideoformat = formatIndex.videoformat.toString();
                 }
             });
-            builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+            builder.addButton("DONE", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.END, new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    String strName = arrayAdapter.getItem(which);
-                    for (int i = 0; i < textmsg.length; i++) {
-                        if (strName.matches(textmsg[i])) {
-                            scamFormatIndex = numberFormatIndexes[i];
-                            formatIndex = uvc_descriptor.getFormatIndex(i);
-                            svideoformat = formatIndex.videoformat.toString();
-                            String[] textmessage = new String[formatIndex.numberOfFrameDescriptors];
-                            String inp;
-                            for (int j = 0; j < formatIndex.numberOfFrameDescriptors; j++) {
-                            }
-                        }
+                public void onClick(DialogInterface dialogInterface, int index) {
+                    if(scamFormatIndex == 0) scamFormatIndex = numberFormatIndexes[index];
+                    if (svideoformat == null) {
+                        formatIndex = uvc_descriptor.getFormatIndex(index);
+                        svideoformat = formatIndex.videoformat.toString();
                     }
                     selectFrameIndex(automatic);
+                    dialogInterface.dismiss();
                 }
             });
-            builderSingle.show();
+            builder.show();
         } else {
             if (uvc_descriptor.formatIndex.size() == 1) {
                 scamFormatIndex = 1;
@@ -967,9 +969,9 @@ public class SaveToFile  {
 
     private void selectFrameIndex (boolean automatic) {
         if (!automatic) {
-            frameDescriptorsResolutionArray = new String[formatIndex.numberOfFrameDescriptors];
-            String inp;
 
+            int [] scamFrameIndexArray = new int [formatIndex.numberOfFrameDescriptors];
+            frameDescriptorsResolutionArray = new String[formatIndex.numberOfFrameDescriptors];
             for (int j = 0; j < formatIndex.numberOfFrameDescriptors; j++) {
                 frameIndex = formatIndex.getFrameIndex(j);
                 StringBuilder stringb = new StringBuilder();
@@ -977,43 +979,44 @@ public class SaveToFile  {
                 stringb.append(" x ");
                 stringb.append(Integer.toString(frameIndex.wHeight));
                 frameDescriptorsResolutionArray[j] = stringb.toString();
+                scamFrameIndexArray[j] = frameIndex.frameIndex;
             }
-            final AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
-            builderSingle.setIcon(R.drawable.ic_menu_camera);
-            builderSingle.setTitle("Camera Resolution (Frame Format)");
-            //builderSingle.setMessage("Select the camera Frame Format (Represents the Resolution)");
-            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
-
-            for (int i = 0; i < frameDescriptorsResolutionArray.length; i++) {
-                arrayAdapter.add(frameDescriptorsResolutionArray[i]);
+            final CFAlertDialog.Builder builder = new CFAlertDialog.Builder(mContext);
+            builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+            builder.setTitle("Camera Resolution (Frame Format)");
+            builder.setMessage("Your current Resolution: " + simageWidth + "x" + simageHeight);
+            int selectedItem = 0;
+            for (int a =0; a<scamFrameIndexArray.length; a++) {
+                if (scamFrameIndexArray[a] == scamFrameIndex) selectedItem = a;
             }
-
-            builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            builder.setSingleChoiceItems(frameDescriptorsResolutionArray, selectedItem, new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    writeMsgMain("UVC values canceled");
-                    dialog.dismiss();
+                public void onClick(DialogInterface dialogInterface, int index) {
+                    frameIndex = formatIndex.getFrameIndex(index);
+                    scamFrameIndex = frameIndex.frameIndex;
+                    System.out.println("scamFrameIndex = " + scamFrameIndex);
+                    simageWidth = frameIndex.wWidth;
+                    simageHeight = frameIndex.wHeight;
                 }
             });
-            builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+            builder.addButton("DONE", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.END, new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    String input = arrayAdapter.getItem(which);
-                    for (int i = 0; i < frameDescriptorsResolutionArray.length; i++) {
-                        for (int j = 0; j < formatIndex.numberOfFrameDescriptors; j++) {
-                            if (input.equals(frameDescriptorsResolutionArray[j])) {
-                                frameIndex = formatIndex.getFrameIndex(j);
-                                scamFrameIndex = frameIndex.frameIndex;
-                                System.out.println("scamFrameIndex = " + scamFrameIndex);
-                                simageWidth = frameIndex.wWidth;
-                                simageHeight = frameIndex.wHeight;
-                            }
-                        }
+                public void onClick(DialogInterface dialogInterface, int index) {
+                    if (scamFrameIndex == 0) {
+                        frameIndex = formatIndex.getFrameIndex(index);
+                        scamFrameIndex = frameIndex.frameIndex;
                     }
+                    if (simageWidth == 0 || simageHeight == 0) {
+                        frameIndex = formatIndex.getFrameIndex(index);
+                        simageWidth = frameIndex.wWidth;
+                        simageHeight = frameIndex.wHeight;
+                    }
+
                     selectDWFrameIntervall(automatic);
+                    dialogInterface.dismiss();
                 }
             });
-            builderSingle.show();
+            builder.show();
         } else {
             if(lowQuality) {
                 int[] resArray = new int [formatIndex.numberOfFrameDescriptors];
@@ -1021,8 +1024,6 @@ public class SaveToFile  {
                     frameIndex = formatIndex.getFrameIndex(j);
                     resArray[j] = (frameIndex.wWidth * frameIndex.wHeight);
                 }
-
-
                 // find lowest resolution:
                 int minValue = resArray[0];
                 int minPos = 0;
@@ -1052,39 +1053,31 @@ public class SaveToFile  {
             for (int k=0; k<dwFrameIntervalArray.length; k++) {
                 dwFrameIntervalArray[k] = Integer.toString(frameIndex.dwFrameInterval[k]);
             }
-            final AlertDialog.Builder dwFrameIntervalArraybuilder = new AlertDialog.Builder(mContext);
-            dwFrameIntervalArraybuilder.setIcon(R.drawable.ic_menu_camera);
-            dwFrameIntervalArraybuilder.setTitle("Frameintervall");
-            //dwFrameIntervalArraybuilder.setMessage("Select the camera Frame Intervall\n333333 means 30 Frames per Second\n666666 means 15 Frames per Second\nThe number is in Nano Secounds and every amount of nanao secounds a Frame is sent.");
-            final ArrayAdapter<String> dwFrameIntervalArrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
+            final CFAlertDialog.Builder builder = new CFAlertDialog.Builder(mContext);
+            builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+            builder.setTitle("Select the camera Frame Intervall");
+            builder.setMessage("Your current FrameInterval: " + scamFrameInterval);
 
-            for (int i = 0; i < dwFrameIntervalArray.length; i++) {
-                dwFrameIntervalArrayAdapter.add(dwFrameIntervalArray[i]);
+            int selectedItem = 0;
+            for (int a =0; a<frameIndex.dwFrameInterval.length; a++) {
+                if (frameIndex.dwFrameInterval[a] == scamFrameInterval) selectedItem = a;
             }
-
-            dwFrameIntervalArraybuilder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            builder.setSingleChoiceItems(dwFrameIntervalArray, selectedItem, new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    writeMsgMain("UVC values canceled");
-                    dialog.dismiss();
+                public void onClick(DialogInterface dialogInterface, int index) {
+                    scamFrameInterval = frameIndex.dwFrameInterval[index];
                 }
             });
-            dwFrameIntervalArraybuilder.setAdapter(dwFrameIntervalArrayAdapter, new DialogInterface.OnClickListener() {
+            builder.addButton("DONE", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.END, new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    String textInput = dwFrameIntervalArrayAdapter.getItem(which);
-                    if (textInput != null) {
-                        scamFrameInterval = Integer.parseInt(textInput);
-                        System.out.println("scamFrameInterval = " + scamFrameInterval);
-                    }
+                public void onClick(DialogInterface dialogInterface, int index) {
+                    if (scamFrameInterval == 0) scamFrameInterval = frameIndex.dwFrameInterval[index];
                     writeTheValues();
                     saveYesNo();
-
+                    dialogInterface.dismiss();
                 }
             });
-            dwFrameIntervalArraybuilder.show();
-
-
+            builder.show();
         } else {
             if(lowQuality) {
                 int[] intervalArray = frameIndex.dwFrameInterval.clone();
@@ -1303,6 +1296,8 @@ public class SaveToFile  {
         setUpTheUsbDevice.raiseActiveUrbs = raiseActiveUrbs;
 
     }
+
+
 
 
 }

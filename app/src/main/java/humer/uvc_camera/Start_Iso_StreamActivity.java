@@ -200,8 +200,8 @@ public class Start_Iso_StreamActivity extends Activity {
     int start_position=0;
 
     // UVC Interface
-    IUVC_Descriptor iuvc_descriptor;
-    CFAlertDialog alertDialog;
+    private static IUVC_Descriptor iuvc_descriptor;
+    private CFAlertDialog alertDialog;
 
 
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
@@ -989,7 +989,6 @@ public class Start_Iso_StreamActivity extends Activity {
 
     public void resolutionFrameIntervalClickButtonEvent () {
 
-// Create Alert using Builder
         CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
         builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
         // red  = #FF0000
@@ -997,13 +996,7 @@ public class Start_Iso_StreamActivity extends Activity {
 
         String red = "#11ff0000";
         int redInt = Color.parseColor(red);
-        //builder.setBackgroundColor(redInt);
 
-
-
-
-        //builder.setHeaderView(R.layout.dialog_header_layout);
-        // findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
         builder.setFooterView(R.layout.dialog_footer_layout);
 
 

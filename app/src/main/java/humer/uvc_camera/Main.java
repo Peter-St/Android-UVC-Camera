@@ -83,10 +83,7 @@ public class Main extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
         tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-        tv.setText("NEW CAMERA FUNCTIONS IN THIS APP:\nThe camera functions for changing the brightness and other camera values" +
-                " have been rewritten!\nTo use the new functions re-run the Button 'Set Up With Uvc Values' for your camera and save the Values!!!" +
-                "\nIf you click the options menu now in the Camera Stream Screen, you now see all functions supported by your camera. " +
-                "Up to now not all functions are supportet by this app, but they could be available in near future.\nSo far,\nHappy testing!" +
+        tv.setText("Hello\n\nThis App may not work on Android 9 (PIE) and Android 10 (Q) Devices. In this case please use other Usb Camera Apps from the Play Store" +
                 "\n\nYour current Values are:\n\n( - this is a sroll and zoom field - )\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
                 "\nAltSetting = " + camStreamingAltSetting + "\nMaxPacketSize = " + maxPacketSize + "\nVideoformat = " + videoformat + "\ncamFormatIndex = " + camFormatIndex + "\n" +
                 "camFrameIndex = " + camFrameIndex + "\nimageWidth = "+ imageWidth + "\nimageHeight = " + imageHeight + "\ncamFrameInterval = " + camFrameInterval + "" +

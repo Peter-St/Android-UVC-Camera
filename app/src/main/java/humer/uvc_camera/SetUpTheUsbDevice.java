@@ -2754,6 +2754,68 @@ public class SetUpTheUsbDevice extends Activity {
 
     }
 
+    public void one (View v) {
+        stf.spacketsPerRequest = 1;
+        stf.alertDialog.dismiss();
+        stf.selectUrbs(false);
+    }
+    public void two (View v) {
+        stf.spacketsPerRequest = 2;
+        stf.alertDialog.dismiss();
+        stf.selectUrbs(false);
+    }
+    public void three (View v) {
+        stf.spacketsPerRequest = 4;
+        stf.alertDialog.dismiss();
+        stf.selectUrbs(false);
+    }
+    public void four (View v) {
+        stf.spacketsPerRequest = 8;
+        stf.alertDialog.dismiss();
+        stf.selectUrbs(false);
+    }
+    public void five (View v) {
+        stf.spacketsPerRequest = 16;
+        stf.alertDialog.dismiss();
+        stf.selectUrbs(false);
+    }
+    public void six (View v) {
+        stf.spacketsPerRequest = 32;
+        stf.alertDialog.dismiss();
+        stf.selectUrbs(false);
+    }
+    public void uone (View v) {
+        stf.sactiveUrbs = 1;
+        stf.alertDialog.dismiss();
+        stf.selectFormatIndex(false);
+    }
+    public void utwo (View v) {
+        stf.sactiveUrbs = 2;
+        stf.alertDialog.dismiss();
+        stf.selectFormatIndex(false);
+    }
+    public void uthree (View v) {
+        stf.sactiveUrbs = 4;
+        stf.alertDialog.dismiss();
+        stf.selectFormatIndex(false);
+    }
+    public void ufour (View v) {
+        stf.sactiveUrbs = 8;
+        stf.alertDialog.dismiss();
+        stf.selectFormatIndex(false);
+    }
+    public void ufive (View v) {
+        stf.sactiveUrbs = 16;
+        stf.alertDialog.dismiss();
+        stf.selectFormatIndex(false);
+    }
+    public void usix (View v) {
+        stf.sactiveUrbs = 32;
+        stf.alertDialog.dismiss();
+        stf.selectFormatIndex(false);
+    }
+
+
 }
  /*
 
