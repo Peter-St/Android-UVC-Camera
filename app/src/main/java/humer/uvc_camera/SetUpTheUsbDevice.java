@@ -527,7 +527,8 @@ public class SetUpTheUsbDevice extends Activity {
     private void findCam() throws Exception {
         camDevice = findCameraDevice();
         if (camDevice == null) {
-            throw new Exception("No USB camera device found.");
+            camDevice = checkDeviceVideoClass();
+            if (camDevice == null) throw new Exception("No USB camera device found.");
         }
         StringBuilder sb = new StringBuilder();
         sb.append(camDevice.toString());
@@ -540,6 +541,19 @@ public class SetUpTheUsbDevice extends Activity {
         }
         log("deviceName = " + deviceName);
         usbManager.requestPermission(camDevice, mPermissionIntent);
+    }
+
+    private UsbDevice checkDeviceVideoClass() {
+
+        HashMap<String, UsbDevice> deviceList = usbManager.getDeviceList();
+        log("USB devices count = " + deviceList.size());
+        for (UsbDevice usbDevice : deviceList.values()) {
+            log("USB device \"" + usbDevice.getDeviceName() + "\": " + usbDevice);
+            if (checkDeviceHasVideoControlInterface(usbDevice)) {
+                return usbDevice;
+            }
+        }
+        return null;
     }
 
 
@@ -557,6 +571,10 @@ public class SetUpTheUsbDevice extends Activity {
 
     private boolean checkDeviceHasVideoStreamingInterface(UsbDevice usbDevice) {
         return getVideoStreamingInterface(usbDevice) != null;
+    }
+
+    private boolean checkDeviceHasVideoControlInterface(UsbDevice usbDevice) {
+        return getVideoControlInterface(usbDevice) != null;
     }
 
     private UsbInterface getVideoControlInterface(UsbDevice usbDevice) {
