@@ -908,7 +908,7 @@ public class SaveToFile  {
             alertDialog = builder.show();
         } else {
             if (raiseActiveUrbs) sactiveUrbs ++;
-            selectFormatIndex(true);
+            selectFormatIndex(automatic);
         }
     }
 
@@ -955,15 +955,44 @@ public class SaveToFile  {
             });
             builder.show();
         } else {
+            numberFormatIndexes = new int[uvc_descriptor.formatIndex.size()];
+            final String[] textmsg = new String[uvc_descriptor.formatIndex.size()];
+            for (int a = 0; a < uvc_descriptor.formatIndex.size(); a++) {
+                formatIndex = uvc_descriptor.getFormatIndex(a);
+                System.out.println("formatIndex.videoformat = " + formatIndex.videoformat);
+                numberFormatIndexes[a] = formatIndex.formatIndexNumber;
+                System.out.println("numberFormatIndexes[" + a + "] = " + numberFormatIndexes[a]);
+                textmsg[a] = formatIndex.videoformat.toString();
+            }
             if (uvc_descriptor.formatIndex.size() == 1) {
+                numberFormatIndexes = new int[uvc_descriptor.formatIndex.size()];
                 scamFormatIndex = 1;
                 formatIndex = uvc_descriptor.getFormatIndex(0);
                 svideoformat = formatIndex.videoformat.toString();
-                selectFrameIndex(true);
+                selectFrameIndex(automatic);
                 return;
+            } else {
+                for (int a = 0; a < uvc_descriptor.formatIndex.size(); a++) {
+                    if (textmsg[a].equals("mjpeg")) {
+                        scamFormatIndex = numberFormatIndexes[a];
+                        formatIndex = uvc_descriptor.getFormatIndex(a);
+                        svideoformat = formatIndex.videoformat.toString();
+                        selectFrameIndex(automatic);
+                        return;
+                    }
+                }
+                for (int a = 0; a < uvc_descriptor.formatIndex.size(); a++) {
+                    if (textmsg[a].equals("yuv") || textmsg[a].equals("YUY2") || textmsg[a].equals("YV12") || textmsg[a].equals("YUV_422_888") || textmsg[a].equals("YUV_420_888")) {
+                        scamFormatIndex = numberFormatIndexes[a];
+                        formatIndex = uvc_descriptor.getFormatIndex(a);
+                        svideoformat = formatIndex.videoformat.toString();
+                        selectFrameIndex(automatic);
+                        return;
+                    }
+                }
+
+
             }
-            scamFormatIndex = 1;
-            selectFrameIndex(true);
         }
     }
 
@@ -1040,10 +1069,10 @@ public class SaveToFile  {
                 System.out.println("scamFrameIndex = " + scamFrameIndex);
                 System.out.println("simageWidth = " + simageWidth);
                 System.out.println("simageHeight = " + simageHeight);
-                selectDWFrameIntervall(true);
+                selectDWFrameIntervall(automatic);
                 return;
             }
-            selectDWFrameIntervall(true);
+            selectDWFrameIntervall(automatic);
         }
     }
 
