@@ -25,13 +25,24 @@
 
     <item
         android:id="@+id/resolutionFrameInterval"
-        android:icon="@drawable/ic_brightness_2green_24dp"
-        app:iconTint="@color/green"
+        android:icon="@drawable/ic_resolution_24dp"
+        app:iconTint="@color/yellow"
         android:title="Change Resoltion / FrameInterval"
         app:showAsAction="ifRoom"
         app:touchGuard="false"
         android:orderInCategory="1"
         />
+
+    <item
+        android:id="@+id/webRTC"
+        android:icon="@drawable/ic_web_rtc_24dp"
+        app:iconTint="@color/blue"
+        android:title="WebRTC"
+        app:showAsAction="ifRoom"
+        app:touchGuard="false"
+        android:orderInCategory="1"
+        />
+
 
     <item
         android:icon="@drawable/return_main_screen_24dp"

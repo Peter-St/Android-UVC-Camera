@@ -23,7 +23,6 @@ This Repository is provided "as is", without warranties of any kind.
 package humer.uvc_camera;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -42,16 +41,13 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
+import android.media.ImageReader;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.support.design.internal.NavigationMenu;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -74,11 +70,14 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
-import com.crowdfire.cfalertdialog.views.CFPushButton;
+import com.example.androidthings.videortc.MainActivity;
 import com.sample.timelapse.MJPEGGenerator ;
+
+import org.webrtc.VideoCapturer;
+import org.webrtc.VideoFrame;
 
 import humer.uvc_camera.UVC_Descriptor.IUVC_Descriptor;
 import humer.uvc_camera.UVC_Descriptor.UVC_Descriptor;
@@ -271,6 +270,9 @@ public class Start_Iso_StreamActivity extends Activity {
                         return false;
                     case R.id.resolutionFrameInterval:
                         resolutionFrameIntervalClickButtonEvent();
+                        return false;
+                    case R.id.webRTC:
+                        startWebRTC();
                         return false;
                     case R.id.returnToConfigScreen:
                         returnToConfigScreen();
@@ -1003,10 +1005,10 @@ public class Start_Iso_StreamActivity extends Activity {
         alertDialog = builder.show();
     }
 
-
-
-
-
+    private void startWebRTC() {
+        startActivity(new Intent(Start_Iso_StreamActivity.this, MainActivity.class));
+        Start_Iso_StreamActivity.this.finish();
+    }
 
     public void returnToConfigScreen() {
         stopKamera = true;
@@ -2048,6 +2050,53 @@ public class Start_Iso_StreamActivity extends Activity {
         String hex = formatter.toString();
         System.out.println("hex " + hex);
     }
+
+
+    public void a() {
+        VideoCapturer v;
+
+        VideoCapturer.CapturerObserver a;
+
+
+
+        a = new VideoCapturer.CapturerObserver() {
+            @Override
+            public void onCapturerStarted(boolean b) {
+
+            }
+
+            @Override
+            public void onCapturerStopped() {
+
+            }
+
+            @Override
+            public void onByteBufferFrameCaptured(byte[] bytes, int i, int i1, int i2, long l) {
+
+            }
+
+            @Override
+            public void onTextureFrameCaptured(int i, int i1, int i2, float[] floats, int i3, long l) {
+
+            }
+
+            @Override
+            public void onFrameCaptured(VideoFrame videoFrame) {
+
+            }
+        };
+
+
+        ImageReader i;
+
+        Executor executor;
+        VideoCapturer capturer;
+
+    }
+
+
+
+
 
 }
 
