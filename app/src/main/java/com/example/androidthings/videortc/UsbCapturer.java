@@ -14,18 +14,30 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
+import android.os.Environment;
 import android.util.Log;
-import android.view.SurfaceHolder;
+
+import org.opencv.android.Utils;
+import org.opencv.core.CvException;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 import org.webrtc.SurfaceTextureHelper;
 import org.webrtc.SurfaceViewRenderer;
 import org.webrtc.VideoCapturer;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
-import humer.uvc_camera.UVC_Descriptor.IUVC_Descriptor;
 import humer.uvc_camera.UsbIso64.USBIso;
 import humer.uvc_camera.UsbIso64.usbdevice_fs_util;
+
+import org.opencv.android.OpenCVLoader;
 
 public class UsbCapturer implements VideoCapturer {
 
@@ -96,6 +108,10 @@ public class UsbCapturer implements VideoCapturer {
     private boolean exit = false;
     public StringBuilder stringBuilder;
     private enum Videoformat {yuv, mjpeg, YUY2, YV12, YUV_422_888, YUV_420_888}
+    private int [] differentFrameSizes;
+    private int [] lastThreeFrames;
+    private int whichFrame = 0;
+
 
     public static CallActivity callActivity;
 
@@ -154,6 +170,13 @@ public class UsbCapturer implements VideoCapturer {
     }
 
     private void initializeTheStream() throws Exception {
+
+        if (!OpenCVLoader.initDebug())
+            Log.e("OpenCv", "Unable to load OpenCV");
+        else
+            Log.d("OpenCv", "OpenCV loaded");
+
+
         usbManager = (UsbManager) callActivity.getSystemService(Context.USB_SERVICE);
         mPermissionIntent = PendingIntent.getBroadcast(callActivity.getApplicationContext(), 0, new Intent(ACTION_USB_PERMISSION), 0);
         IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
@@ -588,12 +611,14 @@ public class UsbCapturer implements VideoCapturer {
                 byte[] data = new byte[maxPacketSize];
                 enableStreaming(true);
                 usbIso64.submitUrbs();
+
                 while (true) {
                     if (pauseCamera) {
                         Thread.sleep(200);
                     } else {
                         USBIso.Request req = usbIso64.reapRequest(true);
                         for (int packetNo = 0; packetNo < req.getNumberOfPackets(); packetNo++) {
+
                             int packetStatus = req.getPacketStatus(packetNo);
                             try {if (packetStatus != 0) {
                                 skipFrames = 1;}
@@ -601,9 +626,11 @@ public class UsbCapturer implements VideoCapturer {
                                 log("Camera read error, packet status=" + packetStatus);
                             }
                             int packetLen = req.getPacketActualLength(packetNo);
+
                             if (packetLen == 0) {
                                 continue;
                             }
+
                             if (packetLen > maxPacketSize) {
                                 throw new Exception("packetLen > maxPacketSize");
                             }
@@ -618,13 +645,27 @@ public class UsbCapturer implements VideoCapturer {
                             }
                             int headerFlags = data[1] & 0xff;
                             int dataLen = packetLen - headerLen;
+
                             boolean error = (headerFlags & 0x40) != 0;
                             if (error && skipFrames == 0) skipFrames = 1;
                             if (dataLen > 0 && skipFrames == 0) frameData.write(data, headerLen, dataLen);
+
+
                             if ((headerFlags & 2) != 0) {
+
                                 log("Frame Complete");
                                 log("frameLen = " + frameData.size());
-                                if(frameData.size() < imageWidth * imageHeight * 2) skipFrames =1;
+                                if(frameData.size() < imageWidth * imageHeight * 2) {
+                                    if (videoformat.equals("mjpeg")) ;
+                                    else skipFrames =1;
+                                }
+                                //if(frameData.size() < 20000) skipFrames =1;
+                                // check Frame Size
+                                if (checkFrameSize(frameData.size())) {
+                                    skipFrames = 1;
+                                    log("Checking Frame --> Skip Retruned");
+                                }
+
                                 if (skipFrames > 0) {
                                     log("Skipping frame, len= " + frameData.size());
                                     frameData.reset();
@@ -638,6 +679,8 @@ public class UsbCapturer implements VideoCapturer {
                                     frameData.write(data, headerLen, dataLen);
                                     if (videoformat.equals("mjpeg") ) {
                                         try {
+                                            log("frame, len= " + frameData.size());
+
                                             processReceivedMJpegVideoFrameKamera(frameData.toByteArray());
                                         } catch (Exception e) {
                                             e.printStackTrace();
@@ -677,13 +720,42 @@ public class UsbCapturer implements VideoCapturer {
         }
     }
 
+    private boolean checkFrameSize(int size) {
+        if(size < 10000) return true;
+        if (differentFrameSizes == null) differentFrameSizes = new int [5];
+        if (lastThreeFrames == null) lastThreeFrames = new int [4];
+        lastThreeFrames[3] = lastThreeFrames[2];
+        lastThreeFrames[2] = lastThreeFrames[1];
+        lastThreeFrames[1] = lastThreeFrames[0];
+        lastThreeFrames[0] = size;
+        if (++whichFrame == 5) whichFrame = 0;
+        if(differentFrameSizes[whichFrame] == 0) {
+            differentFrameSizes[whichFrame] = size;
+            return false;
+        }
+        if (differentFrameSizes[whichFrame] < size) {
+            differentFrameSizes[whichFrame] = size;
+            return false;
+        }
+
+        int averageSize = 0;
+        for (int j = 1; j < lastThreeFrames.length;j++) {
+            averageSize = averageSize + lastThreeFrames[j];
+        }
+        if ((averageSize / 3 - 1000) < size) {
+            return false;
+        }
+        if ((averageSize / 3 /1.3) < size) {
+            log ("averageSize = " + (averageSize / 3 /1.3));
+            return false;
+        }
+        return true;
+    }
+
     private void processReceivedVideoFrameYuv(byte[] frameData, UsbCapturer.Videoformat videoFromat) throws IOException {
+        Long imageTime = System.currentTimeMillis();
         log("YUV Progress");
         YuvImage yuvImage ;
-
-
-        Long imageTime = System.currentTimeMillis();
-
         if (videoFromat == UsbCapturer.Videoformat.YUY2) yuvImage = new YuvImage(frameData, ImageFormat.YUY2, imageWidth, imageHeight, null);
         else if (videoFromat == UsbCapturer.Videoformat.YV12) yuvImage = new YuvImage(frameData, ImageFormat.YV12, imageWidth, imageHeight, null);
         else if (videoFromat == UsbCapturer.Videoformat.YUV_420_888) yuvImage = new YuvImage(frameData, ImageFormat.YUV_420_888, imageWidth, imageHeight, null);
@@ -754,29 +826,45 @@ public class UsbCapturer implements VideoCapturer {
         }
     }
 
+
     public void processReceivedMJpegVideoFrameKamera(byte[] mjpegFrameData) throws Exception {
 
         byte[] jpegFrameData = convertMjpegFrameToJpegKamera(mjpegFrameData);
-
+        Bitmap bitmap = BitmapFactory.decodeByteArray(jpegFrameData, 0, jpegFrameData.length);
+        Mat rgbaMat = new Mat(imageWidth, imageHeight, CvType.CV_8UC3);
+        Utils.bitmapToMat(bitmap, rgbaMat);
+        // convert to NV21 ...
+        Mat nv12Mat = new Mat(imageWidth, imageHeight, CvType.CV_8UC2);
+        Imgproc.cvtColor( rgbaMat, nv12Mat, Imgproc.COLOR_BGR2YUV_I420 );
+        byte[] nv12buffer = new byte[(int) (nv12Mat.total() * nv12Mat.channels())];
+        nv12Mat.get(0, 0, nv12buffer);
+        byte [] nv21Array = YV12toNV21 (nv12buffer, null , imageWidth, imageHeight);
 
         if (exit == false) {
             Long imageTime = System.currentTimeMillis();
-            capturerObserver.onByteBufferFrameCaptured(jpegFrameData, imageWidth, imageHeight, 0, imageTime);
-            final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegFrameData, 0, jpegFrameData.length);
-
-
-            /*
-            final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegFrameData, 0, jpegFrameData.length);
-
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    imageView.setImageBitmap(bitmap);
-                }
-            });
-            */
+            capturerObserver.onByteBufferFrameCaptured(nv21Array, imageWidth, imageHeight, 0, imageTime);
         }
     }
+
+
+    /** Convert YV12 (YYYYYYYY:UU:VV) to NV21 (YYYYYYYYY:VUVU) */
+    public byte[] YV12toNV21(final byte[] input, byte[] output, final int width, final int height) {
+        if (output == null) {
+            output = new byte[input.length];
+        }
+        final int size = width * height;
+        final int quarter = size / 4;
+        final int u0 = size + quarter;
+
+        System.arraycopy(input, 0, output, 0, size); // Y is same
+
+        for (int v = size, u = u0, o = size; v < u0; u++, v++, o += 2) {
+            output[o] = input[v]; // For NV21, V first
+            output[o + 1] = input[u]; // For NV21, U second
+        }
+        return output;
+    }
+
 
     // see USB video class standard, USB_Video_Payload_MJPEG_1.5.pdf
     private byte[] convertMjpegFrameToJpegKamera(byte[] frameData) throws Exception {

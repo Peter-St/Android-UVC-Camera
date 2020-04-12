@@ -18,7 +18,7 @@
 
     <uses-sdk
         android:targetSdkVersion="28"
-        tools:overrideLibrary="org.webrtc"/>
+        tools:overrideLibrary="org.webrtc, org.opencv"/>
 
     <application
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"

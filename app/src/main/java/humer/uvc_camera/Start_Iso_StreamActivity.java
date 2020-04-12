@@ -62,6 +62,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -76,6 +77,15 @@ import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.example.androidthings.videortc.WebRtc_MainActivity;
 import com.sample.timelapse.MJPEGGenerator ;
 
+import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
+import org.opencv.core.CvException;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.core.Scalar;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 import org.webrtc.VideoCapturer;
 import org.webrtc.VideoFrame;
 
@@ -197,10 +207,15 @@ public class Start_Iso_StreamActivity extends Activity {
     static float end;
     float start_pos;
     int start_position=0;
+    private int framecount = 0;
 
     // UVC Interface
     private static IUVC_Descriptor iuvc_descriptor;
     private CFAlertDialog alertDialog;
+
+    private int [] differentFrameSizes;
+    private int [] lastThreeFrames;
+    private int whichFrame = 0;
 
 
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
@@ -1145,6 +1160,10 @@ public class Start_Iso_StreamActivity extends Activity {
 
     private void findCam() throws Exception {
 
+        if (!OpenCVLoader.initDebug())
+            Log.e("OpenCv", "Unable to load OpenCV");
+        else
+            Log.d("OpenCv", "OpenCV loaded");
         camDevice = findCameraDevice();
         if (camDevice == null) {
             throw new Exception("No USB camera device found.");
@@ -1399,6 +1418,55 @@ public class Start_Iso_StreamActivity extends Activity {
         }
     }
 
+    private byte [] getNV21 (int inputWidth, int inputHeight, Bitmap scaled) {
+
+        int [] argb = new int[inputWidth * inputHeight];
+
+        scaled.getPixels(argb, 0, inputWidth, 0, 0, inputWidth, inputHeight);
+
+        byte [] yuv = new byte[inputWidth*inputHeight*3/2];
+        encodeYUV420SP(yuv, argb, inputWidth, inputHeight);
+
+        scaled.recycle();
+
+        return yuv;
+    }
+
+    void encodeYUV420SP(byte[] yuv420sp, int[] argb, int width, int height) {
+        final int frameSize = width * height;
+
+        int yIndex = 0;
+        int uvIndex = frameSize;
+
+        int a, R, G, B, Y, U, V;
+        int index = 0;
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+
+                a = (argb[index] & 0xff000000) >> 24; // a is not used obviously
+                R = (argb[index] & 0xff0000) >> 16;
+                G = (argb[index] & 0xff00) >> 8;
+                B = (argb[index] & 0xff) >> 0;
+
+                // well known RGB to YUV algorithm
+                Y = ( (  66 * R + 129 * G +  25 * B + 128) >> 8) +  16;
+                U = ( ( -38 * R -  74 * G + 112 * B + 128) >> 8) + 128;
+                V = ( ( 112 * R -  94 * G -  18 * B + 128) >> 8) + 128;
+
+                // NV21 has a plane of Y and interleaved planes of VU each sampled by a factor of 2
+                //    meaning for every 4 Y pixels there are 1 V and 1 U.  Note the sampling is every other
+                //    pixel AND every other scanline.
+                yuv420sp[yIndex++] = (byte) ((Y < 0) ? 0 : ((Y > 255) ? 255 : Y));
+                if (j % 2 == 0 && index % 2 == 0) {
+                    yuv420sp[uvIndex++] = (byte)((V<0) ? 0 : ((V > 255) ? 255 : V));
+                    yuv420sp[uvIndex++] = (byte)((U<0) ? 0 : ((U > 255) ? 255 : U));
+                }
+
+                index ++;
+            }
+        }
+    }
+
     private void processReceivedVideoFrameYuv(byte[] frameData, Videoformat videoFromat) throws IOException {
         YuvImage yuvImage ;
         if (videoFromat == Videoformat.YUY2) yuvImage = new YuvImage(frameData, ImageFormat.YUY2, imageWidth, imageHeight, null);
@@ -1463,15 +1531,10 @@ public class Start_Iso_StreamActivity extends Activity {
                 bitmapToVideoEncoder.queueFrame(bitmap);
             }
         }
-
-
-
     }
 
     public void processReceivedMJpegVideoFrameKamera(byte[] mjpegFrameData) throws Exception {
-
         byte[] jpegFrameData = convertMjpegFrameToJpegKamera(mjpegFrameData);
-
         if (bildaufnahme) {
             bildaufnahme = false ;
             date = new Date() ;
@@ -1514,14 +1577,9 @@ public class Start_Iso_StreamActivity extends Activity {
                 String fileName = new File(rootPath + lastPicture + ".jpg").getPath() ;
                 writeBytesToFile(fileName, jpegFrameData);
             }
-
         }
-
-
         if (exit == false) {
-
             if (lowerResolution) {
-
                 BitmapFactory.Options opts = new BitmapFactory.Options();
                 opts.inSampleSize = 4;
                 final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegFrameData, 0, jpegFrameData.length, opts);
@@ -1536,7 +1594,6 @@ public class Start_Iso_StreamActivity extends Activity {
                 if (videorecordApiJellyBean) {
                     bitmapToVideoEncoder.queueFrame(bitmap);
                 }
-
             } else {
                 final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegFrameData, 0, jpegFrameData.length);
                 runOnUiThread(new Runnable() {
@@ -1548,10 +1605,7 @@ public class Start_Iso_StreamActivity extends Activity {
                 if (videorecordApiJellyBean) {
                     bitmapToVideoEncoder.queueFrame(bitmap);
                 }
-
             }
-
-
         }
     }
 
@@ -1945,6 +1999,12 @@ public class Start_Iso_StreamActivity extends Activity {
                             if (error && skipFrames == 0) skipFrames = 1;
                             if (dataLen > 0 && skipFrames == 0) frameData.write(data, headerLen, dataLen);
                             if ((headerFlags & 2) != 0) {
+                                if (frameData.size() <= 20000 ) skipFrames = 1;
+                                // check Frame Size
+                                if (checkFrameSize(frameData.size())) {
+                                    skipFrames = 1;
+                                    log("Checking Frame --> Skip Retruned");
+                                }
                                 if (skipFrames > 0) {
                                     log("Skipping frame, len= " + frameData.size());
                                     frameData.reset();
@@ -1963,6 +2023,7 @@ public class Start_Iso_StreamActivity extends Activity {
                                     frameData.write(data, headerLen, dataLen);
                                     if (videoformat.equals("mjpeg") ) {
                                         try {
+                                            log("Frame, len= " + frameData.size());
                                             processReceivedMJpegVideoFrameKamera(frameData.toByteArray());
                                         } catch (Exception e) {
                                             e.printStackTrace();
@@ -2005,6 +2066,38 @@ public class Start_Iso_StreamActivity extends Activity {
             runningStream = null;
 
         }
+    }
+
+    private boolean checkFrameSize(int size) {
+        if(size < 10000) return true;
+        if (differentFrameSizes == null) differentFrameSizes = new int [5];
+        if (lastThreeFrames == null) lastThreeFrames = new int [4];
+        lastThreeFrames[3] = lastThreeFrames[2];
+        lastThreeFrames[2] = lastThreeFrames[1];
+        lastThreeFrames[1] = lastThreeFrames[0];
+        lastThreeFrames[0] = size;
+        if (++whichFrame == 5) whichFrame = 0;
+        if(differentFrameSizes[whichFrame] == 0) {
+            differentFrameSizes[whichFrame] = size;
+            return false;
+        }
+        if (differentFrameSizes[whichFrame] < size) {
+            differentFrameSizes[whichFrame] = size;
+            return false;
+        }
+
+        int averageSize = 0;
+        for (int j = 1; j < lastThreeFrames.length;j++) {
+            averageSize = averageSize + lastThreeFrames[j];
+        }
+        if ((averageSize / 3 - 1000) < size) {
+            return false;
+        }
+        if ((averageSize / 3 /1.3) < size) {
+            log ("averageSize = " + (averageSize / 3 /1.3));
+            return false;
+        }
+        return true;
     }
 
     private void fetchTheValues(){
@@ -2114,7 +2207,43 @@ public class Start_Iso_StreamActivity extends Activity {
 
     }
 
+    private void saveToFile(byte[] data) {
 
+        final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+        final String saveFilePathFolder = "UVC_Camera/frame";
+        File file = new File(rootPath, "/" + saveFilePathFolder);
+        if (!file.exists()) {
+            log("creating directory");
+            if (!file.mkdirs()) {
+                Log.e("TravellerLog :: ", "Problem creating Image folder");
+            }
+            file.mkdirs();
+        }
+        String rootdirStr = file.toString();
+
+        rootdirStr += "/";
+        rootdirStr += "data";
+        rootdirStr += framecount ;
+        rootdirStr += ".bin";
+
+
+        file = new File(rootdirStr);
+        //file = new File(savePath).getAbsoluteFile();
+        log("AbsolutePath = " + file.getAbsolutePath());
+        //file.getParentFile().mkdirs();
+        if (file.exists())  file.delete();
+
+        FileOutputStream fos= null;
+        try {
+            fos = new FileOutputStream(file.toString());
+            fos.write(data);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 
 
