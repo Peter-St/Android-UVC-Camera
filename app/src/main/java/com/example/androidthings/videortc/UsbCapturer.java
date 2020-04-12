@@ -631,7 +631,7 @@ public class UsbCapturer implements VideoCapturer {
                             if ((headerFlags & 2) != 0) {
                                 log("Frame Complete");
                                 log("frameLen = " + frameData.size());
-                                if(frameData.size() < 614400) skipFrames =1;
+                                if(frameData.size() < imageWidth * imageHeight * 2) skipFrames =1;
                                 if (skipFrames > 0) {
                                     log("Skipping frame, len= " + frameData.size());
                                     frameData.reset();
