@@ -19,10 +19,12 @@ package com.example.androidthings.videortc;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.UiThread;
 import android.util.Log;
+import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
@@ -58,6 +60,26 @@ import humer.uvc_camera.R;
 
 public class CallActivity extends Activity implements AppRTCClient.SignalingEvents,
         PeerConnectionClient.PeerConnectionEvents {
+
+    // Camera Values
+    public static int camStreamingAltSetting;
+    public static int camFormatIndex;
+    public int camFrameIndex;
+    public static int camFrameInterval;
+    public static int packetsPerRequest;
+    public static int maxPacketSize;
+    public int imageWidth;
+    public int imageHeight;
+    public static int activeUrbs;
+    public static String videoformat;
+    public static boolean camIsOpen;
+    public static byte bUnitID;
+    public static byte bTerminalID;
+    public static byte bStillCaptureMethod;
+    public static byte[] bNumControlTerminal;
+    public static byte[] bNumControlUnit;
+
+
     private static final String TAG = "CallActivity";
     private static final String APPRTC_URL = "https://appr.tc";
     private static final String UPPER_ALPHA_DIGITS = "ACEFGHJKLMNPQRUVWXY123456789";
@@ -72,6 +94,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     private AppRTCClient.SignalingParameters signalingParameters;
     private SurfaceViewRenderer pipRenderer;
     private SurfaceViewRenderer fullscreenRenderer;
+    SurfaceHolder surfaceHolder;
     private Toast logToast;
     private boolean activityRunning;
     private AppRTCClient.RoomConnectionParameters roomConnectionParameters;
@@ -89,8 +112,8 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_call);
+        fetchTheValues();
 
         iceConnected = false;
         signalingParameters = null;
@@ -98,7 +121,8 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         // Create UI controls.
         pipRenderer = findViewById(R.id.pip_video_view);
         fullscreenRenderer = findViewById(R.id.fullscreen_video_view);
-
+// Install a SurfaceHolder.Callback so we get notified when the
+        // underlying surface is created and destroyed.
         disconnectButton = findViewById(R.id.button_call_disconnect);
         cameraSwitchButton = findViewById(R.id.button_call_switch_camera);
         toggleMuteButton = findViewById(R.id.button_call_toggle_mic);
@@ -158,6 +182,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
 
         // Connect video call to the random room
         connectVideoCall(randomRoomID);
+
     }
 
     // Create a random string
@@ -168,6 +193,10 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
             sb.append(characterSet.substring(randomInt, randomInt + 1));
         }
         return sb.toString();
+    }
+
+    public void log(String msg) {
+        Log.i("CallActivity", msg);
     }
 
     // Join video call with randomly generated roomId
@@ -397,20 +426,8 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         logAndToast("Creating peer connection, delay=" + delta + "ms");
         VideoCapturer videoCapturer = null;
         if (peerConnectionParameters.videoCallEnabled) {
-
-
-
-
-
-
-
-
-            //videoCapturer = new InitCapturer();
-
-
-
-            videoCapturer = createVideoCapturer();
-
+            videoCapturer = new UsbCapturer(this, fullscreenRenderer, this);
+            //videoCapturer = createVideoCapturer();
         }
         peerConnectionClient.createPeerConnection(
                 localProxyVideoSink, remoteRenderers, videoCapturer, signalingParameters);
@@ -632,6 +649,8 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         super.onDestroy();
     }
 
+
+
     private static class ProxyRenderer implements VideoRenderer.Callbacks {
         private VideoRenderer.Callbacks target;
 
@@ -669,5 +688,33 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         }
     }
 
+    private void fetchTheValues(){
+        Intent intent=getIntent();
+        Bundle bundle=intent.getBundleExtra("bun");
+        camStreamingAltSetting=bundle.getInt("camStreamingAltSetting",0);
+        videoformat=bundle.getString("videoformat");
+        camFormatIndex=bundle.getInt("camFormatIndex",0);
+        imageWidth=bundle.getInt("imageWidth",0);
+        imageHeight=bundle.getInt("imageHeight",0);
+        camFrameIndex=bundle.getInt("camFrameIndex",0);
+        camFrameInterval=bundle.getInt("camFrameInterval",0);
+        packetsPerRequest=bundle.getInt("packetsPerRequest",0);
+        maxPacketSize=bundle.getInt("maxPacketSize",0);
+        activeUrbs=bundle.getInt("activeUrbs",0);
+        bUnitID = bundle.getByte("bUnitID",(byte)0);
+        bTerminalID = bundle.getByte("bTerminalID",(byte)0);
+        bNumControlTerminal = bundle.getByteArray("bNumControlTerminal");
+        bNumControlUnit = bundle.getByteArray("bNumControlUnit");
+        bStillCaptureMethod = bundle.getByte("bStillCaptureMethod", (byte)0);
+    }
+
+    public void displayMessage(final String msg) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(CallActivity.this, msg, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
 
 }

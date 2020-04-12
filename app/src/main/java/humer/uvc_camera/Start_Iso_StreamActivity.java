@@ -73,7 +73,7 @@ import java.util.HashMap;
 import java.util.concurrent.Executor;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
-import com.example.androidthings.videortc.MainActivity;
+import com.example.androidthings.videortc.WebRtc_MainActivity;
 import com.sample.timelapse.MJPEGGenerator ;
 
 import org.webrtc.VideoCapturer;
@@ -128,17 +128,17 @@ public class Start_Iso_StreamActivity extends Activity {
     private PendingIntent mPermissionIntent;
 
     // Camera Values
-    private static int camStreamingAltSetting;
-    private static int camFormatIndex;
-    private int camFrameIndex;
-    private static int camFrameInterval;
-    private static int packetsPerRequest;
-    private static int maxPacketSize;
-    private int imageWidth;
-    private int imageHeight;
-    private static int activeUrbs;
-    private static String videoformat;
-    private static boolean camIsOpen;
+    public static int camStreamingAltSetting;
+    public static int camFormatIndex;
+    public int camFrameIndex;
+    public static int camFrameInterval;
+    public static int packetsPerRequest;
+    public static int maxPacketSize;
+    public int imageWidth;
+    public int imageHeight;
+    public static int activeUrbs;
+    public static String videoformat;
+    public static boolean camIsOpen;
     public static byte bUnitID;
     public static byte bTerminalID;
     public static byte bStillCaptureMethod;
@@ -1006,7 +1006,27 @@ public class Start_Iso_StreamActivity extends Activity {
     }
 
     private void startWebRTC() {
-        startActivity(new Intent(Start_Iso_StreamActivity.this, MainActivity.class));
+        if (runningStream != null) stopTheCameraStreamClickEvent(null);
+        Intent intent = new Intent(this, WebRtc_MainActivity.class);
+        Bundle bundle=new Bundle();
+        bundle.putBoolean("edit", true);
+        bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
+        bundle.putString("videoformat",videoformat);
+        bundle.putInt("camFormatIndex",camFormatIndex);
+        bundle.putInt("imageWidth",imageWidth);
+        bundle.putInt("imageHeight",imageHeight);
+        bundle.putInt("camFrameIndex",camFrameIndex);
+        bundle.putInt("camFrameInterval",camFrameInterval);
+        bundle.putInt("packetsPerRequest",packetsPerRequest);
+        bundle.putInt("maxPacketSize",maxPacketSize);
+        bundle.putInt("activeUrbs",activeUrbs);
+        bundle.putByte("bUnitID",bUnitID);
+        bundle.putByte("bTerminalID",bTerminalID);
+        bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
+        bundle.putByteArray("bNumControlUnit", bNumControlUnit);
+        bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
+        intent.putExtra("bun",bundle);
+        startActivity(intent);
         Start_Iso_StreamActivity.this.finish();
     }
 
@@ -1870,7 +1890,7 @@ public class Start_Iso_StreamActivity extends Activity {
             (byte) 0xea, (byte) 0xf2, (byte) 0xf3, (byte) 0xf4, (byte) 0xf5, (byte) 0xf6, (byte) 0xf7, (byte) 0xf8, (byte) 0xf9, (byte) 0xfa};
 
 
-    class IsochronousStream extends Thread {
+    public class IsochronousStream extends Thread {
 
         private Activity activity;
         private boolean reapTheLastFrames;

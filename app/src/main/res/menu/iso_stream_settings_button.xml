@@ -6,7 +6,6 @@
     <item
         android:id="@+id/adjustValuesUnit"
         android:icon="@drawable/ic_brightness_green_24dp"
-        app:fabDrawableTint="@color/Coral"
         android:title="Adjust / Change PROCESSING Values"
         app:touchGuard="false"
         app:showAsAction="always"
@@ -16,7 +15,6 @@
     <item
         android:id="@+id/adjustValuesTerminal"
         android:icon="@drawable/ic_brightness_2green_24dp"
-        app:iconTint="@color/green"
         android:title="Adjust / Change TERMINAL  Values"
         app:showAsAction="ifRoom"
         app:touchGuard="false"
@@ -26,7 +24,6 @@
     <item
         android:id="@+id/resolutionFrameInterval"
         android:icon="@drawable/ic_resolution_24dp"
-        app:iconTint="@color/yellow"
         android:title="Change Resoltion / FrameInterval"
         app:showAsAction="ifRoom"
         app:touchGuard="false"
@@ -35,9 +32,8 @@
 
     <item
         android:id="@+id/webRTC"
-        android:icon="@drawable/ic_web_rtc_24dp"
-        app:iconTint="@color/blue"
         android:title="WebRTC"
+        android:icon="@drawable/ic_web_rtc_24dp"
         app:showAsAction="ifRoom"
         app:touchGuard="false"
         android:orderInCategory="1"
@@ -46,7 +42,6 @@
 
     <item
         android:icon="@drawable/return_main_screen_24dp"
-
         android:id="@+id/returnToConfigScreen"
         android:title="Return To Configuration Sreen"
         app:touchGuard="false"
@@ -55,7 +50,6 @@
 
     <item
         android:icon="@drawable/exit_program_24dp"
-
         android:id="@+id/beenden"
         android:title="Exit Program"
         app:touchGuard="false"

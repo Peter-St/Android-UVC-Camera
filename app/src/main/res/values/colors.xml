@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <array name="fab_speed_colors">
+        <item>@color/green</item>
+        <item>@color/Aqua</item>
+        <item>@color/Aqua</item>
+        <item>@color/white</item>
+        <item>@color/white</item>
+        <item>@color/white</item>
+    </array>
     <color name="colorPrimary">#9fee2b11</color>
     <color name="colorPrimaryDark">#6e0f2122</color>
     <color name="colorAccent">#a8358a00</color>
@@ -165,19 +173,7 @@
     <color name="Navy">#000080</color>
     <color name="Black">#000000</color>
 
-    <array name="brightness_colors">
-        <!-- A dark Holo shade of red -->
-        <item>@android:color/holo_green_light</item>
-        <!-- A Holo shade of purple -->
-        <item>@android:color/holo_green_light</item>
-        <!-- A light Holo shade of green -->
-        <item>@android:color/holo_orange_light</item>
 
-        <item>@android:color/white</item>
-
-        <item>@android:color/white</item>
-
-    </array>
 
 
 </resources>

@@ -89,7 +89,7 @@
         app:fabDrawable="@drawable/bg_button_settings"
         app:fabBackgroundTint="#50000080"
         app:fabMenu="@menu/iso_stream_settings_button"
-        app:miniFabBackgroundTintList="@array/brightness_colors"
+        app:miniFabBackgroundTintList="@array/fab_speed_colors"
         app:miniFabDrawableTint="@color/black"
         app:miniFabTitleTextColor="@color/black" />
 
