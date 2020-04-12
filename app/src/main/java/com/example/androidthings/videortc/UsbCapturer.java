@@ -31,8 +31,6 @@ public class UsbCapturer implements VideoCapturer {
 
     private CapturerObserver capturerObserver;
     private volatile UsbCapturer.IsochronousStream runningStream;
-
-
     private static final String ACTION_USB_PERMISSION = "humer.uvc_camera.USB_PERMISSION";
 
     // USB codes:
@@ -97,17 +95,11 @@ public class UsbCapturer implements VideoCapturer {
     private boolean pauseCamera = false;
     private boolean exit = false;
     public StringBuilder stringBuilder;
-    private static enum Videoformat {yuv, mjpeg, YUY2, YV12, YUV_422_888, YUV_420_888}
-
-
-    // UVC Interface
-    private static IUVC_Descriptor iuvc_descriptor;
+    private enum Videoformat {yuv, mjpeg, YUY2, YV12, YUV_422_888, YUV_420_888}
 
     public static CallActivity callActivity;
 
-    private SurfaceHolder surfaceHolder;
-
-    public UsbCapturer(Context context, SurfaceViewRenderer svVideoRender, CallActivity callActivity) {
+    public UsbCapturer(Context context, SurfaceViewRenderer svVideoRender, CallActivity callActivity) throws Exception {
         this.callActivity = callActivity;
         fetchTheValues();
         initializeTheStream();
@@ -161,10 +153,11 @@ public class UsbCapturer implements VideoCapturer {
         bStillCaptureMethod = callActivity.bStillCaptureMethod;
     }
 
-    private void initializeTheStream() {
+    private void initializeTheStream() throws Exception {
         usbManager = (UsbManager) callActivity.getSystemService(Context.USB_SERVICE);
         mPermissionIntent = PendingIntent.getBroadcast(callActivity.getApplicationContext(), 0, new Intent(ACTION_USB_PERMISSION), 0);
         IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
+        findCamm();
         try {
             findCamm();
         } catch (Exception e) {

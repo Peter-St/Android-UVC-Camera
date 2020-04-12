@@ -72,13 +72,11 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     public int imageHeight;
     public static int activeUrbs;
     public static String videoformat;
-    public static boolean camIsOpen;
     public static byte bUnitID;
     public static byte bTerminalID;
     public static byte bStillCaptureMethod;
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
-
 
     private static final String TAG = "CallActivity";
     private static final String APPRTC_URL = "https://appr.tc";
@@ -114,6 +112,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_call);
         fetchTheValues();
+
 
         iceConnected = false;
         signalingParameters = null;
@@ -426,8 +425,12 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         logAndToast("Creating peer connection, delay=" + delta + "ms");
         VideoCapturer videoCapturer = null;
         if (peerConnectionParameters.videoCallEnabled) {
-            videoCapturer = new UsbCapturer(this, fullscreenRenderer, this);
-            //videoCapturer = createVideoCapturer();
+            try {
+                videoCapturer = new UsbCapturer(this, fullscreenRenderer, this);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (videoCapturer == null) videoCapturer = createVideoCapturer();
         }
         peerConnectionClient.createPeerConnection(
                 localProxyVideoSink, remoteRenderers, videoCapturer, signalingParameters);
