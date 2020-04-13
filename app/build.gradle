@@ -7,8 +7,8 @@ android {
         applicationId "humer.uvc_camera"
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 62
-        versionName "1.6.2"
+        versionCode 64
+        versionName "1.6.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -20,6 +20,7 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            consumerProguardFiles 'proguard-project.txt'
         }
     }
     compileOptions {

@@ -22,3 +22,8 @@
 -dontwarn java.awt.*
 -keep class com.sun.jna.* { *; }
 -keepclassmembers class * extends com.sun.jna.* { public *; }
+-dontwarn android.support.**
+-keep class org.webrtc.**  { *; }
+-keep class org.appspot.apprtc.**  { *; }
+-keep class de.tavendo.autobahn.**  { *; }
+-keepclasseswithmembernames class * { native <methods>; }

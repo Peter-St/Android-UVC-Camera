@@ -80,7 +80,8 @@ public class WebRtc_MainActivity extends Activity {
         addListenerOnButton();
 
         int PERMISSION_ALL = 1;
-        String[] PERMISSIONS = {Manifest.permission.INTERNET, Manifest.permission.CHANGE_NETWORK_STATE,  Manifest.permission.ACCESS_NETWORK_STATE};
+        String[] PERMISSIONS = {Manifest.permission.INTERNET, Manifest.permission.CHANGE_NETWORK_STATE,  Manifest.permission.ACCESS_NETWORK_STATE,
+                Manifest.permission.RECORD_AUDIO, Manifest.permission.MODIFY_AUDIO_SETTINGS, Manifest.permission.CAMERA};
 
         if (!hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);

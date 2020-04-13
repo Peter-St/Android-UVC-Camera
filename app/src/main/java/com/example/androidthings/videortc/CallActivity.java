@@ -117,6 +117,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         fetchTheValues();
 
 
+
         iceConnected = false;
         signalingParameters = null;
 
@@ -170,10 +171,10 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         fullscreenRenderer.setScalingType(ScalingType.SCALE_ASPECT_FILL);
 
         pipRenderer.setZOrderMediaOverlay(true);
-        pipRenderer.setEnableHardwareScaler(true /* enabled */);
-        fullscreenRenderer.setEnableHardwareScaler(true /* enabled */);
+        pipRenderer.setEnableHardwareScaler(true ); // enabled //);
+        fullscreenRenderer.setEnableHardwareScaler(true); // enabled );
         // Start with local feed in fullscreen and swap it to the pip when the call is connected.
-        setSwappedFeeds(true /* isSwappedFeeds */);
+        setSwappedFeeds(true ); // isSwappedFeeds );
 
         // Generate a random room ID with 7 uppercase letters and digits
         String randomRoomID = randomString(7, UPPER_ALPHA_DIGITS);
@@ -184,6 +185,8 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
 
         // Connect video call to the random room
         connectVideoCall(randomRoomID);
+
+
 
     }
 
