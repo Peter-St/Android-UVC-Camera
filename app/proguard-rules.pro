@@ -26,4 +26,5 @@
 -keep class org.webrtc.**  { *; }
 -keep class org.appspot.apprtc.**  { *; }
 -keep class de.tavendo.autobahn.**  { *; }
+-keep class de.tavendo.autobanh.**  { *; }
 -keepclasseswithmembernames class * { native <methods>; }
