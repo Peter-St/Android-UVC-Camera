@@ -67,6 +67,8 @@ public class WebRtc_MainActivity extends Activity {
     private static final int ACCESS_NETWORK_STATE_PERMISSION_CODE = 102;
     private static final int RECORD_AUDIO_STATE_PERMISSION_CODE = 103;
     private static final int MODIFY_AUDIO_STATE_PERMISSION_CODE = 104;
+    private static final int CAMERA_PERMISSION_CODE = 105;
+
 
 
     @Override
@@ -93,7 +95,8 @@ public class WebRtc_MainActivity extends Activity {
                 RECORD_AUDIO_STATE_PERMISSION_CODE);
         checkPermission (Manifest.permission.MODIFY_AUDIO_SETTINGS,
                 MODIFY_AUDIO_STATE_PERMISSION_CODE);
-
+        checkPermission (Manifest.permission.CAMERA,
+                CAMERA_PERMISSION_CODE);
 
         fetchTheValues();
     }
@@ -181,6 +184,20 @@ public class WebRtc_MainActivity extends Activity {
             else {
                 Toast.makeText(WebRtc_MainActivity.this,
                         "CHANGE_NETWORK_STATE Permission Denied",
+                        Toast.LENGTH_SHORT)
+                        .show();
+            }
+        } else if (requestCode == CAMERA_PERMISSION_CODE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(WebRtc_MainActivity.this,
+                        "CAMERA Permission Granted",
+                        Toast.LENGTH_SHORT)
+                        .show();
+            }
+            else {
+                Toast.makeText(WebRtc_MainActivity.this,
+                        "CAMERA Permission Denied",
                         Toast.LENGTH_SHORT)
                         .show();
             }

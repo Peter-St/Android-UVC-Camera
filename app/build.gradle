@@ -7,8 +7,8 @@ android {
         applicationId "humer.uvc_camera"
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 61
-        versionName "1.6.1"
+        versionCode 62
+        versionName "1.6.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -51,7 +51,7 @@ dependencies {
     implementation 'com.crowdfire.cfalertdialog:cfalertdialog:1.1.0'
     // WebRtc
     implementation 'org.webrtc:google-webrtc:1.0.22672'
-
+    // OpenCV
     implementation 'com.quickbirdstudios:opencv:4.1.0'
 
 }

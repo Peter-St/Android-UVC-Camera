@@ -107,6 +107,9 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     private ImageButton cameraSwitchButton;
     private ImageButton toggleMuteButton;
 
+    // Internal Camera, Usb Camera Value
+    public boolean usbCamera = true;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -425,12 +428,8 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         logAndToast("Creating peer connection, delay=" + delta + "ms");
         VideoCapturer videoCapturer = null;
         if (peerConnectionParameters.videoCallEnabled) {
-            try {
-                videoCapturer = new UsbCapturer(this, fullscreenRenderer, this);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if (videoCapturer == null) videoCapturer = createVideoCapturer();
+            videoCapturer = new UsbCapturer(this, fullscreenRenderer, this);
+            if (usbCamera == false) videoCapturer = createVideoCapturer();
         }
         peerConnectionClient.createPeerConnection(
                 localProxyVideoSink, remoteRenderers, videoCapturer, signalingParameters);

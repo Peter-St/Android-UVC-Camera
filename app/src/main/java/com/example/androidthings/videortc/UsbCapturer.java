@@ -115,7 +115,7 @@ public class UsbCapturer implements VideoCapturer {
 
     public static CallActivity callActivity;
 
-    public UsbCapturer(Context context, SurfaceViewRenderer svVideoRender, CallActivity callActivity) throws Exception {
+    public UsbCapturer(Context context, SurfaceViewRenderer svVideoRender, CallActivity callActivity) {
         this.callActivity = callActivity;
         fetchTheValues();
         initializeTheStream();
@@ -169,7 +169,7 @@ public class UsbCapturer implements VideoCapturer {
         bStillCaptureMethod = callActivity.bStillCaptureMethod;
     }
 
-    private void initializeTheStream() throws Exception {
+    private void initializeTheStream() {
 
         if (!OpenCVLoader.initDebug())
             Log.e("OpenCv", "Unable to load OpenCV");
@@ -181,14 +181,10 @@ public class UsbCapturer implements VideoCapturer {
         mPermissionIntent = PendingIntent.getBroadcast(callActivity.getApplicationContext(), 0, new Intent(ACTION_USB_PERMISSION), 0);
         IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
         findCamm();
-        try {
-            findCamm();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         if (camDevice == null) {
-            displayMessage("No Camera connected\nPlease connect a camera");
+            callActivity.usbCamera = false;
+            displayMessage("No Usb Camera found\nTry to connect to internal camera ...");
             return;
         }
         else {
@@ -213,10 +209,11 @@ public class UsbCapturer implements VideoCapturer {
 
 
 
-    private void findCamm() throws Exception {
+    private void findCamm()  {
         camDevice = findCameraDevice();
         if (camDevice == null) {
-            throw new Exception("No USB camera device found.");
+            log("Camera = null");
+            return;
         }
         if (!usbManager.hasPermission(camDevice)) {
             log("Asking for Permissions");
