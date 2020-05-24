@@ -5,7 +5,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.ImageFormat;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.usb.UsbConstants;
@@ -15,31 +21,30 @@ import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.os.Environment;
+import androidx.annotation.ColorInt;
 import android.util.Log;
-
-import org.opencv.android.Utils;
-import org.opencv.core.CvException;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
 import org.webrtc.SurfaceTextureHelper;
 import org.webrtc.SurfaceViewRenderer;
 import org.webrtc.VideoCapturer;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+
 import humer.uvc_camera.UsbIso64.USBIso;
 import humer.uvc_camera.UsbIso64.usbdevice_fs_util;
 
-import org.opencv.android.OpenCVLoader;
 
 public class UsbCapturer implements VideoCapturer {
+
+    private  byte[] mBgr;
+
+
+    private static String saveFilePathFolder = "UVC_Camera/yuvImage";
+    private int value = 0;
+
 
     private CapturerObserver capturerObserver;
     private volatile UsbCapturer.IsochronousStream runningStream;
@@ -170,13 +175,6 @@ public class UsbCapturer implements VideoCapturer {
     }
 
     private void initializeTheStream() {
-
-        if (!OpenCVLoader.initDebug())
-            Log.e("OpenCv", "Unable to load OpenCV");
-        else
-            Log.d("OpenCv", "OpenCV loaded");
-
-
         usbManager = (UsbManager) callActivity.getSystemService(Context.USB_SERVICE);
         mPermissionIntent = PendingIntent.getBroadcast(callActivity.getApplicationContext(), 0, new Intent(ACTION_USB_PERMISSION), 0);
         IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
@@ -824,43 +822,119 @@ public class UsbCapturer implements VideoCapturer {
     }
 
 
+    private byte[] rgbValuesFromBitmap(Bitmap bitmap)
+    {
+        ColorMatrix colorMatrix = new ColorMatrix();
+        ColorFilter colorFilter = new ColorMatrixColorFilter(
+                colorMatrix);
+        Bitmap argbBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(),
+                Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(argbBitmap);
+
+        Paint paint = new Paint();
+
+        paint.setColorFilter(colorFilter);
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        int componentsPerPixel = 3;
+        int totalPixels = width * height;
+        int totalBytes = totalPixels * componentsPerPixel;
+
+        byte[] rgbValues = new byte[totalBytes];
+        @ColorInt int[] argbPixels = new int[totalPixels];
+        argbBitmap.getPixels(argbPixels, 0, width, 0, 0, width, height);
+        for (int i = 0; i < totalPixels; i++) {
+            @ColorInt int argbPixel = argbPixels[i];
+            int red = Color.red(argbPixel);
+            int green = Color.green(argbPixel);
+            int blue = Color.blue(argbPixel);
+            rgbValues[i * componentsPerPixel + 0] = (byte) red;
+            rgbValues[i * componentsPerPixel + 1] = (byte) green;
+            rgbValues[i * componentsPerPixel + 2] = (byte) blue;
+        }
+
+        return rgbValues;
+    }
+
+    //  RGB(ARGB8888) to YUV420 Semi-Planar(NV21) conversion
+    public void rgbToYuv(byte[] rgb, int width, int height, byte[] yuv) {
+        int rgbIndex = 0;
+        int yIndex = 0;
+        int uvIndex = width * height;
+        for (int j = 0; j < height; ++j) {
+            for (int i = 0; i < width; ++i) {
+                final int r = rgb[rgbIndex] & 0xFF;
+                final int g = rgb[rgbIndex + 1] & 0xFF;
+                final int b = rgb[rgbIndex + 2] & 0xFF;
+
+                final int y = (int) (0.257 * r + 0.504 * g + 0.098 * b + 16);
+                final int u = (int) (-0.148 * r - 0.291 * g + 0.439 * b + 128);
+                final int v = (int) (0.439 * r - 0.368 * g - 0.071 * b + 128);
+
+                yuv[yIndex++] = (byte) Math.max(0, Math.min(255, y));
+                if ((i & 0x01) == 0 && (j & 0x01) == 0) {
+                    yuv[uvIndex++] = (byte) Math.max(0, Math.min(255, v));
+                    yuv[uvIndex++] = (byte) Math.max(0, Math.min(255, u));
+                }
+
+                rgbIndex += 3;
+            }
+        }
+    }
+
+
+
+
+
     public void processReceivedMJpegVideoFrameKamera(byte[] mjpegFrameData) throws Exception {
 
         byte[] jpegFrameData = convertMjpegFrameToJpegKamera(mjpegFrameData);
         Bitmap bitmap = BitmapFactory.decodeByteArray(jpegFrameData, 0, jpegFrameData.length);
-        Mat rgbaMat = new Mat(imageWidth, imageHeight, CvType.CV_8UC3);
-        Utils.bitmapToMat(bitmap, rgbaMat);
-        // convert to NV21 ...
-        Mat nv12Mat = new Mat(imageWidth, imageHeight, CvType.CV_8UC2);
-        Imgproc.cvtColor( rgbaMat, nv12Mat, Imgproc.COLOR_BGR2YUV_I420 );
-        byte[] nv12buffer = new byte[(int) (nv12Mat.total() * nv12Mat.channels())];
-        nv12Mat.get(0, 0, nv12buffer);
-        byte [] nv21Array = YV12toNV21 (nv12buffer, null , imageWidth, imageHeight);
 
+        byte [] yuv = new byte[imageWidth*imageHeight*3/2];
+
+
+
+
+        rgbToYuv(rgbValuesFromBitmap(bitmap), imageWidth, imageHeight, yuv);
+
+
+
+
+        //rgbToNV21(jpegFrameData, bitmap.getWidth(), bitmap.getHeight(), yuv);
+        //encodeYUV420SP(yuv, rgbValuesFromBitmap(bitmap), imageWidth, imageHeight);
+
+        final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+        final File file = new File(rootPath, "/" + saveFilePathFolder);
+        if (!file.exists()) {
+            log("creating directory");
+            if (!file.mkdirs()) {
+                Log.e("TravellerLog :: ", "Problem creating Image folder");
+            }
+            file.mkdirs();
+        }
+        log("Path: " + rootPath.toString());
+        String rootdirStr = file.toString();
+        rootdirStr += "/";
+        rootdirStr += value;
+        rootdirStr += ".Yuv_nv21";
+        if (value < 5) {
+            try (FileOutputStream fos = new FileOutputStream(rootdirStr)) {
+                fos.write(yuv);
+                value++;
+                //fos.close(); There is no more need for this line since you had created the instance of "fos" inside the try. And this will automatically close the OutputStream
+            }
+        }
         if (exit == false) {
             Long imageTime = System.currentTimeMillis();
-            capturerObserver.onByteBufferFrameCaptured(nv21Array, imageWidth, imageHeight, 0, imageTime);
+            capturerObserver.onByteBufferFrameCaptured(yuv, imageWidth, imageHeight, 0, imageTime);
         }
+
     }
 
 
-    /** Convert YV12 (YYYYYYYY:UU:VV) to NV21 (YYYYYYYYY:VUVU) */
-    public byte[] YV12toNV21(final byte[] input, byte[] output, final int width, final int height) {
-        if (output == null) {
-            output = new byte[input.length];
-        }
-        final int size = width * height;
-        final int quarter = size / 4;
-        final int u0 = size + quarter;
-
-        System.arraycopy(input, 0, output, 0, size); // Y is same
-
-        for (int v = size, u = u0, o = size; v < u0; u++, v++, o += 2) {
-            output[o] = input[v]; // For NV21, V first
-            output[o + 1] = input[u]; // For NV21, U second
-        }
-        return output;
-    }
 
 
     // see USB video class standard, USB_Video_Payload_MJPEG_1.5.pdf
@@ -940,7 +1014,106 @@ public class UsbCapturer implements VideoCapturer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
 }
+
+/*
+ if (FFmpeg.getInstance(callActivity.getApplicationContext()).isSupported()) {
+            //versionFFmpeg();
+            String resolution = new String();
+            resolution += imageWidth;
+            resolution += "x";
+            resolution += imageHeight;
+
+            String[] cmd = {"-i", "jpegFrameData", "output.mov", "-s", resolution , "-pix_fmt" , "nv21", "test-yuv420p.yuv"};
+
+
+            // ffmpeg -i test-640x480.jpg -s 640x480 -pix_fmt yuv420p test-yuv420p.yuv
+
+            FFmpeg ffmpeg = FFmpeg.getInstance(callActivity.getApplicationContext());
+            ffmpeg.execute(cmd, new ExecuteBinaryResponseHandler() {
+
+                @Override
+                public void onStart() {Timber.d( "on start");}
+
+                @Override
+                public void onProgress(String message) {Timber.d(message);}
+
+                @Override
+                public void onFailure(String message) {Timber.d(message);}
+
+                @Override
+                public void onSuccess(String message) {Timber.d(message);}
+
+                @Override
+                public void onFinish() {Timber.d("on finish");}
+
+            });
+
+        } else {
+            // ffmpeg is not supported
+        }
+        //byte[] jpegFrameData = convertMjpegFrameToJpegKamera(mjpegFrameData);
+
+ */
+/*
+    private void versionFFmpeg() {
+        FFmpeg.getInstance(callActivity.getApplicationContext()).execute(new String[]{"-version"}, new ExecuteBinaryResponseHandler() {
+            @Override
+            public void onSuccess(String message) {
+                Timber.d(message);
+            }
+
+            @Override
+            public void onProgress(String message) {
+                Timber.d(message);
+            }
+        });
+
+    }
+*/
+
+/*
+
+    /** Convert YV12 (YYYYYYYY:UU:VV) to NV21 (YYYYYYYYY:VUVU) */  /*
+public byte[] YV12toNV21(final byte[] input, byte[] output, final int width, final int height) {
+    if (output == null) {
+        output = new byte[input.length];
+    }
+    final int size = width * height;
+    final int quarter = size / 4;
+    final int u0 = size + quarter;
+
+    System.arraycopy(input, 0, output, 0, size); // Y is same
+
+    for (int v = size, u = u0, o = size; v < u0; u++, v++, o += 2) {
+        output[o] = input[v]; // For NV21, V first
+        output[o + 1] = input[u]; // For NV21, U second
+    }
+    return output;
+}
+ */
+
+    /*
+    if (!OpenCVLoader.initDebug())
+            Log.e("OpenCv", "Unable to load OpenCV");
+        else
+            Log.d("OpenCv", "OpenCV loaded");
+     */
+
+     /*
+        Mat rgbaMat = new Mat(imageWidth, imageHeight, CvType.CV_8UC3);
+        Utils.bitmapToMat(bitmap, rgbaMat);
+        // convert to NV21 ...
+        Mat nv12Mat = new Mat(imageWidth, imageHeight, CvType.CV_8UC2);
+        Imgproc.cvtColor( rgbaMat, nv12Mat, Imgproc.COLOR_BGR2YUV_I420 );
+        byte[] nv12buffer = new byte[(int) (nv12Mat.total() * nv12Mat.channels())];
+        nv12Mat.get(0, 0, nv12buffer);
+        byte [] nv21Array = YV12toNV21 (nv12buffer, null , imageWidth, imageHeight);
+
+        if (exit == false) {
+            Long imageTime = System.currentTimeMillis();
+            capturerObserver.onByteBufferFrameCaptured(nv21Array, imageWidth, imageHeight, 0, imageTime);
+        }
+        //*/

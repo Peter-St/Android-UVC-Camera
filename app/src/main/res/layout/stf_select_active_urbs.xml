@@ -17,59 +17,85 @@
 
 
         <!--Configurations container-->
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/configuration_container"
             android:layout_width="match_parent"
             android:layout_height="264dp"
             android:orientation="vertical"
             android:visibility="visible">
 
-            <android.support.constraint.Guideline
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_vertical_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.1" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelinehor_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0" />
+
+            <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.25" />
 
-            <android.support.constraint.Guideline
+            <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.75" />
 
-            <android.support.constraint.Guideline
+            <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guidelinehor1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintGuide_percent="0.2" />
 
-            <android.support.constraint.Guideline
+            <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guidelinehor2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintGuide_percent="0.5" />
 
-            <android.support.constraint.Guideline
+            <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guidelinehor3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintGuide_percent="0.8" />
 
-            <android.support.constraint.Guideline
+            <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guidelinehor4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintGuide_percent="1" />
 
+            <TextView
+                android:id="@+id/textView_setUrbs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                app:layout_constraintTop_toTopOf="@id/guidelinehor_text"
+                app:layout_constraintLeft_toLeftOf="@id/guideline_vertical_text"
+                app:layout_constraintRight_toRightOf="@id/guideline_vertical_text"
+
+
+                />
+
 
 
             <com.crowdfire.cfalertdialog.views.CFPushButton
-                android:id="@+id/one"
+                android:id="@+id/uone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -80,15 +106,13 @@
                 android:textAllCaps="false"
                 android:textColor="@color/Black"
                 android:textSize="30dp"
-
                 app:layout_constraintBottom_toBottomOf="@id/guidelinehor1"
                 app:layout_constraintLeft_toLeftOf="@id/guideline"
                 app:layout_constraintRight_toRightOf="@id/guideline"
                 app:layout_constraintTop_toTopOf="@id/guidelinehor1" />
 
-
             <com.crowdfire.cfalertdialog.views.CFPushButton
-                android:id="@+id/two"
+                android:id="@+id/utwo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -99,14 +123,13 @@
                 android:textAllCaps="false"
                 android:textColor="@color/Black"
                 android:textSize="30dp"
-
                 app:layout_constraintBottom_toBottomOf="@id/guidelinehor1"
                 app:layout_constraintLeft_toLeftOf="@id/guideline2"
                 app:layout_constraintRight_toRightOf="@id/guideline2"
                 app:layout_constraintTop_toTopOf="@id/guidelinehor1" />
 
             <com.crowdfire.cfalertdialog.views.CFPushButton
-                android:id="@+id/three"
+                android:id="@+id/uthree"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -125,7 +148,7 @@
 
 
             <com.crowdfire.cfalertdialog.views.CFPushButton
-                android:id="@+id/four"
+                android:id="@+id/ufour"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -143,7 +166,7 @@
                 app:layout_constraintTop_toTopOf="@id/guidelinehor2" />
 
             <com.crowdfire.cfalertdialog.views.CFPushButton
-                android:id="@+id/five"
+                android:id="@+id/ufive"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -162,7 +185,7 @@
 
 
             <com.crowdfire.cfalertdialog.views.CFPushButton
-                android:id="@+id/six"
+                android:id="@+id/usix"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -180,7 +203,9 @@
                 app:layout_constraintTop_toTopOf="@id/guidelinehor3" />
 
 
-        </android.support.constraint.ConstraintLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
 

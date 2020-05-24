@@ -46,8 +46,8 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.support.v7.widget.PopupMenu;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -60,6 +60,9 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import androidx.appcompat.widget.PopupMenu;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -72,23 +75,12 @@ import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.concurrent.Executor;
-
 import com.crowdfire.cfalertdialog.CFAlertDialog;
+import com.crowdfire.cfalertdialog.views.CFPushButton;
 import com.example.androidthings.videortc.WebRtc_MainActivity;
 import com.sample.timelapse.MJPEGGenerator ;
-
-import org.opencv.android.OpenCVLoader;
-import org.opencv.android.Utils;
-import org.opencv.core.CvException;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
-import org.opencv.core.Scalar;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
 import org.webrtc.VideoCapturer;
 import org.webrtc.VideoFrame;
-
 import humer.uvc_camera.UVC_Descriptor.IUVC_Descriptor;
 import humer.uvc_camera.UVC_Descriptor.UVC_Descriptor;
 import humer.uvc_camera.UVC_Descriptor.UVC_Initializer;
@@ -201,7 +193,6 @@ public class Start_Iso_StreamActivity extends Activity {
     // Camera Configuration Values to adjust Values over Controltransfers
     private boolean focusAutoState;
     private boolean exposureAutoState;
-
     float discrete=0;
     static float start;
     static float end;
@@ -211,12 +202,10 @@ public class Start_Iso_StreamActivity extends Activity {
 
     // UVC Interface
     private static IUVC_Descriptor iuvc_descriptor;
-    private CFAlertDialog alertDialog;
 
     private int [] differentFrameSizes;
     private int [] lastThreeFrames;
     private int whichFrame = 0;
-
 
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -246,7 +235,6 @@ public class Start_Iso_StreamActivity extends Activity {
         // Start onClick Listener method
         startStream = (Button) findViewById(R.id.startStream);
         startStream.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View view) {
                 //Creating the instance of PopupMenu
@@ -265,7 +253,6 @@ public class Start_Iso_StreamActivity extends Activity {
             }
         });//closing the setOnClickListener method
         startStream.getBackground().setAlpha(180);  // 25% transparent
-
         FabSpeedDial fabSpeedDial = (FabSpeedDial) findViewById(R.id.settingsButton);
         fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
 
@@ -274,8 +261,6 @@ public class Start_Iso_StreamActivity extends Activity {
             @Override
             public boolean onMenuItemSelected(MenuItem menuItem) {
                 log("click");
-                //Snackbar.make(findViewById(R.id.rootView), getString(R.string.selected_menu_item, menuItem.getTitle()), Snackbar.LENGTH_SHORT).show();
-
                 switch (menuItem.getItemId()) {
                     case R.id.adjustValuesUnit:
                         showAdjustValuesUnitMenu(findViewById(R.id.startStream));
@@ -301,13 +286,9 @@ public class Start_Iso_StreamActivity extends Activity {
                 return false;
             }
         });
-
-
         FrameLayout layout = (FrameLayout)findViewById(R.id.switch_view);
         layout.setVisibility(View.GONE);
-
         photoButton = (ImageButton) findViewById(R.id.Bildaufnahme);
-
         final MediaPlayer mp2 = MediaPlayer.create(Start_Iso_StreamActivity.this, R.raw.sound2);
         final MediaPlayer mp1 = MediaPlayer.create(Start_Iso_StreamActivity.this, R.raw.sound1);
         photoButton.setOnLongClickListener(new View.OnLongClickListener() {
@@ -318,7 +299,6 @@ public class Start_Iso_StreamActivity extends Activity {
                 return true;
             }
         });
-
         photoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -354,9 +334,7 @@ public class Start_Iso_StreamActivity extends Activity {
                         if (!path.exists()) {
                             path.mkdirs();
                         }
-
                         bitmapToVideoEncoder.startEncoding(imageWidth, imageHeight, new File(sdPath + "output-" + lastVideo +"-" + dateFormat.format(date) + ".mp4"));
-
                     } else {
                         // The toggle is enabled
                         lastPicture = 0;
@@ -478,11 +456,8 @@ public class Start_Iso_StreamActivity extends Activity {
                             int fps = round(a);
                             log("fps ( Frame per Secound ) = " + fps);
                             log ( "lastPicture = " + lastPicture);
-
-
                             date = new Date() ;
                             dateFormat = new SimpleDateFormat("dd.MM.yyyy_HH..mm..ss") ;
-
                             File fileVideo = new File(sdPath + "output-" + lastVideo +"-" + dateFormat.format(date) + ".avi");
                             try {
                                 generator = new MJPEGGenerator(fileVideo, imageWidth, imageHeight, fps, lastPicture);
@@ -619,7 +594,6 @@ public class Start_Iso_StreamActivity extends Activity {
         else  popup.getMenu().findItem(R.id.analog_video_standard).setVisible(false);
         if(lockVariables.Analog_Video_Lock_Status == true)  popup.getMenu().findItem(R.id.analog_video_lock_status).setVisible(true);
         else  popup.getMenu().findItem(R.id.analog_video_lock_status).setVisible(false);
-
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -801,10 +775,8 @@ public class Start_Iso_StreamActivity extends Activity {
         //Context wrapper = new ContextThemeWrapper(this, R.style.YOURSTYLE);
         PopupMenu popup = new PopupMenu(this, v);
         popup.inflate(R.menu.iso_stream_adjust_values_terminal);
-
         LockCameraVariables lockVariables = new LockCameraVariables(bNumControlTerminal, bNumControlUnit);
         lockVariables.initTerminal();
-
         if(lockVariables.Scanning_Mode == true)  popup.getMenu().findItem(R.id.scanning_Mode).setVisible(true);
         else  popup.getMenu().findItem(R.id.scanning_Mode).setVisible(false);
         if(lockVariables.Auto_Exposure_Mode == true)  popup.getMenu().findItem(R.id.auto_exposure_mode).setVisible(true);
@@ -843,7 +815,6 @@ public class Start_Iso_StreamActivity extends Activity {
         else  popup.getMenu().findItem(R.id.focusAuto).setVisible(false);
         if(lockVariables.Privacy == true)  popup.getMenu().findItem(R.id.Privacy).setVisible(true);
         else  popup.getMenu().findItem(R.id.Privacy).setVisible(false);
-
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -893,7 +864,6 @@ public class Start_Iso_StreamActivity extends Activity {
                                             setAutoExposure.adjustValue(SetCameraVariables.CameraFunctionSetting.auto);
                                         }
                                     }
-
                                 });
                                 myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
                             }
@@ -961,8 +931,6 @@ public class Start_Iso_StreamActivity extends Activity {
                                 SetCameraVariables setFocus = new SetCameraVariables(camDeviceConnection, SetCameraVariables.CameraFunction.autofocus, focusAutoState,
                                         bUnitID, bTerminalID);
                                 focusAutoState = setFocus.autoEnabled;
-
-
                                 switchAuto = (Switch) findViewById(R.id.switchAuto);
                                 switchAuto.setEnabled(true);
                                 switchAuto.setVisibility(View.VISIBLE);
@@ -991,7 +959,6 @@ public class Start_Iso_StreamActivity extends Activity {
                             }
                         });
                         return true;
-
                     case R.id.Privacy:
                         displayMessage("Not supported up to now...");
                         return true;
@@ -1005,19 +972,92 @@ public class Start_Iso_StreamActivity extends Activity {
     }
 
     public void resolutionFrameIntervalClickButtonEvent () {
-
+        final CFAlertDialog alertDialog;
         CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
+        LayoutInflater li = LayoutInflater.from(this);
+        View edit_resolution_frameinterval_view = li.inflate(R.layout.iso_stream_resolution_interval_menu, null);
         builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
         // red  = #FF0000
         // transparent red = #00ff0000
-
         String red = "#11ff0000";
         int redInt = Color.parseColor(red);
-
-        builder.setFooterView(R.layout.dialog_footer_layout);
-
-
+        builder.setFooterView(edit_resolution_frameinterval_view);
         alertDialog = builder.show();
+        CFPushButton resolution = edit_resolution_frameinterval_view.findViewById(R.id.resolution) ;
+        resolution.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CFAlertDialog.Builder builder = new CFAlertDialog.Builder(Start_Iso_StreamActivity.this);
+                builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+                builder.setTitle("Select your Resolution");
+                builder.setMessage("Current Resolution: " + imageWidth + "x" + imageHeight);
+                if (iuvc_descriptor == null)  {
+                    alertDialog.dismiss();
+                    displayMessage("Start the Camera Stream first !");
+                    return;
+                }
+                int [] [] resolutions;
+                if (videoformat.equals("mjpeg")) resolutions = iuvc_descriptor.findDifferentResolutions(true);
+                else resolutions = iuvc_descriptor.findDifferentResolutions(false);
+                log("resolutions.length = " + resolutions.length);
+                String [] resString = new String [resolutions.length];
+                for (int a = 0; a < resolutions.length; a++) resString[a] = Arrays.toString(resolutions[a]);
+                for (int a = 0; a < resolutions.length; a++) log("Arrays.toString(resolutions[" + a + "]  =  " + Arrays.toString(resolutions[a]));
+                builder.setItems(resString , new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int index) {
+                        log("resolutions[index][0] = " + resolutions[index][0]);
+                        log("resolutions[index][1] = " + resolutions[index][1]);
+                        imageWidth = resolutions[index][0];
+                        imageHeight = resolutions[index][1];
+                        camFrameIndex = index + 1;
+                        displayMessage("Resolution selected.\nPlease restart the camera stream!");
+                        if (runningStream != null) {
+                            View v = null;
+                            stopTheCameraStreamClickEvent(v);
+                        }
+                        dialogInterface.dismiss();
+                    }
+                });
+                builder.show();
+                alertDialog.dismiss();
+            }
+        });
+        CFPushButton interval = edit_resolution_frameinterval_view.findViewById(R.id.frameinterval) ;
+        interval.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (iuvc_descriptor == null) {
+                    alertDialog.dismiss();
+                    displayMessage("Start the Camera Stream first !");
+                    return;
+                }
+                int [] intervals;
+                if (videoformat.equals("mjpeg")) intervals = iuvc_descriptor.findDifferentFrameIntervals(true, new int [] {imageWidth, imageHeight});
+                else intervals = iuvc_descriptor.findDifferentFrameIntervals(false, new int [] {imageWidth, imageHeight});
+                CFAlertDialog.Builder builder = new CFAlertDialog.Builder(Start_Iso_StreamActivity.this);
+                builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+                builder.setTitle("Select your FrameInterval");
+                builder.setMessage("Current Interval: " + (10000000 / camFrameInterval) + " Frames per Second");
+                String [] intervalString = new String [intervals.length];
+                for (int a = 0; a < intervalString.length; a++) intervalString[a] = Integer.toString((10000000 / intervals[a])) + "   FPS";
+                builder.setItems(intervalString , new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int index) {
+                        log("intervals[index] = " + intervals[index]);
+                        camFrameInterval = intervals[index];
+                        displayMessage("FrameInterval selected.\nPlease restart the camera stream!");
+                        if (runningStream != null) {
+                            View v = null;
+                            stopTheCameraStreamClickEvent(v);
+                        }
+                        dialogInterface.dismiss();
+                    }
+                });
+                builder.show();
+                alertDialog.dismiss();
+            }
+        });
     }
 
     private void startWebRTC() {
@@ -1069,7 +1109,6 @@ public class Start_Iso_StreamActivity extends Activity {
         Intent resultIntent = new Intent();
         if (exit == true) resultIntent.putExtra("closeProgram", true);
         setResult(Activity.RESULT_OK, resultIntent);
-
         finish();
     }
 
@@ -1077,8 +1116,6 @@ public class Start_Iso_StreamActivity extends Activity {
         log("imageHight = " + imageHeight);
         log("imageWidth = " + imageWidth);
         log("camFrameIndex = " + camFrameIndex);
-
-
         if (camDevice == null) {
             displayMessage("No Camera connected\nPlease connect a camera");
             return;
@@ -1100,7 +1137,6 @@ public class Start_Iso_StreamActivity extends Activity {
             }
             initStillImageParms();
             if (camIsOpen) {
-
                 if (runningStream != null) {
                     return;
                 }
@@ -1123,7 +1159,6 @@ public class Start_Iso_StreamActivity extends Activity {
                         log ("iuvc_descriptor.findDifferentFrameIntervals( = " + Arrays.toString(iuvc_descriptor.findDifferentFrameIntervals(false, new int[] {imageWidth, imageHeight})));
                         log ("");
                     }
-
                 } else displayMessage("Interface initialization for the Descriptor failed.");
             } else {
                 runOnUiThread(new Runnable() {
@@ -1159,11 +1194,6 @@ public class Start_Iso_StreamActivity extends Activity {
     }
 
     private void findCam() throws Exception {
-
-        if (!OpenCVLoader.initDebug())
-            Log.e("OpenCv", "Unable to load OpenCV");
-        else
-            Log.d("OpenCv", "OpenCV loaded");
         camDevice = findCameraDevice();
         if (camDevice == null) {
             throw new Exception("No USB camera device found.");
@@ -1172,7 +1202,6 @@ public class Start_Iso_StreamActivity extends Activity {
             log("Asking for Permissions");
             usbManager.requestPermission(camDevice, mPermissionIntent);
         } else usbManager.requestPermission (camDevice, mPermissionIntent);
-
     }
 
     private UsbDevice findCameraDevice() {
@@ -1216,13 +1245,10 @@ public class Start_Iso_StreamActivity extends Activity {
             initCamera();
             camIsOpen = true;
         }
-
-
         log("Camera opened sucessfully");
     }
 
     private void openCameraDevice(boolean init) throws Exception {
-
         // (For transfer buffer sizes > 196608 the kernel file drivers/usb/core/devio.c must be patched.)
         camControlInterface = getVideoControlInterface(camDevice);
         camStreamingInterface = getVideoStreamingInterface(camDevice);
@@ -1285,7 +1311,6 @@ public class Start_Iso_StreamActivity extends Activity {
     public void stopTheCameraStreamClickEvent(View view) {
         startStream.getBackground().setAlpha(180);  // 25% transparent
         startStream.setEnabled(true);
-
         stopStreamButton.getBackground().setAlpha(20);  // 100% transparent
         ((Button)findViewById(R.id.stopKameraknopf)).setEnabled(false);
         photoButton.setEnabled(false);
@@ -1293,14 +1318,11 @@ public class Start_Iso_StreamActivity extends Activity {
         videoButton.setEnabled(false);
         videoButton.setAlpha(0); // 100% transparent
         stopKamera = true;
-
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-
         try {
             enableStreaming(false);
         } catch (Exception e) {
@@ -1309,102 +1331,6 @@ public class Start_Iso_StreamActivity extends Activity {
         displayMessage("Stopped ");
         log("Stopped");
         runningStream = null;
-    }
-
-    public void resolutionButtonClickEvent(View v) {
-        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(Start_Iso_StreamActivity.this);
-        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
-        builder.setTitle("Select your Resolution");
-        builder.setMessage("Current Resolution: " + imageWidth + "x" + imageHeight);
-
-        if (iuvc_descriptor == null)  {
-            alertDialog.dismiss();
-            alertDialog = null;
-            displayMessage("Start the Camera Stream first !");
-            return;
-        }
-        int [] [] resolutions;
-
-        if (videoformat.equals("mjpeg")) resolutions = iuvc_descriptor.findDifferentResolutions(true);
-        else resolutions = iuvc_descriptor.findDifferentResolutions(false);
-
-        log("resolutions.length = " + resolutions.length);
-        String [] resString = new String [resolutions.length];
-        for (int a = 0; a < resolutions.length; a++) resString[a] = Arrays.toString(resolutions[a]);
-        for (int a = 0; a < resolutions.length; a++) log("Arrays.toString(resolutions[" + a + "]  =  " + Arrays.toString(resolutions[a]));
-
-
-
-
-        builder.setItems(resString , new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int index) {
-
-                log("resolutions[index][0] = " + resolutions[index][0]);
-                log("resolutions[index][1] = " + resolutions[index][1]);
-                imageWidth = resolutions[index][0];
-                imageHeight = resolutions[index][1];
-                camFrameIndex = index + 1;
-                displayMessage("Resolution selected.\nPlease restart the camera stream!");
-                if (runningStream != null) {
-                    View v = null;
-                    stopTheCameraStreamClickEvent(v);
-                }
-                dialogInterface.dismiss();
-            }
-        });
-        builder.show();
-
-        alertDialog.dismiss();
-        alertDialog = null;
-
-    }
-
-    public void frameIntervalClickEvent(View v) {
-
-        if (iuvc_descriptor == null) {
-            alertDialog.dismiss();
-            alertDialog = null;
-            displayMessage("Start the Camera Stream first !");
-            return;
-        }
-        int [] intervals;
-        if (videoformat.equals("mjpeg")) intervals = iuvc_descriptor.findDifferentFrameIntervals(true, new int [] {imageWidth, imageHeight});
-        else intervals = iuvc_descriptor.findDifferentFrameIntervals(false, new int [] {imageWidth, imageHeight});
-
-        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(Start_Iso_StreamActivity.this);
-        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
-        builder.setTitle("Select your FrameInterval");
-        builder.setMessage("Current Interval: " + camFrameInterval );
-
-
-
-        String [] intervalString = new String [intervals.length];
-        for (int a = 0; a < intervalString.length; a++) intervalString[a] = Integer.toString(intervals[a]);
-
-            builder.setItems(intervalString , new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int index) {
-
-                log("intervals[index] = " + intervals[index]);
-                camFrameInterval = intervals[index];
-                displayMessage("FrameInterval selected.\nPlease restart the camera stream!");
-                if (runningStream != null) {
-                    View v = null;
-                    stopTheCameraStreamClickEvent(v);
-                }
-                dialogInterface.dismiss();
-            }
-        });
-        builder.show();
-
-
-
-
-        alertDialog.dismiss();
-        alertDialog = null;
-
-
     }
 
     private void writeBytesToFile(String fileName, byte[] data) throws IOException {
@@ -1418,41 +1344,22 @@ public class Start_Iso_StreamActivity extends Activity {
         }
     }
 
-    private byte [] getNV21 (int inputWidth, int inputHeight, Bitmap scaled) {
-
-        int [] argb = new int[inputWidth * inputHeight];
-
-        scaled.getPixels(argb, 0, inputWidth, 0, 0, inputWidth, inputHeight);
-
-        byte [] yuv = new byte[inputWidth*inputHeight*3/2];
-        encodeYUV420SP(yuv, argb, inputWidth, inputHeight);
-
-        scaled.recycle();
-
-        return yuv;
-    }
-
     void encodeYUV420SP(byte[] yuv420sp, int[] argb, int width, int height) {
         final int frameSize = width * height;
-
         int yIndex = 0;
         int uvIndex = frameSize;
-
         int a, R, G, B, Y, U, V;
         int index = 0;
         for (int j = 0; j < height; j++) {
             for (int i = 0; i < width; i++) {
-
                 a = (argb[index] & 0xff000000) >> 24; // a is not used obviously
                 R = (argb[index] & 0xff0000) >> 16;
                 G = (argb[index] & 0xff00) >> 8;
                 B = (argb[index] & 0xff) >> 0;
-
                 // well known RGB to YUV algorithm
                 Y = ( (  66 * R + 129 * G +  25 * B + 128) >> 8) +  16;
                 U = ( ( -38 * R -  74 * G + 112 * B + 128) >> 8) + 128;
                 V = ( ( 112 * R -  94 * G -  18 * B + 128) >> 8) + 128;
-
                 // NV21 has a plane of Y and interleaved planes of VU each sampled by a factor of 2
                 //    meaning for every 4 Y pixels there are 1 V and 1 U.  Note the sampling is every other
                 //    pixel AND every other scanline.
@@ -1461,7 +1368,6 @@ public class Start_Iso_StreamActivity extends Activity {
                     yuv420sp[uvIndex++] = (byte)((V<0) ? 0 : ((V > 255) ? 255 : V));
                     yuv420sp[uvIndex++] = (byte)((U<0) ? 0 : ((U > 255) ? 255 : U));
                 }
-
                 index ++;
             }
         }
@@ -1491,7 +1397,6 @@ public class Start_Iso_StreamActivity extends Activity {
             writeBytesToFile(fileName, jpegByteArray);
             log ("file saved");
         }
-
         if (saveStillImage) {
             date = new Date();
             dateFormat = new SimpleDateFormat("\"dd.MM.yyyy_HH..mm..ss") ;
@@ -1504,7 +1409,6 @@ public class Start_Iso_StreamActivity extends Activity {
             writeBytesToFile(fileName, jpegByteArray);
             saveStillImage = false;
         }
-
         if (videorecord) {
             if (System.currentTimeMillis() - currentTime > 200) {
                 currentTime = System.currentTimeMillis();
@@ -1518,7 +1422,6 @@ public class Start_Iso_StreamActivity extends Activity {
                 writeBytesToFile(fileName, jpegByteArray);
             }
         }
-
         if (exit == false) {
             final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
             runOnUiThread(new Runnable() {
@@ -1547,11 +1450,8 @@ public class Start_Iso_StreamActivity extends Activity {
             String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getPath() ;
             writeBytesToFile(fileName, jpegFrameData);
             log ("file saved");
-
         }
-
         if (saveStillImage) {
-
             date = new Date();
             dateFormat = new SimpleDateFormat("\"dd.MM.yyyy_HH..mm..ss") ;
             String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
@@ -1564,7 +1464,6 @@ public class Start_Iso_StreamActivity extends Activity {
             saveStillImage = false;
             log("Still Image Save Complete");
         }
-
         if (videorecord) {
             if (System.currentTimeMillis() - currentTime > 200) {
                 currentTime = System.currentTimeMillis();
@@ -1640,8 +1539,6 @@ public class Start_Iso_StreamActivity extends Activity {
                 return a;
             } else
                 return null;
-
-
         }
     }
 
@@ -1728,7 +1625,6 @@ public class Start_Iso_StreamActivity extends Activity {
         final int timeout = 5000;
         int len;
         byte[] parms = new byte[11];
-
         len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_MIN, VS_STILL_PROBE_CONTROL << 8, camStreamingInterface.getId(), parms, parms.length, timeout);
         if (len != parms.length) {
             log("Camera initialization failed. Still image parms probe get failed.");
@@ -1739,7 +1635,6 @@ public class Start_Iso_StreamActivity extends Activity {
             log("Camera initialization failed. Still image parms probe get failed.");
         }
         log("Probed still image parms (GET_MAX): " + dumpStillImageParms(parms));
-
         parms[0] = (byte) camFormatIndex;
         parms[1] = (byte) camFrameIndex;
         //parms[2] = 1;
@@ -1749,12 +1644,8 @@ public class Start_Iso_StreamActivity extends Activity {
             log("Camera initialization failed. Still image parms probe get failed.");
         }
         log("Probed still image parms (GET_CUR): " + dumpStillImageParms(parms));
-
-
         parms[0] = (byte) camFormatIndex;
         parms[1] = (byte) camFrameIndex;
-
-
         len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, VS_STILL_COMMIT_CONTROL << 8, camStreamingInterface.getId(), parms, parms.length, timeout);
         if (len != parms.length) {
             log("Camera initialization failed. Still image parms commit set failed.");
@@ -1945,16 +1836,13 @@ public class Start_Iso_StreamActivity extends Activity {
 
 
     public class IsochronousStream extends Thread {
-
         private Activity activity;
         private boolean reapTheLastFrames;
         private int lastReapedFrames = 0;
-
         public IsochronousStream(Context mContext) {
             setPriority(Thread.MAX_PRIORITY);
             activity = (Activity) mContext;
         }
-
         public void run() {
             try {
                 USBIso usbIso64 = new USBIso(camDeviceConnection.getFileDescriptor(), packetsPerRequest, maxPacketSize, (byte) camStreamingEndpoint.getAddress());
@@ -2023,7 +1911,7 @@ public class Start_Iso_StreamActivity extends Activity {
                                     frameData.write(data, headerLen, dataLen);
                                     if (videoformat.equals("mjpeg") ) {
                                         try {
-                                            log("Frame, len= " + frameData.size());
+                                            //log("Frame, len= " + frameData.size());
                                             processReceivedMJpegVideoFrameKamera(frameData.toByteArray());
                                         } catch (Exception e) {
                                             e.printStackTrace();
@@ -2055,16 +1943,11 @@ public class Start_Iso_StreamActivity extends Activity {
                         }
                     }
                 }
-                //enableStreaming(false);
-                //processReceivedMJpegVideoFrame(frameData.toByteArray());
-                //saveReceivedVideoFrame(frameData.toByteArray());
                 log("OK");
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
             runningStream = null;
-
         }
     }
 
@@ -2085,7 +1968,6 @@ public class Start_Iso_StreamActivity extends Activity {
             differentFrameSizes[whichFrame] = size;
             return false;
         }
-
         int averageSize = 0;
         for (int j = 1; j < lastThreeFrames.length;j++) {
             averageSize = averageSize + lastThreeFrames[j];
@@ -2101,7 +1983,6 @@ public class Start_Iso_StreamActivity extends Activity {
     }
 
     private void fetchTheValues(){
-
         Intent intent=getIntent();
         Bundle bundle=intent.getBundleExtra("bun");
         camStreamingAltSetting=bundle.getInt("camStreamingAltSetting",0);
@@ -2138,12 +2019,9 @@ public class Start_Iso_StreamActivity extends Activity {
         final int height = options.outHeight;
         final int width = options.outWidth;
         int inSampleSize = 1;
-
         if (height > reqHeight || width > reqWidth) {
-
             final int halfHeight = height / 2;
             final int halfWidth = width / 2;
-
             // Calculate the largest inSampleSize value that is a power of 2 and keeps both
             // height and width larger than the requested height and width.
             while ((halfHeight / inSampleSize) >= reqHeight
@@ -2151,7 +2029,6 @@ public class Start_Iso_StreamActivity extends Activity {
                 inSampleSize *= 2;
             }
         }
-
         return inSampleSize;
     }
 
@@ -2164,51 +2041,32 @@ public class Start_Iso_StreamActivity extends Activity {
         System.out.println("hex " + hex);
     }
 
-
     public void a() {
         VideoCapturer v;
-
         VideoCapturer.CapturerObserver a;
-
-
-
         a = new VideoCapturer.CapturerObserver() {
             @Override
             public void onCapturerStarted(boolean b) {
-
             }
-
             @Override
             public void onCapturerStopped() {
-
             }
-
             @Override
             public void onByteBufferFrameCaptured(byte[] bytes, int i, int i1, int i2, long l) {
-
             }
-
             @Override
             public void onTextureFrameCaptured(int i, int i1, int i2, float[] floats, int i3, long l) {
-
             }
-
             @Override
             public void onFrameCaptured(VideoFrame videoFrame) {
-
             }
         };
-
-
         ImageReader i;
-
         Executor executor;
         VideoCapturer capturer;
-
     }
 
     private void saveToFile(byte[] data) {
-
         final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
         final String saveFilePathFolder = "UVC_Camera/frame";
         File file = new File(rootPath, "/" + saveFilePathFolder);
@@ -2220,19 +2078,15 @@ public class Start_Iso_StreamActivity extends Activity {
             file.mkdirs();
         }
         String rootdirStr = file.toString();
-
         rootdirStr += "/";
         rootdirStr += "data";
         rootdirStr += framecount ;
         rootdirStr += ".bin";
-
-
         file = new File(rootdirStr);
         //file = new File(savePath).getAbsoluteFile();
         log("AbsolutePath = " + file.getAbsolutePath());
         //file.getParentFile().mkdirs();
         if (file.exists())  file.delete();
-
         FileOutputStream fos= null;
         try {
             fos = new FileOutputStream(file.toString());
@@ -2242,7 +2096,6 @@ public class Start_Iso_StreamActivity extends Activity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
 

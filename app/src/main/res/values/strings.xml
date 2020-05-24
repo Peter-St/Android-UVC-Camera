@@ -1,72 +1,205 @@
 <resources>
     <string name="app_name">UVC_Camera</string>
-    <string name="readme"><![CDATA[
+    <string name="readme_1"><![CDATA[
        
-Camera stream over Usb.\n
+Camera stream over Usb.\n\n
 OTG cabel or OTG Hub needed\n
 It works with Micro Usb and Usb Type C devices\n
 (Some OTG cabels doesn\'t work --> I\'ll found one which is an extern powered more Port USB-C OTG cable and doesn\'t work ...)\n
-All phones, tablets with all chipsets are supported\n\n
+All phones, tablets with all chipsets are supported.
+Since Android 9 Google made a mistake granting the Usb Permissions for Usb Cameras, so this app may not works on Android 9 + Devices\n\n
+--> https://issuetracker.google.com/issues/145082934
+\n
 
 Explaination:\n
-To set up the userspace driver for your USB camera you have to set the following \'isochronous data transfer\' values:\n\n
-
-Alt-Setting, Maximal-Packet-Size, Format-Index, Frame-Index, Videoformat, Image-Width, Image-Hight, Frame-Interval, Packets-Per-Request, Active-Urbs\n
-This Values are explained at the end of this Text.\n\n
-
-To adjust this values automatically, click on the Button: "SET UP WITH UVC SETTINGS". (you need a UVC compliance camera)\n
-You can save your settings and restore them later, for faster setup.\n\n
-
-To adjust this values by hand, click on the Button: "EDIT / SAVE THE CAMERA VALUES". (you need a UVC compliance camera)\n
-You can save your settings and restore them later, for faster setup.\n\n
-
-On first Start follow these steps:\n
-
-Use the "SET UP THE CAMERA DEVICE" button --> Search for a camera.\n
-Next you can list the interfaces and endpoints of the camera. (List the camera button)\n
-Set up the Camera with the values for the isochronous data transfer.\n
+Before you start with entering the Camera values, your Android device have to detect the Camera:
+\n
+So you click the Button "Set Up The Usb Device" and then the Button "Find the Camera". The app will ask you for granting the permissions.
+\n
+    ]]></string>
 
 
-Next important part is the Testrun for your camera.\n
-Thirst you have to perform a controlltransfer.
-Click "Testrun" --> "Controltransfer" --> "and perform the first Controltransfer.\n
-If the controlltransfer was sucessful, you can read out one frame. The frame will be displayed below.\n
-Next you can Read out all the frames for 5 secounds.\n
-Have a look at your frames: If they are all identically and big enougth, than you can proceed to start the camera stream with the "Start the camera stream" button from the main screen.\n\n
-Otherwise you have to edit some values for your camera: Perhaps -PacketsPerRequest- or -ActiveUrbs-, or something else.\n\n
-Click the "Transmission Start" --> "Start the Camera" Button to start the transmission.\n
-If everything works, you can watch the video of your camera.\n\n
 
-Alt-Setting:\n
-The Alt-Setting is a camera specific setting which defines which interface of your camera shall be used for the isochronous data transfer.\n\n
 
-Maximal-Packet-Size:\n
-Each Alt-Setting has it's own Maximal-Packet-Size. The Maximal-Packet-Size is byte Number which defines how many bytes each Packet of the iso transfer maximal contains.\n\n
 
-Format-Index:\n
-Your Camera can support different Format Index\'s. This could be MJPEG, or uncompressed (YUV) or ...\n\n
+ <string name="readme_2"><![CDATA[
 
-Videoformat\n
-This is a helper value, which has to be set to your selected Format-Index. You have to enter YUV, or MJPEG, or ...\n\n
+In the Picture above a camera was found and the Permissions to the Camera are granted.
+If no Camera is detected, you can nott use this app. (except of the WebRTC function).
+\n
+Next you have read out the camera Interfaces, to see if your camera is UVC complient.
+So you click the Button: "List Up The Camera":
+\n
+    ]]></string>
 
-Frame-Index:\n
-Each Format-Index of your camera can have different Frame Index\'s. This is a number which represents the camera resolution (1920x1020, or 640x480)\n\n
 
-Image-Width, Image-Hight:\n
-This are helper values, which have to be set to your selected Frame-Index. For Example: Image-Width = 640 and Image-Hight = 480\n\n
 
-Frame-Interval:\n
-The Frame-Interval is a number which defines, on how much nano secounds each new frame will be sent from the camera to your device.\n
-For example: 666666 means each 0,066 Secounds a frame is sent. 666666 = 15 frames per secound.\n
-333333 are 30 Frames per secound\n\n
 
-Packets-Per-Request:\n
-This is a value wich defines how many Packet will be sent from your camera to your device in one cycle of the transfer.\n\n
 
-Active-Urbs:\n
-And this value defines have many cycles are running paralell to each other in the data steam between camera and Android device.\n\n
+ <string name="readme_3"><![CDATA[
+Here you can see a sucessful return of an UVC compliant camera. The first Interface is always the ControlInterface and the second is always the Stream Interface.
+\n
+This Controlinterface (1st) has only 1 Endpoint.
+\n
+The StreamInterface could have more than one Endpoints (depends on the supported resolution of the camera).
+\n
+Here the Endpoint of the StreamInterface has a maxPacketSize of 3072 bytes (You need such a value later).
+\n
+(It could be, that your camera has an audio output, or Sd-Card output too, than see more than 2 Interfaces for your device).
+\n
+If those two Buttons work correctly, you can start to set up the UVC values:
+\n
+Click the Button "Set Up With UVC Settings" to start the camera setup.
+\n
+You have two pissibilies: The "manual" and the "automatic" Method. The "automatic" method is in beta stadium for now, so if this button fails, you choose the "manual" method next time!
+\n
+The automatic method should find working camera values for its own, but this values may not be optimal for video transmission. To choose the right values for your own, you click on the "Manual" Button.
+\n
+Manual Method Explained:
+\n
+First you choose you Maximal Packet Size:
+\n
+You Camera may supports more Values for the MaxPacketSize, so you can test out each of them, which works best. If your phone uses a Mediathek Chipset you may choose the smallest value, but normaly you choose the highest value!
+\n
+Click on "Done" and proceed to the Packets Per Request selection:
+\n
+The Values you select builds the size of the Stream. This means if you select higher Values (such as 32 or more ..) you stream gets bigger, but there may could result error from your device or the camera because of a too large amount of data.
+\n
+For the start you select 1 for this Value. (This would be definitly to less, but you can raise it later) ..
+\n
+Next Sceen shows the ActiveUrbs (actice Usb Request Blocks) --> This is also a value which represents the size of the camera stream. One Block of the activeUrbs is exactly the maxPacketSize x packetsPerRequest. You can select 1 for the start (You will have to raise it later ..)
+\n
+Then the Setup Method will ask you for the Camera Format, which your camera supports. If there is only one format, you click on "Done", if there were more, you select one (does not matter which one) (eventually MJpeg if present) and click on "Done".
+\n
+Next you have to select you Camera Resolution, which you camera supports with the Format (perhaps your camera supports other resolutions, with the other Format ...). Select something ... and click on "Done"
+\n
+Then you have to select the Frame Interval, which your camera supports. You can click on a Value (maybe the lowest on displayed on the screen, because it is better for the setup.
+\n
+You can save your Entries now:
+\n
+Click on "Yes, Save" to save this values (you do not need to run the method again, if you have finished the setup and found some working values ...
+\n
+If you click on "ok" in the next screen --> an automatic name will be taken from the camera to save the file. You can also enter a unique name or enter the value, which is displayed on the bottom, to choose an existing file.
+\n
+    ]]></string>
 
-This program is on GitHub on following link:\n
+
+
+ <string name="readme_4"><![CDATA[
+
+The picture shows the output of the sucessful setup:
+\n
+Now you want to know, if your Camera works with your selected Values. So you start the comunication with your camera by clicking on the Button "-Controltransfer-Testrun-" and then you select the first entry "Video Probe-Commit Controls".
+\n
+The app then starts to initialize the camera with your selected values!
+\n
+    ]]></string>
+
+ <string name="readme_5"><![CDATA[
+
+If you output is the same like on the Picture above, you have sucessfuly initialized your camera with your selected values.
+\n
+If you do not get a sucessful output of this Button (Video Probe-Commit Control) you can not use the app with your phone / camera.
+\n
+If this output fails, you may contact the developer or try to run the manual Uvc setup method again.
+\n
+If you were sucessful, then you can proceed with reading out the camera frames (first only over the Text View, because your frames may be corrupted or too short or ..
+\n
+To receive some data from your camera, your press the Button "-Controltransfer-Testrun-" again and then on "Testrun" and then on "One Frame".
+\n
+You then should receive the first frame data from your camera.
+\n
+    ]]></string>
+
+ <string name="readme_6"><![CDATA[
+
+The first data which was received on the picture above, were 39950 byte in this case.
+\n
+This means that the camera communicats with the android device and trys to submit the frame data. But the data received above is much to less for a frame Image of a sample size of 640 x 480. So tbe Values "ActiveUrbs" and "PacketsPerRequest" should be raised to get a better output: in my case to 16 Packets and 16 Urbs.
+\n
+If you were not able to get the frame data from your camera, then re-run the manual setup method and change same values. (lower the maxPacketSize, raise activeUrbs, raise packetsPerRequest).
+\n
+To raise the vales for (packetsPerRequest and activeUrbs) you can re-run the "manual" setup method or you click on the Button "Edit / Save The Camera Values"
+\n
+There you should only change the values for these two values (packetsPerRequest and activeUrbs).
+\n
+If you re-run the manual method, you can keep your values by clicking on done, or type in new values to change em.
+\n
+
+    ]]></string>
+
+ <string name="readme_7"><![CDATA[
+
+Here you see, that the frame now gots larger --> 614400 --> this is exact the size of imageWidth x ImageHight x 2 --> 640 x 480 x 2.
+\n
+So in the shown case, the correct setting was found and now the camera setup is finished!
+\n
+Sometimes cameras compresses the frames they send to the devices, so in some cases you have to receive frames with a nearly same size too each other (use the 2nd method from the testrun menu --> "Frames for 5 seconds")
+\n
+When all frames are identically (or nearly) and also all methods above were sucessful, you have sucessfuly finish the setup.
+\n
+You will sure have to spend more time to figure out the right values, but if you have found them, save them and later you can easy restore them any time.
+\n
+If you want to delete some savefiles you will have to manually do this with a file explorer (but only this one you do not need any more)
+\n
+\n
+To the Button "Frames for 5 secound":
+\n
+Have a look at your frames: If they are all identically and big enougth, than you can proceed to start the camera stream with the "Start the camera stream" button from the main screen.
+\n\n
+Otherwise you have to edit some values for your camera: Perhaps -PacketsPerRequest- or -ActiveUrbs-, or something else.
+\n\n
+Click the "Transmission Start" --> "Start the Camera" Button to start the transmission.
+\n
+If everything works, you can watch the video of your camera.
+\n\n
+
+Descripton of the Camera Values:
+\n
+Alt-Setting:
+\n
+The Alt-Setting is a camera specific setting which defines which interface of your camera shall be used for the isochronous data transfer.
+\n\n
+
+Maximal-Packet-Size:
+\n
+Each Alt-Setting has its own Maximal-Packet-Size. The Maximal-Packet-Size is byte Number which defines how many bytes each Packet of the iso transfer maximal contains.
+\n\n
+
+Format-Index:
+\n
+Your Camera can support different Format Indexs. This could be MJPEG, or uncompressed (YUV) or ...
+\n\n
+Videoformat
+\n
+This is a helper value, which has to be set to your selected Format-Index. You have to enter YUV, or MJPEG, or ...
+\n\n
+Frame-Index:
+\n
+Each Format-Index of your camera can have different Frame Indexs. This is a number which represents the camera resolution (1920x1020, or 640x480)
+\n\n
+Image-Width, Image-Hight:
+\n
+This are helper values, which have to be set to your selected Frame-Index. For Example: Image-Width = 640 and Image-Hight = 480
+\n\n
+Frame-Interval:
+\n
+The Frame-Interval is a number which defines, on how much nano secounds each new frame will be sent from the camera to your device.
+\n
+For example: 666666 means each 0,066 Secounds a frame is sent. 666666 = 15 frames per secound.
+\n
+333333 are 30 Frames per secound
+\n\n
+Packets-Per-Request:
+\n
+This is a value wich defines how many Packet will be sent from your camera to your device in one cycle of the transfer.
+\n\n
+Active-Urbs:
+\n
+And this value defines have many cycles are running paralell to each other in the data steam between camera and Android device.
+\n\n
+This program is on GitHub on following link:
+\n
 https://github.com/Peter-St/Android-UVC-Camera/
 
     ]]></string>

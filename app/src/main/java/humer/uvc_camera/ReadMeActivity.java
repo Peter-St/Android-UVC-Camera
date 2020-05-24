@@ -24,18 +24,27 @@ package humer.uvc_camera;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ImageSpan;
 import android.widget.TextView;
 
 public class ReadMeActivity extends Activity {
 
-    TextView tv;
+    TextViewWithImages tv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_readme);
-        tv = (TextView) findViewById(R.id.textDarstellung);
-        tv.setText(getString(R.string.readme));
+        //tv = (TextViewWithImages) findViewById(R.id.textDarstellung);
+
+        //tv.setText(getString(R.string.readme_));
+
+
+
+
+       // tv.setText(getString(R.string.readme));
 
 
 

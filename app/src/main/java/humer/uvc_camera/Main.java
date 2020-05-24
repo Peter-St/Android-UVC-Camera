@@ -31,10 +31,10 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -83,10 +83,15 @@ public class Main extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
         tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-        tv.setText("Hello\n\nThis App may not work on Android 9 (PIE) and Android 10 (Q) Devices. In this case please use other Usb Camera Apps from the Play Store" +
+        if (camFrameInterval == 0) tv.setText("Hello\n\nThis App may not work on Android 9 (PIE) and Android 10 (Q) Devices. In this case please use other Usb Camera Apps from the Play Store" +
                 "\n\nYour current Values are:\n\n( - this is a sroll and zoom field - )\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
                 "\nAltSetting = " + camStreamingAltSetting + "\nMaxPacketSize = " + maxPacketSize + "\nVideoformat = " + videoformat + "\ncamFormatIndex = " + camFormatIndex + "\n" +
-                "camFrameIndex = " + camFrameIndex + "\nimageWidth = "+ imageWidth + "\nimageHeight = " + imageHeight + "\ncamFrameInterval = " + camFrameInterval + "" +
+                "camFrameIndex = " + camFrameIndex + "\nimageWidth = "+ imageWidth + "\nimageHeight = " + imageHeight + "\ncamFrameInterval (fps) = " + camFrameInterval + "" +
+                "\n\nYou can edit these Settings by clicking on (Set Up The Camera Device).\nYou can then save the values and later restore them.");
+        else tv.setText("Hello\n\nThis App may not work on Android 9 (PIE) and Android 10 (Q) Devices. In this case please use other Usb Camera Apps from the Play Store" +
+                "\n\nYour current Values are:\n\n( - this is a sroll and zoom field - )\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
+                "\nAltSetting = " + camStreamingAltSetting + "\nMaxPacketSize = " + maxPacketSize + "\nVideoformat = " + videoformat + "\ncamFormatIndex = " + camFormatIndex + "\n" +
+                "camFrameIndex = " + camFrameIndex + "\nimageWidth = "+ imageWidth + "\nimageHeight = " + imageHeight + "\ncamFrameInterval (fps) = " + (10000000 / camFrameInterval) + "" +
                 "\n\nYou can edit these Settings by clicking on (Set Up The Camera Device).\nYou can then save the values and later restore them.");
         tv.setTextColor(darker(Color.BLUE, 100));
     }
@@ -146,13 +151,13 @@ public class Main extends Activity {
             bNumControlTerminal = data.getByteArrayExtra("bNumControlTerminal");
             bNumControlUnit = data.getByteArrayExtra("bNumControlUnit");
             bStillCaptureMethod = data.getByteExtra("bStillCaptureMethod",(byte) 0);
-
-
-            tv.setText("Your current Values are:\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
+            if (camFrameInterval == 0) tv.setText("Your current Values are:\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
                     "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat + "\nCamera Format Index = " + camFormatIndex + "\n" +
-                    "Camera FrameIndex = " + camFrameIndex + "\nImage Width = "+ imageWidth + "\nImage Height = " + imageHeight + "\nCamera Frame Interval = " + camFrameInterval)          ;
+                    "Camera FrameIndex = " + camFrameIndex + "\nImage Width = "+ imageWidth + "\nImage Height = " + imageHeight + "\nCamera Frame Interval (fps) = " +camFrameInterval);
+            else  tv.setText("Your current Values are:\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
+                    "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat + "\nCamera Format Index = " + camFormatIndex + "\n" +
+                    "Camera FrameIndex = " + camFrameIndex + "\nImage Width = "+ imageWidth + "\nImage Height = " + imageHeight + "\nCamera Frame Interval (fps) = " + (10000000 / camFrameInterval));
             tv.setTextColor(Color.BLACK);
-
         }
         if (requestCode == ActivityStartIsoStreamRequestCode && resultCode == RESULT_OK && data != null) {
             boolean exit = data.getBooleanExtra("closeProgram",false);
@@ -176,11 +181,9 @@ public class Main extends Activity {
         startActivity(intent);
     }
 
-
     public void setUpTheUsbDevice(View view){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             if (showStoragePermissionRead() && showStoragePermissionWrite() && showCameraPermissionCamera()) {
-
                 Intent intent = new Intent(this, SetUpTheUsbDevice.class);
                 Bundle bundle=new Bundle();
                 bundle.putBoolean("edit", true);
@@ -205,7 +208,6 @@ public class Main extends Activity {
                 super.onResume();
                 startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
             }
-
         }
         else if (showStoragePermissionRead() && showStoragePermissionWrite()) {
 
@@ -228,7 +230,6 @@ public class Main extends Activity {
             bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
             bundle.putByteArray("bNumControlUnit", bNumControlUnit);
             bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
-
             intent.putExtra("bun",bundle);
             super.onResume();
             startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
@@ -253,18 +254,15 @@ public class Main extends Activity {
             bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
             bundle.putByteArray("bNumControlUnit", bNumControlUnit);
             bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
-
             intent.putExtra("bun",bundle);
             super.onResume();
             startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
         }
-
     }
 
     public void log(String msg) {
         Log.i("UVC_Camera_Main", msg);
     }
-
 
     public void restoreCameraSettings (View view) {
         if (showStoragePermissionRead() && showStoragePermissionWrite()) {
@@ -280,10 +278,6 @@ public class Main extends Activity {
             stf = null;
         }
     }
-
-
-
-
 
     public void isoStream(View view){
 
@@ -317,7 +311,6 @@ public class Main extends Activity {
                 bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
                 bundle.putByteArray("bNumControlUnit", bNumControlUnit);
                 bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
-
                 intent.putExtra("bun",bundle);
                 startActivityForResult(intent, ActivityStartIsoStreamRequestCode);
             }
@@ -348,12 +341,10 @@ public class Main extends Activity {
                 bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
                 bundle.putByteArray("bNumControlUnit", bNumControlUnit);
                 bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
-
                 intent.putExtra("bun",bundle);
                 startActivityForResult(intent, ActivityStartIsoStreamRequestCode);
             }
         }
-
     }
 
     public void displayMessage(final String msg) {
@@ -366,10 +357,14 @@ public class Main extends Activity {
     }
 
     public void setTextTextView () {
-        tv.setText("Your current Values are:\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
+        if (camFrameInterval == 0) tv.setText("Your current Values are:\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
                 "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat + "\nCamera Format Index = " + camFormatIndex + "\n" +
-                "Camera FrameIndex = " + camFrameIndex + "\nImage Width = "+ imageWidth + "\nImage Height = " + imageHeight + "\nCamera Frame Interval = " +
+                "Camera FrameIndex = " + camFrameIndex + "\nImage Width = "+ imageWidth + "\nImage Height = " + imageHeight + "\nCamera Frame Interval (fps) = " +
                 camFrameInterval + "\n\nUVC Values:\nbUnitID = " + bUnitID + "\nbTerminalID = " + bTerminalID);
+        else tv.setText("Your current Values are:\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
+                "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat + "\nCamera Format Index = " + camFormatIndex + "\n" +
+                "Camera FrameIndex = " + camFrameIndex + "\nImage Width = "+ imageWidth + "\nImage Height = " + imageHeight + "\nCamera Frame Interval (fps) = " +
+                (10000000 / camFrameInterval) + "\n\nUVC Values:\nbUnitID = " + bUnitID + "\nbTerminalID = " + bTerminalID);
         tv.setTextColor(darker(Color.GREEN, 100));
     }
 

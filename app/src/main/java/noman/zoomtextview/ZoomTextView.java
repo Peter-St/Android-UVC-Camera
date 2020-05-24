@@ -1,17 +1,21 @@
 package noman.zoomtextview;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import androidx.appcompat.widget.AppCompatTextView;
 
 /**
  * Created by nor on 11/23/2015.
  */
-public class ZoomTextView extends android.support.v7.widget.AppCompatTextView {
+
+
+
+public class ZoomTextView extends AppCompatTextView {
     private static final String TAG = "ZoomTextView";
     private ScaleGestureDetector mScaleDetector;
 

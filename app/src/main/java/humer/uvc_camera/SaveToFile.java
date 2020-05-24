@@ -28,12 +28,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Environment;
-import android.support.design.widget.TextInputLayout;
+
 import android.text.InputType;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -42,6 +43,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
+import com.crowdfire.cfalertdialog.views.CFPushButton;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -132,9 +135,6 @@ public class SaveToFile  {
 
     public static boolean highestMaxPacketSizeDone;
     public static boolean lowestMaxPacketSizeDone;
-    public CFAlertDialog alertDialog;
-
-
 
     public SaveToFile(Main main, Context mContext) {
         this.uvc_camera = main;
@@ -159,9 +159,12 @@ public class SaveToFile  {
             public void run() {
                 activity.setContentView(R.layout.set_up_the_device_layout_main);
                 tv = activity.findViewById(R.id.textDarstellung);
-                tv.setText(msg + "\n\nYour current Values are:\n\nPackets Per Request = " + spacketsPerRequest +"\nActive Urbs = " + sactiveUrbs +
+                if (scamFrameInterval == 0) tv.setText(msg + "\n\nYour current Values are:\n\nPackets Per Request = " + spacketsPerRequest +"\nActive Urbs = " + sactiveUrbs +
                         "\nAltSetting = " + sALT_SETTING + "\nMaximal Packet Size = " + smaxPacketSize + "\nVideoformat = " + svideoformat + "\nCamera Format Index = " + scamFormatIndex + "\n" +
-                        "Camera FrameIndex = " + scamFrameIndex + "\nImage Width = "+ simageWidth + "\nImage Height = " + simageHeight + "\nCamera Frame Interval = " + scamFrameInterval );
+                        "Camera FrameIndex = " + scamFrameIndex + "\nImage Width = "+ simageWidth + "\nImage Height = " + simageHeight + "\nCamera Frame Interval = " + scamFrameInterval);
+                else tv.setText(msg + "\n\nYour current Values are:\n\nPackets Per Request = " + spacketsPerRequest +"\nActive Urbs = " + sactiveUrbs +
+                        "\nAltSetting = " + sALT_SETTING + "\nMaximal Packet Size = " + smaxPacketSize + "\nVideoformat = " + svideoformat + "\nCamera Format Index = " + scamFormatIndex + "\n" +
+                        "Camera FrameIndex = " + scamFrameIndex + "\nImage Width = "+ simageWidth + "\nImage Height = " + simageHeight + "\nCamera Frame Interval (fps) = " + (10000000 / scamFrameInterval) );
                 tv.setTextColor(Color.BLACK);
                 tv.setOnTouchListener(new View.OnTouchListener() {
                     @Override
@@ -465,30 +468,28 @@ public class SaveToFile  {
         rootdirStr += "/";
         //final File folder = new File("/home/you/Desktop");
         listFilesForFolder(file);
-
-
-
         if (paths.isEmpty() == true && optionForSaveFile == OptionForSaveFile.restorefromfile) {
             returnToMainLayout(String.format("No savefiles found in the save directory.\nDirectory: &s", rootdirStr ));
         } else {
-            stringBuilder.append("Type the number of the file to select it, or type in the name (new or existing).\n");
+            stringBuilder.append("Click on 'ok' to auto select a name, or type the number infront of a shown file, or type in a unique name.\n");
             for (int i = 0; i < paths.size(); i++) {
                 stringBuilder.append(String.format("%d   ->   ", (i+1)));
-                stringBuilder.append(paths.get(i));
+                String entry = paths.get(i);
+                String root = Environment.getExternalStorageDirectory().getAbsolutePath();
+                root += "/UVC_Camera/save/";
+                stringBuilder.append(entry.substring(root.length(), (entry.length() - 4) ));
                 stringBuilder.append("\n");
             }
             log(stringBuilder.toString());
             if (option == OptionForSaveFile.restorefromfile) {
-
                 AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
                 builderSingle.setIcon(R.drawable.ic_menu_camera);
                 builderSingle.setTitle("Please select the file to restore");
-
                 final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
-
                 for (int i = 0; i < paths.size(); i++) {
                     StringBuilder sb = new StringBuilder();
-                    sb.append(paths.get(i));
+
+                    sb.append(paths.get(i).substring(0, (paths.get(i).length()-4)));
                     int end = rootdirStr.length();
                     sb.delete(0, end);
                     arrayAdapter.add(sb.toString());
@@ -506,9 +507,9 @@ public class SaveToFile  {
                         String strName = arrayAdapter.getItem(which);
                         String path = rootdirStr;
                         path += strName;
+                        path+= ".sav";
                         restoreFromFile(path);
                     }
-
                 });
                 builderSingle.show();
             } else {
@@ -566,7 +567,6 @@ public class SaveToFile  {
                                     break;
                             }
                         }
-
                         switch(option) {
                             case savetofile:
                                 String rootdirString = file.toString();
@@ -608,24 +608,17 @@ public class SaveToFile  {
     }
 
 
-
     public void saveValuesToFile (String savePath) {
 
         log("savePath = " + savePath);
         try {  // Catch errors in I/O if necessary.
-            /*
-        File dump = new File(DUMP_FILE).getAbsoluteFile();
-        dump.getParentFile().mkdirs();
-        */
             File file = new File(savePath);
             //file = new File(savePath).getAbsoluteFile();
             log("AbsolutePath = " + file.getAbsolutePath());
             //file.getParentFile().mkdirs();
             if (file.exists())  file.delete();
-
             FileOutputStream saveFile=new FileOutputStream(file.toString());
             ObjectOutputStream save = new ObjectOutputStream(saveFile);
-
             save.writeObject(sALT_SETTING);
             save.writeObject(svideoformat);
             save.writeObject(scamFormatIndex);
@@ -643,13 +636,10 @@ public class SaveToFile  {
             save.writeObject(bNumControlTerminal);
             save.writeObject(bNumControlUnit);
             save.writeObject(bStillCaptureMethod);
-            // Close the file.
             save.close(); // This also closes saveFile.
         } catch (Exception e) { log("Error"); e.printStackTrace();}
-
         returnToMainLayout(String.format("Values edited and saved\nSavefile = %s", savePath));
     }
-
 
     public void restoreFromFile(String pathToFile){
         try{
@@ -681,7 +671,7 @@ public class SaveToFile  {
         writeTheValues();
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("Restored Values:\n"));
-        sb.append(String.format("Altsetting = %d\nVideoFormat = %s\nImageWidth = %d\nImageHeight = %d\nFrameInterval = %d\nPacketsPerRequest = %d\nActiveUrbs = %d", sALT_SETTING, svideoformat, simageWidth, simageHeight, scamFrameInterval, spacketsPerRequest, sactiveUrbs));
+        sb.append(String.format("Altsetting = %d\nVideoFormat = %s\nImageWidth = %d\nImageHeight = %d\nFrameInterval = %d\nPacketsPerRequest = %d\nActiveUrbs = %d", sALT_SETTING, svideoformat, simageWidth, simageHeight, (10000000 / scamFrameInterval), spacketsPerRequest, sactiveUrbs));
         setTextViewMain();
         writeMsgMain(sb.toString());
     }
@@ -745,10 +735,8 @@ public class SaveToFile  {
         }
         if (!automatic)  selectMaxPacketSize(automatic);
         else {
-
             spacketsPerRequest = 1;
             sactiveUrbs = 1;
-
             completed = false;
             lowQuality = true;
             raiseMaxPacketSize = false;
@@ -756,27 +744,6 @@ public class SaveToFile  {
             raisePacketsPerRequest = false;
             raiseActiveUrbs = false;
             selectMaxPacketSize(true);
-
-        }
-    }
-
-    private int returnConvertedValue(int wSize){
-        String st = Integer.toBinaryString(wSize);
-        StringBuilder result = new StringBuilder();
-        result.append(st);
-        if (result.length()<12) return Integer.parseInt(result.toString(), 2);
-        else if (result.length() == 12) {
-            String a = result.substring(0, 1);
-            String b = result.substring(1, 12);
-            int c = Integer.parseInt(a, 2);
-            int d = Integer.parseInt(b, 2);
-            return (c+1)*d;
-        } else {
-            String a = result.substring(0, 2);
-            String b = result.substring(2,13);
-            int c = Integer.parseInt(a, 2);
-            int d = Integer.parseInt(b, 2);
-            return (c+1)*d;
         }
     }
 
@@ -841,18 +808,19 @@ public class SaveToFile  {
 
     public void selectPackets(boolean automatic) {
         if (!automatic) {
+
+            CFAlertDialog alertDialog;
             CFAlertDialog.Builder builder = new CFAlertDialog.Builder(mContext);
+            LayoutInflater li = LayoutInflater.from(mContext);
+            View stf_select_max_package_layout_view = li.inflate(R.layout.stf_select_max_package_layout, null);
+            builder.setHeaderView(stf_select_max_package_layout_view);
             builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
             builder.setTitle("Select your Packets per Request");
             builder.setMessage("Your current Value = " + spacketsPerRequest);
-            builder.setHeaderView(R.layout.stf_select_max_package_layout);
-// Set up the input
             final EditText input = new EditText(mContext);
-// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
             input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
             builder.setFooterView(input);
-
-            builder.addButton("Ok", Color.parseColor("#FFFFFF"), Color.parseColor("#429ef4"), CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, new DialogInterface.OnClickListener() {
+            builder.addButton("Done", Color.parseColor("#FFFFFF"), Color.parseColor("#429ef4"), CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     if (input.getText().toString().isEmpty() == false) {
@@ -868,29 +836,83 @@ public class SaveToFile  {
                 }
             });
             alertDialog = builder.show();
-
+            TextView tv = stf_select_max_package_layout_view.findViewById(R.id.textView_setPackets);
+            tv.setText("One Packets has a size of " + smaxPacketSize + " bytes");
+            CFPushButton packetOne = stf_select_max_package_layout_view.findViewById(R.id.one) ;
+            packetOne.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    spacketsPerRequest = 1;
+                    alertDialog.dismiss();
+                    selectUrbs(false);
+                }
+            });
+            CFPushButton packetTwo = stf_select_max_package_layout_view.findViewById(R.id.two) ;
+            packetTwo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    spacketsPerRequest = 2;
+                    alertDialog.dismiss();
+                    selectUrbs(false);
+                }
+            });
+            CFPushButton packetThree = stf_select_max_package_layout_view.findViewById(R.id.three) ;
+            packetThree.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    spacketsPerRequest = 4;
+                    alertDialog.dismiss();
+                    selectUrbs(false);
+                }
+            });
+            CFPushButton packetFour = stf_select_max_package_layout_view.findViewById(R.id.four) ;
+            packetFour.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    spacketsPerRequest = 8;
+                    alertDialog.dismiss();
+                    selectUrbs(false);
+                }
+            });
+            CFPushButton packetFive = stf_select_max_package_layout_view.findViewById(R.id.five) ;
+            packetFive.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    spacketsPerRequest = 16;
+                    alertDialog.dismiss();
+                    selectUrbs(false);
+                }
+            });
+            CFPushButton packetSix = stf_select_max_package_layout_view.findViewById(R.id.six) ;
+            packetSix.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    spacketsPerRequest = 32;
+                    alertDialog.dismiss();
+                    selectUrbs(false);
+                }
+            });
         } else {
             if (raisePacketsPerRequest) spacketsPerRequest ++;
             selectUrbs(true);
         }
-
     }
 
     public void selectUrbs(boolean automatic) {
         if (!automatic) {
-
+            CFAlertDialog alertDialog;
             CFAlertDialog.Builder builder = new CFAlertDialog.Builder(mContext);
+            LayoutInflater li = LayoutInflater.from(mContext);
+            View stf_select_max_package_layout_view = li.inflate(R.layout.stf_select_active_urbs, null);
+            builder.setHeaderView(stf_select_max_package_layout_view);
+
             builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
             builder.setTitle("Select your active Usb Request Blocks");
             builder.setMessage("Your current Value = " + sactiveUrbs);
-            builder.setHeaderView(R.layout.stf_select_active_urbs);
-// Set up the input
             final EditText input = new EditText(mContext);
-// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
             input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
             builder.setFooterView(input);
-
-            builder.addButton("Ok", Color.parseColor("#FFFFFF"), Color.parseColor("#429ef4"), CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, new DialogInterface.OnClickListener() {
+            builder.addButton("Done", Color.parseColor("#FFFFFF"), Color.parseColor("#429ef4"), CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     if (input.getText().toString().isEmpty() == false) {
@@ -906,6 +928,65 @@ public class SaveToFile  {
                 }
             });
             alertDialog = builder.show();
+            TextView tv = stf_select_max_package_layout_view.findViewById(R.id.textView_setUrbs);
+            tv.setText("One Usb Request Block has a size of " + smaxPacketSize + " x " + spacketsPerRequest +" bytes");
+            CFPushButton packetOne = stf_select_max_package_layout_view.findViewById(R.id.uone) ;
+            packetOne.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    log("selectUrbs --> one clicked");
+                    sactiveUrbs = 1;
+                    alertDialog.dismiss();
+                    selectFormatIndex(automatic);
+                    log("selectUrbs --> one end");
+
+                }
+            });
+            CFPushButton packetTwo = stf_select_max_package_layout_view.findViewById(R.id.utwo) ;
+            packetTwo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    sactiveUrbs = 2;
+                    alertDialog.dismiss();
+                    selectFormatIndex(automatic);
+                }
+            });
+            CFPushButton packetThree = stf_select_max_package_layout_view.findViewById(R.id.uthree) ;
+            packetThree.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    sactiveUrbs = 4;
+                    alertDialog.dismiss();
+                    selectFormatIndex(automatic);
+                }
+            });
+            CFPushButton packetFour = stf_select_max_package_layout_view.findViewById(R.id.ufour) ;
+            packetFour.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    sactiveUrbs = 8;
+                    alertDialog.dismiss();
+                    selectFormatIndex(automatic);
+                }
+            });
+            CFPushButton packetFive = stf_select_max_package_layout_view.findViewById(R.id.ufive) ;
+            packetFive.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    sactiveUrbs = 16;
+                    alertDialog.dismiss();
+                    selectFormatIndex(automatic);
+                }
+            });
+            CFPushButton packetSix = stf_select_max_package_layout_view.findViewById(R.id.usix) ;
+            packetSix.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    sactiveUrbs = 32;
+                    alertDialog.dismiss();
+                    selectFormatIndex(automatic);
+                }
+            });
         } else {
             if (raiseActiveUrbs) sactiveUrbs ++;
             selectFormatIndex(automatic);
@@ -914,6 +995,7 @@ public class SaveToFile  {
 
     public void selectFormatIndex (boolean automatic) {
         if (!automatic) {
+            log("formatIndex");
             numberFormatIndexes = new int[uvc_descriptor.formatIndex.size()];
             final String[] textmsg = new String[uvc_descriptor.formatIndex.size()];
             for (int a = 0; a < uvc_descriptor.formatIndex.size(); a++) {
@@ -926,9 +1008,7 @@ public class SaveToFile  {
             final CFAlertDialog.Builder builder = new CFAlertDialog.Builder(mContext);
             builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
             builder.setTitle("Select the Camera Format (MJPEG / YUV / ...)");
-
             if (svideoformat != null) builder.setMessage("Your current format: " + svideoformat);
-
             int selectedItem = 0;
             for (int a =0; a<numberFormatIndexes.length; a++) {
                 if (numberFormatIndexes[a] == scamFormatIndex) selectedItem = a;
@@ -990,15 +1070,12 @@ public class SaveToFile  {
                         return;
                     }
                 }
-
-
             }
         }
     }
 
     private void selectFrameIndex (boolean automatic) {
         if (!automatic) {
-
             int [] scamFrameIndexArray = new int [formatIndex.numberOfFrameDescriptors];
             frameDescriptorsResolutionArray = new String[formatIndex.numberOfFrameDescriptors];
             for (int j = 0; j < formatIndex.numberOfFrameDescriptors; j++) {
@@ -1085,13 +1162,24 @@ public class SaveToFile  {
             final CFAlertDialog.Builder builder = new CFAlertDialog.Builder(mContext);
             builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
             builder.setTitle("Select the camera Frame Intervall");
-            builder.setMessage("Your current FrameInterval: " + scamFrameInterval);
+            if (scamFrameInterval == 0)  builder.setMessage("Your current FrameInterval:  " + scamFrameInterval + " fps");
+            else builder.setMessage("Your current FrameInterval: " + (10000000 /  scamFrameInterval) + " fps");
 
             int selectedItem = 0;
             for (int a =0; a<frameIndex.dwFrameInterval.length; a++) {
                 if (frameIndex.dwFrameInterval[a] == scamFrameInterval) selectedItem = a;
             }
-            builder.setSingleChoiceItems(dwFrameIntervalArray, selectedItem, new DialogInterface.OnClickListener() {
+            String [] builderArray = new String[frameIndex.dwFrameInterval.length];
+            for (int k=0; k<builderArray.length; k++) {
+                builderArray[k] = "";
+                builderArray[k] += (  (10000000 / frameIndex.dwFrameInterval[k] )  + "  -  Frames per Second") ;
+            }
+
+
+
+
+
+            builder.setSingleChoiceItems(builderArray, selectedItem, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int index) {
                     scamFrameInterval = frameIndex.dwFrameInterval[index];
@@ -1326,7 +1414,25 @@ public class SaveToFile  {
 
     }
 
-
-
-
 }
+/*
+ private int returnConvertedValue(int wSize){
+        String st = Integer.toBinaryString(wSize);
+        StringBuilder result = new StringBuilder();
+        result.append(st);
+        if (result.length()<12) return Integer.parseInt(result.toString(), 2);
+        else if (result.length() == 12) {
+            String a = result.substring(0, 1);
+            String b = result.substring(1, 12);
+            int c = Integer.parseInt(a, 2);
+            int d = Integer.parseInt(b, 2);
+            return (c+1)*d;
+        } else {
+            String a = result.substring(0, 2);
+            String b = result.substring(2,13);
+            int c = Integer.parseInt(a, 2);
+            int d = Integer.parseInt(b, 2);
+            return (c+1)*d;
+        }
+    }
+ */

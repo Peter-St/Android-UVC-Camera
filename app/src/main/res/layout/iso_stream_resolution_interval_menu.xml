@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!--Footer Content-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:animateLayoutChanges="true"
+        android:background="#FFFFFF"
+        android:orientation="vertical"
+        android:padding="1dp">
+
+
+        <!--Configurations container-->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/configuration_container"
+            android:layout_width="match_parent"
+            android:layout_height="264dp"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_vertical_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.1" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelinehor_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.25" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.75" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelinehor1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.2" />
+
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelinehor3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.7" />
+
+            <TextView
+                android:id="@+id/textView_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Change the Values for:\nResolution / Frameinterval"
+                android:textSize="25dp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/Black"
+                app:layout_constraintLeft_toLeftOf="@id/guideline_vertical_text"
+                app:layout_constraintRight_toRightOf="@id/guideline_vertical_text"
+                app:layout_constraintTop_toTopOf="@id/guidelinehor_text" />
+
+
+            <com.crowdfire.cfalertdialog.views.CFPushButton
+                android:id="@+id/resolution"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_button"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="resolutionButtonClickEvent"
+                android:text="Resolution"
+                android:textAllCaps="false"
+                android:textColor="@color/Black"
+                android:textSize="25dp"
+                app:layout_constraintBottom_toBottomOf="@id/guidelinehor3"
+                app:layout_constraintLeft_toLeftOf="@id/guideline"
+                app:layout_constraintRight_toRightOf="@id/guideline"
+                app:layout_constraintTop_toTopOf="@id/guidelinehor3" />
+
+            <com.crowdfire.cfalertdialog.views.CFPushButton
+                android:id="@+id/frameinterval"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_button"
+                android:fontFamily="sans-serif-medium"
+                android:text="FrameInterval"
+                android:textAllCaps="false"
+                android:textColor="@color/Black"
+                android:textSize="25dp"
+                app:layout_constraintBottom_toBottomOf="@id/guidelinehor3"
+                app:layout_constraintLeft_toLeftOf="@id/guideline2"
+                app:layout_constraintRight_toRightOf="@id/guideline2"
+                app:layout_constraintTop_toTopOf="@id/guidelinehor3" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>
