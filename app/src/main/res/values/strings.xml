@@ -7,14 +7,14 @@ OTG cabel or OTG Hub needed\n
 It works with Micro Usb and Usb Type C devices\n
 (Some OTG cabels doesn\'t work --> I\'ll found one which is an extern powered more Port USB-C OTG cable and doesn\'t work ...)\n
 All phones, tablets with all chipsets are supported.
-Since Android 9 Google made a mistake granting the Usb Permissions for Usb Cameras, so this app may not works on Android 9 + Devices\n\n
+Since Android 9 Google made a mistake granting the Usb Permissions for Usb Cameras, so this app may not works on Android 9 + Devices\n
 --> https://issuetracker.google.com/issues/145082934
-\n
+\n\n
 
 Explaination:\n
 Before you start with entering the Camera values, your Android device have to detect the Camera:
 \n
-So you click the Button "Set Up The Usb Device" and then the Button "Find the Camera". The app will ask you for granting the permissions.
+So you click the Button <Set Up The Usb Device> and then the Button <Find the Camera>. The app will ask you for granting the permissions.
 \n
     ]]></string>
 
@@ -28,7 +28,7 @@ In the Picture above a camera was found and the Permissions to the Camera are gr
 If no Camera is detected, you can nott use this app. (except of the WebRTC function).
 \n
 Next you have read out the camera Interfaces, to see if your camera is UVC complient.
-So you click the Button: "List Up The Camera":
+So you click the Button: <List Up The Camera>:
 \n
     ]]></string>
 
@@ -49,11 +49,11 @@ Here the Endpoint of the StreamInterface has a maxPacketSize of 3072 bytes (You 
 \n
 If those two Buttons work correctly, you can start to set up the UVC values:
 \n
-Click the Button "Set Up With UVC Settings" to start the camera setup.
+Click the Button <Set Up With UVC Settings> to start the camera setup.
 \n
-You have two pissibilies: The "manual" and the "automatic" Method. The "automatic" method is in beta stadium for now, so if this button fails, you choose the "manual" method next time!
+You have two pissibilies: The <manual> and the <automatic> Method. The <automatic> method is in beta stadium for now, so if this button fails, you choose the <manual> method next time!
 \n
-The automatic method should find working camera values for its own, but this values may not be optimal for video transmission. To choose the right values for your own, you click on the "Manual" Button.
+The automatic method should find working camera values for its own, but this values may not be optimal for video transmission. To choose the right values for your own, you click on the <Manual> Button.
 \n
 Manual Method Explained:
 \n
@@ -61,7 +61,7 @@ First you choose you Maximal Packet Size:
 \n
 You Camera may supports more Values for the MaxPacketSize, so you can test out each of them, which works best. If your phone uses a Mediathek Chipset you may choose the smallest value, but normaly you choose the highest value!
 \n
-Click on "Done" and proceed to the Packets Per Request selection:
+Click on <Done> and proceed to the Packets Per Request selection:
 \n
 The Values you select builds the size of the Stream. This means if you select higher Values (such as 32 or more ..) you stream gets bigger, but there may could result error from your device or the camera because of a too large amount of data.
 \n
@@ -69,17 +69,17 @@ For the start you select 1 for this Value. (This would be definitly to less, but
 \n
 Next Sceen shows the ActiveUrbs (actice Usb Request Blocks) --> This is also a value which represents the size of the camera stream. One Block of the activeUrbs is exactly the maxPacketSize x packetsPerRequest. You can select 1 for the start (You will have to raise it later ..)
 \n
-Then the Setup Method will ask you for the Camera Format, which your camera supports. If there is only one format, you click on "Done", if there were more, you select one (does not matter which one) (eventually MJpeg if present) and click on "Done".
+Then the Setup Method will ask you for the Camera Format, which your camera supports. If there is only one format, you click on <Done>, if there were more, you select one (does not matter which one) (eventually MJpeg if present) and click on <Done>.
 \n
-Next you have to select you Camera Resolution, which you camera supports with the Format (perhaps your camera supports other resolutions, with the other Format ...). Select something ... and click on "Done"
+Next you have to select you Camera Resolution, which you camera supports with the Format (perhaps your camera supports other resolutions, with the other Format ...). Select something ... and click on <Done>
 \n
 Then you have to select the Frame Interval, which your camera supports. You can click on a Value (maybe the lowest on displayed on the screen, because it is better for the setup.
 \n
 You can save your Entries now:
 \n
-Click on "Yes, Save" to save this values (you do not need to run the method again, if you have finished the setup and found some working values ...
+Click on <Yes, Save> to save this values (you do not need to run the method again, if you have finished the setup and found some working values ...
 \n
-If you click on "ok" in the next screen --> an automatic name will be taken from the camera to save the file. You can also enter a unique name or enter the value, which is displayed on the bottom, to choose an existing file.
+If you click on <ok> in the next screen --> an automatic name will be taken from the camera to save the file. You can also enter a unique name or enter the value, which is displayed on the bottom, to choose an existing file.
 \n
     ]]></string>
 
@@ -89,7 +89,7 @@ If you click on "ok" in the next screen --> an automatic name will be taken from
 
 The picture shows the output of the sucessful setup:
 \n
-Now you want to know, if your Camera works with your selected Values. So you start the comunication with your camera by clicking on the Button "-Controltransfer-Testrun-" and then you select the first entry "Video Probe-Commit Controls".
+Now you want to know, if your Camera works with your selected Values. So you start the comunication with your camera by clicking on the Button <-Controltransfer-Testrun-> and then you select the first entry <Video Probe-Commit Controls>.
 \n
 The app then starts to initialize the camera with your selected values!
 \n
@@ -105,7 +105,7 @@ If this output fails, you may contact the developer or try to run the manual Uvc
 \n
 If you were sucessful, then you can proceed with reading out the camera frames (first only over the Text View, because your frames may be corrupted or too short or ..
 \n
-To receive some data from your camera, your press the Button "-Controltransfer-Testrun-" again and then on "Testrun" and then on "One Frame".
+To receive some data from your camera, your press the Button <-Controltransfer-Testrun-> again and then on <Testrun> and then on <One Frame>.
 \n
 You then should receive the first frame data from your camera.
 \n
@@ -119,7 +119,7 @@ This means that the camera communicats with the android device and trys to submi
 \n
 If you were not able to get the frame data from your camera, then re-run the manual setup method and change same values. (lower the maxPacketSize, raise activeUrbs, raise packetsPerRequest).
 \n
-To raise the vales for (packetsPerRequest and activeUrbs) you can re-run the "manual" setup method or you click on the Button "Edit / Save The Camera Values"
+To raise the vales for (packetsPerRequest and activeUrbs) you can re-run the <manual> setup method or you click on the Button <Edit / Save The Camera Values>
 \n
 There you should only change the values for these two values (packetsPerRequest and activeUrbs).
 \n
@@ -145,11 +145,11 @@ If you want to delete some savefiles you will have to manually do this with a fi
 \n
 To the Button "Frames for 5 secound":
 \n
-Have a look at your frames: If they are all identically and big enougth, than you can proceed to start the camera stream with the "Start the camera stream" button from the main screen.
+Have a look at your frames: If they are all identically and big enougth, than you can proceed to start the camera stream with the <Start the camera stream> button from the main screen.
 \n\n
 Otherwise you have to edit some values for your camera: Perhaps -PacketsPerRequest- or -ActiveUrbs-, or something else.
 \n\n
-Click the "Transmission Start" --> "Start the Camera" Button to start the transmission.
+Click the <Transmission Start> --> <Start the Camera> Button to start the transmission.
 \n
 If everything works, you can watch the video of your camera.
 \n\n

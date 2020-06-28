@@ -31,7 +31,7 @@ import android.widget.Button;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
-import humer.uvc_camera.R;
+import humer.UvcCamera.R;
 
 
 public class WebRtc_MainActivity extends Activity {

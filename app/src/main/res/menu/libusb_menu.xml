@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/testValues"
+        android:onClick="test_Values_over_LibUsb"
+        android:title="TestValuesOverLibUsb" />
+    <item
+        android:id="@+id/stop_Libusb_Stream"
+        android:onClick="stop_LibUsbStream"
+        android:title="Stop Libusb Stream" />
+    <item
+        android:id="@+id/ctl_over_Libusb"
+        android:onClick="ctl_over_LibUsb"
+        android:title="Receive Ctl Values" />
+    <item
+        android:id="@+id/terminal_unit_change"
+        android:onClick="terminal_unit_change"
+        android:title="Terminal / Unit / Changes" />
+
+</menu>

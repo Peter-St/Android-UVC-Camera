@@ -13,11 +13,24 @@
         android:layout_height="match_parent"
         android:layout_alignEnd="@+id/stopKameraknopf"
         android:layout_alignRight="@+id/stopKameraknopf"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="0dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginLeft="1dp"
         android:layout_marginEnd="1dp"
         android:layout_marginRight="1dp"
         android:adjustViewBounds="false" />
+
+    <SurfaceView
+        android:id="@+id/surfaceView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="false"
+        android:layout_marginTop="1dp"
+        android:layout_marginLeft="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginRight="1dp"
+
+        />
+
 
     <ImageButton
         android:id="@+id/Bildaufnahme"
@@ -65,6 +78,69 @@
         android:background="@drawable/bg_button_stop"
         android:onClick="stopTheCameraStreamClickEvent"
         android:text="Stop !" />
+
+    <ImageButton
+        android:id="@+id/flipLeftButton"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="60dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginBottom="130dp"
+        android:background="@drawable/bg_button_flip_left"
+        android:onClick="flipLeft"
+         />
+
+    <ImageButton
+        android:id="@+id/flipRightButton"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignEnd="@+id/stopKameraknopf"
+        android:layout_alignRight="@+id/stopKameraknopf"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="60dp"
+        android:layout_marginRight="60dp"
+        android:layout_marginBottom="131dp"
+        android:background="@drawable/bg_button_flip_right"
+        android:onClick="flipRight"
+        />
+
+
+    <ToggleButton
+        android:id="@+id/flipVerticalButton"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignEnd="@+id/stopKameraknopf"
+        android:layout_alignRight="@+id/stopKameraknopf"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="60dp"
+        android:layout_marginRight="58dp"
+        android:layout_marginBottom="280dp"
+        android:background="@drawable/bg_toggle_button_flip_vertical"
+        android:onClick="flipVertical"
+        android:textOn=""
+        android:textOff=""
+        />
+
+    <ToggleButton
+        android:id="@+id/flipHorizontalButton"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="60dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginBottom="280dp"
+        android:background="@drawable/bg_toggle_button_flip_horizontal"
+        android:onClick="flipHorizontal"
+        android:textOn=""
+        android:textOff=""
+        />
+
+
 
     <Button
         android:id="@+id/startStream"
@@ -160,6 +236,7 @@
         android:textOff="Auto\nOFF"
         android:textOn="Auto\nON"
         android:textSize="24sp" />
+
 
 
 

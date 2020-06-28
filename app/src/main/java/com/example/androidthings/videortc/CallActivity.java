@@ -23,11 +23,14 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.UiThread;
+
+import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,7 +54,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
-import humer.uvc_camera.R;
+import humer.UvcCamera.R;
 
 /**
  * Activity for peer connection call setup, call waiting
@@ -106,40 +109,38 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     private ImageButton disconnectButton;
     private ImageButton cameraSwitchButton;
     private ImageButton toggleMuteButton;
+    private ImageButton flipImage;
 
     // Internal Camera, Usb Camera Value
     public boolean usbCamera = true;
+    public int rotate = 0;
+    public boolean horizontalFlip;
+    public boolean verticalFlip;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_call);
         fetchTheValues();
-
-
-
         iceConnected = false;
         signalingParameters = null;
-
         // Create UI controls.
         pipRenderer = findViewById(R.id.pip_video_view);
         fullscreenRenderer = findViewById(R.id.fullscreen_video_view);
 // Install a SurfaceHolder.Callback so we get notified when the
         // underlying surface is created and destroyed.
         disconnectButton = findViewById(R.id.button_call_disconnect);
-        cameraSwitchButton = findViewById(R.id.button_call_switch_camera);
         toggleMuteButton = findViewById(R.id.button_call_toggle_mic);
-
+        final LinearLayout layout = (LinearLayout)findViewById(R.id.buttons_call_container_usb);
+        layout.setVisibility(View.INVISIBLE);
+        ImageButton flip = (ImageButton) findViewById(R.id.button_call_flip_left); flip.setEnabled(false); flip.setBackgroundDrawable(null);
+        flip = (ImageButton) findViewById(R.id.button_call_flip_right); flip.setEnabled(false); flip.setBackgroundDrawable(null);
+        flip = (ImageButton) findViewById(R.id.button_call_flip_horizontal); flip.setEnabled(false); flip.setBackgroundDrawable(null);
+        flip = (ImageButton) findViewById(R.id.button_call_flip_vertical); flip.setEnabled(false); flip.setBackgroundDrawable(null);
         // Add buttons click events.
         disconnectButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 onCallHangUp();
-            }
-        });
-
-        cameraSwitchButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                onCameraSwitch();
             }
         });
 
@@ -149,7 +150,6 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
                 toggleMuteButton.setAlpha(enabled ? 1.0f : 0.3f);
             }
         });
-
         // Swap feeds on pip view click.
         pipRenderer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,37 +157,47 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
                 setSwappedFeeds(!isSwappedFeeds);
             }
         });
-
         remoteRenderers.add(remoteProxyRenderer);
-
         // Create peer connection client.
         peerConnectionClient = new PeerConnectionClient();
-
         // Create video renderers.
         pipRenderer.init(peerConnectionClient.getRenderContext(), null);
         pipRenderer.setScalingType(ScalingType.SCALE_ASPECT_FIT);
-
         fullscreenRenderer.init(peerConnectionClient.getRenderContext(), null);
         fullscreenRenderer.setScalingType(ScalingType.SCALE_ASPECT_FILL);
-
         pipRenderer.setZOrderMediaOverlay(true);
         pipRenderer.setEnableHardwareScaler(true ); // enabled //);
         fullscreenRenderer.setEnableHardwareScaler(true); // enabled );
         // Start with local feed in fullscreen and swap it to the pip when the call is connected.
         setSwappedFeeds(true ); // isSwappedFeeds );
-
         // Generate a random room ID with 7 uppercase letters and digits
         String randomRoomID = randomString(7, UPPER_ALPHA_DIGITS);
         // Show the random room ID so that another client can join from https://appr.tc
         TextView roomIdTextView = findViewById(R.id.roomID);
         roomIdTextView.setText(getString(R.string.room_id_caption) + randomRoomID);
         Log.d(TAG, getString(R.string.room_id_caption) + randomRoomID);
-
         // Connect video call to the random room
         connectVideoCall(randomRoomID);
+    }
 
+    public void flipLeft (View view) {
+        if (rotate == 0) rotate = 180;
+        else rotate -= 180;
+    }
 
+    public void flipRight (View view) {
+        if (rotate == 180) rotate = 0;
+        else rotate += 180;
+    }
 
+    public void flipHorizontal (View view) {
+        if (horizontalFlip == false) horizontalFlip = true;
+        else horizontalFlip = false;
+    }
+
+    public void flipVertical (View view) {
+        if (verticalFlip == false) verticalFlip = true;
+        else verticalFlip = false;
     }
 
     // Create a random string
@@ -433,6 +443,72 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         if (peerConnectionParameters.videoCallEnabled) {
             videoCapturer = new UsbCapturer(this, fullscreenRenderer, this);
             if (usbCamera == false) videoCapturer = createVideoCapturer();
+            else {
+                LinearLayout layout = (LinearLayout)findViewById(R.id.buttons_call_container);
+                layout.setVisibility(View.INVISIBLE);
+                layout = (LinearLayout)findViewById(R.id.buttons_call_container_usb);
+                layout.setVisibility(View.VISIBLE);
+                flipImage = findViewById(R.id.usb_button_call_switch_image);
+                flipImage.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View view) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Runnable myRunnable = new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ImageButton flip = (ImageButton) findViewById(R.id.button_call_flip_left); flip.setEnabled(false); flip.setBackgroundDrawable(null);
+                                        flip = (ImageButton) findViewById(R.id.button_call_flip_right); flip.setEnabled(false); flip.setBackgroundDrawable(null);
+                                        flip = (ImageButton) findViewById(R.id.button_call_flip_horizontal); flip.setEnabled(false); flip.setBackgroundDrawable(null);
+                                        flip = (ImageButton) findViewById(R.id.button_call_flip_vertical); flip.setEnabled(false); flip.setBackgroundDrawable(null);
+                                    }
+                                };
+                                Handler myHandler = new Handler();
+                                final int TIME_TO_WAIT = 2500;
+                                ImageButton flip = (ImageButton) findViewById(R.id.button_call_flip_left); flip.setEnabled(true); flip.setBackgroundResource(R.drawable.bg_button_flip_left);
+                                flip.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        myHandler.removeCallbacks(myRunnable);
+                                        myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                                        flipLeft(null);
+                                    }
+                                });
+                                flip = (ImageButton) findViewById(R.id.button_call_flip_right); flip.setEnabled(true); flip.setBackgroundResource(R.drawable.bg_button_flip_right);
+                                flip.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        myHandler.removeCallbacks(myRunnable);
+                                        myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                                        flipRight(null);
+                                    }
+                                });
+                                flip = (ImageButton) findViewById(R.id.button_call_flip_horizontal); flip.setEnabled(true); flip.setBackgroundResource(R.drawable.bg_button_flip_horizontal);
+                                flip.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        myHandler.removeCallbacks(myRunnable);
+                                        myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                                        flipHorizontal(null);
+                                    }
+                                });
+                                flip = (ImageButton) findViewById(R.id.button_call_flip_vertical); flip.setEnabled(true); flip.setBackgroundResource(R.drawable.bg_button_flip_vertical);
+                                flip.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        myHandler.removeCallbacks(myRunnable);
+                                        myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                                        flipVertical(null);
+                                    }
+                                });
+                                myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                            }
+                        });
+                    }
+                });
+                disconnectButton = findViewById(R.id.usb_button_call_disconnect);
+                disconnectButton.setOnClickListener(v -> onCallHangUp());
+            }
         }
         peerConnectionClient.createPeerConnection(
                 localProxyVideoSink, remoteRenderers, videoCapturer, signalingParameters);

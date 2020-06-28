@@ -11,6 +11,7 @@ import android.graphics.ColorFilter;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
@@ -33,19 +34,14 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import humer.uvc_camera.UsbIso64.USBIso;
-import humer.uvc_camera.UsbIso64.usbdevice_fs_util;
+import humer.UvcCamera.UsbIso64.USBIso;
+import humer.UvcCamera.UsbIso64.usbdevice_fs_util;
 
 
 public class UsbCapturer implements VideoCapturer {
 
-    private  byte[] mBgr;
-
-
     private static String saveFilePathFolder = "UVC_Camera/yuvImage";
     private int value = 0;
-
-
     private CapturerObserver capturerObserver;
     private volatile UsbCapturer.IsochronousStream runningStream;
     private static final String ACTION_USB_PERMISSION = "humer.uvc_camera.USB_PERMISSION";
@@ -105,9 +101,7 @@ public class UsbCapturer implements VideoCapturer {
     private PendingIntent mPermissionIntent;
     private String controlltransfer;
 
-
     // Vales for debuging the camera
-
     private boolean stopKamera = false;
     private boolean pauseCamera = false;
     private boolean exit = false;
@@ -116,7 +110,6 @@ public class UsbCapturer implements VideoCapturer {
     private int [] differentFrameSizes;
     private int [] lastThreeFrames;
     private int whichFrame = 0;
-
 
     public static CallActivity callActivity;
 
@@ -352,7 +345,7 @@ public class UsbCapturer implements VideoCapturer {
         // for (int i = 0; i < streamingParms.length; i++) streamingParms[i] = 99;          // temp test
         len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, VS_COMMIT_CONTROL << 8, camStreamingInterface.getId(), streamingParms, usedStreamingParmsLen, timeout);
         if (len != streamingParms.length) {
-            throw new Exception("Camera initialization failed. Streaming parms commit get failed.");
+            //throw new Exception("Camera initialization failed. Streaming parms commit get failed.");
         }
         log("Final streaming parms: " + dumpStreamingParms(streamingParms));
         stringBuilder.append("\nFinal streaming parms: \n");
@@ -765,11 +758,27 @@ public class UsbCapturer implements VideoCapturer {
                 yuvImage.compressToJpeg(new Rect(0, 0, imageWidth, imageHeight), 100, os);
                 byte[] jpegByteArray = os.toByteArray();
                 final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
-                final byte [] yuvimage = getNV21(imageWidth, imageHeight, bitmap);
-                log("before Capturer Observer");
+                final byte [] yuvimage;
+                if (callActivity.horizontalFlip || callActivity.verticalFlip || callActivity.rotate != 0) {
+                    yuvimage = getNV21(imageWidth, imageHeight, flipImage(bitmap));
+                    log("before flip Capturer Observer");
+                } else {
+                    yuvimage = getNV21(imageWidth, imageHeight, bitmap);
+                    log("before Capturer Observer");
+                }
                 capturerObserver.onByteBufferFrameCaptured(yuvimage, imageWidth, imageHeight, 0, imageTime);
             }
         }
+    }
+
+    public Bitmap flipImage(Bitmap src) {
+        // create new matrix for transformation
+        Matrix matrix = new Matrix();
+        if (callActivity.horizontalFlip) matrix.preScale(1.0f, -1.0f);
+        if (callActivity.verticalFlip) matrix.preScale(-1.0f, 1.0f);
+        if (callActivity.rotate != 0) matrix.postRotate(callActivity.rotate);
+        // return transformed image
+        return Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);
     }
 
     private byte [] getNV21 (int inputWidth, int inputHeight, Bitmap scaled) {
@@ -892,16 +901,11 @@ public class UsbCapturer implements VideoCapturer {
 
         byte[] jpegFrameData = convertMjpegFrameToJpegKamera(mjpegFrameData);
         Bitmap bitmap = BitmapFactory.decodeByteArray(jpegFrameData, 0, jpegFrameData.length);
-
         byte [] yuv = new byte[imageWidth*imageHeight*3/2];
 
-
-
-
-        rgbToYuv(rgbValuesFromBitmap(bitmap), imageWidth, imageHeight, yuv);
-
-
-
+        if (callActivity.horizontalFlip || callActivity.verticalFlip || callActivity.rotate != 0) {
+            rgbToYuv(rgbValuesFromBitmap(flipImage(bitmap)), imageWidth, imageHeight, yuv);
+        } else rgbToYuv(rgbValuesFromBitmap(bitmap), imageWidth, imageHeight, yuv);
 
         //rgbToNV21(jpegFrameData, bitmap.getWidth(), bitmap.getHeight(), yuv);
         //encodeYUV420SP(yuv, rgbValuesFromBitmap(bitmap), imageWidth, imageHeight);

@@ -264,6 +264,25 @@
                 app:layout_constraintTop_toBottomOf="@id/PacketsPerReq"
                 />
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/PacketsPerReq"
+                />
+
+            <TextView
+                android:id="@+id/slibusb"
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                android:text="LibUsb"
+                android:textSize="18sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="@id/v_guideline1"
+                app:layout_constraintTop_toBottomOf="@id/ActiveUrbs"
+                />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/alt"
                 android:layout_width="0dp"
@@ -426,6 +445,27 @@
                     android:hint="1 or 8 or 124 ?"
                     android:inputType="number" />
             </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/LibUsb"
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="@id/v_guideline1"
+                app:layout_constraintTop_toBottomOf="@id/ActiveUr"
+                >
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/LibUsbText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Support for LibUsb"
+                    android:focusable="false"
+
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

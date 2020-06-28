@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/resolution"
+        android:icon="@drawable/ic_brightness_green_24dp"
+        android:title="Adjust / Change Resolution"
+        app:touchGuard="false"
+        app:showAsAction="always"
+        android:orderInCategory="0"
+        />
+
+    <item
+        android:id="@+id/frameinterval"
+        android:icon="@drawable/ic_brightness_2green_24dp"
+        android:title="Adjust / Change Frameinterval"
+        app:showAsAction="ifRoom"
+        app:touchGuard="false"
+        android:orderInCategory="1"
+        />
+</menu>

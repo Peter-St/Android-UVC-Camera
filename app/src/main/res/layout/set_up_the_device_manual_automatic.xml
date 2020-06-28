@@ -64,7 +64,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0.5" />
+                app:layout_constraintGuide_percent="0.4" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guidelinehor3"
@@ -145,7 +145,18 @@
                 app:layout_constraintRight_toRightOf="@id/guideline2"
                 app:layout_constraintTop_toTopOf="@id/guidelinehor3" />
 
-
+            <Switch
+                android:id="@+id/activateLibUsb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="LibUsb"
+                android:textOff="deactivated"
+                android:textOn="active"
+                app:layout_constraintBottom_toBottomOf="@id/guidelinehor2"
+                app:layout_constraintLeft_toLeftOf="@id/guideline"
+                app:layout_constraintRight_toRightOf="@id/guideline"
+                app:layout_constraintTop_toTopOf="@id/guidelinehor2" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

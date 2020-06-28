@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <item
+        android:id="@+id/adjustValuesUnit"
+        android:icon="@drawable/ic_brightness_green_24dp"
+        android:title="Adjust / Change Brightness .."
+        app:touchGuard="false"
+        app:showAsAction="always"
+        android:orderInCategory="0"
+        />
+
+    <item
+        android:id="@+id/adjustValuesTerminal"
+        android:icon="@drawable/ic_brightness_2green_24dp"
+        android:title="Adjust / Change TERMINAL  Values"
+        app:showAsAction="ifRoom"
+        app:touchGuard="false"
+        android:orderInCategory="1"
+        />
+
+</menu>
