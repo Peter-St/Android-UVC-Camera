@@ -79,7 +79,9 @@ public class Main extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
         tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-        if (camFrameInterval == 0) tv.setText("Hello\n\nThis App may not work on Android 9 (PIE) and Android 10 (Q) Devices. In this case please use other Usb Camera Apps from the Play Store" +
+        if (camFrameInterval == 0) tv.setText("LIBUSB Support\n\nFor better performance you can now switch to LibUsb to handle the camera stream for you.\n\nTo use the new LibUsb function," +
+                " you may have to set up your Camera Device again with the 'manual' or 'automatic' Method in the Setup Menu.\n\n" +
+                "This App may not work on Android 9 (PIE) and Android 10 (Q) Devices. In this case please use other Usb Camera Apps from the Play Store" +
                 "\n\nYour current Values are:\n\n( - this is a sroll and zoom field - )\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
                 "\nAltSetting = " + camStreamingAltSetting + "\nMaxPacketSize = " + maxPacketSize + "\nVideoformat = " + videoformat + "\ncamFormatIndex = " + camFormatIndex + "\n" +
                 "camFrameIndex = " + camFrameIndex + "\nimageWidth = "+ imageWidth + "\nimageHeight = " + imageHeight + "\ncamFrameInterval (fps) = " + camFrameInterval + "\nLibUsb = " + LIBUSB  + ""  +
@@ -89,7 +91,7 @@ public class Main extends Activity {
                 "\nAltSetting = " + camStreamingAltSetting + "\nMaxPacketSize = " + maxPacketSize + "\nVideoformat = " + videoformat + "\ncamFormatIndex = " + camFormatIndex + "\n" +
                 "camFrameIndex = " + camFrameIndex + "\nimageWidth = "+ imageWidth + "\nimageHeight = " + imageHeight + "\ncamFrameInterval (fps) = " + (10000000 / camFrameInterval) + "\nLibUsb = " + LIBUSB  +  "" +
                 "\n\nYou can edit these Settings by clicking on (Set Up The Camera Device).\nYou can then save the values and later restore them.");
-        tv.setTextColor(darker(Color.BLUE, 100));
+        tv.setTextColor(darker(Color.BLACK, 100));
     }
 
     @Override
