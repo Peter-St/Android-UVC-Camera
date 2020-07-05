@@ -51,7 +51,7 @@ Explaination:
 Before you start with entering the Camera values, your Android device have to detect the Camera:
 So you click the Button <Set Up The Usb Device> and then the Button <Find the Camera>. The app will ask you for granting the permissions.
 
-![alt text](https://github.com/Peter-St/Android-UVC-Camera/blob/master/findcam.png?raw=true)
+![alt text](https://github.com/Peter-St/Android-UVC-Camera/blob/master/app/src/main/res/drawable/findcam.png?raw=true)
 
 
 Explaination:
