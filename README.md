@@ -44,6 +44,14 @@ License
 
 
 
+Since Android 9 Google made a mistake granting the Usb Permissions for Usb Cameras, so this app may not works on Android 9 + Devices
+--> https://issuetracker.google.com/issues/145082934
+
+Explaination:
+Before you start with entering the Camera values, your Android device have to detect the Camera:
+So you click the Button <Set Up The Usb Device> and then the Button <Find the Camera>. The app will ask you for granting the permissions.
+
+![alt text](https://github.com/Peter-St/Android-UVC-Camera/blob/master/findcam.png?raw=true)
 
 
 Explaination:
