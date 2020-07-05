@@ -54,6 +54,43 @@ So you click the Button <Set Up The Usb Device> and then the Button <Find the Ca
 ![alt text](https://github.com/Peter-St/Android-UVC-Camera/blob/master/app/src/main/res/drawable/findcam.png?raw=true)
 
 
+In the Picture above a camera was found and the Permissions to the Camera are granted.
+If no Camera is detected, you can nott use this app. (except of the WebRTC function).
+Next you have read out the camera Interfaces, to see if your camera is UVC complient.
+So you click the Button: <List Up The Camera>:
+
+![alt text](https://github.com/Peter-St/Android-UVC-Camera/blob/master/app/src/main/res/drawable/listdev.png?raw=true)
+
+Here you can see a sucessful return of an UVC compliant camera. The first Interface is always the ControlInterface and the second is always the Stream Interface.
+This Controlinterface (1st) has only 1 Endpoint.
+The StreamInterface could have more than one Endpoints (depends on the supported resolution of the camera).
+Here the Endpoint of the StreamInterface has a maxPacketSize of 3072 bytes (You need such a value later).
+(It could be, that your camera has an audio output, or Sd-Card output too, than see more than 2 Interfaces for your device).
+If those two Buttons work correctly, you can start to set up the UVC values:
+Click the Button <Set Up With UVC Settings> to start the camera setup.
+You have two pissibilies: The <manual> and the <automatic> Method. The <automatic> method is in beta stadium for now, so if this button fails, you choose the <manual> method next time!
+The automatic method should find working camera values for its own, but this values may not be optimal for video transmission. To choose the right values for your own, you click on the <Manual> Button.
+
+Manual Method Explained:
+First you choose you Maximal Packet Size:
+You Camera may supports more Values for the MaxPacketSize, so you can test out each of them, which works best. If your phone uses a Mediathek Chipset you may choose the smallest value, but normaly you choose the highest value!
+Click on <Done> and proceed to the Packets Per Request selection:
+The Values you select builds the size of the Stream. This means if you select higher Values (such as 32 or more ..) you stream gets bigger, but there may could result error from your device or the camera because of a too large amount of data.
+For the start you select 1 for this Value. (This would be definitly to less, but you can raise it later) ..
+Next Sceen shows the ActiveUrbs (actice Usb Request Blocks) --> This is also a value which represents the size of the camera stream. One Block of the activeUrbs is exactly the maxPacketSize x packetsPerRequest. You can select 1 for the start (You will have to raise it later ..)
+Then the Setup Method will ask you for the Camera Format, which your camera supports. If there is only one format, you click on <Done>, if there were more, you select one (does not matter which one) (eventually MJpeg if present) and click on <Done>.
+Next you have to select you Camera Resolution, which you camera supports with the Format (perhaps your camera supports other resolutions, with the other Format ...). Select something ... and click on <Done>
+Then you have to select the Frame Interval, which your camera supports. You can click on a Value (maybe the lowest on displayed on the screen, because it is better for the setup.
+You can save your Entries now:
+Click on <Yes, Save> to save this values (you do not need to run the method again, if you have finished the setup and found some working values ...
+If you click on <ok> in the next screen --> an automatic name will be taken from the camera to save the file. You can also enter a unique name or enter the value, which is displayed on the bottom, to choose an existing file.
+
+![alt text](https://github.com/Peter-St/Android-UVC-Camera/blob/master/app/src/main/res/drawable/setup_complete.png?raw=true)
+
+
+
+
+
 Explaination:
 - When the automatic search succeeds, you first set up the MAXIMAL PACKET SIZE. If your device is a mediathek device, you may have to lower the value for the max packet size. Here your camera device supports normaly 4 to 10 different values.
 - The Value PACKETS PER REQUEST defines the Number of the Packets sending to the camera device. It also defines the amount of bytes from one Urb (UsbRequestBlock). The minimal size is one packet and you can raise it up to maybe 64.
