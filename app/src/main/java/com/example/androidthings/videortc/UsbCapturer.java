@@ -23,6 +23,8 @@ import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.os.Environment;
 import androidx.annotation.ColorInt;
+
+import android.text.TextUtils;
 import android.util.Log;
 import org.webrtc.SurfaceTextureHelper;
 import org.webrtc.SurfaceViewRenderer;
@@ -31,11 +33,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import humer.UvcCamera.LibUsb.I_LibUsb;
+import humer.UvcCamera.StartIsoStreamActivity;
 import humer.UvcCamera.UsbIso64.USBIso;
 import humer.UvcCamera.UsbIso64.usbdevice_fs_util;
+
+import static java.lang.Integer.parseInt;
 
 
 public class UsbCapturer implements VideoCapturer {
@@ -113,6 +120,33 @@ public class UsbCapturer implements VideoCapturer {
 
     public static CallActivity callActivity;
 
+    public native void JniWebRtc(int a, int b);
+
+
+    // NEW LIBUSB VALUES
+    public static boolean LIBUSB;
+    private static int fd;
+    private static int productID;
+    private static int vendorID;
+    private static String adress;
+    private static int camStreamingEndpointAdress;
+    private static String mUsbFs;
+    private static int busnum;
+    private static int devaddr;
+    private volatile boolean libusb_is_initialized;
+    private static final String DEFAULT_USBFS = "/dev/bus/usb";
+
+    private static boolean isLoaded;
+    static {
+        if (!isLoaded) {
+            System.loadLibrary("usb100");
+            System.loadLibrary("jpeg-turbo1500");
+            System.loadLibrary("uvc");
+            System.loadLibrary("Iso_stream");
+            isLoaded = true;
+        }
+    }
+
     public UsbCapturer(Context context, SurfaceViewRenderer svVideoRender, CallActivity callActivity) {
         this.callActivity = callActivity;
         fetchTheValues();
@@ -165,6 +199,7 @@ public class UsbCapturer implements VideoCapturer {
         bNumControlTerminal = callActivity.bNumControlTerminal;
         bNumControlUnit = callActivity.bNumControlUnit;
         bStillCaptureMethod = callActivity.bStillCaptureMethod;
+        LIBUSB = callActivity.LIBUSB;
     }
 
     private void initializeTheStream() {
@@ -179,22 +214,77 @@ public class UsbCapturer implements VideoCapturer {
             return;
         }
         else {
-            try {
-                openCam(true);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            initStillImageParms();
-            if (camIsOpen) {
-
-                if (runningStream != null) {
-                    return;
+            if(LIBUSB) {
+                try {
+                    openCameraDevice(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                runningStream = new UsbCapturer.IsochronousStream(callActivity.getApplicationContext());
-                runningStream.start();
+                if (camDeviceConnection != null || camStreamingInterface != null) closeCameraDevice();
+
+
+                if (!libusb_is_initialized) {
+                    try {
+                        I_LibUsb.INSTANCE.setLogPrint(new I_LibUsb.logPrint(){
+                            public boolean callback(String msg) {
+                                log(msg);
+                                return false;
+                            }
+
+                        });
+                        if (camDeviceConnection == null) {
+                            findCamm();
+                            openCameraDevice(true);
+                        }
+                        if (fd == 0) fd = camDeviceConnection.getFileDescriptor();
+                        if(productID == 0) productID = camDevice.getProductId();
+                        if(vendorID == 0) vendorID = camDevice.getVendorId();
+                        if(adress == null)  adress = camDevice.getDeviceName();
+                        if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
+                        if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
+                        I_LibUsb.INSTANCE.init(fd, productID, vendorID, getBus(adress), getDevice(adress), mUsbFs,
+                                packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                                camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat);
+                        libusb_is_initialized = true;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                I_LibUsb.INSTANCE.probeCommitControl(1, camFormatIndex, camFrameIndex,  camFrameInterval);
+                I_LibUsb.INSTANCE.probeCommitControl_cleanup();
+
+                JniWebRtc( 1, 1);
+
+                //JniIsoStreamActivitySurface(mPreviewSurface, 1, 1);
+                //camera.setPreviewDisplay(holder.getSurface());
+
+
+
             } else {
-                displayMessage("Failed to start the Camera Stream");
+
+                try {
+                    openCam(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                initStillImageParms();
+                if (camIsOpen) {
+
+                    if (runningStream != null) {
+                        return;
+                    }
+                    runningStream = new UsbCapturer.IsochronousStream(callActivity.getApplicationContext());
+                    runningStream.start();
+                } else {
+                    displayMessage("Failed to start the Camera Stream");
+                }
             }
+
+
+
+
+
         }
     }
 
@@ -272,17 +362,19 @@ public class UsbCapturer implements VideoCapturer {
             log("Failed to open the device");
             throw new Exception("Unable to open camera device connection.");
         }
-        if (!camDeviceConnection.claimInterface(camControlInterface, true)) {
-            log("Failed to claim camControlInterface");
-            throw new Exception("Unable to claim camera control interface.");
-        }
-        if (!camDeviceConnection.claimInterface(camStreamingInterface, true)) {
-            log("Failed to claim camStreamingInterface");
-            throw new Exception("Unable to claim camera streaming interface.");
+        if (!LIBUSB) {
+            if (!camDeviceConnection.claimInterface(camControlInterface, true)) {
+                log("Failed to claim camControlInterface");
+                throw new Exception("Unable to claim camera control interface.");
+            }
+            if (!camDeviceConnection.claimInterface(camStreamingInterface, true)) {
+                log("Failed to claim camStreamingInterface");
+                throw new Exception("Unable to claim camera streaming interface.");
+            }
         }
     }
 
-    private void closeCameraDevice() throws IOException {
+    private void closeCameraDevice() {
         if (camDeviceConnection != null) {
             camDeviceConnection.releaseInterface(camControlInterface);
             camDeviceConnection.releaseInterface(camStreamingInterface);
@@ -935,10 +1027,28 @@ public class UsbCapturer implements VideoCapturer {
             Long imageTime = System.currentTimeMillis();
             capturerObserver.onByteBufferFrameCaptured(yuv, imageWidth, imageHeight, 0, imageTime);
         }
-
     }
 
+    public void processReceivedVideoFrameYuvFromJni(byte[] frameData) {
+        Videoformat videoFromat;
+        if (videoformat.equals("yuv")){
+            videoFromat = Videoformat.yuv;
+        }else if (videoformat.equals("YUY2")){
+            videoFromat = Videoformat.YUY2;
+        }else if (videoformat.equals("YUY2")){
+            videoFromat = Videoformat.YV12;
+        }else if (videoformat.equals("YUV_420_888")){
+            videoFromat = Videoformat.YUV_420_888;
+        }else if (videoformat.equals("YUV_422_888")){
+            videoFromat = Videoformat.YUV_422_888;
+        } else videoFromat = Videoformat.mjpeg;
 
+        try {
+            processReceivedVideoFrameYuv(frameData, videoFromat);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     // see USB video class standard, USB_Video_Payload_MJPEG_1.5.pdf
@@ -1000,24 +1110,56 @@ public class UsbCapturer implements VideoCapturer {
     public void stopTheCameraStream() {
 
         stopKamera = true;
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if (LIBUSB) {
+            I_LibUsb.INSTANCE.stopStreaming();
+        } else {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            try {
+                enableStreaming(false);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            displayMessage("Stopped ");
+            log("Stopped");
+            runningStream = null;
         }
-        try {
-            enableStreaming(false);
-        } catch (Exception e) {
-            e.printStackTrace();
+        closeCameraDevice();
+    }
+
+    private final String getUSBFSName(final UsbDevice ctrlBlock) {
+        String result = null;
+        final String name = ctrlBlock.getDeviceName();
+        final String[] v = !TextUtils.isEmpty(name) ? name.split("/") : null;
+        if ((v != null) && (v.length > 2)) {
+            final StringBuilder sb = new StringBuilder(v[0]);
+            for (int i = 1; i < v.length - 2; i++)
+                sb.append("/").append(v[i]);
+            result = sb.toString();
         }
-        displayMessage("Stopped ");
-        log("Stopped");
-        runningStream = null;
-        try {
-            closeCameraDevice();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (TextUtils.isEmpty(result)) {
+            log( "failed to get USBFS path, try to use default path:" + name);
+            result = DEFAULT_USBFS;
         }
+        return result;
+    }
+
+
+    public int getBus(String myString) {
+        if(myString.length() > 3)
+            return parseInt(myString.substring(myString.length()-7 , myString.length() - 4) ) ;
+        else
+            return 0;
+    }
+
+    public int getDevice(String myString) {
+        if(myString.length() > 3)
+            return parseInt(myString.substring(myString.length()-3)) ;
+        else
+            return 0;
     }
 
 }

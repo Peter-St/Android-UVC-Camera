@@ -80,6 +80,8 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     public static byte bStillCaptureMethod;
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
+    public static boolean LIBUSB;
+
 
     private static final String TAG = "CallActivity";
     private static final String APPRTC_URL = "https://appr.tc";
@@ -787,6 +789,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         bNumControlTerminal = bundle.getByteArray("bNumControlTerminal");
         bNumControlUnit = bundle.getByteArray("bNumControlUnit");
         bStillCaptureMethod = bundle.getByte("bStillCaptureMethod", (byte)0);
+        LIBUSB = bundle.getBoolean("libUsb" );
     }
 
     public void displayMessage(final String msg) {

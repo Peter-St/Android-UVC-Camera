@@ -18,8 +18,8 @@ android {
         }
 
         release {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false //keeps unused methods instead of removing them
+            //shrinkResources true //to shrink files
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             consumerProguardFiles 'proguard-project.txt'
         }
