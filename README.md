@@ -11,16 +11,13 @@ This is a Android Studio Project. It connects to a usb camera from your Android 
 
 # This Project was built to perform an Isochronous Video Stream from all Android Devices (Above 4.1 Ice Cream Sandwich)(Mediathek Devices too).
 
+The app connects to USB Cameras via variable, different input values for the camera driver creation.
+In most cases you won't need to set up your own camera driver, because other apps may do this for you automatically, but for some Android devices it could help to watch videos from Usb Cameras.
+
+- LibUsb Support Added: LibUsb raises the performance of the standard Usb Device Driver.
+
 (Some OTG cabels doesn't work -->  I'll found one which is an extern powered more Port USB-C OTG cable and doesn't work ...)
 (An non working OTG cable doesn't show the right interfaces and endpoints of you camera: --> When you click on 'List Up The Camera' Button)
-
-
-The program uses the usb device driver to perform an isochronous transfer with your camera device.
-
-- When you click on 'Set up the Camera Device' Button, the app searches for a connected camera. (Usb OTG Cable required)
-- First you have to set up all camera settings for your device. The program then saves the values and you can restore them later or overwrite them with other values. There is a built-in service included to automatically set up the values ("Set Up With UVC Values Button").
-
-
 
 
 License
