@@ -25,7 +25,9 @@ package humer.UvcCamera;
 import android.app.Activity;
 import android.os.Bundle;
 
-public class ReadMeActivity extends Activity {
+import com.akexorcist.localizationactivity.ui.LocalizationActivity;
+
+public class ReadMeActivity extends LocalizationActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

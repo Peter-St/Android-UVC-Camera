@@ -23,7 +23,6 @@ This Repository is provided "as is", without warranties of any kind.
 package humer.UvcCamera;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -37,11 +36,17 @@ import androidx.core.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import com.akexorcist.localizationactivity.ui.LocalizationActivity;
+
+import java.util.Locale;
 
 import noman.zoomtextview.ZoomTextView;
 
-public class Main extends Activity {
+public class Main extends LocalizationActivity {
 
     public static int camStreamingAltSetting;
     public static int camFormatIndex;
@@ -78,21 +83,64 @@ public class Main extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
+
+        ImageButton language = findViewById(R.id.language);
+
+        Locale currentLanguage = getCurrentLanguage();
+        //displayMessage(currentLanguage.toString());
+        if (Locale.ENGLISH.equals(currentLanguage)) {
+            language.setImageResource(R.mipmap.country_america);
+        } else if (Locale.CHINESE.equals(currentLanguage)) {
+            language.setImageResource(R.mipmap.country_china);
+        } else if ("ru".equals((currentLanguage.toString()))) {
+            language.setImageResource(R.mipmap.country_russia);
+        }else if (Locale.ITALIAN.equals(currentLanguage)) {
+            language.setImageResource(R.mipmap.country_italy);
+        } else if (Locale.KOREAN.equals(currentLanguage)) {
+            language.setImageResource(R.mipmap.country_korea);
+        } else if (Locale.US.equals(currentLanguage)) {
+            language.setImageResource(R.mipmap.country_america);
+        } else if (Locale.JAPANESE.equals(currentLanguage)) {
+            language.setImageResource(R.mipmap.country_japan);
+        } else if ("pt".equals(currentLanguage.toString())) {
+            language.setImageResource(R.mipmap.country_portugal);
+        } else if ("th".equals(currentLanguage.toString())) {
+            language.setImageResource(R.mipmap.country_thai);
+        } else if ("de".equals(currentLanguage.toString())) {
+            language.setImageResource(R.mipmap.country_germany);
+        }
+
+        LinearLayout sv_language_chooser = findViewById(R.id.languageChooser);
+        sv_language_chooser.setEnabled(false);
+        sv_language_chooser.setAlpha(0); // 100% transparent
+
         tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-        if (camFrameInterval == 0) tv.setText("LIBUSB Support\n\nFor better performance you can now switch to LibUsb to handle the camera stream for you.\n\nTo use the new LibUsb function," +
-                " you may have to set up your Camera Device again with the 'manual' or 'automatic' Method in the Setup Menu.\n\n" +
-                "This App may not work on Android 9 (PIE) and Android 10 (Q) Devices. In this case please use other Usb Camera Apps from the Play Store" +
-                "\n\nYour current Values are:\n\n( - this is a sroll and zoom field - )\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
-                "\nAltSetting = " + camStreamingAltSetting + "\nMaxPacketSize = " + maxPacketSize + "\nVideoformat = " + videoformat + "\ncamFormatIndex = " + camFormatIndex + "\n" +
-                "camFrameIndex = " + camFrameIndex + "\nimageWidth = "+ imageWidth + "\nimageHeight = " + imageHeight + "\ncamFrameInterval (fps) = " + camFrameInterval + "\nLibUsb = " + LIBUSB  + ""  +
-                "\n\nYou can edit these Settings by clicking on (Set Up The Camera Device).\nYou can then save the values and later restore them.");
+
+        getResources().getString(R.string.maxPacketSize);
+        getResources().getString(R.string.videoformat);
+        getResources().getString(R.string.camFormatIndex);
+        getResources().getString(R.string.camFrameIndex);
+        getResources().getString(R.string.imageWidth);
+        getResources().getString(R.string.imageHeight);
+        getResources().getString(R.string.camFrameInterval);
+        getResources().getString(R.string.LIBUSB);
+
+
+
+        if (camFrameInterval == 0) tv.setText(getResources().getString(R.string.intro) + "\n\n" + getResources().getString(R.string.packetsPerRequest) + " = " + packetsPerRequest + "\n" + getResources().getString(R.string.activeUrbs) + " = " + activeUrbs +
+                "\n" + getResources().getString(R.string.camStreamingAltSetting) + " = " + camStreamingAltSetting + "\n" + getResources().getString(R.string.maxPacketSize) + " = " + maxPacketSize + "\n" + getResources().getString(R.string.videoformat) + " = " + videoformat +
+                        "\n" + getResources().getString(R.string.camFormatIndex) + " = " + camFormatIndex + "\n" +
+                        " " + getResources().getString(R.string.camFrameIndex) + " = " + camFrameIndex + "\n" + getResources().getString(R.string.imageWidth) + " = " + imageWidth + "\n" + getResources().getString(R.string.imageHeight) + " = " + imageHeight +
+                        "\n" + getResources().getString(R.string.camFrameInterval) + " (fps) = " + camFrameInterval + "\nLibUsb = " + LIBUSB);
         else tv.setText("Hello\n\nThis App may not work on Android 9 (PIE) and Android 10 (Q) Devices. In this case please use other Usb Camera Apps from the Play Store" +
                 "\n\nYour current Values are:\n\n( - this is a sroll and zoom field - )\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
                 "\nAltSetting = " + camStreamingAltSetting + "\nMaxPacketSize = " + maxPacketSize + "\nVideoformat = " + videoformat + "\ncamFormatIndex = " + camFormatIndex + "\n" +
-                "camFrameIndex = " + camFrameIndex + "\nimageWidth = "+ imageWidth + "\nimageHeight = " + imageHeight + "\ncamFrameInterval (fps) = " + (10000000 / camFrameInterval) + "\nLibUsb = " + LIBUSB  +  "" +
+                "camFrameIndex = " + camFrameIndex + "\nimageWidth = "+ imageWidth + "\nimageHeight = " + imageHeight + "\ncamFrameInterval (fps) = " +
+                (10000000 / camFrameInterval) + "\nLibUsb = " + LIBUSB  +  "" +
                 "\n\nYou can edit these Settings by clicking on (Set Up The Camera Device).\nYou can then save the values and later restore them.");
         tv.setTextColor(darker(Color.BLACK, 100));
     }
+
 
     @Override
     public void onRequestPermissionsResult(
@@ -130,41 +178,70 @@ public class Main extends Activity {
     @RequiresApi(api = Build.VERSION_CODES.GINGERBREAD)
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ActivitySetUpTheUsbDeviceRequestCode && resultCode == RESULT_OK && data != null) {
             // TODO Extract the data returned from the child Activity.
 
-            camStreamingAltSetting=data.getIntExtra("camStreamingAltSetting",0);
-            videoformat=data.getStringExtra("videoformat");
-            camFormatIndex=data.getIntExtra("camFormatIndex",0);
-            imageWidth=data.getIntExtra("imageWidth",0);
-            imageHeight=data.getIntExtra("imageHeight",0);
-            camFrameIndex=data.getIntExtra("camFrameIndex",0);
-            camFrameInterval=data.getIntExtra("camFrameInterval",0);
-            packetsPerRequest=data.getIntExtra("packetsPerRequest",0);
-            maxPacketSize=data.getIntExtra("maxPacketSize",0);
-            activeUrbs=data.getIntExtra("activeUrbs",0);
-            deviceName=data.getStringExtra("deviceName");
-            bUnitID = data.getByteExtra("bUnitID",(byte) 0);
-            bTerminalID = data.getByteExtra("bTerminalID",(byte)0);
+            camStreamingAltSetting = data.getIntExtra("camStreamingAltSetting", 0);
+            videoformat = data.getStringExtra("videoformat");
+            camFormatIndex = data.getIntExtra("camFormatIndex", 0);
+            imageWidth = data.getIntExtra("imageWidth", 0);
+            imageHeight = data.getIntExtra("imageHeight", 0);
+            camFrameIndex = data.getIntExtra("camFrameIndex", 0);
+            camFrameInterval = data.getIntExtra("camFrameInterval", 0);
+            packetsPerRequest = data.getIntExtra("packetsPerRequest", 0);
+            maxPacketSize = data.getIntExtra("maxPacketSize", 0);
+            activeUrbs = data.getIntExtra("activeUrbs", 0);
+            deviceName = data.getStringExtra("deviceName");
+            bUnitID = data.getByteExtra("bUnitID", (byte) 0);
+            bTerminalID = data.getByteExtra("bTerminalID", (byte) 0);
             bNumControlTerminal = data.getByteArrayExtra("bNumControlTerminal");
             bNumControlUnit = data.getByteArrayExtra("bNumControlUnit");
-            bStillCaptureMethod = data.getByteExtra("bStillCaptureMethod",(byte) 0);
+            bStillCaptureMethod = data.getByteExtra("bStillCaptureMethod", (byte) 0);
             LIBUSB = data.getBooleanExtra("libUsb", false);
-            if (camFrameInterval == 0) tv.setText("Your current Values are:\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
-                    "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat + "\nCamera Format Index = " + camFormatIndex + "\n" +
-                    "Camera FrameIndex = " + camFrameIndex + "\nImage Width = "+ imageWidth + "\nImage Height = " + imageHeight + "\nCamera Frame Interval (fps) = " +camFrameInterval + "\nLibUsb = " + LIBUSB  );
-            else  tv.setText("Your current Values are:\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
-                    "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat + "\nCamera Format Index = " + camFormatIndex + "\n" +
-                    "Camera FrameIndex = " + camFrameIndex + "\nImage Width = "+ imageWidth + "\nImage Height = " + imageHeight + "\nCamera Frame Interval (fps) = " + (10000000 / camFrameInterval) + "\nLibUsb = " + LIBUSB  );
+            if (camFrameInterval == 0)
+                tv.setText("Your current Values are:\n\nPackets Per Request = " + packetsPerRequest + "\nActive Urbs = " + activeUrbs +
+                        "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat +
+                        "\nCamera Format Index = " + camFormatIndex + "\n" +
+                        "Camera FrameIndex = " + camFrameIndex + "\nImage Width = " + imageWidth + "\nImage Height = " + imageHeight +
+                        "\nCamera Frame Interval (fps) = " + camFrameInterval + "\nLibUsb = " + LIBUSB);
+            else
+                tv.setText("Your current Values are:\n\nPackets Per Request = " + packetsPerRequest + "\nActive Urbs = " + activeUrbs +
+                        "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat + "\nCamera Format Index = " + camFormatIndex + "\n" +
+                        "Camera FrameIndex = " + camFrameIndex + "\nImage Width = " + imageWidth + "\nImage Height = " + imageHeight + "\nCamera Frame Interval (fps) = " + (10000000 / camFrameInterval) + "\nLibUsb = " + LIBUSB);
             tv.setTextColor(Color.BLACK);
         }
         if (requestCode == ActivityStartIsoStreamRequestCode && resultCode == RESULT_OK && data != null) {
-            boolean exit = data.getBooleanExtra("closeProgram",false);
+            boolean exit = data.getBooleanExtra("closeProgram", false);
             if (exit == true) finish();
         }
     }
 
-    ////////////////   BUTTONS  //////////////////////////////////////////7
+    ////////////////   BUTTONS  //////////////////////////////////////////
+
+    public void changeTheLanguage(View view){
+        if(isLanguageChooserEnabled()) {
+            disableLanguageChooser();
+            displayIntro();
+        } else{
+            tv.setEnabled(false);
+            tv.setAlpha(0);
+            LinearLayout sv_language_chooser = findViewById(R.id.languageChooser);
+            sv_language_chooser.setEnabled(true);
+            sv_language_chooser.setAlpha(1); // 100% transparent
+            findViewById(R.id.btn_america).setOnClickListener(onAmericaLanguageSelected());
+            findViewById(R.id.btn_china).setOnClickListener(onChinaLanguageSelected());
+            findViewById(R.id.btn_italy).setOnClickListener(onItalyLanguageSelected());
+            findViewById(R.id.btn_japan).setOnClickListener(onJapanLanguageSelected());
+            findViewById(R.id.btn_korea).setOnClickListener(onKoreaLanguageSelected());
+            findViewById(R.id.btn_portugal).setOnClickListener(onPortugalLanguageSelected());
+            findViewById(R.id.btn_thai).setOnClickListener(onThaiLanguageSelected());
+            findViewById(R.id.btn_russia).setOnClickListener(onRussiaLanguageSelected());
+            findViewById(R.id.btn_ger).setOnClickListener(onGermanyLanguageSelected());
+            // default Language
+            findViewById(R.id.btn_defaultLanguage).setOnClickListener(onDefaultLanguageSelected());
+        }
+    }
 
     public void viewPrivatePolicy(View view) {
         // TODO Auto-generated method stub
@@ -466,5 +543,73 @@ public class Main extends Activity {
                 Math.max( (int)(b * factor), 0 ) );
     }
 
+    // Language Buttons Methods
+
+    private View.OnClickListener onAmericaLanguageSelected() {
+        return view -> setLanguage("en");
+    }
+
+    private View.OnClickListener onChinaLanguageSelected() {
+        return view -> setLanguage("zh");
+    }
+
+    private View.OnClickListener onItalyLanguageSelected() {
+        return view -> setLanguage("it");
+    }
+
+    private View.OnClickListener onJapanLanguageSelected() {
+        return view -> setLanguage("ja");
+    }
+
+    private View.OnClickListener onKoreaLanguageSelected() {
+        return view -> setLanguage("ko");
+    }
+
+    private View.OnClickListener onPortugalLanguageSelected() {
+        return view -> setLanguage("pt");
+    }
+
+    private View.OnClickListener onThaiLanguageSelected() {
+        return view -> setLanguage("th");
+    }
+
+    private View.OnClickListener onRussiaLanguageSelected() {
+        return view -> setLanguage("ru");
+    }
+
+    private View.OnClickListener onGermanyLanguageSelected() {
+        return view -> setLanguage("de");
+    }
+
+    private View.OnClickListener onDefaultLanguageSelected() {
+        return view -> setLanguage("en");
+    }
+
+    private void disableLanguageChooser() {
+        LinearLayout sv_language_chooser = findViewById(R.id.languageChooser);
+        sv_language_chooser.setEnabled(false);
+        sv_language_chooser.setAlpha(0); // 100% transparent
+    }
+
+    private void displayIntro() {
+        tv.setEnabled(true);
+        tv.setAlpha(1);
+        if (camFrameInterval == 0) tv.setText(getResources().getString(R.string.intro) + "\n\nPackets Per Request = " + packetsPerRequest + "\nActive Urbs = " + activeUrbs +
+                "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat +
+                "\nCamera Format Index = " + camFormatIndex + "\n" +
+                "Camera FrameIndex = " + camFrameIndex + "\nImage Width = " + imageWidth + "\nImage Height = " + imageHeight +
+                "\nCamera Frame Interval (fps) = " + camFrameInterval + "\nLibUsb = " + LIBUSB);
+        else tv.setText(getResources().getString(R.string.intro) + "Hello\n\nThis App may not work on Android 9 (PIE) and Android 10 (Q) Devices. In this case please use other Usb Camera Apps from the Play Store" +
+                "\n\nYour current Values are:\n\n( - this is a sroll and zoom field - )\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
+                "\nAltSetting = " + camStreamingAltSetting + "\nMaxPacketSize = " + maxPacketSize + "\nVideoformat = " + videoformat + "\ncamFormatIndex = " + camFormatIndex + "\n" +
+                "camFrameIndex = " + camFrameIndex + "\nimageWidth = "+ imageWidth + "\nimageHeight = " + imageHeight + "\ncamFrameInterval (fps) = " +
+                (10000000 / camFrameInterval) + "\nLibUsb = " + LIBUSB  +  "" +
+                "\n\nYou can edit these Settings by clicking on (Set Up The Camera Device).\nYou can then save the values and later restore them.");
+    }
+    private boolean isLanguageChooserEnabled () {
+        LinearLayout sv_language_chooser = findViewById(R.id.languageChooser);
+        if(sv_language_chooser.isEnabled()) return true;
+        return false;
+    }
 
 }

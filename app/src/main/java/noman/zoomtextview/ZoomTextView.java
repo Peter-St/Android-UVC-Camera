@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import androidx.appcompat.widget.AppCompatTextView;
@@ -18,11 +19,18 @@ import androidx.appcompat.widget.AppCompatTextView;
 public class ZoomTextView extends AppCompatTextView {
     private static final String TAG = "ZoomTextView";
     private ScaleGestureDetector mScaleDetector;
+    private GestureDetector gestureDetector;
 
     private float mScaleFactor = 1.f;
     private float defaultSize;
 
     private float zoomLimit = 3.0f;
+
+    public static final int TEXT_MAX_SIZE = 140;
+    public static final int TEXT_MIN_SIZE = 40;
+    private static final int STEP = 4;
+    private int mBaseDistZoomIn;
+    private int mBaseDistZoomOut;
 
 
     public ZoomTextView(Context context) {
@@ -43,7 +51,7 @@ public class ZoomTextView extends AppCompatTextView {
     private void initialize() {
         defaultSize = getTextSize();
         mScaleDetector = new ScaleGestureDetector(getContext(), new ScaleListener());
-
+        gestureDetector = new GestureDetector(getContext(), new GestureListener());
     }
 
     /***
@@ -64,6 +72,7 @@ public class ZoomTextView extends AppCompatTextView {
     public boolean onTouchEvent(@NonNull MotionEvent ev) {
         super.onTouchEvent(ev);
         mScaleDetector.onTouchEvent(ev);
+        gestureDetector.onTouchEvent(ev);
         return true;
     }
 
@@ -79,8 +88,40 @@ public class ZoomTextView extends AppCompatTextView {
             mScaleFactor *= detector.getScaleFactor();
             mScaleFactor = Math.max(1.0f, Math.min(mScaleFactor, zoomLimit));
             setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultSize * mScaleFactor);
-            Log.e(TAG, String.valueOf(mScaleFactor));
+            Log.d(TAG, String.valueOf(mScaleFactor));
             return true;
         }
+    }
+
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            float x = e.getX();
+            float y = e.getY();
+
+            Log.d(TAG, "Tapped at: (" + x + "," + y + ")");
+
+            if (mScaleFactor == 1.0f) {
+                mScaleFactor = 2.0f;
+                setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultSize * mScaleFactor);
+
+            } else if (mScaleFactor == 2.0f) {
+                mScaleFactor = 3.0f;
+                setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultSize * mScaleFactor);
+            } else{
+                mScaleFactor = 1.0f;
+                setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultSize * mScaleFactor);
+            }
+            return true;
+        }
+    }
+
+
+    // good function to get the distance between the multiple touch
+    int getDistanceFromEvent(MotionEvent event) {
+        int dx = (int) (event.getX(0) - event.getX(1));
+        int dy = (int) (event.getY(0) - event.getY(1));
+        return (int) (Math.sqrt(dx * dx + dy * dy));
     }
 }

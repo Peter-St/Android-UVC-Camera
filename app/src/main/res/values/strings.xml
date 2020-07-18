@@ -1,13 +1,82 @@
 <resources>
-    <string name="app_name">UVC_Camera</string>
-    <string name="readme_1"><![CDATA[
+ <string name="app_name">UVC_Camera</string>
+ <string name="america" translatable="false">America</string>
+ <string name="russia" translatable="false">Russia</string>
+ <string name="china" translatable="false">China</string>
+ <string name="italy" translatable="false">Italy</string>
+ <string name="japan" translatable="false">Japan</string>
+ <string name="korea" translatable="false">Korea</string>
+ <string name="portugal" translatable="false">Portugal</string>
+ <string name="thai" translatable="false">Thai</string>
+ <string name="germany" translatable="false">Germany</string>
+
+ <string name="packetsPerRequest">Packets Per Request</string>
+ <string name="activeUrbs">Active Usb Request Blocks</string>
+ <string name="camStreamingAltSetting">Alt Setting</string>
+ <string name="maxPacketSize">Maximal Packet Size</string>
+ <string name="videoformat">Videoformat</string>
+ <string name="camFormatIndex">Format Index</string>
+ <string name="camFrameIndex">Frame Index</string>
+ <string name="imageWidth">Image Width</string>
+ <string name="imageHeight">Image Height</string>
+ <string name="camFrameInterval">Frame Interval</string>
+ <string name="LIBUSB">LibUsb</string>
+
+
+
+
+
+ <string name="intro"><![CDATA[
+(Scroll- and Zoomfield)
+\n\n
+Hello,
+\n\n
+with this app you can connect to USB Cameras via your own different input values for the camera driver creation.
+\n\n
+In most cases you won"t need to set up your own camera driver, because other apps may do this for you automatically, but for some Android devices it could help to watch videos from Usb Cameras.
+\n\n
+A detailed description is available under the Read-Me Button.
+\n\n
+Your Current Values are:
+]]></string>
+
+ <string name="readme_0"><![CDATA[
+
+ LibUsb Support:
+ \n
+ LibUsb is a Usb Development, which is used to connect and access Usb Devices. This Library has been included to this app and can be switched on or off, if you want to use it or not. It is suggested to use the LibUsb Support, because this Library has the best performance.
+\n\n
+ The basis of this app is a FileTransfer with your Usb camera and afterwards an imageprocessing for different frame formats of this FileTransfer.
+ \n
+ To better understand the Filetransfer, the Usb Video Class is short exlained:
+ \n
+ The Files you receive from your Camera are stored in smal packages between 100 and 3000 bytes. This Files were then added together to one big Frame. When the Frame is complete, the next frame starts also by adding smal files together.
+ \n
+ With this app you can edit or resize this Filetranfer to get faster or slower. You can size the smal FilePackages from 100 to 3000 bytes, if your Camera Supports it. And you can choose how many Files were transmitted together to slow or fasten the Usb speed.
+ \n
+ With different settings you will receive different outputs. You can watch this outputs in the Setup Menu or test them in the stream screen.
+ \n
+ After the Filetransfer, the frames will be converted to jpegs and displayed on the screen. This app supports picture and video capture.
+
+
+     ]]></string>
+
+
+
+ <string name="readme_1"><![CDATA[
        
-Camera stream over Usb.\n\n
-OTG cabel or OTG Hub needed\n
-It works with Micro Usb and Usb Type C devices\n
-(Some OTG cabels doesn\'t work --> I\'ll found one which is an extern powered more Port USB-C OTG cable and doesn\'t work ...)\n
+Camera stream over Usb.
+\n\n
+OTG cabel or OTG Hub needed
+\n
+It works with Micro Usb and Usb Type C devices
+\n
+(Some OTG cabels doesn\'t work --> I\'ll found one which is an extern powered more Port USB-C OTG cable and doesn\'t work ...)
+\n
 All phones, tablets with all chipsets are supported.
-Since Android 9 Google made a mistake granting the Usb Permissions for Usb Cameras, so this app may not works on Android 9 + Devices\n
+\n
+Since Android 9 Google made a mistake granting the Usb Permissions for Usb Cameras, so this app may not works on Android 9 + Devices
+\n
 --> https://issuetracker.google.com/issues/145082934
 \n\n
 

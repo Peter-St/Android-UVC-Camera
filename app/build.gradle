@@ -8,8 +8,8 @@ android {
         minSdkVersion 15
         targetSdkVersion 29
         buildToolsVersion "29.0.2"
-        versionCode 72
-        versionName "1.7.5"
+        versionCode 73
+        versionName "1.7.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -62,6 +62,7 @@ dependencies {
     implementation "androidx.core:core-ktx:+"
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'com.google.android.material:material:1.2.0-alpha06'
+    implementation 'com.akexorcist:localization:1.2.5'
 
     //implementation 'com.quickbirdstudios:opencv:3.4.1'
 

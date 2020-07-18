@@ -21,6 +21,22 @@
                 android:orientation="vertical"
                 android:layout_margin="2dp"
                 >
+
+
+                <TextView
+                    android:id="@+id/textDarstellung_0"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="0dp"
+                    android:gravity="center"
+                    android:lineSpacingExtra="10sp"
+                    android:text="@string/readme_0"
+                    android:textAppearance="@style/TextAppearance.AppCompat"
+                    android:textSize="18sp"
+                    android:textStyle="italic" />
+
+
                 <TextView
                     android:id="@+id/textDarstellung"
                     android:layout_width="match_parent"

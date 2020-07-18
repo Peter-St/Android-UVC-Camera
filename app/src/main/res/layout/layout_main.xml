@@ -8,6 +8,21 @@
     android:background="@drawable/main_background">
 
 
+    <ImageButton
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/language"
+        android:onClick="changeTheLanguage"
+        android:layout_width="@dimen/btn_language_size"
+        android:layout_height="@dimen/btn_language_size"
+        android:layout_marginEnd="@dimen/padding"
+        android:background="@color/transparent"
+        android:contentDescription="@string/america"
+        android:scaleType="fitCenter"
+        android:src="@mipmap/country_america"
+        android:layout_marginRight="@dimen/padding" />
+
+
     <Button
         android:id="@+id/restoreValues"
         android:layout_width="wrap_content"
@@ -173,5 +188,21 @@
             />
 
     </ScrollView>
+
+    <include
+        android:id="@+id/languageChooser"
+        layout="@layout/layout_language_chooser"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        app:layout_constraintTop_toBottomOf="@id/readMeButton"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+
+
+
+
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
