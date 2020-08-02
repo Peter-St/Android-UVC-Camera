@@ -33,11 +33,15 @@ import android.os.Bundle;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import android.os.Handler;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.akexorcist.localizationactivity.ui.LocalizationActivity;
@@ -78,6 +82,18 @@ public class Main extends LocalizationActivity {
     float mRatio = 1.0f;
     int mBaseDist;
     float mBaseRatio;
+    private Handler buttonHandler;
+    Runnable myRunnable = new Runnable() {
+        @Override
+        public void run() {
+            Button button = findViewById(R.id.raiseSize);
+            button.setEnabled(false); button.setAlpha(0);
+            Button button2 = findViewById(R.id.lowerSize);
+            button2.setEnabled(false); button2.setAlpha(0);
+            buttonHandler = null;
+        }
+    };
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -116,17 +132,6 @@ public class Main extends LocalizationActivity {
 
         tv = (ZoomTextView) findViewById(R.id.textDarstellung);
 
-        getResources().getString(R.string.maxPacketSize);
-        getResources().getString(R.string.videoformat);
-        getResources().getString(R.string.camFormatIndex);
-        getResources().getString(R.string.camFrameIndex);
-        getResources().getString(R.string.imageWidth);
-        getResources().getString(R.string.imageHeight);
-        getResources().getString(R.string.camFrameInterval);
-        getResources().getString(R.string.LIBUSB);
-
-
-
         if (camFrameInterval == 0) tv.setText(getResources().getString(R.string.intro) + "\n\n" + getResources().getString(R.string.packetsPerRequest) + " = " + packetsPerRequest + "\n" + getResources().getString(R.string.activeUrbs) + " = " + activeUrbs +
                 "\n" + getResources().getString(R.string.camStreamingAltSetting) + " = " + camStreamingAltSetting + "\n" + getResources().getString(R.string.maxPacketSize) + " = " + maxPacketSize + "\n" + getResources().getString(R.string.videoformat) + " = " + videoformat +
                         "\n" + getResources().getString(R.string.camFormatIndex) + " = " + camFormatIndex + "\n" +
@@ -139,6 +144,33 @@ public class Main extends LocalizationActivity {
                 (10000000 / camFrameInterval) + "\nLibUsb = " + LIBUSB  +  "" +
                 "\n\nYou can edit these Settings by clicking on (Set Up The Camera Device).\nYou can then save the values and later restore them.");
         tv.setTextColor(darker(Color.BLACK, 100));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            ScrollView scrollView = findViewById(R.id.scrolli);
+            scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+                @Override
+                public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                    final int TIME_TO_WAIT = 2500;
+                    Button button = findViewById(R.id.raiseSize);
+                    if (button.isEnabled()) {
+                        buttonHandler.removeCallbacks(myRunnable);
+                        buttonHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                        return ;
+                    }
+                    button.setEnabled(true);
+                    button.setAlpha(0.8f);
+                    Button button2 = findViewById(R.id.lowerSize);
+                    button2.setEnabled(true); button2.setAlpha(0.8f);
+
+                    buttonHandler = new Handler();
+                    buttonHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+
+                }
+            });
+        }
+        Button button = findViewById(R.id.raiseSize);
+        button.setEnabled(false); button.setAlpha(0);
+        Button button2 = findViewById(R.id.lowerSize);
+        button2.setEnabled(false); button2.setAlpha(0);
     }
 
 
@@ -242,6 +274,47 @@ public class Main extends LocalizationActivity {
             findViewById(R.id.btn_defaultLanguage).setOnClickListener(onDefaultLanguageSelected());
         }
     }
+
+    public void raiseSize(View view){
+        final int TIME_TO_WAIT = 2500;
+        Button button = findViewById(R.id.raiseSize);
+        if (button.isEnabled()) {
+            buttonHandler.removeCallbacks(myRunnable);
+            buttonHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+            tv.raiseSize();
+            return ;
+        }
+        button.setEnabled(true);
+        button.setAlpha(0.8f);
+        Button button2 = findViewById(R.id.lowerSize);
+        button2.setEnabled(true); button2.setAlpha(0.8f);
+        tv.raiseSize();
+
+        buttonHandler = new Handler();
+        buttonHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+
+    }
+
+    public void lowerSize(View view){
+        final int TIME_TO_WAIT = 2500;
+        Button button = findViewById(R.id.raiseSize);
+        if (button.isEnabled()) {
+            buttonHandler.removeCallbacks(myRunnable);
+            buttonHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+            tv.lowerSize();
+            return;
+        }
+        button.setEnabled(true);
+        button.setAlpha(0.8f);
+        Button button2 = findViewById(R.id.lowerSize);
+        button2.setEnabled(true); button2.setAlpha(0.8f);
+        tv.lowerSize();
+
+        buttonHandler = new Handler();
+        buttonHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+
+    }
+
 
     public void viewPrivatePolicy(View view) {
         // TODO Auto-generated method stub

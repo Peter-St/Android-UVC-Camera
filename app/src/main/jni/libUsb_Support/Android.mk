@@ -58,7 +58,7 @@ LOCAL_ARM_MODE := arm
 LOCAL_SRC_FILES := \
 		        libusb_support.c\
 
-LOCAL_MODULE    := LibUsb_Support
+LOCAL_MODULE    := Usb_Support
 include $(BUILD_SHARED_LIBRARY)
 
 LOCAL_LDLIBS := -llog

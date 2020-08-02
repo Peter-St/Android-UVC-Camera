@@ -1,22 +1,20 @@
-#ifndef iso_h__
-#define iso_h__
+#ifndef libusb_support_h__
+#define libusb_support_h__
 
 #include </home/peter/Android/Sdk/ndk/21.1.6352462/sysroot/usr/include/android/native_window.h>
 #include </home/peter/Android/Sdk/ndk/21.1.6352462/sysroot/usr/include/jni.h>
 
 
 
+extern int init (int FD, int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
+                 int camFrameInde, int camFrameInterva, int imageWidt, int imageHeigh, int camStreamingEndpointAdress, int camStreamingInterfaceNumber,
+                 const char* frameformat);
 
-extern int libUsb(int fileDescriptor);
 
-extern int libUsb_init();
 
-extern int setBus_Dev_num(int bus, int dev);
 
 
 extern int libUsb_open_def_fd(int vid, int pid, const char *serial, int fd, int busnum, int devaddr);
-
-
 
 extern void getFramesOverLibUsb(int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
                                 int camFrameInde, int camFrameInterva, int imageWidt, int imageHeigh, int yuvFrameIsZero, int stream );
@@ -42,10 +40,6 @@ extern unsigned char * probeCommitControl();
 
 extern int eheckEventHandling();
 
-extern void init (int FD, int productID, int vendorID, int busnum, int devaddr,const char *mUsbFs,
-                  int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
-                  int camFrameInde, int camFrameInterva, int imageWidt, int imageHeigh, int camStreamingEndpointAdress, int camStreamingInterfaceNumber,
-                  const char* frameformat);
 
 extern unsigned char * probeCommitControl(int bmHin, int camFormatInde, int camFrameInde, int camFrameInterva);
 

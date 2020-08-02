@@ -57,6 +57,20 @@
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
             </intent-filter>
         </activity>
+        <activity android:name="humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect" android:theme="@style/Theme.Transparent" >
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+            </intent-filter>
+        </activity>
+        <activity android:name="humer.UvcCamera.AutomaticDetection.Jna_AutoDetect" android:theme="@style/Theme.Transparent" >
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+            </intent-filter>
+        </activity>
         <activity
             android:name="com.example.androidthings.videortc.CallActivity"
             android:configChanges="orientation|screenSize"

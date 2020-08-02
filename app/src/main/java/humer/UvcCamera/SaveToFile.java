@@ -27,8 +27,10 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Environment;
 
+import android.os.Handler;
 import android.text.InputType;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -40,6 +42,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
@@ -54,6 +57,8 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import humer.UvcCamera.AutomaticDetection.Jna_AutoDetect;
+import humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect;
 import humer.UvcCamera.UVC_Descriptor.UVC_Descriptor;
 
 public class SaveToFile  {
@@ -81,8 +86,9 @@ public class SaveToFile  {
     private boolean init = false;
     private static boolean libUsb;
 
-
+    private LibUsb_AutoDetect libUsb_autoDetect;
     private SetUpTheUsbDevice setUpTheUsbDevice;
+    private Jna_AutoDetect jna_autoDetect;
     private Main uvc_camera = null;
     private Context mContext;
     private View v;
@@ -140,6 +146,8 @@ public class SaveToFile  {
     public static boolean highestMaxPacketSizeDone;
     public static boolean lowestMaxPacketSizeDone;
 
+    private boolean libUsb_AutoDetect;
+
     public SaveToFile(Main main, Context mContext) {
         this.uvc_camera = main;
         this.mContext = mContext;
@@ -154,7 +162,19 @@ public class SaveToFile  {
         this.init = true;
     }
 
+    public SaveToFile(LibUsb_AutoDetect libUsb_autoDetect, Context mContext) {
+        this.libUsb_autoDetect = libUsb_autoDetect;
+        this.mContext = mContext;
+        this.activity = (Activity)mContext;
+        this.libUsb_AutoDetect = true;
+    }
 
+    public SaveToFile(Jna_AutoDetect jna_autoDetect, Context mContext) {
+        this.jna_autoDetect = jna_autoDetect;
+        this.mContext = mContext;
+        this.activity = (Activity)mContext;
+        this.libUsb_AutoDetect = true;
+    }
 
 
     private void returnToMainLayout(final String msg) {
@@ -170,27 +190,6 @@ public class SaveToFile  {
                         "\nAltSetting = " + sALT_SETTING + "\nMaximal Packet Size = " + smaxPacketSize + "\nVideoformat = " + svideoformat + "\nCamera Format Index = " + scamFormatIndex + "\n" +
                         "Camera FrameIndex = " + scamFrameIndex + "\nImage Width = "+ simageWidth + "\nImage Height = " + simageHeight + "\nCamera Frame Interval (fps) = " + (10000000 / scamFrameInterval)  + "\nLibUsb = " + libUsb );
                 tv.setTextColor(Color.BLACK);
-                tv.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View view, MotionEvent event) {
-                        if (event.getPointerCount() == 2) {
-                            int action = event.getAction();
-                            int pureaction = action & MotionEvent.ACTION_MASK;
-                            if (pureaction == MotionEvent.ACTION_POINTER_DOWN) {
-                                mBaseDist = getDistance(event);
-                                mBaseRatio = mRatio;
-                            } else {
-                                float delta = (getDistance(event) - mBaseDist) / STEP;
-                                float multi = (float) Math.pow(2, delta);
-                                mRatio = Math.min(1024.0f, Math.max(0.1f, mBaseRatio * multi));
-                                tv.setTextSize(mRatio + 13);
-                            }
-                        }
-                        return true;
-                    }
-
-
-                });
                 Button testrun  = activity.findViewById(R.id.testrun);
                 testrun.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -198,6 +197,34 @@ public class SaveToFile  {
                         setUpTheUsbDevice.showTestRunMenu(view);
                     }
                 });
+                Button button = activity.findViewById(R.id.raiseSize_setUp);
+                button.setEnabled(false); button.setAlpha(0);
+                Button button2 = activity.findViewById(R.id.lowerSize_setUp);
+                button2.setEnabled(false); button2.setAlpha(0);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    ScrollView scrollView = activity.findViewById(R.id.scrolli_setup);
+                    scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+                        @Override
+                        public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                            final int TIME_TO_WAIT = 2500;
+                            Button button = activity.findViewById(R.id.raiseSize_setUp);
+                            if (button.isEnabled()) {
+                                setUpTheUsbDevice.buttonHandler.removeCallbacks(setUpTheUsbDevice.myRunnable);
+                                setUpTheUsbDevice.buttonHandler.postDelayed(setUpTheUsbDevice.myRunnable, TIME_TO_WAIT);
+                                return ;
+                            }
+                            button.setEnabled(true);
+                            button.setAlpha(0.8f);
+                            Button button2 = activity.findViewById(R.id.lowerSize_setUp);
+                            button2.setEnabled(true); button2.setAlpha(0.8f);
+
+                            setUpTheUsbDevice.buttonHandler = new Handler();
+                            setUpTheUsbDevice.buttonHandler.postDelayed(setUpTheUsbDevice.myRunnable, TIME_TO_WAIT);
+
+                        }
+                    });
+                }
+
 
             }
         });
@@ -432,23 +459,62 @@ public class SaveToFile  {
     ////// Buttons  END //////////
 
     public void fetchTheValues(){
-        sALT_SETTING = setUpTheUsbDevice.camStreamingAltSetting;
-        svideoformat = setUpTheUsbDevice.videoformat;
-        scamFormatIndex = setUpTheUsbDevice.camFormatIndex;
-        simageWidth = setUpTheUsbDevice.imageWidth;
-        simageHeight = setUpTheUsbDevice.imageHeight;
-        scamFrameIndex = setUpTheUsbDevice.camFrameIndex;
-        scamFrameInterval = setUpTheUsbDevice.camFrameInterval;
-        spacketsPerRequest = setUpTheUsbDevice.packetsPerRequest;
-        smaxPacketSize = setUpTheUsbDevice.maxPacketSize;
-        sactiveUrbs = setUpTheUsbDevice.activeUrbs;
-        sdeviceName = setUpTheUsbDevice.deviceName;
-        bUnitID = setUpTheUsbDevice.bUnitID;
-        bTerminalID = setUpTheUsbDevice.bTerminalID;
-        bNumControlTerminal = setUpTheUsbDevice.bNumControlTerminal;
-        bNumControlUnit = setUpTheUsbDevice.bNumControlUnit;
-        bStillCaptureMethod = setUpTheUsbDevice.bStillCaptureMethod;
-        libUsb = setUpTheUsbDevice.libUsb;
+        if (setUpTheUsbDevice != null) {
+            sALT_SETTING = setUpTheUsbDevice.camStreamingAltSetting;
+            svideoformat = setUpTheUsbDevice.videoformat;
+            scamFormatIndex = setUpTheUsbDevice.camFormatIndex;
+            simageWidth = setUpTheUsbDevice.imageWidth;
+            simageHeight = setUpTheUsbDevice.imageHeight;
+            scamFrameIndex = setUpTheUsbDevice.camFrameIndex;
+            scamFrameInterval = setUpTheUsbDevice.camFrameInterval;
+            spacketsPerRequest = setUpTheUsbDevice.packetsPerRequest;
+            smaxPacketSize = setUpTheUsbDevice.maxPacketSize;
+            sactiveUrbs = setUpTheUsbDevice.activeUrbs;
+            sdeviceName = setUpTheUsbDevice.deviceName;
+            bUnitID = setUpTheUsbDevice.bUnitID;
+            bTerminalID = setUpTheUsbDevice.bTerminalID;
+            bNumControlTerminal = setUpTheUsbDevice.bNumControlTerminal;
+            bNumControlUnit = setUpTheUsbDevice.bNumControlUnit;
+            bStillCaptureMethod = setUpTheUsbDevice.bStillCaptureMethod;
+            libUsb = setUpTheUsbDevice.libUsb;
+        } else if (libUsb_autoDetect != null) {
+            sALT_SETTING = libUsb_autoDetect.camStreamingAltSetting;
+            svideoformat = libUsb_autoDetect.videoformat;
+            scamFormatIndex = libUsb_autoDetect.camFormatIndex;
+            simageWidth = libUsb_autoDetect.imageWidth;
+            simageHeight = libUsb_autoDetect.imageHeight;
+            scamFrameIndex = libUsb_autoDetect.camFrameIndex;
+            scamFrameInterval = libUsb_autoDetect.camFrameInterval;
+            spacketsPerRequest = libUsb_autoDetect.packetsPerRequest;
+            smaxPacketSize = libUsb_autoDetect.maxPacketSize;
+            sactiveUrbs = libUsb_autoDetect.activeUrbs;
+            sdeviceName = libUsb_autoDetect.deviceName;
+            bUnitID = libUsb_autoDetect.bUnitID;
+            bTerminalID = libUsb_autoDetect.bTerminalID;
+            bNumControlTerminal = libUsb_autoDetect.bNumControlTerminal;
+            bNumControlUnit = libUsb_autoDetect.bNumControlUnit;
+            bStillCaptureMethod = libUsb_autoDetect.bStillCaptureMethod;
+            libUsb = libUsb_autoDetect.libUsb;
+        } else if (jna_autoDetect != null) {
+            sALT_SETTING = jna_autoDetect.camStreamingAltSetting;
+            svideoformat = jna_autoDetect.videoformat;
+            scamFormatIndex = jna_autoDetect.camFormatIndex;
+            simageWidth = jna_autoDetect.imageWidth;
+            simageHeight = jna_autoDetect.imageHeight;
+            scamFrameIndex = jna_autoDetect.camFrameIndex;
+            scamFrameInterval = jna_autoDetect.camFrameInterval;
+            spacketsPerRequest = jna_autoDetect.packetsPerRequest;
+            smaxPacketSize = jna_autoDetect.maxPacketSize;
+            sactiveUrbs = jna_autoDetect.activeUrbs;
+            sdeviceName = jna_autoDetect.deviceName;
+            bUnitID = jna_autoDetect.bUnitID;
+            bTerminalID = jna_autoDetect.bTerminalID;
+            bNumControlTerminal = jna_autoDetect.bNumControlTerminal;
+            bNumControlUnit = jna_autoDetect.bNumControlUnit;
+            bStillCaptureMethod = jna_autoDetect.bStillCaptureMethod;
+            libUsb = jna_autoDetect.libUsb;
+        }
+
     }
 
     public void writeTheValues(){
@@ -470,7 +536,7 @@ public class SaveToFile  {
             uvc_camera.bNumControlTerminal = bNumControlTerminal;
             uvc_camera.bStillCaptureMethod = bStillCaptureMethod;
             uvc_camera.LIBUSB = libUsb;
-        } else {
+        } else if (setUpTheUsbDevice != null) {
             setUpTheUsbDevice.camStreamingAltSetting = sALT_SETTING;
             setUpTheUsbDevice.videoformat = svideoformat;
             setUpTheUsbDevice.camFormatIndex = scamFormatIndex;
@@ -488,6 +554,42 @@ public class SaveToFile  {
             setUpTheUsbDevice.bNumControlUnit = bNumControlUnit;
             setUpTheUsbDevice.bStillCaptureMethod = bStillCaptureMethod;
             setUpTheUsbDevice.libUsb = libUsb;
+        } else if (libUsb_autoDetect != null) {
+            libUsb_autoDetect.camStreamingAltSetting = sALT_SETTING;
+            libUsb_autoDetect.videoformat = svideoformat;
+            libUsb_autoDetect.camFormatIndex = scamFormatIndex;
+            libUsb_autoDetect.imageWidth = simageWidth;
+            libUsb_autoDetect.imageHeight = simageHeight;
+            libUsb_autoDetect.camFrameIndex = scamFrameIndex;
+            libUsb_autoDetect.camFrameInterval = scamFrameInterval;
+            libUsb_autoDetect.packetsPerRequest = spacketsPerRequest;
+            libUsb_autoDetect.maxPacketSize = smaxPacketSize;
+            libUsb_autoDetect.activeUrbs = sactiveUrbs;
+            libUsb_autoDetect.deviceName = sdeviceName;
+            libUsb_autoDetect.bUnitID = bUnitID;
+            libUsb_autoDetect.bTerminalID = bTerminalID;
+            libUsb_autoDetect.bNumControlTerminal = bNumControlTerminal;
+            libUsb_autoDetect.bNumControlUnit = bNumControlUnit;
+            libUsb_autoDetect.bStillCaptureMethod = bStillCaptureMethod;
+            libUsb_autoDetect.libUsb = libUsb;
+        } else if (jna_autoDetect != null) {
+            jna_autoDetect.camStreamingAltSetting = sALT_SETTING;
+            jna_autoDetect.videoformat = svideoformat;
+            jna_autoDetect.camFormatIndex = scamFormatIndex;
+            jna_autoDetect.imageWidth = simageWidth;
+            jna_autoDetect.imageHeight = simageHeight;
+            jna_autoDetect.camFrameIndex = scamFrameIndex;
+            jna_autoDetect.camFrameInterval = scamFrameInterval;
+            jna_autoDetect.packetsPerRequest = spacketsPerRequest;
+            jna_autoDetect.maxPacketSize = smaxPacketSize;
+            jna_autoDetect.activeUrbs = sactiveUrbs;
+            jna_autoDetect.deviceName = sdeviceName;
+            jna_autoDetect.bUnitID = bUnitID;
+            jna_autoDetect.bTerminalID = bTerminalID;
+            jna_autoDetect.bNumControlTerminal = bNumControlTerminal;
+            jna_autoDetect.bNumControlUnit = bNumControlUnit;
+            jna_autoDetect.bStillCaptureMethod = bStillCaptureMethod;
+            jna_autoDetect.libUsb = libUsb;
         }
     }
 
@@ -836,8 +938,11 @@ public class SaveToFile  {
         } else {
             // Select highest Max Packet Size
             if (!highestMaxPacketSizeDone) {
-
-                int[] maxPacketsSizeArray = setUpTheUsbDevice.convertedMaxPacketSize.clone();
+                int[] maxPacketsSizeArray;
+                if (setUpTheUsbDevice != null) maxPacketsSizeArray = setUpTheUsbDevice.convertedMaxPacketSize.clone();
+                else if (libUsb_autoDetect != null) maxPacketsSizeArray = libUsb_autoDetect.convertedMaxPacketSize.clone();
+                else if (jna_autoDetect != null) maxPacketsSizeArray = jna_autoDetect.convertedMaxPacketSize.clone();
+                else return;
 
                 // find greatest MaxPacketSize:
                 int maxValue = maxPacketsSizeArray[0];
@@ -1247,6 +1352,12 @@ public class SaveToFile  {
             });
             builder.show();
         } else {
+            if (libUsb_autoDetect != null || jna_autoDetect != null) {
+                writeTheValues();
+                return;
+            }
+
+
             if(lowQuality) {
                 int[] intervalArray = frameIndex.dwFrameInterval.clone();
                 // sorting the array to smalest Value first

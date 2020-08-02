@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 apply plugin: 'com.android.application'
 
 
@@ -8,8 +10,8 @@ android {
         minSdkVersion 15
         targetSdkVersion 29
         buildToolsVersion "29.0.2"
-        versionCode 73
-        versionName "1.7.6"
+        versionCode 74
+        versionName "1.7.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -36,12 +38,102 @@ android {
     configurations.all {
         resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.2'
     }
-    sourceSets.main {
-        jni.srcDirs = []
-        jniLibs.srcDir 'src/main/libs'
+
+    buildTypes {
+        release {
+            externalNativeBuild {
+                ndkBuild {
+                    arguments "BUILD_TYPE=release"
+                }}
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            debuggable true
+            jniDebuggable true
+        }
+        debug {
+            debuggable true
+            jniDebuggable true
+            externalNativeBuild {
+                ndkBuild {
+                    cFlags "-DDEBUG=1"
+                }
+            }
+        }
+    }
+    sourceSets {
+        main {
+            jniLibs.srcDir 'src/main/libs'
+            jni.srcDirs = []
+        }
+    }
+
+    externalNativeBuild {
+        ndkBuild {
+            path 'src/main/jni/Android.mk'
+        }
+    }
+
+    publishNonDefault true
+    packagingOptions {
+        pickFirst 'lib/x86_64/libUsb_Support.so'
+        pickFirst 'lib/armeabi/libUsb_Support.so'
+        pickFirst 'lib/x86/libUsb_Support.so'
+        pickFirst 'lib/armeabi-v7a/libUsb_Support.so'
+        pickFirst 'lib/arm64-v8a/libUsb_Support.so'
+
+        pickFirst 'lib/x86_64/libusb1.0.so'
+        pickFirst 'lib/armeabi/libusb1.0.so'
+        pickFirst 'lib/x86/libusb1.0.so'
+        pickFirst 'lib/armeabi-v7a/libusb1.0.so'
+        pickFirst 'lib/arm64-v8a/libusb1.0.so'
+
+        pickFirst 'lib/x86_64/libuvc.so'
+        pickFirst 'lib/armeabi/libuvc.so'
+        pickFirst 'lib/x86/libuvc.so'
+        pickFirst 'lib/armeabi-v7a/libuvc.so'
+        pickFirst 'lib/arm64-v8a/libuvc.so'
+
+        pickFirst 'lib/x86_64/libjpeg-turbo1500.so'
+        pickFirst 'lib/armeabi/libjpeg-turbo1500.so'
+        pickFirst 'lib/x86/libjpeg-turbo1500.so'
+        pickFirst 'lib/armeabi-v7a/libjpeg-turbo1500.so'
+        pickFirst 'lib/arm64-v8a/libjpeg-turbo1500.so'
+
     }
 }
 
+
+tasks.withType(JavaCompile) {
+    compileTask -> compileTask.dependsOn ndkBuild
+}
+
+String getNdkBuildPath() {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    def ndkBuildingDir = properties.getProperty("ndk.dir")
+    def ndkBuildPath = ndkBuildingDir
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        ndkBuildPath = ndkBuildingDir + '/ndk-build.cmd'
+    } else {
+        ndkBuildPath = ndkBuildingDir + '/ndk-build'
+    }
+    return ndkBuildPath
+}
+
+task ndkBuild(type: Exec, description: 'Compile JNI source via NDK') {
+    println('executing ndkBuild')
+    def ndkBuildPath = getNdkBuildPath();
+    commandLine ndkBuildPath, '-j8', '-C', file('src/main').absolutePath
+}
+
+task ndkClean(type: Exec, description: 'clean JNI libraries') {
+    println('executing ndkBuild clean')
+    def ndkBuildPath = getNdkBuildPath();
+    commandLine ndkBuildPath, 'clean', '-C', file('src/main').absolutePath
+}
+
+
+clean.dependsOn 'ndkClean'
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')

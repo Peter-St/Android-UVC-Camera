@@ -8,7 +8,7 @@ import com.sun.jna.Pointer;
 
 public interface I_LibUsb extends Library {
 
-    public static final I_LibUsb INSTANCE = Native.load("Iso_stream", I_LibUsb.class);
+    public static final I_LibUsb INSTANCE = Native.load("Usb_Support", I_LibUsb.class);
 
     public void getFramesOverLibUsb(int packetsPerRequest, int maxPacketSize, int activeUrbs, int camStreamingAltSetting, int camFormatIndex,
                              int camFrameIndex, int camFrameInterval, int imageWidth, int imageHeight, int yuvFrameIsZero, int stream );
@@ -38,8 +38,7 @@ public interface I_LibUsb extends Library {
 
     public void probeCommitControl_cleanup();
 
-    public void init (int FD, int productID, int vendorID, int busnum, int devaddr,String mUsbFs,
-                      int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
+    public void init (int FD, int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
                       int camFrameInde, int camFrameInterva, int imageWidt, int imageHeigh, int camStreamingEndpoint, int camStreamingInterfaceNumber,
                       String frameFormat);
 

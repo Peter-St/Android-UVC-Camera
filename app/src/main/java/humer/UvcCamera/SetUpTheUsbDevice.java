@@ -40,6 +40,7 @@ import android.hardware.usb.UsbManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
@@ -50,6 +51,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -70,6 +72,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import humer.UvcCamera.AutomaticDetection.Jna_AutoDetect;
+import humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect;
 import humer.UvcCamera.LibUsb.I_LibUsb;
 import humer.UvcCamera.UVC_Descriptor.UVC_Descriptor;
 import humer.UvcCamera.UsbIso64.USBIso;
@@ -164,9 +168,9 @@ public class SetUpTheUsbDevice extends Activity {
     private enum Options { searchTheCamera, testrun, listdevice, showTestRunMenu, setUpWithUvcSettings };
 
     //Buttons & Views
-    protected Button testrun;
+    public Button testrun;
     private ZoomTextView tv;
-    protected Button menu;
+    public Button menu;
 
     //  Other Classes as Objects
     private UVC_Descriptor uvc_descriptor;
@@ -178,6 +182,10 @@ public class SetUpTheUsbDevice extends Activity {
     private volatile LibUsbAutomaticClass runningLibUsbAutoTransfer;
 
     // Values for Auto Detection
+    private static int ActivityLibUsbAutoDetectRequestCode = 3;
+    private static int ActivityJnaAutoDetectRequestCode = 4;
+
+
     public static boolean completed;
     public static boolean lowQuality;
     public static boolean raiseMaxPacketSize;
@@ -218,6 +226,18 @@ public class SetUpTheUsbDevice extends Activity {
     private static int busnum;
     private static int devaddr;
     private volatile boolean libusb_is_initialized;
+
+    public Handler buttonHandler = null;
+    public Runnable myRunnable = new Runnable() {
+        @Override
+        public void run() {
+            Button button = findViewById(R.id.raiseSize_setUp);
+            button.setEnabled(false); button.setAlpha(0);
+            Button button2 = findViewById(R.id.lowerSize_setUp);
+            button2.setEnabled(false); button2.setAlpha(0);
+            buttonHandler = null;
+        }
+    };
 
     /*
     // JNI METHODS
@@ -333,6 +353,33 @@ public class SetUpTheUsbDevice extends Activity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            ScrollView scrollView = findViewById(R.id.scrolli_setup);
+            scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+                @Override
+                public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                    final int TIME_TO_WAIT = 2500;
+                    Button button = findViewById(R.id.raiseSize_setUp);
+                    if (button.isEnabled()) {
+                        buttonHandler.removeCallbacks(myRunnable);
+                        buttonHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+                        return ;
+                    }
+                    button.setEnabled(true);
+                    button.setAlpha(0.8f);
+                    Button button2 = findViewById(R.id.lowerSize_setUp);
+                    button2.setEnabled(true); button2.setAlpha(0.8f);
+
+                    buttonHandler = new Handler();
+                    buttonHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+
+                }
+            });
+        }
+        Button button = findViewById(R.id.raiseSize_setUp);
+        button.setEnabled(false); button.setAlpha(0);
+        Button button2 = findViewById(R.id.lowerSize_setUp);
+        button2.setEnabled(false); button2.setAlpha(0);
     }
 
     @Override
@@ -344,13 +391,63 @@ public class SetUpTheUsbDevice extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
+        if (automaticStart) {
+            mPermissionIntent = null;
+            try {
+                unregisterReceiver(mUsbReceiver);
+                unregisterReceiver(mUsbDeviceReceiver);
+            } catch(IllegalArgumentException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
         mPermissionIntent = null;
-        unregisterReceiver(mUsbReceiver);
-        unregisterReceiver(mUsbDeviceReceiver);
+        try {
+            unregisterReceiver(mUsbReceiver);
+            unregisterReceiver(mUsbDeviceReceiver);
+        } catch(IllegalArgumentException e) {
+            e.printStackTrace();
+        }
         beenden();
     }
 
     //////////////////////// BUTTONS ///////////////////////////////////////
+
+    public void raiseSize(View view){
+        final int TIME_TO_WAIT = 2500;
+        Button button = findViewById(R.id.raiseSize_setUp);
+        if (button.isEnabled()) {
+            buttonHandler.removeCallbacks(myRunnable);
+            buttonHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+            tv.raiseSize();
+            return ;
+        }
+        button.setEnabled(true);
+        button.setAlpha(0.8f);
+        Button button2 = findViewById(R.id.lowerSize_setUp);
+        button2.setEnabled(true); button2.setAlpha(0.8f);
+        tv.raiseSize();
+        buttonHandler = new Handler();
+        buttonHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+    }
+
+    public void lowerSize(View view){
+        final int TIME_TO_WAIT = 2500;
+        Button button = findViewById(R.id.raiseSize_setUp);
+        if (button.isEnabled()) {
+            buttonHandler.removeCallbacks(myRunnable);
+            buttonHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+            tv.lowerSize();
+            return;
+        }
+        button.setEnabled(true);
+        button.setAlpha(0.8f);
+        Button button2 = findViewById(R.id.lowerSize_setUp);
+        button2.setEnabled(true); button2.setAlpha(0.8f);
+        tv.lowerSize();
+        buttonHandler = new Handler();
+        buttonHandler.postDelayed(myRunnable, TIME_TO_WAIT);
+    }
 
     public void showTestRunMenu(View v) {
         if (camDevice == null) {
@@ -517,6 +614,10 @@ public class SetUpTheUsbDevice extends Activity {
     }
 
     public void editCameraSettings (View view) {
+        if(buttonHandler != null) {
+            buttonHandler.removeCallbacks(myRunnable);
+            buttonHandler = null;
+        }
         stf.startEditSave();
     }
 
@@ -758,7 +859,7 @@ public class SetUpTheUsbDevice extends Activity {
         }
     }
 
-    private void closeCameraDevice() {
+    public void closeCameraDevice() {
 
         if (camDeviceConnection != null) {
             camDeviceConnection.releaseInterface(camControlInterface);
@@ -908,14 +1009,12 @@ public class SetUpTheUsbDevice extends Activity {
                     //renewTheProgressbar();
                     CFAlertDialog.Builder percentageB = new CFAlertDialog.Builder(SetUpTheUsbDevice.this);
                     percentageB.setHeaderView(R.layout.dialog_header_layout);
-                    percentageBuilder = percentageB.show();
-                    percentageBuilder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    runOnUiThread(new Runnable() {
                         @Override
-                        public void onDismiss(DialogInterface dialog) {
-                            log("Percentage Builder Dismissed");
-                            if (libUsb) renewTheProgressbarLibUsb();
-                            else renewTheProgressbar();
-
+                        public void run() {
+                            tv = (ZoomTextView) findViewById(R.id.textDarstellung);
+                            tv.setText("");
+                            tv.setTextColor(Color.BLACK);
                         }
                     });
                     alertDialog.dismiss();
@@ -937,113 +1036,56 @@ public class SetUpTheUsbDevice extends Activity {
                 @Override
                 public void onDismiss(DialogInterface dialog) {
                     if (automaticStart) {
+                        // Automatic UVC DetectionAutomatic UVC Detection
                         if (libUsb) {
-                            if (camDeviceConnection != null || camStreamingInterface != null) closeCameraDevice();
-                            sframeCnt =0;
-                            // Automatic UVC DetectionAutomatic UVC Detection
-                            testrun = findViewById(R.id.testrun);
-                            testrun.setEnabled(false);
-                            testrun.setVisibility(View.GONE);
-                            Button button = findViewById(R.id.returnToMainScreen);
-                            button.setEnabled(false);
-                            button = findViewById(R.id.findTheCamera);
-                            button.setEnabled(false);
-                            button = findViewById(R.id.listTheCamera);
-                            button.setEnabled(false);
-                            button = findViewById(R.id.setUpWithUVC);
-                            button.setEnabled(false);
-                            button = findViewById(R.id.editSaveTheValues);
-                            button.setEnabled(false);
-                            int a = uvc_descriptor.phraseUvcData();
-                            if (a == 0) {
-                                //  /*
-                                if (convertedMaxPacketSize == null) listDevice(camDevice);
-                                stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize, true);
-                                sframeLen = 0;
-                                number = 0;
-                                try {
-                                    activeUrbs = 2;
-                                    packetsPerRequest = 32;
-                                    if (!libusb_is_initialized) {
-                                        try {
-                                            if (camDeviceConnection == null) {
-                                                findCam();
-                                                openCameraDevice(true);
-                                            }
-                                            if (fd == 0) fd = camDeviceConnection.getFileDescriptor();
-                                            if(productID == 0) productID = camDevice.getProductId();
-                                            if(vendorID == 0) vendorID = camDevice.getVendorId();
-                                            if(adress == null)  adress = camDevice.getDeviceName();
-                                            if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
-                                            if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
-                                            I_LibUsb.INSTANCE.init(fd, productID, vendorID, getBus(adress), getDevice(adress), mUsbFs,
-                                                    packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                                                    camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat);
-                                            libusb_is_initialized = true;
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                    latch = new CountDownLatch(1);
-                                    I_LibUsb.INSTANCE.setCallback(new I_LibUsb.eventCallback(){
-                                        public boolean callback(Pointer videoFrame, int frameSize) {
-                                            sframeCnt ++;
-                                            log("Event Callback called:\nFrameLength = " + frameSize);
-                                            if (frameSize > 20) {
-                                                sframeLen = frameSize;
-                                                log("Event Callback called:\nFrameLength = " + frameSize);
-                                            }
-                                            if (sframeCnt > 3) latch.countDown();
-                                            else if (frameSize == (imageWidth * imageHeight * 2)) {
-                                                if (latch.getCount() == 1) {
-                                                    latch.countDown();
-                                                }
-                                            }
-                                            return true;
-                                        }
-                                    });
-                                    I_LibUsb.INSTANCE.getFramesOverLibUsb(packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                                            camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, videoFormatToInt(), 0);
-                                    latch.await();
-                                    I_LibUsb.INSTANCE.stopStreaming();
-                                    log("Stream complete!");
-                                    percentageBuilder.dismiss();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
+                            closeCameraDevice();
+                            Intent intent = new Intent(getApplicationContext(), LibUsb_AutoDetect.class);
+                            Bundle bundle=new Bundle();
+                            bundle.putBoolean("edit", true);
+                            bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
+                            bundle.putString("videoformat",videoformat);
+                            bundle.putInt("camFormatIndex",camFormatIndex);
+                            bundle.putInt("imageWidth",imageWidth);
+                            bundle.putInt("imageHeight",imageHeight);
+                            bundle.putInt("camFrameIndex",camFrameIndex);
+                            bundle.putInt("camFrameInterval",camFrameInterval);
+                            bundle.putInt("packetsPerRequest",packetsPerRequest);
+                            bundle.putInt("maxPacketSize",maxPacketSize);
+                            bundle.putInt("activeUrbs",activeUrbs);
+                            bundle.putString("deviceName",deviceName);
+                            bundle.putByte("bUnitID",bUnitID);
+                            bundle.putByte("bTerminalID",bTerminalID);
+                            bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
+                            bundle.putByteArray("bNumControlUnit", bNumControlUnit);
+                            bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
+                            bundle.putBoolean("libUsb", libUsb);
+                            intent.putExtra("bun",bundle);
+                            startActivityForResult(intent, ActivityLibUsbAutoDetectRequestCode);
                         } else {
                             activeUrbs = 1;
-                            // Automatic UVC DetectionAutomatic UVC Detection
-                            testrun = findViewById(R.id.testrun);
-                            testrun.setEnabled(false);
-                            testrun.setVisibility(View.GONE);
-                            Button button = findViewById(R.id.returnToMainScreen);
-                            button.setEnabled(false);
-                            button = findViewById(R.id.findTheCamera);
-                            button.setEnabled(false);
-                            button = findViewById(R.id.listTheCamera);
-                            button.setEnabled(false);
-                            button = findViewById(R.id.setUpWithUVC);
-                            button.setEnabled(false);
-                            button = findViewById(R.id.editSaveTheValues);
-                            button.setEnabled(false);
-                            int a = uvc_descriptor.phraseUvcData();
-                            if (a == 0) {
-                                if (convertedMaxPacketSize == null) listDevice(camDevice);
-                                stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize, true);
-                                sframeLen = 0;
-                                number = 0;
-                                try {
-                                    latch = new CountDownLatch(1);
-                                    makeAnAutomaticTransfer(false, 0, false);
-                                    latch.await();
-                                    percentageBuilder.dismiss();
-                                    //renewTheProgressbar();
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            }
+                            closeCameraDevice();
+                            Intent intent = new Intent(getApplicationContext(), Jna_AutoDetect.class);
+                            Bundle bundle=new Bundle();
+                            bundle.putBoolean("edit", true);
+                            bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
+                            bundle.putString("videoformat",videoformat);
+                            bundle.putInt("camFormatIndex",camFormatIndex);
+                            bundle.putInt("imageWidth",imageWidth);
+                            bundle.putInt("imageHeight",imageHeight);
+                            bundle.putInt("camFrameIndex",camFrameIndex);
+                            bundle.putInt("camFrameInterval",camFrameInterval);
+                            bundle.putInt("packetsPerRequest",packetsPerRequest);
+                            bundle.putInt("maxPacketSize",maxPacketSize);
+                            bundle.putInt("activeUrbs",activeUrbs);
+                            bundle.putString("deviceName",deviceName);
+                            bundle.putByte("bUnitID",bUnitID);
+                            bundle.putByte("bTerminalID",bTerminalID);
+                            bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
+                            bundle.putByteArray("bNumControlUnit", bNumControlUnit);
+                            bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
+                            bundle.putBoolean("libUsb", libUsb);
+                            intent.putExtra("bun",bundle);
+                            startActivityForResult(intent, ActivityJnaAutoDetectRequestCode);
                         }
 
                     }
@@ -1892,8 +1934,7 @@ public class SetUpTheUsbDevice extends Activity {
                     if(adress == null)  adress = camDevice.getDeviceName();
                     if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
                     if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
-                    I_LibUsb.INSTANCE.init(fd, productID, vendorID, getBus(adress), getDevice(adress), mUsbFs,
-                            packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                    I_LibUsb.INSTANCE.init(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                             camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat);
                     libusb_is_initialized = true;
                 } catch (Exception e) {
@@ -2046,8 +2087,7 @@ public class SetUpTheUsbDevice extends Activity {
                     if(adress == null)  adress = camDevice.getDeviceName();
                     if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
                     if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
-                    I_LibUsb.INSTANCE.init(fd, productID, vendorID, getBus(adress), getDevice(adress), mUsbFs,
-                            packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                    I_LibUsb.INSTANCE.init(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                             camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat);
                     libusb_is_initialized = true;
                 } catch (Exception e) {
@@ -2200,8 +2240,7 @@ public class SetUpTheUsbDevice extends Activity {
                             if(adress == null)  adress = camDevice.getDeviceName();
                             if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
                             if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
-                            I_LibUsb.INSTANCE.init(fd, productID, vendorID, getBus(adress), getDevice(adress), mUsbFs,
-                                    packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                            I_LibUsb.INSTANCE.init(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                                     camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat);
                             libusb_is_initialized = true;
                         } catch (Exception e) {

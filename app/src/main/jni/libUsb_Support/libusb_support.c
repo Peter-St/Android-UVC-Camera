@@ -14,7 +14,7 @@
 #include <linux/usbdevice_fs.h>
 #include <signal.h>
 #include <android/log.h>
-#include "iso.h"
+#include "libusb_support.h"
 #include <sys/wait.h>
 #include <stdbool.h>
 #include <android/native_window.h>
@@ -144,46 +144,6 @@ typedef struct _Frame_Data
 FrameData *videoFrameData;
 
 uint8_t streamControl[48];
-
-/*
-int setBus_Dev_num(int bus, int dev) {
-    libusb_set_bus_dev_num(bus, dev);
-}
-
-*/
-int libUsb_init() {
-    int ret;
-
-    ret = libusb_init(&ctx);
-    if (ret < 0) {
-        __android_log_print(ANDROID_LOG_INFO, TAG,
-                            "libusb_init failed: %d\n", ret);
-        return 1;
-    }
-}
-
-
-int libUsb(int fileDescriptor) {
-
-    result = libusb_init_ex(&ctx, 1);
-
-    int ret;
-    unsigned char data[64];
-    libusb_device_handle *devh = NULL;
-
-
-/*
-    //fd = dup(fileDescriptor);
-
-    ret = libusb_init(&ctx);
-    if (ret < 0) {
-        __android_log_print(ANDROID_LOG_INFO, TAG,
-                            "libusb_init failed: %d\n", ret);
-        return 1;
-    }
-*/
-
-}
 
 
 void kontrollaustausch(libusb_device_handle *handle) {
@@ -590,41 +550,11 @@ void exit() {
     initialized = false;
 }
 
-void closeLibUsb() {
-/*
-    LOGD("Try to release Stream Interface:");
-    int ret =libusb_release_interface(globalUVCHandle, 1);
-    if (ret == 0)     LOGD("Streaming Interface released");
-    else if (ret == LIBUSB_ERROR_NOT_FOUND) LOGD("Streaming Interface was not claimed");
-    else if (ret == LIBUSB_ERROR_NO_DEVICE) LOGD("Cam device has been disconnected");
-    else if (ret == LIBUSB_ERROR_OTHER) LOGD("another LIBUSB_ERROR Streaming code on other failure");
-    else LOGD("another LIBUSB_ERROR code on Streaming Interface Release");
-
-    ret = libusb_release_interface(globalUVCHandle, 0);
-    if (ret == 0)     LOGD("Control Interface released");
-    else if (ret == LIBUSB_ERROR_NOT_FOUND) LOGD("Control Interface was not claimed");
-    else if (ret == LIBUSB_ERROR_NO_DEVICE) LOGD("Cam device has been disconnected");
-    else if (ret == LIBUSB_ERROR_OTHER) LOGD("another LIBUSB_ERROR Control code on other failure");
-    else LOGD("another LIBUSB_ERROR code on Control Interface Release");
-
-    uvc_close(globalUVCHandle);
-    free(mUsbFs);
-    uvc_unref_device(mGlobalDevice);
-    close(fd);
-    initialized = false;
 
 
-    */
-
-}
-
-
-void init (int FD, int productID, int vendorID, int busnum, int devaddr,const char *mUsbFs,
-           int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
+int init (int FD, int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
            int camFrameInde, int camFrameInterva, int imageWidt, int imageHeigh, int camStreamingEndpointAdress, int camStreamingInterfaceNumber,
            const char* frameformat) {
-
-
 
     packetsPerRequest = packetsPerReques;
     maxPacketSize = maxPacketSiz;
@@ -642,9 +572,6 @@ void init (int FD, int productID, int vendorID, int busnum, int devaddr,const ch
     productID = productID;
     busnum = busnum;
     devaddr = devaddr;
-    fd = dup(FD);
-    //globalUVCContext = calloc(1, sizeof(*globalUVCContext));;
-    //uvc_error_t result = UVC_ERROR_BUSY;
 
 
     //uvc_device_t *mDevice;
@@ -653,16 +580,15 @@ void init (int FD, int productID, int vendorID, int busnum, int devaddr,const ch
     videoFrameData->FrameBufferSize = videoFrameData->FrameSize * 2;
 
 
+    int result = libusb_init_ex(&ctx, 1);
 
+    int ret;
+    unsigned char data[64];
+    libusb_device_handle *devh = NULL;
 
-/*
-    result = uvc_init2(&globalUVCContext, NULL, mUsbFs);
-    //fd = dup(fd);
-    result = uvc_get_device_with_fd(globalUVCContext, &mGlobalDevice, vendorID, productID, NULL, fd, busnum, devaddr);
-    result = uvc_open(mGlobalDevice, &globalUVCHandle);
     initialized = true;
 
-    */
+    return result;
 }
 
 /* this function is run by the second thread */

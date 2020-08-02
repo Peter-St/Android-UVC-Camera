@@ -124,4 +124,16 @@ public class ZoomTextView extends AppCompatTextView {
         int dy = (int) (event.getY(0) - event.getY(1));
         return (int) (Math.sqrt(dx * dx + dy * dy));
     }
+
+    public void raiseSize () {
+        mScaleFactor += 0.3f;
+        mScaleFactor = Math.max(1.0f, Math.min(mScaleFactor, zoomLimit));
+        setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultSize * mScaleFactor);
+    }
+
+    public void lowerSize() {
+        mScaleFactor -= 0.3f;
+        mScaleFactor = Math.max(1.0f, Math.min(mScaleFactor, zoomLimit));
+        setTextSize(TypedValue.COMPLEX_UNIT_PX, defaultSize * mScaleFactor);
+    }
 }

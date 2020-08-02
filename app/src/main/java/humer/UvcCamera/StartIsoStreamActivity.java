@@ -1308,8 +1308,7 @@ public class StartIsoStreamActivity extends Activity {
                         if(adress == null)  adress = camDevice.getDeviceName();
                         if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
                         if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
-                        I_LibUsb.INSTANCE.init(fd, productID, vendorID, getBus(adress), getDevice(adress), mUsbFs,
-                                packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                        I_LibUsb.INSTANCE.init(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                                 camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat);
                         libusb_is_initialized = true;
                     } catch (Exception e) {
