@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "humer.uvc_camera",
+  "variantName": "release",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "properties": [],
+      "versionCode": 74,
+      "versionName": "74",
+      "enabled": true,
+      "outputFile": "app-release.apk"
+    }
+  ]
+}
