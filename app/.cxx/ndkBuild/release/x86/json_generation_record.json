@@ -7,67 +7,7 @@
   },
   {
     "level": "INFO",
-    "message": "rebuilding JSON /home/peter/Downloads/Webcam/Android-UVC-Camera/app/.cxx/ndkBuild/release/x86/android_gradle_build.json due to:",
-    "file": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk",
-    "tag": "release|x86"
-  },
-  {
-    "level": "INFO",
-    "message": "- a dependent build file changed",
-    "file": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk",
-    "tag": "release|x86"
-  },
-  {
-    "level": "INFO",
-    "message": "  - /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk",
-    "file": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk",
-    "tag": "release|x86"
-  },
-  {
-    "level": "INFO",
-    "message": "keeping json folder \u0027/home/peter/Downloads/Webcam/Android-UVC-Camera/app/.cxx/ndkBuild/release/x86\u0027 but regenerating project",
-    "file": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk",
-    "tag": "release|x86"
-  },
-  {
-    "level": "INFO",
-    "message": "executing ndkBuild Executable : /home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build\narguments : \nNDK_PROJECT_PATH\u003dnull\nAPP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk\nNDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk\nAPP_ABI\u003dx86\nNDK_ALL_ABIS\u003dx86\nNDK_DEBUG\u003d1\nAPP_PLATFORM\u003dandroid-16\nNDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj\nNDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib\nBUILD_TYPE\u003drelease\nAPP_SHORT_COMMANDS\u003dfalse\nLOCAL_SHORT_COMMANDS\u003dfalse\n-B\n-n\njvmArgs : \n\n",
-    "file": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk",
-    "tag": "release|x86"
-  },
-  {
-    "level": "INFO",
-    "message": "Executable : /home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build\narguments : \nNDK_PROJECT_PATH\u003dnull\nAPP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk\nNDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk\nAPP_ABI\u003dx86\nNDK_ALL_ABIS\u003dx86\nNDK_DEBUG\u003d1\nAPP_PLATFORM\u003dandroid-16\nNDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj\nNDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib\nBUILD_TYPE\u003drelease\nAPP_SHORT_COMMANDS\u003dfalse\nLOCAL_SHORT_COMMANDS\u003dfalse\n-B\n-n\njvmArgs : \n\n",
-    "file": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk",
-    "tag": "release|x86"
-  },
-  {
-    "level": "INFO",
-    "message": "done executing ndkBuild",
-    "file": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk",
-    "tag": "release|x86"
-  },
-  {
-    "level": "INFO",
-    "message": "write build output /home/peter/Downloads/Webcam/Android-UVC-Camera/app/.cxx/ndkBuild/release/x86/build_output.txt",
-    "file": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk",
-    "tag": "release|x86"
-  },
-  {
-    "level": "INFO",
-    "message": "parse and convert ndk-build output to build configuration JSON",
-    "file": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk",
-    "tag": "release|x86"
-  },
-  {
-    "level": "INFO",
-    "message": "found application make file /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk",
-    "file": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk",
-    "tag": "release|x86"
-  },
-  {
-    "level": "INFO",
-    "message": "write command file /home/peter/Downloads/Webcam/Android-UVC-Camera/app/.cxx/ndkBuild/release/x86/build_command.txt",
+    "message": "JSON \u0027/home/peter/Downloads/Webcam/Android-UVC-Camera/app/.cxx/ndkBuild/release/x86/android_gradle_build.json\u0027 was up-to-date",
     "file": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk",
     "tag": "release|x86"
   },

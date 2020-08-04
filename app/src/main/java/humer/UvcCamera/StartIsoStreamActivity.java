@@ -71,7 +71,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Formatter;
@@ -85,7 +84,7 @@ import com.sun.jna.Pointer;
 import org.webrtc.VideoCapturer;
 import org.webrtc.VideoFrame;
 
-import humer.UvcCamera.LibUsb.I_LibUsb;
+import humer.UvcCamera.LibUsb.JNA_I_LibUsb;
 import humer.UvcCamera.UVC_Descriptor.IUVC_Descriptor;
 import humer.UvcCamera.UVC_Descriptor.UVC_Descriptor;
 import humer.UvcCamera.UVC_Descriptor.UVC_Initializer;
@@ -1240,7 +1239,7 @@ public class StartIsoStreamActivity extends Activity {
     public void beenden(boolean exit) {
         if (LIBUSB) {
             if(libusb_is_initialized) {
-                I_LibUsb.INSTANCE.stopStreaming();
+                JNA_I_LibUsb.INSTANCE.stopStreaming();
             }
             //I_LibUsb.INSTANCE.closeLibUsb();
             //I_LibUsb.INSTANCE.exit();
@@ -1291,7 +1290,7 @@ public class StartIsoStreamActivity extends Activity {
 
                 if (!libusb_is_initialized) {
                     try {
-                        I_LibUsb.INSTANCE.setLogPrint(new I_LibUsb.logPrint(){
+                        JNA_I_LibUsb.INSTANCE.setLogPrint(new JNA_I_LibUsb.logPrint(){
                             public boolean callback(String msg) {
                                 log(msg);
                                 return false;
@@ -1308,8 +1307,8 @@ public class StartIsoStreamActivity extends Activity {
                         if(adress == null)  adress = camDevice.getDeviceName();
                         if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
                         if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
-                        I_LibUsb.INSTANCE.init(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                                camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat);
+                        JNA_I_LibUsb.INSTANCE.init(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                                camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat,0);
                         libusb_is_initialized = true;
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -1549,7 +1548,7 @@ public class StartIsoStreamActivity extends Activity {
         videoButton.setAlpha(0); // 100% transparent
         stopKamera = true;
         if (LIBUSB) {
-            I_LibUsb.INSTANCE.stopStreaming();
+            JNA_I_LibUsb.INSTANCE.stopStreaming();
         } else {
             try {
                 Thread.sleep(100);

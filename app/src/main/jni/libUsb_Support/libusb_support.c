@@ -21,6 +21,7 @@
 #include <android/native_window_jni.h>
 #include <libusb.h>
 
+
 #define  LOG_TAG    "From LibUsb"
 
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
@@ -92,6 +93,7 @@ volatile int totalFrame = 0;
 volatile bool initialized = false;
 volatile  bool runningStream = false;
 static uint8_t frameUeberspringen = 0;
+static uint8_t numberOfAutoFrames;
 
 #define UVC_STREAM_EOH (1 << 7)
 #define UVC_STREAM_ERR (1 << 6)
@@ -101,10 +103,6 @@ static uint8_t frameUeberspringen = 0;
 #define UVC_STREAM_PTS (1 << 2)
 #define UVC_STREAM_EOF (1 << 1)
 #define UVC_STREAM_FID (1 << 0)
-
-//uvc_stream_ctrl_t global_UVC_ctrl;
-
-
 #define TAG "LibUsb"
 
 #define IS_CONTROL_CMD_READ(c) ((c) & 0x80)
@@ -124,16 +122,24 @@ typedef uint8_t control_version_t;
 #define CONTROL_VERSION 0x10
 
 libusb_context *ctx;
+libusb_device_handle *devh = NULL;
 
-typedef struct _CTL_Data
+AutotransferStruct autoStruct;
+
+int initStreamingParmsIntArray[3];
+int probedStreamingParmsIntArray[3];
+int finalStreamingParmsIntArray_first[3];
+int finalStreamingParmsIntArray[3];
+
+autoStreamComplete autoStreamfinished = NULL;
+void setAutoStreamComplete(autoStreamComplete autoStream)
 {
-    int  BufferSize;
-    unsigned char ctl_transfer_values[];
-} CtlData;
-CtlData *ctl_transfer_Data;
+    autoStreamfinished = autoStream;
+}
 
-
-
+AutotransferStruct get_autotransferStruct () {
+    return autoStruct;
+}
 
 typedef struct _Frame_Data
 {
@@ -144,9 +150,26 @@ typedef struct _Frame_Data
 FrameData *videoFrameData;
 
 uint8_t streamControl[48];
+uint8_t unpackUsbInt(uint8_t *p, int i);
 
 
-void kontrollaustausch(libusb_device_handle *handle) {
+bool camIsOpen;
+
+
+
+
+void getStreamingParmsArray(int *array, uint8_t *buf) {
+
+    array[0] = buf[2] & 0xf;
+    array[1] = buf[3] & 0xf;
+    uint8_t pos = 4;
+    array[2] = (buf[pos + 3] << 24) | ((buf[pos + 2] & 0xFF) << 16) | ((buf[pos + 1] & 0xFF) << 8) | (buf[pos] & 0xFF);
+}
+
+
+
+
+void initStreamingParms_controltransfer(libusb_device_handle *handle) {
     uint8_t buffer[26];
     for (i = 0; i < 26; i++) {
         buffer[i] = 0x00;
@@ -160,112 +183,63 @@ void kontrollaustausch(libusb_device_handle *handle) {
     buffer[6] = ((camFrameInterval >> 16)& 0xFF); //   agreement: 0x1312d0 (125 ms)
     buffer[7] = ((camFrameInterval >> 24)& 0xFF); //
     int b;
-    LOGD("Gewünschte Videoparameter:           ");
+/*
+    LOGD("Wanted Streaming Pharms:           ");
     for (int i = 0; i < sizeof(buffer); i++)
         if (buffer[i] != 0){
             LOGD("[%d ] ", buffer[i]);}
+*/
+    getStreamingParmsArray(initStreamingParmsIntArray , buffer);
+    // wanted Pharms
+        LOGD("initStreamingParmsIntArray[0] = %d", initStreamingParmsIntArray[0]);
+    LOGD("initStreamingParmsIntArray[1] = %d", initStreamingParmsIntArray[1]);
+    LOGD("initStreamingParmsIntArray[2] = %d", initStreamingParmsIntArray[2]);
 
-// move from the temp structure to the java structure
     int len = libusb_control_transfer(handle, RT_CLASS_INTERFACE_SET, SET_CUR, (VS_PROBE_CONTROL << 8), camStreamingInterfaceNum, buffer, sizeof (buffer), 2000);
     if (len != sizeof (buffer)) {
         LOGD("\nCamera initialization failed. Streaming parms probe set failed, len= %d.\n", len);
     } else {
         LOGD("Camera initialization success, len= %d.\n", len);
     }
+
     len = libusb_control_transfer(handle, RT_CLASS_INTERFACE_GET, GET_CUR, (VS_PROBE_CONTROL << 8), camStreamingInterfaceNum, buffer, sizeof (buffer), 500);
     if (len != sizeof (buffer)) {
         LOGD("Camera initialization failed. Streaming parms probe set failed, len= %d.\n", len);
     }
-    LOGD("Sondierte Videoflussparameter:       ");
+    getStreamingParmsArray(probedStreamingParmsIntArray , buffer);
+/*
+    LOGD("probedStreamingParmsIntArray[0] = %d", probedStreamingParmsIntArray[0]);
+    LOGD("probedStreamingParmsIntArray[1] = %d", probedStreamingParmsIntArray[1]);
+    LOGD("probedStreamingParmsIntArray[2] = %d", probedStreamingParmsIntArray[2]);
+
+    LOGD("Probed Streaming Pharms:       ");
     for (int i = 0; i < sizeof(buffer); i++)
         if (buffer[i] != 0){
             LOGD("[%d ] ", buffer[i]);}
-
+*/
 
     len = libusb_control_transfer(handle, RT_CLASS_INTERFACE_SET, SET_CUR, (VS_COMMIT_CONTROL << 8), camStreamingInterfaceNum, buffer, sizeof (buffer), 2000);
     if (len != sizeof (buffer)) {
         LOGD("Camera initialization failed. Streaming parms commit set failed, len= %d.", len);
     }
+    getStreamingParmsArray(finalStreamingParmsIntArray_first , buffer);
 
 
     len = libusb_control_transfer(handle, RT_CLASS_INTERFACE_GET, GET_CUR, (short) (VS_COMMIT_CONTROL << 8), camStreamingInterfaceNum, buffer, sizeof (buffer), 2000);
     if (len != sizeof (buffer)) {
         LOGD("Camera initialization failed. Streaming parms commit get failed, len= %d.", len);
     }
-    LOGD("\nAbschließende Videoflussparameter:   ");
+    getStreamingParmsArray(finalStreamingParmsIntArray , buffer);
+/*
+    LOGD("\nFinal Streaming Pharms:   ");
     for (int i = 0; i < sizeof(buffer); i++)
         if (buffer[i] != 0){
             LOGD("[%d ] ", buffer[i]);}
     LOGD("\n");
-
+*/
 }
 
 
-void isoc_transfer_completion_handler(struct libusb_transfer *the_transfer) {
-
-    LOGD("Iso Transfer Callback Function");
-    unsigned char *p;
-    int paketLaenge;
-    int i;
-    p = the_transfer->buffer;
-    for (i = 0; i < the_transfer->num_iso_packets; i++, p += maxPacketSize) {
-        if (the_transfer->iso_packet_desc[i].status == LIBUSB_TRANSFER_COMPLETED) {
-            paketLaenge = the_transfer->iso_packet_desc[i].actual_length;
-            // packet only contains an acknowledge?
-            if (paketLaenge < 2) {
-                continue;
-            }
-            // error packet
-            if (p[1] & UVC_STREAM_ERR) // bmHeaderInfoh
-            {
-                LOGD("UVC_STREAM_ERR --> Package %d", i);
-                frameUeberspringen = 1;
-                continue;
-            }
-            //LOGD("Package %d length = %d", i, the_transfer->iso_packet_desc[i].actual_length);
-            // subtract the header size
-            paketLaenge -= p[0];
-            // check the data size before write
-            if (paketLaenge + total > videoFrameData->FrameBufferSize) {
-                if (ueberschreitungDerUebertragungslaenge == 1) {
-                    LOGD(stderr, "Die Framegröße musste gekürzt werden.\n");
-                    ueberschreitungDerUebertragungslaenge = 1;
-                    fflush(stdout);
-                }
-                //fprintf(stderr, "truncate the excess payload length.\n");
-                paketLaenge = videoFrameData->FrameBufferSize - total;
-            }
-            if (totalFrame == 5) {
-                write(fd, p + p[0], paketLaenge);
-            }
-            // update videoframe
-            //memcpy(videoframe + total, p + p[0], paketLaenge);
-            memcpy(videoFrameData->videoframe + total, p + p[0], paketLaenge);
-            total += paketLaenge;
-            if (p[1] & UVC_STREAM_EOF) {
-                LOGD("Frame received");
-                ueberschreitungDerUebertragungslaenge = 0;
-                if (frameUeberspringen == 0) {
-                    if (total < videoFrameData->FrameBufferSize) {
-                        LOGD(stderr, "insufficient frame data.\n");
-                    }
-                    LOGD("Länge des Frames = %d\n", total);
-                    total = 0;
-                    ++totalFrame;
-                } else {
-                    LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
-                    total = 0;
-                    frameUeberspringen = 0;
-                }
-            }
-        }
-    }
-    if (runningStream) if (libusb_submit_transfer(the_transfer) != 0) {
-            LOGD(stderr, "Die Übertragung ist gescheitert. \n");
-        }
-
-
-}
 
 
 void print_endpoint(const struct libusb_endpoint_descriptor *endpoint, int bInterfaceNumber) {
@@ -355,7 +329,6 @@ int print_device(libusb_device *dev, int level, libusb_device_handle *handle, st
             } else
                 snprintf(description, sizeof (description), "%04X - ",
                          desc.idVendor);
-
             if (desc.iProduct) {
                 ret = libusb_get_string_descriptor_ascii(handle, desc.iProduct, string, sizeof (string));
 
@@ -399,30 +372,20 @@ int print_device(libusb_device *dev, int level, libusb_device_handle *handle, st
                 libusb_free_config_descriptor(config);
             }
         }
-
         return 0;
-
-
-
-
 }
 
 
 int libUsb_open_def_fd(int vid, int pid, const char *serial, int FD, int busnum, int devaddr) {
-
     int ret;
     unsigned char data[64];
     ret = libusb_init_ex(&ctx, 1);
-
     if (ret < 0) {
         __android_log_print(ANDROID_LOG_INFO, TAG,
                             "libusb_init failed: %d\n", ret);
         return 1;
     }
-
-
     libusb_device_handle *devh = NULL;
-
     ret = libusb_wrap_sys_device(NULL, (intptr_t)FD, &devh);
     if (ret < 0) {
         __android_log_print(ANDROID_LOG_INFO, TAG,
@@ -434,10 +397,8 @@ int libUsb_open_def_fd(int vid, int pid, const char *serial, int FD, int busnum,
                             "libusb_wrap_sys_device returned invalid handle\n");
         return 3;
     }
-
     __android_log_print(ANDROID_LOG_INFO, TAG,
                         "libusb_control_transfer start\n");
-
     for (int if_num = 0; if_num < (camStreamingInterfaceNum + 1); if_num++) {
         if (libusb_kernel_driver_active(devh, if_num)) {
             libusb_detach_kernel_driver(devh, if_num);
@@ -451,7 +412,6 @@ int libUsb_open_def_fd(int vid, int pid, const char *serial, int FD, int busnum,
         }
     }
     LOGD("Print Device");
-
     struct libusb_device_descriptor desc;
     print_device(libusb_get_device(devh) , 0, devh, desc);
 
@@ -461,82 +421,11 @@ int libUsb_open_def_fd(int vid, int pid, const char *serial, int FD, int busnum,
     } else {
         LOGD("Die Alternativeinstellungen wurden erfolgreich gesetzt: %d ; Altsetting = 0\n", r);
     }
-
-    kontrollaustausch(devh);
+    initStreamingParms(devh);
     __android_log_print(ANDROID_LOG_INFO, TAG, "devh: %p\n", devh);
-
-
-     r = libusb_set_interface_alt_setting(devh, camStreamingInterfaceNum, camStreamingAltSetting); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
-    if (r != LIBUSB_SUCCESS) {
-        LOGD("libusb_set_interface_alt_setting(devh, 1, 1) failed with error %d\n", r);
-    } else {
-        LOGD("Die Alternativeinstellungen wurden erfolgreich gesetzt: %d ; Altsetting = %d\n", r, camStreamingAltSetting);
-    }
-
-
-
-
     LOGD("Exit");
-
-
-/*
-
-
-    // ------------------------------------------------------------
-    // do an isochronous transfer
-    struct libusb_transfer * xfers[activeUrbs];
-
-
-    for (i = 0; i < activeUrbs; i++) {
-        xfers[i] = libusb_alloc_transfer(packetsPerRequest);
-        uint8_t *data = malloc(maxPacketSize * packetsPerRequest);
-
-        libusb_fill_iso_transfer(
-                xfers[i], devh, camStreamingEndpoint,
-                data, maxPacketSize*packetsPerRequest, packetsPerRequest,
-                isoc_transfer_completion_handler, NULL, 0);
-
-        libusb_set_iso_packet_lengths(xfers[i], maxPacketSize);
-
-        for (int j = 0; j < packetsPerRequest; j++) {
-            xfers[i]->iso_packet_desc[j].status = -1;
-        }
-
-    }
-
-    for (i = 0; i < activeUrbs; i++) {
-        if (libusb_submit_transfer(xfers[i]) != 0) {
-            fprintf(stderr, "submit xfer failed.\n");
-        }
-    }
-
-    runningStream = true;
-
-    time_t t = time(NULL) + laufzeit;
-    while (1) {
-        if (time(NULL) >= t) {
-            runningStream = false;
-            break;
-        }
-        libusb_handle_events(ctx);
-    }
-
-*/
     return 0;
-
 }
-
-
-
-int setPreviewDisplay(ANativeWindow *preview_window) {
-   return 0;
-}
-
-
-
-
-
-
 
 /** @internal
 * @brief Find the descriptor for a specific frame configuration
@@ -554,8 +443,9 @@ void exit() {
 
 int init (int FD, int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
            int camFrameInde, int camFrameInterva, int imageWidt, int imageHeigh, int camStreamingEndpointAdress, int camStreamingInterfaceNumber,
-           const char* frameformat) {
-
+           const char* frameformat, int numberOfAutoFrame) {
+    fd = FD;
+    numberOfAutoFrames = numberOfAutoFrame;
     packetsPerRequest = packetsPerReques;
     maxPacketSize = maxPacketSiz;
     activeUrbs = activeUrb;
@@ -572,187 +462,249 @@ int init (int FD, int packetsPerReques, int maxPacketSiz, int activeUrb, int cam
     productID = productID;
     busnum = busnum;
     devaddr = devaddr;
-
-
-    //uvc_device_t *mDevice;
     videoFrameData = malloc(sizeof *videoFrameData + sizeof(char[imageWidt*imageHeigh*2]));
     videoFrameData->FrameSize = imageWidt * imageHeigh;
     videoFrameData->FrameBufferSize = videoFrameData->FrameSize * 2;
-
-
-    int result = libusb_init_ex(&ctx, 1);
-
-    int ret;
-    unsigned char data[64];
-    libusb_device_handle *devh = NULL;
-
     initialized = true;
-
     return result;
 }
 
-/* this function is run by the second thread */
-void *preview_thread_func(void *x_void_ptr)
-{
-/* increment x to 100 */
-    int *x_ptr = (int *)x_void_ptr;
-    while(++(*x_ptr) < 100);
-    printf("x increment finished\n");
-/* the function must return something - NULL will do */
-    return NULL;
+
+bool compareArrays(int a[], int b[]) {
+    if(memcmp(a, b, sizeof(a)) == 0) return true;
+    return false;
 }
 
-
-/* This callback function runs once per frame. Use it to perform any
- * quick processing you need, or have it put the frame into your application's
- * input queue. If this function takes too long, you'll start losing frames. */
-
-/*
-void cb_stream(uvc_frame_t *frame, void *ptr) {
-
-    LOGD("CallbackFunction called");
-    LOGD("actual len = %d   /// len = %d", frame->actual_bytes, frame->data_bytes);
-    LOGD("width = %d   /// height = %d", frame->width, frame->height);
-    uvc_frame_t *bgr;
-    uvc_error_t ret;
-
-    if (fameJnaCallback != NULL) fameJnaCallback(frame->data, frame->data_bytes) ;
-}
-
-void cb_test(uvc_frame_t *frame, void *ptr) {
-
-    LOGD("CallbackFunction called");
-    LOGD("actual len = %d   /// len = %d", frame->actual_bytes, frame->data_bytes);
-    LOGD("width = %d   /// height = %d", frame->width, frame->height);
-
-    if (fameJnaCallback != NULL) fameJnaCallback(&frame->data, frame->actual_bytes) ;
-}
-*/
-
-// see USB video class standard, USB_Video_Payload_MJPEG_1.5.pdf
-
-
-int findJpegSegment(unsigned char *a, int dataLen, int segmentType) {
-    int p = 2;
-    while (p <= dataLen - 6) {
-        if ((a[p] & 0xff) != 0xff) {
-            LOGE("Unexpected JPEG data structure (marker expected).");
-            break;
+bool compareStreamingParmsValues() {
+    if ( !compareArrays( initStreamingParmsIntArray, probedStreamingParmsIntArray ) || !compareArrays( initStreamingParmsIntArray, finalStreamingParmsIntArray_first )  )  {
+        if (initStreamingParmsIntArray[0] != finalStreamingParmsIntArray_first[0]) {
+            LOGD("The Controltransfer returned differnt Format Index's\n\n");
+            LOGD("Your entered 'Camera Format Index' Values is: %d", initStreamingParmsIntArray[0]);
+            LOGD("The 'Camera Format Index' from the Camera Controltransfer is: %d", finalStreamingParmsIntArray_first[0]);
         }
-        int markerCode = a[p + 1] & 0xff;
-        if (markerCode == segmentType) {
-            return p;
+        if (initStreamingParmsIntArray[1] != finalStreamingParmsIntArray_first[1]) {
+            LOGD("The Controltransfer returned differnt Frame Index's\n\n");
+            LOGD("Your entered 'Camera Frame Index' Values is: " + initStreamingParmsIntArray[1], "\n");
+            LOGD("The 'Camera Frame Index' from the Camera Controltransfer is: %d" , finalStreamingParmsIntArray_first[1] );
         }
-        if (markerCode >= 0xD0 && markerCode <= 0xDA) {       // stop when scan data begins
-            break;
+        if (initStreamingParmsIntArray[2] != finalStreamingParmsIntArray_first[2]) {
+            LOGD("The Controltransfer returned differnt FrameIntervall Index's\n\n");
+            LOGD("Your entered 'Camera FrameIntervall' Values is: %d", initStreamingParmsIntArray[2] );
+            LOGD("The 'Camera FrameIntervall' Value from the Camera Controltransfer is: %d", finalStreamingParmsIntArray_first[2] );
         }
-        int len = ((a[p + 2] & 0xff) << 8) + (a[p + 3] & 0xff);
-        p += len + 2;
-    }
-    return -1;
-}
-
-
-static const uint8_t huffman_table[] =
-        {
-                0xFF, 0xC4, 0x01, 0xA2, 0x00, 0x00, 0x01, 0x05, 0x01, 0x01, 0x01, 0x01,
-                0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02,
-                0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x01, 0x00, 0x03,
-                0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
-                0x0A, 0x0B, 0x10, 0x00, 0x02, 0x01, 0x03, 0x03, 0x02, 0x04, 0x03, 0x05,
-                0x05, 0x04, 0x04, 0x00, 0x00, 0x01, 0x7D, 0x01, 0x02, 0x03, 0x00, 0x04,
-                0x11, 0x05, 0x12, 0x21, 0x31, 0x41, 0x06, 0x13, 0x51, 0x61, 0x07, 0x22,
-                0x71, 0x14, 0x32, 0x81, 0x91, 0xA1, 0x08, 0x23, 0x42, 0xB1, 0xC1, 0x15,
-                0x52, 0xD1, 0xF0, 0x24, 0x33, 0x62, 0x72, 0x82, 0x09, 0x0A, 0x16, 0x17,
-                0x18, 0x19, 0x1A, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x34, 0x35, 0x36,
-                0x37, 0x38, 0x39, 0x3A, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A,
-                0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x63, 0x64, 0x65, 0x66,
-                0x67, 0x68, 0x69, 0x6A, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7A,
-                0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x92, 0x93, 0x94, 0x95,
-                0x96, 0x97, 0x98, 0x99, 0x9A, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8,
-                0xA9, 0xAA, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0xC2,
-                0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xD2, 0xD3, 0xD4, 0xD5,
-                0xD6, 0xD7, 0xD8, 0xD9, 0xDA, 0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7,
-                0xE8, 0xE9, 0xEA, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9,
-                0xFA, 0x11, 0x00, 0x02, 0x01, 0x02, 0x04, 0x04, 0x03, 0x04, 0x07, 0x05,
-                0x04, 0x04, 0x00, 0x01, 0x02, 0x77, 0x00, 0x01, 0x02, 0x03, 0x11, 0x04,
-                0x05, 0x21, 0x31, 0x06, 0x12, 0x41, 0x51, 0x07, 0x61, 0x71, 0x13, 0x22,
-                0x32, 0x81, 0x08, 0x14, 0x42, 0x91, 0xA1, 0xB1, 0xC1, 0x09, 0x23, 0x33,
-                0x52, 0xF0, 0x15, 0x62, 0x72, 0xD1, 0x0A, 0x16, 0x24, 0x34, 0xE1, 0x25,
-                0xF1, 0x17, 0x18, 0x19, 0x1A, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x35, 0x36,
-                0x37, 0x38, 0x39, 0x3A, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A,
-                0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x63, 0x64, 0x65, 0x66,
-                0x67, 0x68, 0x69, 0x6A, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7A,
-                0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x92, 0x93, 0x94,
-                0x95, 0x96, 0x97, 0x98, 0x99, 0x9A, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,
-                0xA8, 0xA9, 0xAA, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA,
-                0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xD2, 0xD3, 0xD4,
-                0xD5, 0xD6, 0xD7, 0xD8, 0xD9, 0xDA, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7,
-                0xE8, 0xE9, 0xEA, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA
-        };
-
-unsigned char* convertMjpegFrameToJpeg(unsigned char* frameData, int frameLen) {
-    //int frameLen = frameData.length;
-    while (frameLen > 0 && frameData[frameLen - 1] == 0) {
-        frameLen--;
-    }
-    if (frameLen < 100 || (frameData[0] & 0xff) != 0xff || (frameData[1] & 0xff) != 0xD8 || (frameData[frameLen - 2] & 0xff) != 0xff || (frameData[frameLen - 1] & 0xff) != 0xd9) {
-        LOGE("Invalid MJPEG frame structure, length= %d", frameLen);
-    }
-    bool hasHuffmanTable = findJpegSegment(frameData, frameLen, 0xC4) != -1;
-    bool exit = false;
-    if (hasHuffmanTable) {
-        LOGD ("hasHuffmanTable ...");
-        return frameData;
-/*
-            if (frameData.length == frameLen) {
-                return frameData;
-            }
-            return Arrays.copyOf(frameData, frameLen);
-*/
-
+        LOGD("The Values for the Control Transfer have a grey color in the 'edit values' screen");
+        LOGD("To get the correct values for you camera, read out the UVC specifications of the camera manualy, or try out the 'Set Up With UVC Settings' Button");
+        LOGD ("compareStreamingParmsValues returned false");
+        return false;
     } else {
-        int segmentDaPos = findJpegSegment(frameData, frameLen, 0xDA);
+        LOGD("Camera Controltransfer Sucessful !\n\nThe returned Values from the Camera Controltransfer fits to your entered Values\nYou can proceed starting a test run!");
+        return true;
+    }
+    return 0;
+}
 
-        if (segmentDaPos == -1) {
-            exit = true;
-            LOGE("Segment 0xDA not found in MJPEG frame data.");
+
+
+int initStreamingParms(int FD) {
+    int ret;
+    unsigned char data[64];
+    ret = libusb_init_ex(&ctx, 1);
+
+    if (ret < 0) {
+        __android_log_print(ANDROID_LOG_INFO, TAG,
+                            "libusb_init failed: %d\n", ret);
+        return -1;
+    }
+    ret = libusb_wrap_sys_device(NULL, (intptr_t)FD, &devh);
+    if (ret < 0) {
+        __android_log_print(ANDROID_LOG_INFO, TAG,
+                            "libusb_wrap_sys_device failed: %d\n", ret);
+        return -2;
+    }
+    else if (devh == NULL) {
+        __android_log_print(ANDROID_LOG_INFO, TAG,
+                            "libusb_wrap_sys_device returned invalid handle\n");
+        return -3;
+    }
+
+    __android_log_print(ANDROID_LOG_INFO, TAG,
+                        "libusb_control_transfer start\n");
+
+
+    for (int if_num = 0; if_num < (camStreamingInterfaceNum + 1); if_num++) {
+        if (libusb_kernel_driver_active(devh, if_num)) {
+            libusb_detach_kernel_driver(devh, if_num);
         }
-        if (exit ==false) {
-            // unsigned char buffer[64]={0xef,0xaa,0x03,0x05,0x05,0x06,0x07,0x08,......};
+        int rc = libusb_claim_interface(devh, if_num);
+        if (rc < 0) {
+            fprintf(stderr, "Error claiming interface: %s\n",
+                    libusb_error_name(rc));
+        } else {
+            printf("Interface %d erfolgreich eingehängt;\n", if_num);
+        }
+    }
+
+    struct libusb_device_descriptor desc;
+    print_device(libusb_get_device(devh) , 0, devh, desc);
+    int r = libusb_set_interface_alt_setting(devh, camStreamingInterfaceNum, 0); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
+    if (r != LIBUSB_SUCCESS) {
+        LOGD("libusb_set_interface_alt_setting(devh, 1, 1) failed with error %d\n", r);
+        return -4;
+    } else {
+        LOGD("Die Alternativeinstellungen wurden erfolgreich gesetzt: %d ; Altsetting = 0\n", r);
+    }
+    initStreamingParms_controltransfer(devh);
+    camIsOpen = compareStreamingParmsValues();
+    if (camIsOpen) return 0;
+    else return -4;
 
 
-            LOGD ("Converting ...");
+}
 
 
 
-            /*
-            unsigned char *a = malloc( sizeof( unsigned char ) * frameLen + sizeof (huffman_table));
-            memcpy(a, frameData, segmentDaPos);
-            memcpy(a + segmentDaPos, huffman_table, sizeof (huffman_table));
-            memcpy(a + (segmentDaPos + sizeof (huffman_table)), frameData + segmentDaPos, frameLen - segmentDaPos);
+void isoc_transfer_completion_handler_automaticdetection(struct libusb_transfer *the_transfer) {
+    LOGD("Iso Transfer Callback Function");
+    unsigned char *p;
+    int packetLen;
+    int i;
+    p = the_transfer->buffer;
+    autoStruct.requestCnt ++;
+    for (i = 0; i < the_transfer->num_iso_packets; i++, p += maxPacketSize) {
+        if (the_transfer->iso_packet_desc[i].status == LIBUSB_TRANSFER_COMPLETED) {
+            autoStruct.packetCnt ++;
+            packetLen = the_transfer->iso_packet_desc[i].actual_length;
+            // packet only contains an acknowledge?
+            if (packetLen == 0) {
+                autoStruct.packet0Cnt++;
+            }
+            if (packetLen == 12) {
+                autoStruct.packet12Cnt++;
+            }
+            if (packetLen < 2) {
+                continue;
+            }
+            // error packet
+            if (p[1] & UVC_STREAM_ERR) // bmHeaderInfoh
+            {
+                autoStruct.packetErrorCnt ++;
+                LOGD("UVC_STREAM_ERR --> Package %d", i);
+                frameUeberspringen = 1;
+                continue;
+            }
+            packetLen -= p[0];
+            if (packetLen + total > videoFrameData->FrameBufferSize) {
+                if (ueberschreitungDerUebertragungslaenge == 1) {
+                    LOGD(stderr, "Die Framegröße musste gekürzt werden.\n");
+                    ueberschreitungDerUebertragungslaenge = 1;
+                    fflush(stdout);
+                }
+                packetLen = videoFrameData->FrameBufferSize - total;
+            }
+            memcpy(videoFrameData->videoframe + total, p + p[0], packetLen);
+            total += packetLen;
+            autoStruct.frameLen += packetLen;
+            if (p[1] & UVC_STREAM_EOF) {
+                autoStruct.sframeLenArray[autoStruct.frameCnt] = autoStruct.frameLen;
+                LOGD("Frame received");
+                ueberschreitungDerUebertragungslaenge = 0;
+                if (frameUeberspringen == 0) {
+                    ++totalFrame;
+
+                    if (total < videoFrameData->FrameBufferSize) {
+                        LOGD(stderr, "insufficient frame data.\n");
+                    }
+                    LOGD("Länge des Frames = %d\n", total);
+                    autoStruct.frameCnt ++;
+
+                    if (numberOfAutoFrames == totalFrame) {
+                        LOGD("calling autoStreamfinished");
+                        runningStream = false;
+                        autoStreamfinished();
+                    }
 
 
-            return a;
+                    total = 0;
+                    autoStruct.frameLen = 0;
+                } else {
+                    LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
+                    total = 0;
+                    frameUeberspringen = 0;
+                }
+            }
+        }
+    }
+    if (runningStream) if (libusb_submit_transfer(the_transfer) != 0) {
+            LOGD(stderr, "Die Übertragung ist gescheitert. \n");
+        }
+}
 
+void startAutoDetection () {
+    if (camIsOpen) {
+        totalFrame = 0;
+        int r = libusb_set_interface_alt_setting(devh, camStreamingInterfaceNum, camStreamingAltSetting); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
+        if (r != LIBUSB_SUCCESS) {
+            LOGD("libusb_set_interface_alt_setting(devh, 1, 1) failed with error %d\n", r);
+        } else {
+            LOGD("Die Alternativeinstellungen wurden erfolgreich gesetzt: %d ; Altsetting = %d\n", r, camStreamingAltSetting);
+        }
+        autoStruct.requestCnt = 0;
+        autoStruct.frameCnt = 0;
+        autoStruct.frameLen = 0;
+        autoStruct.packet0Cnt= 0;
+        autoStruct.packet12Cnt= 0;
+        autoStruct.packetCnt= 0;
+        autoStruct.packetDataCnt= 0;
+        autoStruct.packetErrorCnt= 0;
+        autoStruct.packetHdr8Ccnt= 0;
+        for(int ii = 0; ii < 5; ii++) autoStruct.sframeLenArray[ii] = 0;
+        // ------------------------------------------------------------
+        // do an isochronous transfer
+        struct libusb_transfer * xfers[activeUrbs];
+        for (i = 0; i < activeUrbs; i++) {
+            xfers[i] = libusb_alloc_transfer(packetsPerRequest);
+            uint8_t *data = malloc(maxPacketSize * packetsPerRequest);
 
+            libusb_fill_iso_transfer(
+                    xfers[i], devh, camStreamingEndpoint,
+                    data, maxPacketSize*packetsPerRequest, packetsPerRequest,
+                    isoc_transfer_completion_handler_automaticdetection, NULL, 0);
 
-            /*
-            //byte[]* a = new byte[frameLen + mjpgHuffmanTable.length];
-            System.arraycopy(frameData, 0, a, 0, segmentDaPos);
-            System.arraycopy(mjpgHuffmanTable, 0, a, segmentDaPos, mjpgHuffmanTable.length);
-            System.arraycopy(frameData, segmentDaPos, a, segmentDaPos + mjpgHuffmanTable.length, frameLen - segmentDaPos);
+            libusb_set_iso_packet_lengths(xfers[i], maxPacketSize);
 
-            */
+            for (int j = 0; j < packetsPerRequest; j++) {
+                xfers[i]->iso_packet_desc[j].status = -1;
+            }
 
-
-            return NULL;
-
-        } else
-            return NULL;
+        }
+        for (i = 0; i < activeUrbs; i++) {
+            if (libusb_submit_transfer(xfers[i]) != 0) {
+                fprintf(stderr, "submit xfer failed.\n");
+            }
+        }
+        runningStream = true;
+        while (runningStream) {
+            if (runningStream == false) {
+                break;
+            }
+            libusb_handle_events(ctx);
+        }
     }
 }
+
+void closeLibUsb() {
+    libusb_set_interface_alt_setting(devh,1,0);
+    libusb_release_interface(devh, 0);
+    libusb_release_interface(devh, 1);
+    //libusb_close(devh);
+    //libusb_exit(ctx);
+    //close(fd);
+
+}
+
+
+
+
 /*
 void cb_jni_stream_Surface(uvc_frame_t *frame, void *ptr) {
 
@@ -861,10 +813,7 @@ void getFramesOverLibUsb(int packetsPerReques, int maxPacketSiz, int activeUrb, 
         LOGD("return = %d", err);
         uvc_perror(result, "failed start_streaming");
     }
-
     LOGD("ISO Stream complete");
-
-
     /*
     int r = libusb_set_interface_alt_setting(globalUVCHandle->usb_devh, global_UVC_ctrl.bInterfaceNumber, camStreamingAltSetting); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
     if (r != LIBUSB_SUCCESS) {
@@ -889,8 +838,6 @@ void getFramesOverLibUsb(int packetsPerReques, int maxPacketSiz, int activeUrb, 
             LOGD(stderr, "submit xfer failed.\n");
         }
     }
-
-
      *//*
 }
 
@@ -1319,4 +1266,167 @@ for (i = 0; i < activeUrbs; i++) {
 }
 
 
+static const uint8_t huffman_table[] =
+        {
+                0xFF, 0xC4, 0x01, 0xA2, 0x00, 0x00, 0x01, 0x05, 0x01, 0x01, 0x01, 0x01,
+                0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02,
+                0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x01, 0x00, 0x03,
+                0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
+                0x0A, 0x0B, 0x10, 0x00, 0x02, 0x01, 0x03, 0x03, 0x02, 0x04, 0x03, 0x05,
+                0x05, 0x04, 0x04, 0x00, 0x00, 0x01, 0x7D, 0x01, 0x02, 0x03, 0x00, 0x04,
+                0x11, 0x05, 0x12, 0x21, 0x31, 0x41, 0x06, 0x13, 0x51, 0x61, 0x07, 0x22,
+                0x71, 0x14, 0x32, 0x81, 0x91, 0xA1, 0x08, 0x23, 0x42, 0xB1, 0xC1, 0x15,
+                0x52, 0xD1, 0xF0, 0x24, 0x33, 0x62, 0x72, 0x82, 0x09, 0x0A, 0x16, 0x17,
+                0x18, 0x19, 0x1A, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x34, 0x35, 0x36,
+                0x37, 0x38, 0x39, 0x3A, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A,
+                0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x63, 0x64, 0x65, 0x66,
+                0x67, 0x68, 0x69, 0x6A, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7A,
+                0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x92, 0x93, 0x94, 0x95,
+                0x96, 0x97, 0x98, 0x99, 0x9A, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8,
+                0xA9, 0xAA, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0xC2,
+                0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xD2, 0xD3, 0xD4, 0xD5,
+                0xD6, 0xD7, 0xD8, 0xD9, 0xDA, 0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7,
+                0xE8, 0xE9, 0xEA, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9,
+                0xFA, 0x11, 0x00, 0x02, 0x01, 0x02, 0x04, 0x04, 0x03, 0x04, 0x07, 0x05,
+                0x04, 0x04, 0x00, 0x01, 0x02, 0x77, 0x00, 0x01, 0x02, 0x03, 0x11, 0x04,
+                0x05, 0x21, 0x31, 0x06, 0x12, 0x41, 0x51, 0x07, 0x61, 0x71, 0x13, 0x22,
+                0x32, 0x81, 0x08, 0x14, 0x42, 0x91, 0xA1, 0xB1, 0xC1, 0x09, 0x23, 0x33,
+                0x52, 0xF0, 0x15, 0x62, 0x72, 0xD1, 0x0A, 0x16, 0x24, 0x34, 0xE1, 0x25,
+                0xF1, 0x17, 0x18, 0x19, 0x1A, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x35, 0x36,
+                0x37, 0x38, 0x39, 0x3A, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A,
+                0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x63, 0x64, 0x65, 0x66,
+                0x67, 0x68, 0x69, 0x6A, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7A,
+                0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x92, 0x93, 0x94,
+                0x95, 0x96, 0x97, 0x98, 0x99, 0x9A, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,
+                0xA8, 0xA9, 0xAA, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA,
+                0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xD2, 0xD3, 0xD4,
+                0xD5, 0xD6, 0xD7, 0xD8, 0xD9, 0xDA, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7,
+                0xE8, 0xE9, 0xEA, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA
+        };
+
+unsigned char* convertMjpegFrameToJpeg(unsigned char* frameData, int frameLen) {
+    //int frameLen = frameData.length;
+    while (frameLen > 0 && frameData[frameLen - 1] == 0) {
+        frameLen--;
+    }
+    if (frameLen < 100 || (frameData[0] & 0xff) != 0xff || (frameData[1] & 0xff) != 0xD8 || (frameData[frameLen - 2] & 0xff) != 0xff || (frameData[frameLen - 1] & 0xff) != 0xd9) {
+        LOGE("Invalid MJPEG frame structure, length= %d", frameLen);
+    }
+    bool hasHuffmanTable = findJpegSegment(frameData, frameLen, 0xC4) != -1;
+    bool exit = false;
+    if (hasHuffmanTable) {
+        LOGD ("hasHuffmanTable ...");
+        return frameData;
+/*
+            if (frameData.length == frameLen) {
+                return frameData;
+            }
+            return Arrays.copyOf(frameData, frameLen);
+*//*
+
+} else {
+int segmentDaPos = findJpegSegment(frameData, frameLen, 0xDA);
+
+if (segmentDaPos == -1) {
+exit = true;
+LOGE("Segment 0xDA not found in MJPEG frame data.");
+}
+if (exit ==false) {
+// unsigned char buffer[64]={0xef,0xaa,0x03,0x05,0x05,0x06,0x07,0x08,......};
+
+
+LOGD ("Converting ...");
+
+
+
+/*
+unsigned char *a = malloc( sizeof( unsigned char ) * frameLen + sizeof (huffman_table));
+memcpy(a, frameData, segmentDaPos);
+memcpy(a + segmentDaPos, huffman_table, sizeof (huffman_table));
+memcpy(a + (segmentDaPos + sizeof (huffman_table)), frameData + segmentDaPos, frameLen - segmentDaPos);
+
+
+return a;
+
+
+
+
+//byte[]* a = new byte[frameLen + mjpgHuffmanTable.length];
+System.arraycopy(frameData, 0, a, 0, segmentDaPos);
+System.arraycopy(mjpgHuffmanTable, 0, a, segmentDaPos, mjpgHuffmanTable.length);
+System.arraycopy(frameData, segmentDaPos, a, segmentDaPos + mjpgHuffmanTable.length, frameLen - segmentDaPos);
+
+
+
+
+return NULL;
+
+} else
+return NULL;
+}
+}
+
+
+/* This callback function runs once per frame. Use it to perform any
+ * quick processing you need, or have it put the frame into your application's
+ * input queue. If this function takes too long, you'll start losing frames. */
+
+/*
+void cb_stream(uvc_frame_t *frame, void *ptr) {
+
+    LOGD("CallbackFunction called");
+    LOGD("actual len = %d   /// len = %d", frame->actual_bytes, frame->data_bytes);
+    LOGD("width = %d   /// height = %d", frame->width, frame->height);
+    uvc_frame_t *bgr;
+    uvc_error_t ret;
+
+    if (fameJnaCallback != NULL) fameJnaCallback(frame->data, frame->data_bytes) ;
+}
+
+void cb_test(uvc_frame_t *frame, void *ptr) {
+
+    LOGD("CallbackFunction called");
+    LOGD("actual len = %d   /// len = %d", frame->actual_bytes, frame->data_bytes);
+    LOGD("width = %d   /// height = %d", frame->width, frame->height);
+
+    if (fameJnaCallback != NULL) fameJnaCallback(&frame->data, frame->actual_bytes) ;
+}
 */
+
+// see USB video class standard, USB_Video_Payload_MJPEG_1.5.pdf
+
+
+
+/* this function is run by the second thread *//*
+void *preview_thread_func(void *x_void_ptr)
+{
+/* increment x to 100 *//*
+    int *x_ptr = (int *)x_void_ptr;
+    while(++(*x_ptr) < 100);
+    printf("x increment finished\n");
+/* the function must return something - NULL will do */ /*
+    return NULL;
+}
+
+
+int findJpegSegment(unsigned char *a, int dataLen, int segmentType) {
+    int p = 2;
+    while (p <= dataLen - 6) {
+        if ((a[p] & 0xff) != 0xff) {
+            LOGE("Unexpected JPEG data structure (marker expected).");
+            break;
+        }
+        int markerCode = a[p + 1] & 0xff;
+        if (markerCode == segmentType) {
+            return p;
+        }
+        if (markerCode >= 0xD0 && markerCode <= 0xDA) {       // stop when scan data begins
+            break;
+        }
+        int len = ((a[p + 2] & 0xff) << 8) + (a[p + 3] & 0xff);
+        p += len + 2;
+    }
+    return -1;
+}
+ */

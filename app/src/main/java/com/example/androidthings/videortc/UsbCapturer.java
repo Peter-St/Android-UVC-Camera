@@ -33,12 +33,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import humer.UvcCamera.LibUsb.I_LibUsb;
-import humer.UvcCamera.StartIsoStreamActivity;
+import humer.UvcCamera.LibUsb.JNA_I_LibUsb;
 import humer.UvcCamera.UsbIso64.USBIso;
 import humer.UvcCamera.UsbIso64.usbdevice_fs_util;
 
@@ -225,7 +223,7 @@ public class UsbCapturer implements VideoCapturer {
 
                 if (!libusb_is_initialized) {
                     try {
-                        I_LibUsb.INSTANCE.setLogPrint(new I_LibUsb.logPrint(){
+                        JNA_I_LibUsb.INSTANCE.setLogPrint(new JNA_I_LibUsb.logPrint(){
                             public boolean callback(String msg) {
                                 log(msg);
                                 return false;
@@ -242,16 +240,16 @@ public class UsbCapturer implements VideoCapturer {
                         if(adress == null)  adress = camDevice.getDeviceName();
                         if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
                         if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
-                        I_LibUsb.INSTANCE.init(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                                camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat);
+                        JNA_I_LibUsb.INSTANCE.init(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                                camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, 0);
                         libusb_is_initialized = true;
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
 
-                I_LibUsb.INSTANCE.probeCommitControl(1, camFormatIndex, camFrameIndex,  camFrameInterval);
-                I_LibUsb.INSTANCE.probeCommitControl_cleanup();
+                JNA_I_LibUsb.INSTANCE.probeCommitControl(1, camFormatIndex, camFrameIndex,  camFrameInterval);
+                JNA_I_LibUsb.INSTANCE.probeCommitControl_cleanup();
 
                 JniWebRtc( 1, 1);
 
@@ -1110,7 +1108,7 @@ public class UsbCapturer implements VideoCapturer {
 
         stopKamera = true;
         if (LIBUSB) {
-            I_LibUsb.INSTANCE.stopStreaming();
+            JNA_I_LibUsb.INSTANCE.stopStreaming();
         } else {
             try {
                 Thread.sleep(100);

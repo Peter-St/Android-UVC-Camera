@@ -6,21 +6,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyle"
+    <FrameLayout
+        android:id="@+id/layout_fragment_container_center"
         android:layout_width="100dp"
         android:layout_height="100dp"
-
-
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:indeterminate="false"
+        android:layout_weight="1"
 
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+
+        app:layout_constraintTop_toTopOf="parent"
+
+
+        />
+
 
     <FrameLayout
         android:id="@+id/layout_fragment_container"
@@ -31,6 +31,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progressBar" />
+
+        app:layout_constraintTop_toBottomOf="@+id/layout_fragment_container_center"
+
+
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

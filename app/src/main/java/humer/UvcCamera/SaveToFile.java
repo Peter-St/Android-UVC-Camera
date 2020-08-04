@@ -137,7 +137,7 @@ public class SaveToFile  {
 
     // Values for Auto Detection
     public static boolean completed;
-    public static boolean lowQuality;
+    public static boolean highQuality;
     public static boolean raiseMaxPacketSize;
     public static boolean lowerMaxPacketSize;
     public static boolean raisePacketsPerRequest;
@@ -889,14 +889,6 @@ public class SaveToFile  {
         }
         if (!automatic)  selectMaxPacketSize(automatic);
         else {
-            spacketsPerRequest = 1;
-            sactiveUrbs = 1;
-            completed = false;
-            lowQuality = true;
-            raiseMaxPacketSize = false;
-            lowerMaxPacketSize = false;
-            raisePacketsPerRequest = false;
-            raiseActiveUrbs = false;
             selectMaxPacketSize(true);
         }
     }
@@ -1050,7 +1042,7 @@ public class SaveToFile  {
                 }
             });
         } else {
-            if (raisePacketsPerRequest) spacketsPerRequest ++;
+            //if (raisePacketsPerRequest) spacketsPerRequest ++;
             selectUrbs(true);
         }
     }
@@ -1145,7 +1137,7 @@ public class SaveToFile  {
                 }
             });
         } else {
-            if (raiseActiveUrbs) sactiveUrbs ++;
+            //if (raiseActiveUrbs) sactiveUrbs ++;
             selectFormatIndex(automatic);
         }
     }
@@ -1213,6 +1205,7 @@ public class SaveToFile  {
                         scamFormatIndex = numberFormatIndexes[a];
                         formatIndex = uvc_descriptor.getFormatIndex(a);
                         svideoformat = formatIndex.videoformat.toString();
+                        System.out.println("svideoformat = " + svideoformat);
                         selectFrameIndex(automatic);
                         return;
                     }
@@ -1222,6 +1215,7 @@ public class SaveToFile  {
                         scamFormatIndex = numberFormatIndexes[a];
                         formatIndex = uvc_descriptor.getFormatIndex(a);
                         svideoformat = formatIndex.videoformat.toString();
+                        System.out.println("svideoformat = " + svideoformat);
                         selectFrameIndex(automatic);
                         return;
                     }
@@ -1280,7 +1274,10 @@ public class SaveToFile  {
             });
             builder.show();
         } else {
-            if(lowQuality) {
+            if (libUsb_autoDetect != null || jna_autoDetect != null) {
+                if(!highQuality) {
+
+                }
                 int[] resArray = new int [formatIndex.numberOfFrameDescriptors];
                 for (int j = 0; j < formatIndex.numberOfFrameDescriptors; j++) {
                     frameIndex = formatIndex.getFrameIndex(j);
@@ -1302,9 +1299,13 @@ public class SaveToFile  {
                 System.out.println("scamFrameIndex = " + scamFrameIndex);
                 System.out.println("simageWidth = " + simageWidth);
                 System.out.println("simageHeight = " + simageHeight);
+
                 selectDWFrameIntervall(automatic);
                 return;
             }
+
+
+
             selectDWFrameIntervall(automatic);
         }
     }
@@ -1353,12 +1354,15 @@ public class SaveToFile  {
             builder.show();
         } else {
             if (libUsb_autoDetect != null || jna_autoDetect != null) {
+                int[] intervalArray = frameIndex.dwFrameInterval.clone();
+                // sorting the array to smalest Value first
+                Arrays.sort(intervalArray);
+                scamFrameInterval = frameIndex.dwFrameInterval[(intervalArray.length - 1)];
+                System.out.println("scamFrameInterval = " + scamFrameInterval);
                 writeTheValues();
                 return;
             }
-
-
-            if(lowQuality) {
+            if(!highQuality) {
                 int[] intervalArray = frameIndex.dwFrameInterval.clone();
                 // sorting the array to smalest Value first
                 Arrays.sort(intervalArray);
@@ -1523,7 +1527,7 @@ public class SaveToFile  {
             FileInputStream saveFile = new FileInputStream(pathToFile);
             ObjectInputStream save = new ObjectInputStream(saveFile);
             completed = (Boolean) save.readObject();
-            lowQuality = (Boolean) save.readObject();
+            highQuality = (Boolean) save.readObject();
             raiseMaxPacketSize = (Boolean) save.readObject();
             lowerMaxPacketSize = (Boolean) save.readObject();
             raisePacketsPerRequest = (Boolean) save.readObject();
@@ -1553,7 +1557,7 @@ public class SaveToFile  {
             ObjectOutputStream save = new ObjectOutputStream(saveFile);
 
             save.writeObject(completed);
-            save.writeObject(lowQuality);
+            save.writeObject(highQuality);
             save.writeObject(raiseMaxPacketSize);
             save.writeObject(lowerMaxPacketSize);
             save.writeObject(raisePacketsPerRequest);
@@ -1568,7 +1572,7 @@ public class SaveToFile  {
 
     private void writeTheOrders() {
         setUpTheUsbDevice.completed = completed;
-        setUpTheUsbDevice.lowQuality = lowQuality;
+        setUpTheUsbDevice.highQuality = highQuality;
         setUpTheUsbDevice.raiseMaxPacketSize = raiseMaxPacketSize;
         setUpTheUsbDevice.lowerMaxPacketSize = lowerMaxPacketSize;
         setUpTheUsbDevice.raisePacketsPerRequest = raisePacketsPerRequest;

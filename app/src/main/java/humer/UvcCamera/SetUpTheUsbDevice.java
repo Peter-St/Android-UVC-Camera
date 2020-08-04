@@ -46,15 +46,16 @@ import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.Surface;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.PopupMenu;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
@@ -73,8 +74,9 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import humer.UvcCamera.AutomaticDetection.Jna_AutoDetect;
+import humer.UvcCamera.AutomaticDetection.Jna_AutoDetect_Handler;
 import humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect;
-import humer.UvcCamera.LibUsb.I_LibUsb;
+import humer.UvcCamera.LibUsb.JNA_I_LibUsb;
 import humer.UvcCamera.UVC_Descriptor.UVC_Descriptor;
 import humer.UvcCamera.UsbIso64.USBIso;
 import humer.UvcCamera.UsbIso64.usbdevice_fs_util;
@@ -130,23 +132,25 @@ public class SetUpTheUsbDevice extends Activity {
     private PendingIntent mPermissionIntent;
 
     // Camera Values
-    public static int camStreamingAltSetting;
-    public static int camFormatIndex;
-    public static int camFrameIndex;
-    public static int camFrameInterval;
-    public static int packetsPerRequest;
-    public static int maxPacketSize;
-    public static int imageWidth;
-    public static int imageHeight;
-    public static int activeUrbs;
-    public static String videoformat;
-    public static String deviceName;
-    public static byte bUnitID;
-    public static byte bTerminalID;
-    public static byte[] bNumControlTerminal;
-    public static byte[] bNumControlUnit;
-    public static byte bStillCaptureMethod;
+    public int camStreamingAltSetting;
+    public int camFormatIndex;
+    public int camFrameIndex;
+    public int camFrameInterval;
+    public int packetsPerRequest;
+    public int maxPacketSize;
+    public int imageWidth;
+    public int imageHeight;
+    public int activeUrbs;
+    public String videoformat;
+    public String deviceName;
+    public byte bUnitID;
+    public byte bTerminalID;
+    public byte[] bNumControlTerminal;
+    public byte[] bNumControlUnit;
+    public byte bStillCaptureMethod;
     public boolean libUsb;
+    public boolean transferSucessful;
+
 
     // Vales for debuging the camera
     private String controlltransfer;
@@ -177,21 +181,33 @@ public class SetUpTheUsbDevice extends Activity {
     private SaveToFile  stf;
     private volatile IsochronousRead runningTransfer;
     private volatile IsochronousRead1Frame runningTransfer1Frame;
-    private volatile IsochronousAutomaticClass runningAutoTransfer;
-    private volatile IsochronousAutomaticClass5Frames runningAutoTransfer5frames;
-    private volatile LibUsbAutomaticClass runningLibUsbAutoTransfer;
 
     // Values for Auto Detection
     private static int ActivityLibUsbAutoDetectRequestCode = 3;
     private static int ActivityJnaAutoDetectRequestCode = 4;
-
-
     public static boolean completed;
-    public static boolean lowQuality;
+    public boolean highQuality;
     public static boolean raiseMaxPacketSize;
     public static boolean lowerMaxPacketSize;
     public static boolean raisePacketsPerRequest;
     public static boolean raiseActiveUrbs;
+    public boolean max_Framelength_cant_reached;
+    public boolean maxPacketsPerRequestReached;
+    public boolean maxActiveUrbsReached;
+
+    public int last_camStreamingAltSetting;
+    public int last_camFormatIndex;
+    public int last_camFrameIndex;
+    public int last_camFrameInterval;
+    public int last_packetsPerRequest;
+    public int last_maxPacketSize;
+    public int last_imageWidth;
+    public int last_imageHeight;
+    public int last_activeUrbs;
+    public String last_videoformat;
+    public boolean last_transferSucessful;
+
+
 
     // Values for the Automatic Set Up
     public int spacketCnt = 0;
@@ -206,6 +222,15 @@ public class SetUpTheUsbDevice extends Activity {
     public int [] [] shighestFramesCube = new int [10] [5] ;
     public int srequestCnt = 0;
     public int sframeMaximalLen = 0;
+    public boolean fiveFrames;
+    public int doneTransfers = 0;
+    public int sucessfulDoneTransfers = 0;
+
+    public String progress;
+    public boolean submiterror;
+
+
+
 
     // Debug Camera Variables
     private CountDownLatch latch;
@@ -920,26 +945,26 @@ public class SetUpTheUsbDevice extends Activity {
     }
 
     public void stopLibUsbStreaming () {
-        I_LibUsb.INSTANCE.stopStreaming();
+        JNA_I_LibUsb.INSTANCE.stopStreaming();
         l1ibusbAutoRunning = false;
     }
 
     public void closeLibUsb () {
-        I_LibUsb.INSTANCE.closeLibUsb();
+        JNA_I_LibUsb.INSTANCE.closeLibUsb();
         l1ibusbAutoRunning = false;
     }
 
     public void exitLibUsb () {
-        I_LibUsb.INSTANCE.exit();
+        JNA_I_LibUsb.INSTANCE.exit();
         l1ibusbAutoRunning = false;
     }
 
     private void openCameraDevice(boolean init) throws Exception {
         if (!libUsb) {
             if(libusb_is_initialized) {
-                I_LibUsb.INSTANCE.stopStreaming();
-                I_LibUsb.INSTANCE.closeLibUsb();
-                I_LibUsb.INSTANCE.exit();
+                JNA_I_LibUsb.INSTANCE.stopStreaming();
+                JNA_I_LibUsb.INSTANCE.closeLibUsb();
+                JNA_I_LibUsb.INSTANCE.exit();
                 try {
                     findCam();
                 } catch (Exception e) {
@@ -1006,9 +1031,8 @@ public class SetUpTheUsbDevice extends Activity {
                 @Override
                 public void onClick(View view) {
                     automaticStart = true;
-                    //renewTheProgressbar();
-                    CFAlertDialog.Builder percentageB = new CFAlertDialog.Builder(SetUpTheUsbDevice.this);
-                    percentageB.setHeaderView(R.layout.dialog_header_layout);
+                    ProgressBar progressBar = findViewById(R.id.progressBar);
+                    progressBar.setVisibility(View.VISIBLE);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -1017,6 +1041,7 @@ public class SetUpTheUsbDevice extends Activity {
                             tv.setTextColor(Color.BLACK);
                         }
                     });
+
                     alertDialog.dismiss();
                 }
             });
@@ -1035,59 +1060,18 @@ public class SetUpTheUsbDevice extends Activity {
             alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
                 public void onDismiss(DialogInterface dialog) {
+                    progress = "1% done";
                     if (automaticStart) {
-                        // Automatic UVC DetectionAutomatic UVC Detection
+                        // Automatic UVC Detection
+                        packetsPerRequest = 1;
+                        activeUrbs = 1;
+                        closeCameraDevice();
+                        doneTransfers = 0;
                         if (libUsb) {
-                            closeCameraDevice();
-                            Intent intent = new Intent(getApplicationContext(), LibUsb_AutoDetect.class);
-                            Bundle bundle=new Bundle();
-                            bundle.putBoolean("edit", true);
-                            bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
-                            bundle.putString("videoformat",videoformat);
-                            bundle.putInt("camFormatIndex",camFormatIndex);
-                            bundle.putInt("imageWidth",imageWidth);
-                            bundle.putInt("imageHeight",imageHeight);
-                            bundle.putInt("camFrameIndex",camFrameIndex);
-                            bundle.putInt("camFrameInterval",camFrameInterval);
-                            bundle.putInt("packetsPerRequest",packetsPerRequest);
-                            bundle.putInt("maxPacketSize",maxPacketSize);
-                            bundle.putInt("activeUrbs",activeUrbs);
-                            bundle.putString("deviceName",deviceName);
-                            bundle.putByte("bUnitID",bUnitID);
-                            bundle.putByte("bTerminalID",bTerminalID);
-                            bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
-                            bundle.putByteArray("bNumControlUnit", bNumControlUnit);
-                            bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
-                            bundle.putBoolean("libUsb", libUsb);
-                            intent.putExtra("bun",bundle);
-                            startActivityForResult(intent, ActivityLibUsbAutoDetectRequestCode);
+                            startLibUsbAutoDetection();
                         } else {
-                            activeUrbs = 1;
-                            closeCameraDevice();
-                            Intent intent = new Intent(getApplicationContext(), Jna_AutoDetect.class);
-                            Bundle bundle=new Bundle();
-                            bundle.putBoolean("edit", true);
-                            bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
-                            bundle.putString("videoformat",videoformat);
-                            bundle.putInt("camFormatIndex",camFormatIndex);
-                            bundle.putInt("imageWidth",imageWidth);
-                            bundle.putInt("imageHeight",imageHeight);
-                            bundle.putInt("camFrameIndex",camFrameIndex);
-                            bundle.putInt("camFrameInterval",camFrameInterval);
-                            bundle.putInt("packetsPerRequest",packetsPerRequest);
-                            bundle.putInt("maxPacketSize",maxPacketSize);
-                            bundle.putInt("activeUrbs",activeUrbs);
-                            bundle.putString("deviceName",deviceName);
-                            bundle.putByte("bUnitID",bUnitID);
-                            bundle.putByte("bTerminalID",bTerminalID);
-                            bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
-                            bundle.putByteArray("bNumControlUnit", bNumControlUnit);
-                            bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
-                            bundle.putBoolean("libUsb", libUsb);
-                            intent.putExtra("bun",bundle);
-                            startActivityForResult(intent, ActivityJnaAutoDetectRequestCode);
+                            startJnaAutoDetection();
                         }
-
                     }
                 }
             });
@@ -1638,271 +1622,6 @@ public class SetUpTheUsbDevice extends Activity {
         }
     }
 
-    class LibUsbAutomaticClass extends Thread {
-
-        public void run() {
-
-            long time0 = System.currentTimeMillis();
-
-            while (System.currentTimeMillis() - time0 < 5000) {
-                if (sframeLen==(imageWidth*imageHeight*2)) {
-                    break;
-                }
-
-                if (latch.getCount() == 0) break;
-            }
-            stopLibUsbStreaming();
-            closeLibUsb();
-            if (latch.getCount() == 1) {
-                latch.countDown();
-                log("sframeLen = " + sframeLen);
-                log("activeUrbs = " + activeUrbs);
-                log("packetsPerRequest = " + packetsPerRequest);
-            }
-            runningLibUsbAutoTransfer = null;
-        }
-    }
-
-    class IsochronousAutomaticClass extends Thread {
-        private boolean reapTheLastFrames;
-        private int lastReapedFrames = 0;
-        public IsochronousAutomaticClass() {
-        }
-        public void run() {
-            try {
-                reapTheLastFrames = false;
-                USBIso usbIso64 = new USBIso(camDeviceConnection.getFileDescriptor(), packetsPerRequest, maxPacketSize, (byte) camStreamingEndpoint.getAddress());
-                usbIso64.preallocateRequests(activeUrbs);
-                ArrayList<String> logArray = new ArrayList<>(512);
-                int packetCnt = 0;
-                int packet0Cnt = 0;
-                int packet12Cnt = 0;
-                int packetDataCnt = 0;
-                int packetHdr8Ccnt = 0;
-                int packetErrorCnt = 0;
-                int frameCnt = 0;
-                int frameLen = 0;
-                int requestCnt = 0;
-                byte[] data = new byte[maxPacketSize];
-                try {
-                    enableStreaming(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                usbIso64.submitUrbs();
-                while (frameCnt < 1) {
-                    USBIso.Request req = usbIso64.reapRequest(true);
-                    for (int packetNo = 0; packetNo < req.getNumberOfPackets(); packetNo++) {
-                        packetCnt++;
-                        int packetLen = req.getPacketActualLength(packetNo);
-                        if (packetLen == 0) {
-                            packet0Cnt++;
-                        }
-                        if (packetLen == 12) {
-                            packet12Cnt++;
-                        }
-                        if (packetLen == 0) {
-                            continue;
-                        }
-                        StringBuilder logEntry = new StringBuilder(requestCnt + "/" + packetNo + " len=" + packetLen);
-                        int packetStatus = req.getPacketStatus(packetNo);
-                        if (packetStatus != 0) {
-                            System.out.println("Packet status=" + packetStatus);
-                            break;
-                        }
-                        if (packetLen > 0) {
-                            req.getPacketData(packetNo, data, packetLen);
-                            logEntry.append("bytes // data = " + hexDump(data, Math.min(32, packetLen)));
-                            int headerLen = data[0] & 0xff;
-                            try {
-                                if (headerLen < 2 || headerLen > packetLen) {
-                                    //    skipFrames = 1;
-                                }
-                            } catch (Exception e) {
-                                System.out.println("Invalid payload header length.");
-                            }
-                            int headerFlags = data[1] & 0xff;
-                            if (headerFlags == 0x8c) {
-                                packetHdr8Ccnt++;
-                            }
-                            // logEntry.append(" hdrLen=" + headerLen + " hdr[1]=0x" + Integer.toHexString(headerFlags));
-                            int dataLen = packetLen - headerLen;
-                            if (dataLen > 0) {
-                                packetDataCnt++;
-                            }
-                            frameLen += dataLen;
-                            if ((headerFlags & 0x40) != 0) {
-                                logEntry.append(" *** Error ***");
-                                packetErrorCnt++;
-                            }
-                            if ((headerFlags & 2) != 0) {
-                                logEntry.append(" EOF frameLen=" + frameLen);
-                                reapTheLastFrames = true;
-                                frameCnt++;
-                            }
-                        }
-                        logArray.add(logEntry.toString());
-                    }
-                    if (frameCnt > 0)  reapTheLastFrames = true;
-                    else if (packetErrorCnt > 800) break;
-                    requestCnt++;
-                    if (reapTheLastFrames) {
-                        if (++ lastReapedFrames == activeUrbs) break;
-                    } else {   req.initialize();    req.submit();   }
-                }
-                try {
-                    enableStreaming(false);
-                } catch (Exception e) {
-                    log("Exception during enableStreaming(false): " + e);
-                }
-                log("requests=" + requestCnt + " packetCnt=" + packetCnt + " packetErrorCnt=" + packetErrorCnt + " packet0Cnt=" + packet0Cnt + ", packet12Cnt=" + packet12Cnt + ", packetDataCnt=" + packetDataCnt + " packetHdr8cCnt=" + packetHdr8Ccnt + " frameCnt=" + frameCnt);
-                spacketCnt = packetCnt;
-                spacket0Cnt = packet0Cnt;
-                spacket12Cnt = packet12Cnt;
-                spacketDataCnt = packetDataCnt;
-                spacketHdr8Ccnt = packetHdr8Ccnt;
-                spacketErrorCnt = packetErrorCnt;
-                sframeCnt = frameCnt;
-                sframeLen = frameLen;
-                srequestCnt = requestCnt;
-                log("sframeLen = " + sframeLen);
-                log("activeUrbs = " + activeUrbs);
-                log("packetsPerRequest = " + packetsPerRequest);
-                latch.countDown();
-                runningAutoTransfer = null;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    class IsochronousAutomaticClass5Frames extends Thread {
-        private boolean reapTheLastFrames;
-        private int lastReapedFrames = 0;
-        private int number;
-        public IsochronousAutomaticClass5Frames(int number) {
-            setPriority(Thread.MAX_PRIORITY);
-            this.number = number;
-        }
-        public void run() {
-            try {
-                USBIso usbIso64 = new USBIso(camDeviceConnection.getFileDescriptor(), packetsPerRequest, maxPacketSize, (byte) camStreamingEndpoint.getAddress());
-                usbIso64.preallocateRequests(activeUrbs);
-                //Thread.sleep(500);
-                ArrayList<String> logArray = new ArrayList<>(512);
-                int packetCnt = 0;
-                int packet0Cnt = 0;
-                int packet12Cnt = 0;
-                int packetDataCnt = 0;
-                int packetHdr8Ccnt = 0;
-                int packetErrorCnt = 0;
-                int frameCnt = 0;
-                final long time0 = System.currentTimeMillis();
-                int frameLen = 0;
-                int requestCnt = 0;
-                byte[] data = new byte[maxPacketSize];
-                try {
-                    enableStreaming(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                usbIso64.submitUrbs();
-                while (frameCnt < 5) {
-                    boolean stopReq = false;
-                    USBIso.Request req = usbIso64.reapRequest(true);
-                    for (int packetNo = 0; packetNo < req.getNumberOfPackets(); packetNo++) {
-                        packetCnt++;
-                        int packetLen = req.getPacketActualLength(packetNo);
-                        if (packetLen == 0) {
-                            packet0Cnt++;
-                        }
-                        if (packetLen == 12) {
-                            packet12Cnt++;
-                        }
-                        if (packetLen == 0) {
-                            continue;
-                        }
-                        StringBuilder logEntry = new StringBuilder(requestCnt + "/" + packetNo + " len=" + packetLen);
-                        int packetStatus = req.getPacketStatus(packetNo);
-                        if (packetStatus != 0) {
-                            System.out.println("Packet status=" + packetStatus);
-                            stopReq = true;
-                            break;
-                        }
-                        if (packetLen > 0) {
-                            if (packetLen > maxPacketSize) {
-                                //throw new Exception("packetLen > maxPacketSize");
-                            }
-                            req.getPacketData(packetNo, data, packetLen);
-                            logEntry.append("bytes // data = " + hexDump(data, Math.min(32, packetLen)));
-                            int headerLen = data[0] & 0xff;
-                            try {
-                                if (headerLen < 2 || headerLen > packetLen) {
-                                    //    skipFrames = 1;
-                                }
-                            } catch (Exception e) {
-                                System.out.println("Invalid payload header length.");
-                            }
-                            int headerFlags = data[1] & 0xff;
-                            if (headerFlags == 0x8c) {
-                                packetHdr8Ccnt++;
-                            }
-                            // logEntry.append(" hdrLen=" + headerLen + " hdr[1]=0x" + Integer.toHexString(headerFlags));
-                            int dataLen = packetLen - headerLen;
-                            if (dataLen > 0) {
-                                packetDataCnt++;
-                            }
-                            frameLen += dataLen;
-                            if ((headerFlags & 0x40) != 0) {
-                                logEntry.append(" *** Error ***");
-                                packetErrorCnt++;
-                            }
-                            if ((headerFlags & 2) != 0) {
-                                logEntry.append(" EOF frameLen=" + frameLen);
-                                sframeLenArray[frameCnt] = frameLen;
-                                frameCnt++;
-                                frameLen = 0;
-                                if (frameCnt > 4) reapTheLastFrames = true;;
-                            }
-                        }
-                        logArray.add(logEntry.toString());
-                    }
-                    if (frameCnt > 4)  reapTheLastFrames = true;
-                    else if (packetErrorCnt > 800) break;
-                    requestCnt++;
-                    if (reapTheLastFrames) {
-                        if (++ lastReapedFrames == activeUrbs) break;
-                    } else {
-                        req.initialize();
-                        req.submit();
-                    }
-                }
-                try {
-                    enableStreaming(false);
-                } catch (Exception e) {
-                    log("Exception during enableStreaming(false): " + e);
-                }
-                log("requests=" + requestCnt + " packetCnt=" + packetCnt + " packetErrorCnt=" + packetErrorCnt + " packet0Cnt=" + packet0Cnt + ", packet12Cnt=" + packet12Cnt + ", packetDataCnt=" + packetDataCnt + " packetHdr8cCnt=" + packetHdr8Ccnt + " frameCnt=" + frameCnt);
-                spacketCnt = packetCnt;
-                spacket0Cnt = packet0Cnt;
-                spacket12Cnt = packet12Cnt;
-                spacketDataCnt = packetDataCnt;
-                spacketHdr8Ccnt = packetHdr8Ccnt;
-                spacketErrorCnt = packetErrorCnt;
-                sframeCnt = frameCnt;
-                sframeLen = frameLen;
-                srequestCnt = requestCnt;
-                log("sframeLenArray[0] = " + sframeLenArray[0] + "  /  sframeLenArray[1] = " + sframeLenArray[1] + "  /  sframeLenArray[2] = " + sframeLenArray[2] + "  /  sframeLenArray[3] = " + sframeLenArray[3] + "  /  sframeLenArray[4] = " + sframeLenArray[4] );
-                log("activeUrbs = " + activeUrbs);
-                log("packetsPerRequest = " + packetsPerRequest);
-                shighestFramesCube [number] = sframeLenArray;
-                latch.countDown();
-                runningAutoTransfer5frames = null;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     private void isoRead() {
         if (!usbManager.hasPermission(camDevice)) {
@@ -1934,14 +1653,14 @@ public class SetUpTheUsbDevice extends Activity {
                     if(adress == null)  adress = camDevice.getDeviceName();
                     if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
                     if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
-                    I_LibUsb.INSTANCE.init(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                            camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat);
+                    JNA_I_LibUsb.INSTANCE.init(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                            camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, 0);
                     libusb_is_initialized = true;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            I_LibUsb.INSTANCE.setLogPrint(new I_LibUsb.logPrint(){
+            JNA_I_LibUsb.INSTANCE.setLogPrint(new JNA_I_LibUsb.logPrint(){
                 public boolean callback(String msg) {
                     log(msg);
                     return false;
@@ -1956,7 +1675,7 @@ public class SetUpTheUsbDevice extends Activity {
             ArrayList<String> logArray = new ArrayList<>(512);
             stringBuilder = new StringBuilder();
 // This will add the element, resizing the ArrayList if necessary.
-            I_LibUsb.INSTANCE.setCallback(new I_LibUsb.eventCallback(){
+            JNA_I_LibUsb.INSTANCE.setCallback(new JNA_I_LibUsb.eventCallback(){
                 public boolean callback(Pointer videoFrame, int frameSize) {
                     log("frame received " + sframeCnt);
                     sframeCnt ++;
@@ -1965,7 +1684,7 @@ public class SetUpTheUsbDevice extends Activity {
                     return true;
                 }
             });
-            I_LibUsb.INSTANCE.getFramesOverLibUsb(packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+            JNA_I_LibUsb.INSTANCE.getFramesOverLibUsb(packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                     camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, videoFormatToInt(), 0);
             //JniIsoStreamActivity(null, 0, 0);
             Thread th = new Thread(new Runnable() {
@@ -1989,7 +1708,7 @@ public class SetUpTheUsbDevice extends Activity {
                         }
                     }
                     if (latch.getCount() > 0) latch.countDown();
-                    I_LibUsb.INSTANCE.stopStreaming();
+                    JNA_I_LibUsb.INSTANCE.stopStreaming();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -2013,9 +1732,9 @@ public class SetUpTheUsbDevice extends Activity {
             th.start();
         } else {
             if(libusb_is_initialized) {
-                I_LibUsb.INSTANCE.stopStreaming();
-                I_LibUsb.INSTANCE.closeLibUsb();
-                I_LibUsb.INSTANCE.exit();
+                JNA_I_LibUsb.INSTANCE.stopStreaming();
+                JNA_I_LibUsb.INSTANCE.closeLibUsb();
+                JNA_I_LibUsb.INSTANCE.exit();
                 try {
                     findCam();
                     openCam(true);
@@ -2087,22 +1806,21 @@ public class SetUpTheUsbDevice extends Activity {
                     if(adress == null)  adress = camDevice.getDeviceName();
                     if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
                     if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
-                    I_LibUsb.INSTANCE.init(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                            camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat);
+                    JNA_I_LibUsb.INSTANCE.init(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                            camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, 0);
                     libusb_is_initialized = true;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            I_LibUsb.INSTANCE.setLogPrint(new I_LibUsb.logPrint(){
+            JNA_I_LibUsb.INSTANCE.setLogPrint(new JNA_I_LibUsb.logPrint(){
                 public boolean callback(String msg) {
                     log(msg);
                     return false;
                 }
-
             });
             latch = new CountDownLatch(1);
-            I_LibUsb.INSTANCE.setCallback(new I_LibUsb.eventCallback(){
+            JNA_I_LibUsb.INSTANCE.setCallback(new JNA_I_LibUsb.eventCallback(){
                 public boolean callback(Pointer videoFrame, int frameSize) {
                     log("frame received");
                     sframeCnt ++;
@@ -2113,11 +1831,7 @@ public class SetUpTheUsbDevice extends Activity {
                     stringBuilder.append("Length = " + frameSize + "\n");
                     if (frameSize == (imageWidth*imageHeight*2)) stringBuilder.append("\nThe Frame length matches it's expected size");
                     stringBuilder.append(" data = " + hexDump(videoFrame.getByteArray(0,50), Math.min(32, 50)));
-
-
                     byte [] data = videoFrame.getByteArray(0, frameSize);
-
-
                     String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
                     File file = new File(rootPath);
                     if (!file.exists()) {
@@ -2160,7 +1874,7 @@ public class SetUpTheUsbDevice extends Activity {
                 }
             });
             //JniIsoStreamActivity(null, 0, 0);
-            I_LibUsb.INSTANCE.getFramesOverLibUsb(packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+            JNA_I_LibUsb.INSTANCE.getFramesOverLibUsb(packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                     camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, videoFormatToInt(), 0);
 
             try {
@@ -2168,12 +1882,12 @@ public class SetUpTheUsbDevice extends Activity {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            I_LibUsb.INSTANCE.stopStreaming();
+            JNA_I_LibUsb.INSTANCE.stopStreaming();
         } else {
             if(libusb_is_initialized) {
-                I_LibUsb.INSTANCE.stopStreaming();
-                I_LibUsb.INSTANCE.closeLibUsb();
-                I_LibUsb.INSTANCE.exit();
+                JNA_I_LibUsb.INSTANCE.stopStreaming();
+                JNA_I_LibUsb.INSTANCE.closeLibUsb();
+                JNA_I_LibUsb.INSTANCE.exit();
                 try {
                     findCam();
                     openCam(true);
@@ -2210,8 +1924,6 @@ public class SetUpTheUsbDevice extends Activity {
         if (!usbManager.hasPermission(camDevice)) {
             int a;
             PendingIntent permissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
-            // IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
-            // registerReceiver(mUsbReceiver, filter);
             usbManager.requestPermission(camDevice, permissionIntent);
             while (!usbManager.hasPermission(camDevice)) {
                 long time0 = System.currentTimeMillis();
@@ -2240,20 +1952,20 @@ public class SetUpTheUsbDevice extends Activity {
                             if(adress == null)  adress = camDevice.getDeviceName();
                             if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
                             if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
-                            I_LibUsb.INSTANCE.init(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                                    camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat);
+                            JNA_I_LibUsb.INSTANCE.init(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                                    camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat,0 );
                             libusb_is_initialized = true;
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
-                    I_LibUsb.INSTANCE.setLogPrint(new I_LibUsb.logPrint(){
+                    JNA_I_LibUsb.INSTANCE.setLogPrint(new JNA_I_LibUsb.logPrint(){
                         public boolean callback(String msg) {
                             log(msg);
                             return false;
                         }
                     });
-                    Pointer ctlValues = I_LibUsb.INSTANCE.probeCommitControl(1, camFormatIndex, camFrameIndex,  camFrameInterval);
+                    Pointer ctlValues = JNA_I_LibUsb.INSTANCE.probeCommitControl(1, camFormatIndex, camFrameIndex,  camFrameInterval);
                     byte[] buf = new byte[26];
                     ctlValues.read(0, buf, 0, 26);
                     //buf = ctlValues.getByteArray(0, 26);
@@ -2271,7 +1983,7 @@ public class SetUpTheUsbDevice extends Activity {
                             "\n\nThe third Controltransfer for sending the final commit Values to the Camera: \n" + finalStreamingParms_first +
                             "\n\nThe Last Commit Controltransfer for receiving the final Camera Values:\n" + finalStreamingParms);
                     tv.setTextColor(Color.BLACK);
-                    I_LibUsb.INSTANCE.probeCommitControl_cleanup();
+                    JNA_I_LibUsb.INSTANCE.probeCommitControl_cleanup();
                     log("Control probeCommitControl End");
 
                 }
@@ -2279,9 +1991,9 @@ public class SetUpTheUsbDevice extends Activity {
 
         } else {
             if(libusb_is_initialized) {
-                I_LibUsb.INSTANCE.stopStreaming();
-                I_LibUsb.INSTANCE.closeLibUsb();
-                I_LibUsb.INSTANCE.exit();
+                JNA_I_LibUsb.INSTANCE.stopStreaming();
+                JNA_I_LibUsb.INSTANCE.closeLibUsb();
+                JNA_I_LibUsb.INSTANCE.exit();
                 try {
                     findCam();
                     openCam(true);
@@ -2330,14 +2042,6 @@ public class SetUpTheUsbDevice extends Activity {
                 });
             }
         }
-
-
-
-
-
-
-
-
     }
 
     //////////////////////////////////  General Methods    //////////////////////////////////
@@ -2427,10 +2131,7 @@ public class SetUpTheUsbDevice extends Activity {
         }
         if (libUsb) {
             if (libusb_is_initialized) {
-                I_LibUsb.INSTANCE.stopStreaming();
-               // I_LibUsb.INSTANCE.closeLibUsb();
-               // I_LibUsb.INSTANCE.exit();
-               // libusb_is_initialized = false;
+                JNA_I_LibUsb.INSTANCE.stopStreaming();
             }
         }
         finish();
@@ -2477,738 +2178,165 @@ public class SetUpTheUsbDevice extends Activity {
                 Math.max( (int)(b * factor), 0 ) );
     }
 
-    //////////// Automatic Transfer Methods ////////////
+    // Methods for Automatic Setup
 
-    private void finalAutoMethod () {
-        if (lowQuality) {
-            raiseTheQuality();
-        }
-        if (percentageBuilder != null) {
-            percentageBuilder.hide();
-            percentageBuilder.dismiss();;
-            percentageBuilder = null;
-        }
-        if (percentageBuilder2 != null) {
-            percentageBuilder2.hide();
-            percentageBuilder2.dismiss();
-            percentageBuilder2 = null;
-        }
-        runOnUiThread(new Runnable() {
-            String msg = "Automatic Setup Completed:";
-            @Override
-            public void run() {
-                tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                if (camFrameInterval == 0) tv.setText(msg + "\n\nYour current Values are:\n\nPackets Per Request = " + packetsPerRequest + "\nActive Urbs = " + activeUrbs +
-                        "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat + "\nCamera Format Index = " + camFormatIndex + "\n" +
-                        "Camera FrameIndex = " + camFrameIndex + "\nImage Width = " + imageWidth + "\nImage Height = " + imageHeight + "\nCamera Frame Interval (fps)= " + camFrameInterval + "\nLibUsb = " + libUsb);
-                else tv.setText(msg + "\n\nYour current Values are:\n\nPackets Per Request = " + packetsPerRequest + "\nActive Urbs = " + activeUrbs +
-                        "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat + "\nCamera Format Index = " + camFormatIndex + "\n" +
-                        "Camera FrameIndex = " + camFrameIndex + "\nImage Width = " + imageWidth + "\nImage Height = " + imageHeight + "\nCamera Frame Interval (fps) = " + (10000000 / camFrameInterval) + "\nLibUsb = " + libUsb);
-                tv.setTextColor(Color.BLACK);
-                testrun = findViewById(R.id.testrun);
-                testrun.setEnabled(true);
-                testrun.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        showTestRunMenu(view);
-                    }
-                });
-                Button button = findViewById(R.id.returnToMainScreen);
-                button.setEnabled(true);
-                button = findViewById(R.id.findTheCamera);
-                button.setEnabled(true);
-                button = findViewById(R.id.listTheCamera);
-                button.setEnabled(true);
-                button = findViewById(R.id.setUpWithUVC);
-                button.setEnabled(true);
-                button = findViewById(R.id.editSaveTheValues);
-                button.setEnabled(true);
+    @RequiresApi(api = Build.VERSION_CODES.GINGERBREAD)
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        ProgressBar progressBar = findViewById(R.id.progressBar);
+
+        if (requestCode == ActivityJnaAutoDetectRequestCode && resultCode == RESULT_OK && data != null) {
+            // TODO Extract the data returned from the child Activity.
+            doneTransfers++;
+
+            camStreamingAltSetting = data.getIntExtra("camStreamingAltSetting", 0);
+            videoformat = data.getStringExtra("videoformat");
+            camFormatIndex = data.getIntExtra("camFormatIndex", 0);
+            imageWidth = data.getIntExtra("imageWidth", 0);
+            imageHeight = data.getIntExtra("imageHeight", 0);
+            camFrameIndex = data.getIntExtra("camFrameIndex", 0);
+            camFrameInterval = data.getIntExtra("camFrameInterval", 0);
+            packetsPerRequest = data.getIntExtra("packetsPerRequest", 0);
+            maxPacketSize = data.getIntExtra("maxPacketSize", 0);
+            activeUrbs = data.getIntExtra("activeUrbs", 0);
+            deviceName = data.getStringExtra("deviceName");
+            bUnitID = data.getByteExtra("bUnitID", (byte) 0);
+            bTerminalID = data.getByteExtra("bTerminalID", (byte) 0);
+            bNumControlTerminal = data.getByteArrayExtra("bNumControlTerminal");
+            bNumControlUnit = data.getByteArrayExtra("bNumControlUnit");
+            bStillCaptureMethod = data.getByteExtra("bStillCaptureMethod", (byte) 0);
+            libUsb = data.getBooleanExtra("libUsb", false);
+
+
+            spacketCnt = data.getIntExtra("spacketCnt", 0);
+            spacket0Cnt = data.getIntExtra("spacket0Cnt", 0);
+            spacket12Cnt = data.getIntExtra("spacket12Cnt", 0);
+            spacketDataCnt = data.getIntExtra("spacketDataCnt", 0);
+            spacketHdr8Ccnt = data.getIntExtra("spacketHdr8Ccnt", 0);
+            spacketErrorCnt = data.getIntExtra("spacketErrorCnt", 0);
+            sframeCnt = data.getIntExtra("sframeCnt", 0);
+            sframeLen = data.getIntExtra("sframeLen", 0);
+            srequestCnt = data.getIntExtra("srequestCnt", 0);
+            fiveFrames = data.getBooleanExtra("fiveFrames", false);
+            submiterror = data.getBooleanExtra("submiterror", false);
+            Jna_AutoDetect_Handler jnaAutoDetectHandler = new Jna_AutoDetect_Handler(SetUpTheUsbDevice.this, SetUpTheUsbDevice.this);
+            if(data.getBooleanExtra("stopAutoDetecton", false))   progressBar.setVisibility(View.INVISIBLE);
+            switch (jnaAutoDetectHandler.compare()) {
+                case -1:
+                    //displayMessage("Error");
+                    progressBar.setVisibility(View.INVISIBLE);
+                    break;
+                case 0:
+                    //displayMessage("Finished");
+                    progressBar.setVisibility(View.INVISIBLE);
+                    break;
+                case 1:
+
+                    jnaAutoDetectHandler.spacketsPerRequest = packetsPerRequest;
+                    jnaAutoDetectHandler.sactiveUrbs = activeUrbs;
+                    log("packetPerRequest = " + packetsPerRequest);
+                    startJnaAutoDetection();
+                    break;
+                default:
+                    break;
             }
-        });
-        automaticStart = false;
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which){
-                    case DialogInterface.BUTTON_POSITIVE:
-                        final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
-                        final String saveFilePathFolder = "UVC_Camera/save";
-                        final File file = new File(rootPath, "/" + saveFilePathFolder);
-                        if (!file.exists()) {
-                            log("creating directory");
-                            if (!file.mkdirs()) {
-                                Log.e("TravellerLog :: ", "Problem creating Image folder");
-                            }
-                            file.mkdirs();
-                        }
-                        String rootdirStr = file.toString();
-                        stf.fetchTheValues();
-                        rootdirStr += "/";
-                        rootdirStr += deviceName;
-                        rootdirStr += ".sav";
-                        stf.saveValuesToFile(rootdirStr);
-                        displayMessage("Saved under: -->  " + deviceName);
-                        break;
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        break;
-                }
-            }
-        };
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Automatic Setup Finished").setMessage("Do you want to save the values to a file?").setPositiveButton("Yes, Save", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener).show();
+        }
+        if (requestCode == ActivityLibUsbAutoDetectRequestCode && resultCode == RESULT_OK && data != null) {
+            doneTransfers++;
+            if(data.getBooleanExtra("stopAutoDetecton", false))   progressBar.setVisibility(View.INVISIBLE);
+            boolean exit = data.getBooleanExtra("closeProgram", false);
+            Jna_AutoDetect_Handler jnaAutoDetectHandler = new Jna_AutoDetect_Handler(SetUpTheUsbDevice.this, SetUpTheUsbDevice.this);
+            if(data.getBooleanExtra("stopAutoDetecton", false))   progressBar.setVisibility(View.INVISIBLE);
+            displayMessage("Result received");
+            log ("result received");
+            switch (jnaAutoDetectHandler.compare()) {
+                case -1:
+                    //displayMessage("Error");
+                    progressBar.setVisibility(View.INVISIBLE);
+                    break;
+                case 0:
+                    //displayMessage("Finished");
+                    progressBar.setVisibility(View.INVISIBLE);
+                    break;
+                case 1:
+                    progressBar.setVisibility(View.INVISIBLE);
+                    log("1 returned");
+                    //startLibUsbAutoDetection();
+                    break;
+                default:
+                    break;
+            }        }
     }
 
-    public void makeAnAutomaticTransfer (boolean fiveFrames, int number, boolean libUsb) {
-        int a;
-        if (libUsb) {
-            if (!l1ibusbAutoRunning) {
-                stopLibUsbStreaming();
-                closeLibUsb();
-            }
-
-
-            I_LibUsb.INSTANCE.setCallback(new I_LibUsb.eventCallback(){
-                public boolean callback(Pointer videoFrame, int frameSize) {
-                    sframeCnt ++;
-                    log("Event Callback called:\nFrameLength = " + frameSize);
-                    if (frameSize > 20) {
-                        sframeLen = frameSize;
-                        log("Event Callback called:\nFrameLength = " + frameSize);
-                    }
-                    if (sframeCnt > 10) latch.countDown();
-                    else if (frameSize == (imageWidth * imageHeight * 2)) {
-                        I_LibUsb.INSTANCE.stopStreaming();
-                        I_LibUsb.INSTANCE.closeLibUsb();
-                        I_LibUsb.INSTANCE.exit();
-                        l1ibusbAutoRunning = false;
-                        latch.countDown();
-                    }
-                    return true;
-                }
-            });
-
-
-            try {
-                latch = new CountDownLatch(1);
-
-                if (fd == 0) fd = camDeviceConnection.getFileDescriptor();
-                if(productID == 0) productID = camDevice.getProductId();
-                if(vendorID == 0) vendorID = camDevice.getVendorId();
-                if(adress == null)  adress = camDevice.getDeviceName();
-                if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
-                if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
-
-                activeUrbs = 2;
-                packetsPerRequest = 32;
-
-                runningLibUsbAutoTransfer = new LibUsbAutomaticClass();
-                runningLibUsbAutoTransfer.start();
-
-                I_LibUsb.INSTANCE.getFramesOverLibUsb(packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                        camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, videoFormatToInt(), 0);
-                l1ibusbAutoRunning = true;
-                latch.await();
-                I_LibUsb.INSTANCE.stopStreaming();
-                percentageBuilder.dismiss();
-
-
-
-                //renewTheProgressbar();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-
-
-        } else {
-            //int a;
-            if (!usbManager.hasPermission(camDevice)) {
-                PendingIntent permissionIntent = PendingIntent.getBroadcast(SetUpTheUsbDevice.this, 0, new Intent(ACTION_USB_PERMISSION), 0);
-                // IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
-                // registerReceiver(mUsbReceiver, filter);
-                usbManager.requestPermission(camDevice, permissionIntent);
-                while (!usbManager.hasPermission(camDevice)) {
-                    long time0 = System.currentTimeMillis();
-                    for (a = 0; a < 10; a++) {
-                        while (System.currentTimeMillis() - time0 < 1000) {
-                            if (usbManager.hasPermission(camDevice)) break;
-                        }
-                    }
-                    if (usbManager.hasPermission(camDevice)) break;
-                    if ( a >= 10) break;
-                }
-            }
-                closeCameraDevice();
-
-            try {
-                openCam(true);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if (camIsOpen) {
-                if (!fiveFrames) {
-                    if (runningAutoTransfer != null) {
-                        return;
-                    }
-                    runningAutoTransfer = new IsochronousAutomaticClass();
-                    runningAutoTransfer.start();
-                } else {
-                    if (runningAutoTransfer5frames != null) {
-                        return;
-                    }
-                    runningAutoTransfer5frames = new IsochronousAutomaticClass5Frames(number);
-                    runningAutoTransfer5frames.start();
-                }
-            }
-
-        }
+    private void startLibUsbAutoDetection() {
+        saveLastValues();
+        Intent intent = new Intent(getApplicationContext(), LibUsb_AutoDetect.class);
+        Bundle bundle=new Bundle();
+        bundle.putBoolean("edit", true);
+        bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
+        bundle.putString("videoformat",videoformat);
+        bundle.putInt("camFormatIndex",camFormatIndex);
+        bundle.putInt("imageWidth",imageWidth);
+        bundle.putInt("imageHeight",imageHeight);
+        bundle.putInt("camFrameIndex",camFrameIndex);
+        bundle.putInt("camFrameInterval",camFrameInterval);
+        bundle.putInt("packetsPerRequest",packetsPerRequest);
+        bundle.putInt("maxPacketSize",maxPacketSize);
+        bundle.putInt("activeUrbs",activeUrbs);
+        bundle.putString("deviceName",deviceName);
+        bundle.putByte("bUnitID",bUnitID);
+        bundle.putByte("bTerminalID",bTerminalID);
+        bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
+        bundle.putByteArray("bNumControlUnit", bNumControlUnit);
+        bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
+        bundle.putBoolean("libUsb", libUsb);
+        bundle.putBoolean("fiveFrames", fiveFrames);
+        bundle.putString("progress",progress);
+        intent.putExtra("bun",bundle);
+        startActivityForResult(intent, ActivityLibUsbAutoDetectRequestCode);
     }
 
-    private boolean checkOneFrame () {
-        if (sframeLen == imageWidth * imageHeight * 2 ) return true;
-        else return false;
+    private void saveLastValues() {
+        last_camStreamingAltSetting = camStreamingAltSetting;
+        last_camFormatIndex = camFormatIndex;
+        last_camFrameIndex = camFrameIndex;
+        last_camFrameInterval = camFrameInterval;
+        last_packetsPerRequest = packetsPerRequest;
+        last_maxPacketSize = maxPacketSize;
+        last_imageWidth = imageWidth;
+        last_imageHeight = imageHeight;
+        last_activeUrbs = activeUrbs;
+        last_videoformat = videoformat;
+        last_transferSucessful = transferSucessful;
     }
 
-    private boolean checkFiveFrames () {
-        if ((sframeLenArray[0] >= (imageWidth * imageHeight *2) & sframeLenArray[1] >= (imageWidth * imageHeight *2) & sframeLenArray[2] >= (imageWidth * imageHeight *2) & sframeLenArray[3] >= (imageWidth * imageHeight *2) & sframeLenArray[4] >= (imageWidth * imageHeight *2) )) return true;
-        else return false;
+    private void startJnaAutoDetection() {
+        Intent intent = new Intent(getApplicationContext(), Jna_AutoDetect.class);
+        Bundle bundle=new Bundle();
+        bundle.putBoolean("edit", true);
+        bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
+        bundle.putString("videoformat",videoformat);
+        bundle.putInt("camFormatIndex",camFormatIndex);
+        bundle.putInt("imageWidth",imageWidth);
+        bundle.putInt("imageHeight",imageHeight);
+        bundle.putInt("camFrameIndex",camFrameIndex);
+        bundle.putInt("camFrameInterval",camFrameInterval);
+        bundle.putInt("packetsPerRequest",packetsPerRequest);
+        bundle.putInt("maxPacketSize",maxPacketSize);
+        bundle.putInt("activeUrbs",activeUrbs);
+        bundle.putString("deviceName",deviceName);
+        bundle.putByte("bUnitID",bUnitID);
+        bundle.putByte("bTerminalID",bTerminalID);
+        bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
+        bundle.putByteArray("bNumControlUnit", bNumControlUnit);
+        bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
+        bundle.putBoolean("libUsb", libUsb);
+        bundle.putBoolean("fiveFrames", fiveFrames);
+        bundle.putString("progress",progress);
+        intent.putExtra("bun",bundle);
+        startActivityForResult(intent, ActivityJnaAutoDetectRequestCode);
     }
 
-    private void raiseTheQuality() {
-        log("Method: raiseTheQuality");
-        UVC_Descriptor.FormatIndex formatIndex;
-        formatIndex = stf.formatIndex;
-        UVC_Descriptor.FormatIndex.FrameIndex frameIndex;
-        int[] resArray = new int [formatIndex.numberOfFrameDescriptors];
-        for (int j = 0; j < formatIndex.numberOfFrameDescriptors; j++) {
-            frameIndex = formatIndex.getFrameIndex(j);
-            resArray[j] = (frameIndex.wWidth * frameIndex.wHeight);
-        }
-        // find lowest resolution:
-        int maxValue = resArray[0];
-        int maxPos = 0;
-        for (int i = 1; i < resArray.length; i++) {
-            if (resArray[i] > maxValue) {
-                maxValue = resArray[i];
-                maxPos = i;
-            }
-        }
-        frameIndex = formatIndex.getFrameIndex(maxPos);
-        camFrameIndex = frameIndex.frameIndex;
-        imageWidth = frameIndex.wWidth;
-        imageHeight = frameIndex.wHeight;
-        System.out.println("camFrameIndex = " + camFrameIndex);
-        System.out.println("imageWidth = " + imageWidth);
-        System.out.println("imageHeight = " + imageHeight);
-
-        int[] intervalArray = frameIndex.dwFrameInterval.clone();
-        // sorting the array to smalest Value first
-        Arrays.sort(intervalArray);
-        // Selecting the secound biggest Frame Interval
-        if(intervalArray.length == 1) camFrameInterval = frameIndex.dwFrameInterval[(0)];
-        else camFrameInterval = frameIndex.dwFrameInterval[(1)];
-        lowQuality = false;
-        if (libUsb) {
-            try {
-                latch = new CountDownLatch(1);
-                I_LibUsb.INSTANCE.setCallback(new I_LibUsb.eventCallback(){
-                    public boolean callback(Pointer videoFrame, int frameSize) {
-                        sframeCnt ++;
-                        log("Event Callback called:\nFrameLength = " + frameSize);
-                        if (frameSize > 20) {
-                            sframeLen = frameSize;
-                            log("Event Callback called:\nFrameLength = " + frameSize);
-                        }
-                        if (sframeCnt > 3) latch.countDown();
-                        else if (frameSize == (imageWidth * imageHeight * 2)) {
-                            if (latch.getCount() == 1) {
-                                latch.countDown();
-                            }
-                        }
-                        return true;
-                    }
-                });
-                I_LibUsb.INSTANCE.getFramesOverLibUsb(packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                        camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, videoFormatToInt(), 0);
-                latch.await();
-                I_LibUsb.INSTANCE.stopStreaming();
-                log("Stream complete!");
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        else performAnotherAutomaticTest();
-    }
-    private void performAnotherAutomaticTest() {
-        try {
-            latch = new CountDownLatch(1);
-            makeAnAutomaticTransfer(true, 0, libUsb);
-            latch.await();
-
-            log("High Quality Stream:");
-            log("sframeLenArray[0] = " + sframeLenArray[0] + "  /  sframeLenArray[1] = " + sframeLenArray[1] + "  /  sframeLenArray[2] = " + sframeLenArray[2] + "  /  sframeLenArray[3] = " + sframeLenArray[3] + "  /  sframeLenArray[4] = " + sframeLenArray[4] );
-            if ((sframeLenArray[0] >= (imageWidth * imageHeight *2) & sframeLenArray[1] >= (imageWidth * imageHeight *2) & sframeLenArray[2] >= (imageWidth * imageHeight *2) & sframeLenArray[3] >= (imageWidth * imageHeight *2) & sframeLenArray[4] >= (imageWidth * imageHeight *2) )) highQualityStreamSucessful = true;
-            log("highQualityStreamSucessful = " + highQualityStreamSucessful);
-
-
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void renewTheProgressbar() {
-        if(percentageBuilder == null) {
-        } else {
-            CFAlertDialog.Builder percentageB = new CFAlertDialog.Builder(SetUpTheUsbDevice.this);
-            percentageB.setHeaderView(R.layout.dialog_header_layout_20);
-            percentageBuilder2 = percentageB.create();
-            percentageBuilder2.setOnShowListener(new DialogInterface.OnShowListener() {
-                @Override
-                public void onShow(DialogInterface dialog) {
-                    CFAlertDialog.Builder percentageB = new CFAlertDialog.Builder(SetUpTheUsbDevice.this);
-                    percentageB.setHeaderView(R.layout.dialog_header_layout_20);
-                    percentageBuilder = percentageB.show();
-                    dialog.dismiss();
-                }
-            });
-            percentageBuilder2.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                    try {
-                        if (sframeLen > 0 && sframeCnt > 0) {
-                            if (sframeLen > sframeMaximalLen) sframeMaximalLen = sframeLen;
-                            if (checkOneFrame()) {
-                                latch = new CountDownLatch(1);
-                                makeAnAutomaticTransfer(true, number, false);
-                                latch.await();
-                                if (checkFiveFrames()) {
-                                    finalAutoMethod();
-                                    return;
-                                } else {
-                                    activeUrbs = 4;
-                                    packetsPerRequest = 4;
-                                    latch = new CountDownLatch(1);
-                                    makeAnAutomaticTransfer(true, ++number, false);
-                                    latch.await();
-                                    if (checkFiveFrames()) {
-                                        finalAutoMethod();
-                                        return;
-                                    } else {
-                                        activeUrbs = 8;
-                                        packetsPerRequest = 8;
-                                        latch = new CountDownLatch(1);
-                                        makeAnAutomaticTransfer(true, ++number, false);
-                                        latch.await();
-                                        if (checkFiveFrames()) {
-                                            finalAutoMethod();
-                                            return;
-                                        } else {
-                                            activeUrbs = 16;
-                                            packetsPerRequest = 16;
-                                            latch = new CountDownLatch(1);
-                                            makeAnAutomaticTransfer(true, ++number, false);
-                                            latch.await();
-                                            if (checkFiveFrames()) {
-                                                finalAutoMethod();
-                                                return;
-                                            } else {
-                                                activeUrbs = 32;
-                                                packetsPerRequest = 32;
-                                                latch = new CountDownLatch(1);
-                                                makeAnAutomaticTransfer(true, ++number, false);
-                                                latch.await();
-                                                if (checkFiveFrames()) {
-                                                    finalAutoMethod();
-                                                    return;
-                                                } else {
-                                                    ///////////////////////    ????????????????????????    ///////////////////////
-                                                    finalAutoMethod();
-                                                    return;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            } else {
-                                activeUrbs = 4;
-                                packetsPerRequest = 4;
-                                log("4 / 4");
-                                latch = new CountDownLatch(1);
-                                makeAnAutomaticTransfer(false, 0, false);
-                                latch.await();
-                                if (checkOneFrame()) {
-                                    latch = new CountDownLatch(1);
-                                    makeAnAutomaticTransfer(true, number, false);
-                                    latch.await();
-                                    if (checkFiveFrames()) {
-                                        finalAutoMethod();
-                                        return;
-                                    } else {
-                                        activeUrbs = 8;
-                                        packetsPerRequest = 8;
-                                        latch = new CountDownLatch(1);
-                                        makeAnAutomaticTransfer(true, ++number, false);
-                                        latch.await();
-                                        if (checkFiveFrames()) {
-                                            finalAutoMethod();
-                                            return;
-                                        } else {
-                                            activeUrbs = 16;
-                                            packetsPerRequest = 16;
-                                            latch = new CountDownLatch(1);
-                                            makeAnAutomaticTransfer(true, ++number, false);
-                                            latch.await();
-                                            if (checkFiveFrames()) {
-                                                finalAutoMethod();
-                                                return;
-                                            } else {
-                                                activeUrbs = 32;
-                                                packetsPerRequest = 32;
-                                                latch = new CountDownLatch(1);
-                                                makeAnAutomaticTransfer(true, ++number, false);
-                                                latch.await();
-                                                if (checkFiveFrames()) {
-                                                    finalAutoMethod();
-                                                    return;
-                                                } else {
-                                                    findHighestFrameLengths();
-                                                    return;
-                                                }
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    activeUrbs = 8;
-                                    packetsPerRequest = 8;
-                                    latch = new CountDownLatch(1);
-                                    makeAnAutomaticTransfer(false, 0, false);
-                                    latch.await();
-                                    if (checkOneFrame()) {
-                                        latch = new CountDownLatch(1);
-                                        makeAnAutomaticTransfer(true, number, false);
-                                        latch.await();
-                                        if (checkFiveFrames()) {
-                                            finalAutoMethod();
-                                            return;
-                                        } else {
-                                            activeUrbs = 16;
-                                            packetsPerRequest = 16;
-                                            latch = new CountDownLatch(1);
-                                            makeAnAutomaticTransfer(true, ++number, false);
-                                            latch.await();
-                                            if (checkFiveFrames()) {
-                                                finalAutoMethod();
-                                                return;
-                                            } else {
-                                                activeUrbs = 32;
-                                                packetsPerRequest = 32;
-                                                latch = new CountDownLatch(1);
-                                                makeAnAutomaticTransfer(true, ++number, false);
-                                                latch.await();
-                                                if (checkFiveFrames()) {
-                                                    finalAutoMethod();
-                                                    return;
-                                                } else {
-                                                    ///////////////////////    ????????????????????????    ///////////////////////
-                                                    finalAutoMethod();
-                                                    return;
-                                                }
-                                            }
-                                        }
-                                    } else {
-                                        activeUrbs = 16;
-                                        packetsPerRequest = 16;
-                                        latch = new CountDownLatch(1);
-                                        makeAnAutomaticTransfer(false, number, false);
-                                        latch.await();
-                                        if (checkOneFrame()) {
-                                            latch = new CountDownLatch(1);
-                                            makeAnAutomaticTransfer(true, ++number, false);
-                                            latch.await();
-                                            if (checkFiveFrames()) {
-                                                finalAutoMethod();
-                                                return;
-                                            } else {
-                                                activeUrbs = 32;
-                                                packetsPerRequest = 32;
-                                                latch = new CountDownLatch(1);
-                                                makeAnAutomaticTransfer(true, ++number, false);
-                                                latch.await();
-                                                if (checkFiveFrames()) {
-                                                    finalAutoMethod();
-                                                    return;
-                                                } else {
-                                                    findHighestFrameLengths();
-                                                    finalAutoMethod();
-                                                    return;
-                                                }
-                                            }
-                                        } else {
-                                            findHighestFrameLengths();
-                                            return;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-            percentageBuilder2.show();
-        }
-    }
-
-    private void renewTheProgressbarLibUsb() {
-        if(percentageBuilder == null) {
-            log("percentageBuilder dismissed");
-        } else {
-
-            CFAlertDialog.Builder percentageB = new CFAlertDialog.Builder(SetUpTheUsbDevice.this);
-            percentageB.setHeaderView(R.layout.dialog_header_layout_40);
-            percentageBuilder2 = percentageB.create();
-            percentageBuilder2.setOnShowListener(new DialogInterface.OnShowListener() {
-                @Override
-                public void onShow(DialogInterface dialog) {
-                    dialog.dismiss();
-                }
-            });
-            percentageBuilder2.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                    finalAutoMethod();
-                }
-            });
-            percentageBuilder2.show();
-        }
-    }
-
-    private void findHighestFrameLengths() {
-        percentageBuilder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                CFAlertDialog.Builder percentageB = new CFAlertDialog.Builder(SetUpTheUsbDevice.this);
-                percentageB.setHeaderView(R.layout.dialog_header_layout_40);
-                percentageBuilder2 = percentageB.create();
-                percentageBuilder2.setOnShowListener(new DialogInterface.OnShowListener() {
-                    @Override
-                    public void onShow(DialogInterface dialog) {
-                        CFAlertDialog.Builder percentageB = new CFAlertDialog.Builder(SetUpTheUsbDevice.this);
-                        percentageB.setHeaderView(R.layout.dialog_header_layout_40);
-                        percentageBuilder = percentageB.show();
-                        dialog.dismiss();
-                    }
-                });
-                percentageBuilder2.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        try {
-                            int doneTransfers = number;
-                            log("40 % Status");
-                            // find the highest Transferlength:
-                            int [] lengthOne = findHighestLength();
-                            if(lengthOne[1] == 0) {
-                                activeUrbs = 4;
-                                packetsPerRequest = 4;
-                                log("4 / 4");
-                                latch = new CountDownLatch(1);
-                                makeAnAutomaticTransfer(true, number, false);
-                                latch.await();
-                                //
-                                activeUrbs = 16;
-                                packetsPerRequest = 16;
-                                latch = new CountDownLatch(1);
-                                makeAnAutomaticTransfer(true, ++number, false);
-                                latch.await();
-                                lengthOne = findHighestLength();
-                            }
-                            log ("lengthOne[0] = " + lengthOne[0] );
-                            // Test lowest package size ...
-                            setTheMaxPacketSize(false, true, 0);
-
-                            number = 0;
-                            latch = new CountDownLatch(1);
-                            makeAnAutomaticTransfer(true, number, false);
-                            latch.await();
-                            if (activeUrbs == 4) {
-                                activeUrbs = 16;
-                                packetsPerRequest =16;
-                            } else if (activeUrbs == 16) {
-                                activeUrbs = 4;
-                                packetsPerRequest =4;
-                            } else {
-                                activeUrbs = 2;
-                                packetsPerRequest =2;
-                            }
-                            latch = new CountDownLatch(1);
-                            makeAnAutomaticTransfer(true, ++number, false);
-                            latch.await();
-                            int [] lengthTwo = findHighestLength();
-                            log ("lengthTwo[0] = " + lengthTwo[0] );
-                            if (lengthOne[0] > lengthTwo[0]) {
-                                log("lengthOne[0] > lengthTwo[0]  -->  " + lengthOne[0]  + " > "+ lengthTwo[0]);
-                                setTheMaxPacketSize(true, false, 0);
-                                if (lengthOne[1] == 0) {
-                                    activeUrbs = 16;
-                                    packetsPerRequest =16;
-                                } else if (lengthOne[1] == 1) {
-                                    activeUrbs = 4;
-                                    packetsPerRequest =4;
-                                }
-                            } else {
-                                log("lengthOneo[0] < lengthTwo[0]  -->  " + lengthOne[0]  + " > "+ lengthTwo[0]);
-                                if (lengthTwo[1] == 0) {
-                                    activeUrbs = 16;
-                                    packetsPerRequest =16;
-                                } else if (lengthTwo[1] == 1) {
-                                    activeUrbs = 4;
-                                    packetsPerRequest =4;
-                                }
-                            }
-                            finalAutoMethod();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-                percentageBuilder2.show();
-            }
-        });
-        percentageBuilder.dismiss();
-    }
-
-    private int [] findHighestLength () {
-        int lenght;
-        int highestlength = 0;
-        int num = 0;
-        for (int i = 0; i < number; i++) {
-            lenght = shighestFramesCube[i][0] + shighestFramesCube[i][1] + shighestFramesCube[i][2] + shighestFramesCube[i][3] + shighestFramesCube[i][4];
-            if(lenght > highestlength) {
-                highestlength = lenght;
-                num = i;
-            }
-        }
-        int [] ret = new int [2];
-        ret[0] = highestlength;
-        ret[1] = num;
-        return ret;
-    }
-    private void setTheMaxPacketSize (boolean highest, boolean lowest, int value) {
-
-        if (highest) {
-            int[] maxPacketsSizeArray = convertedMaxPacketSize.clone();
-            int minValue = maxPacketsSizeArray[0];
-            int minPos = 0;
-            for (int i = 0; i < maxPacketsSizeArray.length; i++) {
-                if (maxPacketsSizeArray[i] < minValue) {
-                    minValue = maxPacketsSizeArray[i];
-                    minPos = i;
-                }
-            }
-            camStreamingAltSetting = (minPos + 1);
-            maxPacketSize = maxPacketsSizeArray[minPos];
-        } else if (lowest) {
-            int[] maxPacketsSizeArray = convertedMaxPacketSize.clone();
-            int maxValue = maxPacketsSizeArray[0];
-            int maxPos = 0;
-            for (int i = 0; i < maxPacketsSizeArray.length; i++) {
-                if (maxPacketsSizeArray[i] < maxValue) {
-                    maxValue = maxPacketsSizeArray[i];
-                    maxPos = i;
-                }
-            }
-            camStreamingAltSetting = (maxPos + 1);
-            maxPacketSize = maxPacketsSizeArray[maxPos];
-        } else {
-            int[] maxPacketsSizeArray = convertedMaxPacketSize.clone();
-            if (maxPacketsSizeArray.length >= value) {
-                camStreamingAltSetting = (value + 1);
-                maxPacketSize = maxPacketsSizeArray[value];
-            }
-        }
-    }
 
 }
- /*
-
-
-                                String autoDetectFileValuesString = new String("AutoDetectFileValues");
-                                String autoDetectFileOrdersString = new String("AutoDetectFileOrders");
-                                final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
-                                final File file = new File(rootPath, "/" + autoFilePathFolder);
-                                String rootdirStr = file.toString();
-                                rootdirStr += "/";
-                                stf.restoreAutoOrders(rootdirStr += autoDetectFileOrdersString += ".sav");
-                                rootdirStr = file.toString();
-                                rootdirStr += "/";
-                                stf.restoreFromFile(rootdirStr += autoDetectFileValuesString += ".sav");
-
-                                stf.writeTheValues();
-                                */
-/*
-
-                            private static String autoFilePathFolder = "UVC_Camera/autoDetection";
-                            public int spacketCnt = 0;
-                            public int spacket0Cnt = 0;
-                            public int spacket12Cnt = 0;
-    public int spacketDataCnt = 0;
-    public int spacketHdr8Ccnt = 0;
-    public int spacketErrorCnt = 0;
-    public int sframeCnt = 0;
-    public int sframeLen = 0;
-    public int [] sframeLenArray = new int [5];
-    public int srequestCnt = 0;
-                        do {
-                            if (activeUrbs <= 3) activeUrbs ++;
-                            else activeUrbs = activeUrbs * 2;
-                            latch = new CountDownLatch(1);
-                            makeAnAutomaticTransfer(false);
-                            try {
-                                latch.await();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            log("spacketErrorCnt = " + spacketErrorCnt);
-                        } while (activeUrbs <= 64 && sframeLen < (imageWidth * imageHeight *2));
-                        log("sframeLen = " + sframeLen);
-                        //smallerPacketsPresent = true;
-                        log("\n ");
-                        log("Testing the Urbs 5 Packets ...");
-                        log("\n ");
-
-                        do {
-                            latch = new CountDownLatch(1);
-                            makeAnAutomaticTransfer(true);
-                            log("activeUrbs = " + activeUrbs);
-                            try {
-                                latch.await();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            log("spacketErrorCnt = " + spacketErrorCnt);
-                            if(activeUrbs <= 64 && !(sframeLenArray[0] >= (imageWidth * imageHeight *1.5 ) & sframeLenArray[1] >= (imageWidth * imageHeight * 1.5 ) )) {
-                                if (activeUrbs <= 3) activeUrbs ++;
-                                else activeUrbs = activeUrbs * 2;
-                            }
-                        } while (activeUrbs <= 64 && !(sframeLenArray[0] >= (imageWidth * imageHeight ) & sframeLenArray[1] >= (imageWidth * imageHeight ) ));
-                        log("\n ");
-                        log("\n" + "Testing the Packets ..." + "\n");
-                        log("\n ");
-
-                        do {
-                            latch = new CountDownLatch(1);
-                            makeAnAutomaticTransfer(true);
-                            log("packetsPerRequest = " + packetsPerRequest);
-                            latch.await();
-
-                            log("spacketErrorCnt = " + spacketErrorCnt);
-
-                            if(packetsPerRequest <= 64 && !(sframeLenArray[0] >= (imageWidth * imageHeight *2) & sframeLenArray[1] >= (imageWidth * imageHeight *2) & sframeLenArray[2] >= (imageWidth * imageHeight *2) & sframeLenArray[3] >= (imageWidth * imageHeight *2) & sframeLenArray[4] >= (imageWidth * imageHeight *2) )) {
-                                if (packetsPerRequest <= 3) packetsPerRequest ++;
-                                else packetsPerRequest = packetsPerRequest * 2;
-                            }
-                        } while (packetsPerRequest <= 64 && !(sframeLenArray[0] >= (imageWidth * imageHeight *2) & sframeLenArray[1] >= (imageWidth * imageHeight *2) & sframeLenArray[2] >= (imageWidth * imageHeight *2) & sframeLenArray[3] >= (imageWidth * imageHeight *2) & sframeLenArray[4] >= (imageWidth * imageHeight *2) ));
-                             */

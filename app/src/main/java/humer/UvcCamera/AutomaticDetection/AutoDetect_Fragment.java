@@ -16,8 +16,10 @@ public class AutoDetect_Fragment extends Fragment {
     private final String KEY_SCROLL_Y = "scroll_y";
 
     private TextView percentageView;
+    private static String percentDone = "0% done";
 
-    public static Fragment newInstance() {
+    public static Fragment newInstance(String value) {
+        if (value != null) percentDone = value;
         return new AutoDetect_Fragment();
     }
 
@@ -26,6 +28,7 @@ public class AutoDetect_Fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.auto_detect_fragment, container, false);
         percentageView = rootView.findViewById(R.id.percentage);
+        percentageView.setText(percentDone);
 
         return rootView;
     }

@@ -51,6 +51,7 @@ LOCAL_LDLIBS += -llog
 LOCAL_LDLIBS += -landroid
 
 LOCAL_SHARED_LIBRARIES += libusb1.0
+LOCAL_SHARED_LIBRARIES += libuvc
 
 
 LOCAL_ARM_MODE := arm

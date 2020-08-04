@@ -27,6 +27,7 @@ package humer.UvcCamera.UsbIso64;
 
 import com.sun.jna.ptr.IntByReference;
 import static humer.UvcCamera.UsbIso64.usbdevice_fs.USBDEVFS_GET_CAPABILITIES;
+import static humer.UvcCamera.UsbIso64.usbdevice_fs.USBDEVFS_RELEASEINTERFACE;
 import static humer.UvcCamera.UsbIso64.usbdevice_fs.USBDEVFS_SETINTERFACE;
 import java.io.IOException;
 
@@ -46,6 +47,15 @@ public class usbdevice_fs_util {
         p.altsetting = altSetting;
         Libc.INSTANCE.ioctl(fileDescriptor, USBDEVFS_SETINTERFACE, p);
     }
+
+    // Added by Peter Stoiber for Releasing Interfaces over native
+    // August 2020
+    public static int releaseInterface(int fileDescriptor, int interfaceId) throws IOException {
+        usbdevice_fs.usbdevfs_disconnect_claim p = new usbdevice_fs.usbdevfs_disconnect_claim();
+        p.iface = interfaceId;
+        return Libc.INSTANCE.ioctl(fileDescriptor, USBDEVFS_RELEASEINTERFACE, p);
+    }
+
 
     public int getCapabilities(int fileDescriptor) {
         IntByReference resBuffer = new IntByReference();

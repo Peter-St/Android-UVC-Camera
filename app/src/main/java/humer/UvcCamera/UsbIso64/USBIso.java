@@ -346,7 +346,7 @@ public class USBIso {
          * Submits this request to the USB device driver.
          * The request is added to the queue of active requests.
          */
-        public void submit() throws IOException {
+        public int submit() throws IOException {
             if (!initialized || queued) {
                 throw new IllegalStateException();
             }
@@ -359,7 +359,9 @@ public class USBIso {
             try {
                 rc = (Libc.INSTANCE).ioctl(fileDescriptor, USBDEVFS_SUBMITURB, getNativeUrbAddr());
                 if (rc != 0) {
-                    throw new IOException("ioctl(USBDEVFS_SUBMITURB) failed, rc=" + rc + ".");
+                    Log.d("USBISO", "ioctl(USBDEVFS_SUBMITURB) failed, rc=" + rc + ".");
+                    return rc;
+                    //throw new IOException("ioctl(USBDEVFS_SUBMITURB) failed, rc=" + rc + ".");
                 }
             } catch (Exception e) {
                 Log.d("ERROR", "ERROR: " + e);
@@ -371,6 +373,7 @@ public class USBIso {
            // System.out.println("URBAdresse");
 
             queued = true;
+            return 0;
         }
 
         /**

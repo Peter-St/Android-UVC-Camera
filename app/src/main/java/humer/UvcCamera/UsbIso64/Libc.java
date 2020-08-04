@@ -47,7 +47,8 @@ public interface Libc extends Library {
 
     int ioctl(int fileHandle, int request, PointerByReference p) throws LastErrorException;
 
-    int ioctl(int fileHandle, int request, Pointer p) throws LastErrorException;
+    // edited by Peter Stoiber August 2020
+    int ioctl(int fileHandle, int request, Pointer p) ;
 
     int ioctl(int fileHandle, int request, long l) throws LastErrorException;
 
