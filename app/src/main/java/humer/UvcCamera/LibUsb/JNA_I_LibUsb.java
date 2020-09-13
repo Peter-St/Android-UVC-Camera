@@ -3,6 +3,7 @@ package humer.UvcCamera.LibUsb;
 
 import com.sun.jna.Callback;
 import com.sun.jna.Library;
+import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
@@ -13,7 +14,7 @@ public interface JNA_I_LibUsb extends Library {
 
     public void init (int FD, int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
                       int camFrameInde, int camFrameInterva, int imageWidt, int imageHeigh, int camStreamingEndpoint, int camStreamingInterfaceNumber,
-                      String frameFormat, int numberOfAutoFrames);
+                      String frameFormat, int numberOfAutoFrames, int bcdUVC_int);
 
     public int initStreamingParms(int FD);
 
@@ -42,9 +43,6 @@ public interface JNA_I_LibUsb extends Library {
 
     public void closeLibUsb();
 
-
-
-
     public interface eventCallback extends Callback {
         boolean callback(Pointer videoFrame, int frameSize);
     }
@@ -60,14 +58,10 @@ public interface JNA_I_LibUsb extends Library {
 
     public void exit();
 
-
     public Pointer probeCommitControl(int bmHint, int camFormatInde,
                                       int camFrameInde, int camFrameInterva);
 
     public void probeCommitControl_cleanup();
-
-
-
 
     public void getFramesOverLibUsb(int packetsPerRequest, int maxPacketSize, int activeUrbs, int camStreamingAltSetting, int camFormatIndex,
                                     int camFrameIndex, int camFrameInterval, int imageWidth, int imageHeight, int yuvFrameIsZero, int stream );

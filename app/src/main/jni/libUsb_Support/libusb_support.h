@@ -28,7 +28,7 @@ extern AutotransferStruct get_autotransferStruct();
 
 extern int init (int FD, int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
                  int camFrameInde, int camFrameInterva, int imageWidt, int imageHeigh, int camStreamingEndpointAdress, int camStreamingInterfaceNumber,
-                 const char* frameformat, int numberOfAutoFrame);
+                 const char* frameformat, int numberOfAutoFrame, int bcdUVC_int);
 
 extern int initStreamingParms(int FD);
 
@@ -51,11 +51,6 @@ extern int awaitFrame () ;
 typedef int ( *eventCallback)(unsigned char *videoframe, int value);
 extern void setCallback(eventCallback evnHnd);
 
-typedef int ( *logPrint)(const char *log_msg);
-extern void setLogPrint(logPrint LogPrint);
-
-
-
 extern void stopStreaming();
 
 extern void exit();
@@ -65,7 +60,6 @@ extern void closeLibUsb();
 extern unsigned char * probeCommitControl();
 
 extern int eheckEventHandling();
-
 
 extern unsigned char * probeCommitControl(int bmHin, int camFormatInde, int camFrameInde, int camFrameInterva);
 

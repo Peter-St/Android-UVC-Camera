@@ -59,6 +59,7 @@ public class Jna_AutoDetect extends AppCompatActivity {
     public static byte bTerminalID;
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
+    public static byte[] bcdUVC;
     public static byte bStillCaptureMethod;
     public boolean libUsb;
 
@@ -277,6 +278,7 @@ public class Jna_AutoDetect extends AppCompatActivity {
         bTerminalID = bundle.getByte("bTerminalID",(byte)0);
         bNumControlTerminal = bundle.getByteArray("bNumControlTerminal");
         bNumControlUnit = bundle.getByteArray("bNumControlUnit");
+        bcdUVC = bundle.getByteArray("bcdUVC");
         bStillCaptureMethod = bundle.getByte("bStillCaptureMethod", (byte)0);
         libUsb = bundle.getBoolean("libUsb" );
         fiveFrames = bundle.getBoolean("fiveFrames" );
@@ -569,6 +571,7 @@ public class Jna_AutoDetect extends AppCompatActivity {
         resultIntent.putExtra("bTerminalID", bTerminalID);
         resultIntent.putExtra("bNumControlTerminal", bNumControlTerminal);
         resultIntent.putExtra("bNumControlUnit", bNumControlUnit);
+        resultIntent.putExtra("bcdUVC", bcdUVC);
         resultIntent.putExtra("bStillCaptureMethod", bStillCaptureMethod);
         resultIntent.putExtra("libUsb", libUsb);
 

@@ -59,8 +59,8 @@ public class UVC_Descriptor {
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
 
-
-
+    // Version of UVC
+    public static byte[] bcdUVC;
 
 
     public UVC_Descriptor(ByteBuffer data) {  //convertedMaxPacketSize
@@ -83,6 +83,13 @@ public class UVC_Descriptor {
                 byte descSize = uvcData.get(pos);
                 byte descType = uvcData.get(pos +1);
                 byte descSubType = uvcData.get(pos + 2);
+
+                //Get Version of UVC (bcdUVC)
+                if (descType == 0x24 && descSubType == 0x01 && !foundPROCESSING_UNIT && !foundINPUT_HEADER_IN_Endpoint) {
+                    bcdUVC = new byte [2];
+                    bcdUVC[0] = uvcData.get(pos + 3);
+                    bcdUVC[1] = uvcData.get(pos + 4);
+                }
 
                 //Get Still Image Support
                 if (descType == 0x24 && descSubType == 0x01 && foundPROCESSING_UNIT && !foundINPUT_HEADER_IN_Endpoint) {

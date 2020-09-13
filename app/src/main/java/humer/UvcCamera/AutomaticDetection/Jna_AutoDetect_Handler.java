@@ -31,6 +31,7 @@ public class Jna_AutoDetect_Handler {
     public static byte bTerminalID;
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
+    public static byte[] bcdUVC;
     public static byte bStillCaptureMethod;
     private static boolean libUsb;
 
@@ -233,6 +234,7 @@ public class Jna_AutoDetect_Handler {
             bTerminalID = setUpTheUsbDevice.bTerminalID;
             bNumControlTerminal = setUpTheUsbDevice.bNumControlTerminal;
             bNumControlUnit = setUpTheUsbDevice.bNumControlUnit;
+            bcdUVC = setUpTheUsbDevice.bcdUVC;
             bStillCaptureMethod = setUpTheUsbDevice.bStillCaptureMethod;
             libUsb = setUpTheUsbDevice.libUsb;
             progress = setUpTheUsbDevice.progress;
@@ -284,6 +286,7 @@ public class Jna_AutoDetect_Handler {
             setUpTheUsbDevice.bTerminalID = bTerminalID;
             setUpTheUsbDevice.bNumControlTerminal = bNumControlTerminal;
             setUpTheUsbDevice.bNumControlUnit = bNumControlUnit;
+            setUpTheUsbDevice.bcdUVC = bcdUVC;
             setUpTheUsbDevice.bStillCaptureMethod = bStillCaptureMethod;
             setUpTheUsbDevice.libUsb = libUsb;
             setUpTheUsbDevice.maxPacketsPerRequestReached = maxPacketsPerRequestReached;

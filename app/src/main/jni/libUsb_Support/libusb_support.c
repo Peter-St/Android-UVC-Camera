@@ -84,6 +84,7 @@ static int productID;
 static int vendorID;
 static int busnum;
 static int devaddr;
+static uint16_t bcdUVC;
 static int laufzeit = 2;
 static int fd, i, j, result = -1;
 static int camStreamingInterfaceNum;
@@ -152,11 +153,14 @@ FrameData *videoFrameData;
 uint8_t streamControl[48];
 uint8_t unpackUsbInt(uint8_t *p, int i);
 
-
 bool camIsOpen;
 
-
-
+typedef struct _CTL_Data
+{
+    int  BufferSize;
+    unsigned char ctl_transfer_values[];
+} CtlData;
+CtlData *ctl_transfer_Data;
 
 void getStreamingParmsArray(int *array, uint8_t *buf) {
 
@@ -169,12 +173,26 @@ void getStreamingParmsArray(int *array, uint8_t *buf) {
 
 
 
-void initStreamingParms_controltransfer(libusb_device_handle *handle) {
-    uint8_t buffer[26];
-    for (i = 0; i < 26; i++) {
+void initStreamingParms_controltransfer(libusb_device_handle *handle, bool createPointer) {
+    LOGD("bool createPointer = %d", createPointer);
+    size_t length;
+    if (bcdUVC >= 0x0150)
+        length = 48;
+    else if (bcdUVC >= 0x0110)
+        length = 34;
+    else
+        length = 26;
+    LOGD("length = %d", length);
+    if (createPointer == true) {
+        ctl_transfer_Data = malloc(sizeof *ctl_transfer_Data + sizeof(unsigned char[48*4]));
+        ctl_transfer_Data->BufferSize = 48 * 4;
+        memset(ctl_transfer_Data->ctl_transfer_values, 0, sizeof(unsigned char) * (ctl_transfer_Data->BufferSize));
+    }
+    uint8_t buffer[length];
+    for (i = 0; i < length; i++) {
         buffer[i] = 0x00;
     }
-    buffer[0] = 0x01; // what fields shall be kept fixed (0x01: dwFrameInterval)
+    buffer[0] = bmHint; // what fields shall be kept fixed (0x01: dwFrameInterval)
     buffer[1] = 0x00; //
     buffer[2] = camFormatIndex; // video format index
     buffer[3] = camFrameIndex; // video frame index
@@ -189,22 +207,27 @@ void initStreamingParms_controltransfer(libusb_device_handle *handle) {
         if (buffer[i] != 0){
             LOGD("[%d ] ", buffer[i]);}
 */
+
+    if (createPointer == true) {
+        memcpy(ctl_transfer_Data->ctl_transfer_values, buffer , length);
+    }
     getStreamingParmsArray(initStreamingParmsIntArray , buffer);
     // wanted Pharms
-        LOGD("initStreamingParmsIntArray[0] = %d", initStreamingParmsIntArray[0]);
+    LOGD("initStreamingParmsIntArray[0] = %d", initStreamingParmsIntArray[0]);
     LOGD("initStreamingParmsIntArray[1] = %d", initStreamingParmsIntArray[1]);
     LOGD("initStreamingParmsIntArray[2] = %d", initStreamingParmsIntArray[2]);
-
     int len = libusb_control_transfer(handle, RT_CLASS_INTERFACE_SET, SET_CUR, (VS_PROBE_CONTROL << 8), camStreamingInterfaceNum, buffer, sizeof (buffer), 2000);
     if (len != sizeof (buffer)) {
         LOGD("\nCamera initialization failed. Streaming parms probe set failed, len= %d.\n", len);
     } else {
         LOGD("Camera initialization success, len= %d.\n", len);
     }
-
     len = libusb_control_transfer(handle, RT_CLASS_INTERFACE_GET, GET_CUR, (VS_PROBE_CONTROL << 8), camStreamingInterfaceNum, buffer, sizeof (buffer), 500);
     if (len != sizeof (buffer)) {
         LOGD("Camera initialization failed. Streaming parms probe set failed, len= %d.\n", len);
+    }
+    if (createPointer == true) {
+        memcpy(ctl_transfer_Data->ctl_transfer_values + 47, buffer, length);
     }
     getStreamingParmsArray(probedStreamingParmsIntArray , buffer);
 /*
@@ -217,42 +240,31 @@ void initStreamingParms_controltransfer(libusb_device_handle *handle) {
         if (buffer[i] != 0){
             LOGD("[%d ] ", buffer[i]);}
 */
-
     len = libusb_control_transfer(handle, RT_CLASS_INTERFACE_SET, SET_CUR, (VS_COMMIT_CONTROL << 8), camStreamingInterfaceNum, buffer, sizeof (buffer), 2000);
     if (len != sizeof (buffer)) {
         LOGD("Camera initialization failed. Streaming parms commit set failed, len= %d.", len);
     }
+    if (createPointer == true) {
+        memcpy(ctl_transfer_Data->ctl_transfer_values + 95, buffer, length);
+    }
     getStreamingParmsArray(finalStreamingParmsIntArray_first , buffer);
-
-
     len = libusb_control_transfer(handle, RT_CLASS_INTERFACE_GET, GET_CUR, (short) (VS_COMMIT_CONTROL << 8), camStreamingInterfaceNum, buffer, sizeof (buffer), 2000);
     if (len != sizeof (buffer)) {
         LOGD("Camera initialization failed. Streaming parms commit get failed, len= %d.", len);
     }
+    if (createPointer == true) {
+        memcpy(ctl_transfer_Data->ctl_transfer_values + 143, buffer, length);
+    }
     getStreamingParmsArray(finalStreamingParmsIntArray , buffer);
-/*
-    LOGD("\nFinal Streaming Pharms:   ");
-    for (int i = 0; i < sizeof(buffer); i++)
-        if (buffer[i] != 0){
-            LOGD("[%d ] ", buffer[i]);}
-    LOGD("\n");
-*/
 }
-
-
-
 
 void print_endpoint(const struct libusb_endpoint_descriptor *endpoint, int bInterfaceNumber) {
     int i, ret;
-
     if (bInterfaceNumber == camStreamingInterfaceNum) {
         int endpunktadresse = endpoint->bEndpointAddress;
     }
-
     LOGD("        wMaxPacketSize:   %d\n", endpoint->wMaxPacketSize);
-
     fflush(stdout);
-
 }
 
 void print_altsetting(const struct libusb_interface_descriptor *interface) {
@@ -379,7 +391,13 @@ int print_device(libusb_device *dev, int level, libusb_device_handle *handle, st
 int libUsb_open_def_fd(int vid, int pid, const char *serial, int FD, int busnum, int devaddr) {
     int ret;
     unsigned char data[64];
-    ret = libusb_init_ex(&ctx, 1);
+    enum libusb_error rc;
+    rc = libusb_set_option(&ctx, LIBUSB_OPTION_WEAK_AUTHORITY, NULL);
+    if (rc != LIBUSB_SUCCESS) {
+        __android_log_print(ANDROID_LOG_ERROR, TAG,"libusb_init failed: %d\n", ret);
+        return -1;
+    }
+    ret = libusb_init(&ctx);
     if (ret < 0) {
         __android_log_print(ANDROID_LOG_INFO, TAG,
                             "libusb_init failed: %d\n", ret);
@@ -443,7 +461,7 @@ void exit() {
 
 int init (int FD, int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
            int camFrameInde, int camFrameInterva, int imageWidt, int imageHeigh, int camStreamingEndpointAdress, int camStreamingInterfaceNumber,
-           const char* frameformat, int numberOfAutoFrame) {
+           const char* frameformat, int numberOfAutoFrame, int bcdUVC_int) {
     fd = FD;
     numberOfAutoFrames = numberOfAutoFrame;
     packetsPerRequest = packetsPerReques;
@@ -465,6 +483,9 @@ int init (int FD, int packetsPerReques, int maxPacketSiz, int activeUrb, int cam
     videoFrameData = malloc(sizeof *videoFrameData + sizeof(char[imageWidt*imageHeigh*2]));
     videoFrameData->FrameSize = imageWidt * imageHeigh;
     videoFrameData->FrameBufferSize = videoFrameData->FrameSize * 2;
+    bcdUVC = bcdUVC_int;
+    LOGD("bcdUVC = %d", bcdUVC);
+
     initialized = true;
     return result;
 }
@@ -506,30 +527,38 @@ bool compareStreamingParmsValues() {
 
 
 int initStreamingParms(int FD) {
-    int ret;
-    unsigned char data[64];
-    ret = libusb_init_ex(&ctx, 1);
+    if (!camIsOpen) {
+        int ret;
+        enum libusb_error rc;
+        unsigned char data[64];
 
-    if (ret < 0) {
-        __android_log_print(ANDROID_LOG_INFO, TAG,
-                            "libusb_init failed: %d\n", ret);
-        return -1;
-    }
-    ret = libusb_wrap_sys_device(NULL, (intptr_t)FD, &devh);
-    if (ret < 0) {
-        __android_log_print(ANDROID_LOG_INFO, TAG,
-                            "libusb_wrap_sys_device failed: %d\n", ret);
-        return -2;
-    }
-    else if (devh == NULL) {
-        __android_log_print(ANDROID_LOG_INFO, TAG,
-                            "libusb_wrap_sys_device returned invalid handle\n");
-        return -3;
-    }
+        rc = libusb_set_option(&ctx, LIBUSB_OPTION_WEAK_AUTHORITY, NULL);
+        if (rc != LIBUSB_SUCCESS) {
+            __android_log_print(ANDROID_LOG_ERROR, TAG,"libusb_init failed: %d\n", ret);
+            return -1;
+        }
+        ret = libusb_init(&ctx);
 
-    __android_log_print(ANDROID_LOG_INFO, TAG,
-                        "libusb_control_transfer start\n");
+        if (ret < 0) {
+            __android_log_print(ANDROID_LOG_INFO, TAG,
+                                "libusb_init failed: %d\n", ret);
+            return -1;
+        }
+        ret = libusb_wrap_sys_device(NULL, (intptr_t)FD, &devh);
+        if (ret < 0) {
+            __android_log_print(ANDROID_LOG_INFO, TAG,
+                                "libusb_wrap_sys_device failed: %d\n", ret);
+            return -2;
+        }
+        else if (devh == NULL) {
+            __android_log_print(ANDROID_LOG_INFO, TAG,
+                                "libusb_wrap_sys_device returned invalid handle\n");
+            return -3;
+        }
 
+        __android_log_print(ANDROID_LOG_INFO, TAG,
+                            "libusb_control_transfer start\n");
+    }
 
     for (int if_num = 0; if_num < (camStreamingInterfaceNum + 1); if_num++) {
         if (libusb_kernel_driver_active(devh, if_num)) {
@@ -553,15 +582,71 @@ int initStreamingParms(int FD) {
     } else {
         LOGD("Die Alternativeinstellungen wurden erfolgreich gesetzt: %d ; Altsetting = 0\n", r);
     }
-    initStreamingParms_controltransfer(devh);
+    initStreamingParms_controltransfer(devh, false);
     camIsOpen = compareStreamingParmsValues();
     if (camIsOpen) return 0;
     else return -4;
-
-
 }
 
-
+unsigned char * probeCommitControl(int bmHin, int camFormatInde, int camFrameInde, int camFrameInterva) {
+    bmHint = bmHin;
+    camFormatIndex = camFormatInde;
+    camFrameIndex = camFrameInde;
+    camFrameInterval = camFrameInterva;
+    if (!camIsOpen) {
+        int ret;
+        enum libusb_error rc;
+        rc = libusb_set_option(&ctx, LIBUSB_OPTION_WEAK_AUTHORITY, NULL);
+        if (rc != LIBUSB_SUCCESS) {
+            __android_log_print(ANDROID_LOG_ERROR, TAG,"libusb_init failed: %d\n", ret);
+            return NULL;
+        }
+        ret = libusb_init(&ctx);
+        if (ret < 0) {
+            __android_log_print(ANDROID_LOG_INFO, TAG,
+                                "libusb_init failed: %d\n", ret);
+            return NULL;
+        }
+        ret = libusb_wrap_sys_device(NULL, (intptr_t)fd, &devh);
+        if (ret < 0) {
+            __android_log_print(ANDROID_LOG_INFO, TAG,
+                                "libusb_wrap_sys_device failed: %d\n", ret);
+            return NULL;
+        }
+        else if (devh == NULL) {
+            __android_log_print(ANDROID_LOG_INFO, TAG,
+                                "libusb_wrap_sys_device returned invalid handle\n");
+            return NULL;
+        }
+        __android_log_print(ANDROID_LOG_INFO, TAG,
+                            "libusb_control_transfer start\n");
+    }
+    for (int if_num = 0; if_num < (camStreamingInterfaceNum + 1); if_num++) {
+        if (libusb_kernel_driver_active(devh, if_num)) {
+            libusb_detach_kernel_driver(devh, if_num);
+        }
+        int rc = libusb_claim_interface(devh, if_num);
+        if (rc < 0) {
+            fprintf(stderr, "Error claiming interface: %s\n",
+                    libusb_error_name(rc));
+        } else {
+            printf("Interface %d erfolgreich eingehängt;\n", if_num);
+        }
+    }
+    struct libusb_device_descriptor desc;
+    print_device(libusb_get_device(devh) , 0, devh, desc);
+    int r = libusb_set_interface_alt_setting(devh, camStreamingInterfaceNum, 0); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
+    if (r != LIBUSB_SUCCESS) {
+        LOGD("libusb_set_interface_alt_setting(devh, 1, 1) failed with error %d\n", r);
+        return NULL;
+    } else {
+        LOGD("Die Alternativeinstellungen wurden erfolgreich gesetzt: %d ; Altsetting = 0\n", r);
+    }
+    initStreamingParms_controltransfer(devh, true);
+    camIsOpen = compareStreamingParmsValues();
+    if (camIsOpen) return ctl_transfer_Data;
+    else return ctl_transfer_Data;
+}
 
 void isoc_transfer_completion_handler_automaticdetection(struct libusb_transfer *the_transfer) {
     LOGD("Iso Transfer Callback Function");
@@ -699,7 +784,13 @@ void closeLibUsb() {
     //libusb_close(devh);
     //libusb_exit(ctx);
     //close(fd);
+}
 
+
+void probeCommitControl_cleanup()
+{
+    free(ctl_transfer_Data->ctl_transfer_values);
+    LOGD("probeCommitControl_cleanup Complete");
 }
 
 

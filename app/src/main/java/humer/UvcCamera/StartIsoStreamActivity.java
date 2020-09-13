@@ -79,6 +79,7 @@ import java.util.concurrent.Executor;
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.example.androidthings.videortc.WebRtc_MainActivity;
 import com.sample.timelapse.MJPEGGenerator ;
+import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
 
 import org.webrtc.VideoCapturer;
@@ -152,6 +153,7 @@ public class StartIsoStreamActivity extends Activity {
     public static byte bStillCaptureMethod;
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
+    public static byte[] bcdUVC;
     public static boolean LIBUSB;
 
 
@@ -233,12 +235,12 @@ public class StartIsoStreamActivity extends Activity {
     private static int devaddr;
     private volatile boolean libusb_is_initialized;
     private static final String DEFAULT_USBFS = "/dev/bus/usb";
-
+/*
     // JNI METHODS
     public native void JniIsoStreamActivitySurface(final Surface surface, int a, int b);
     public native void JniIsoStreamActivity(int a, int b);
-
     public native void JniProbeCommitControl(int bmHint,int camFormatIndex,int camFrameIndex,int  camFrameInterval);
+*/
 
     private Surface mPreviewSurface;
     private SurfaceView mUVCCameraView;
@@ -1222,6 +1224,7 @@ public class StartIsoStreamActivity extends Activity {
         bundle.putByte("bTerminalID",bTerminalID);
         bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
         bundle.putByteArray("bNumControlUnit", bNumControlUnit);
+        bundle.putByteArray("bcdUVC", bcdUVC);
         bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
         bundle.putBoolean("libUsb", LIBUSB);
         intent.putExtra("bun",bundle);
@@ -1307,8 +1310,9 @@ public class StartIsoStreamActivity extends Activity {
                         if(adress == null)  adress = camDevice.getDeviceName();
                         if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
                         if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
+                        int bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
                         JNA_I_LibUsb.INSTANCE.init(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                                camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat,0);
+                                camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat,0, bcdUVC_int);
                         libusb_is_initialized = true;
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -1361,8 +1365,8 @@ public class StartIsoStreamActivity extends Activity {
 
                 //mPreviewSurface = mUVCCameraView.getHolder().getSurface();
                 //final SurfaceHolder holder = mPreviewSurface;
-                JniProbeCommitControl(1, camFormatIndex, camFrameIndex,  camFrameInterval);
-                JniIsoStreamActivity( 1, 1);
+                //JniProbeCommitControl(1, camFormatIndex, camFrameIndex,  camFrameInterval);
+                //JniIsoStreamActivity( 1, 1);
 
                 //JniIsoStreamActivitySurface(mPreviewSurface, 1, 1);
                 //camera.setPreviewDisplay(holder.getSurface());
@@ -2269,6 +2273,7 @@ public class StartIsoStreamActivity extends Activity {
         bTerminalID = bundle.getByte("bTerminalID",(byte)0);
         bNumControlTerminal = bundle.getByteArray("bNumControlTerminal");
         bNumControlUnit = bundle.getByteArray("bNumControlUnit");
+        bcdUVC =  bundle.getByteArray("bcdUVC");
         bStillCaptureMethod = bundle.getByte("bStillCaptureMethod", (byte)0);
         LIBUSB = bundle.getBoolean("libUsb" );
 

@@ -27,7 +27,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
+import com.sun.jna.Memory;
 import com.sun.jna.Native;
+import com.sun.jna.NativeLibrary;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -56,6 +58,7 @@ public class LibUsb_AutoDetect extends AppCompatActivity {
     public static byte bTerminalID;
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
+    public static byte[] bcdUVC;
     public static byte bStillCaptureMethod;
     public static boolean libUsb = true;
 
@@ -245,8 +248,6 @@ public class LibUsb_AutoDetect extends AppCompatActivity {
                 sframeLen = autoDetectValues.sframeLen;
                 srequestCnt = autoDetectValues.requestCnt;
                 sframeLenArray = autoDetectValues.sframeLenArray;
-                JNA_I_LibUsb.INSTANCE.closeLibUsb();
-                log("Libusb closed");
                 writeTheValues();
                 return false;
             }
@@ -272,6 +273,7 @@ public class LibUsb_AutoDetect extends AppCompatActivity {
         bTerminalID = bundle.getByte("bTerminalID",(byte)0);
         bNumControlTerminal = bundle.getByteArray("bNumControlTerminal");
         bNumControlUnit = bundle.getByteArray("bNumControlUnit");
+        bcdUVC = bundle.getByteArray("bcdUVC");
         bStillCaptureMethod = bundle.getByte("bStillCaptureMethod", (byte)0);
         libUsb = bundle.getBoolean("libUsb" );
         fiveFrames = bundle.getBoolean("fiveFrames" );
@@ -555,15 +557,14 @@ public class LibUsb_AutoDetect extends AppCompatActivity {
     }
 
     private void libusb_openCameraDevice() {
-
         fd = camDeviceConnection.getFileDescriptor();
         if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
         int framesReceive = 1;
         if (fiveFrames) framesReceive = 5;
+        int bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
         JNA_I_LibUsb.INSTANCE.init(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, framesReceive);
+                camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, framesReceive, bcdUVC_int);
         libusb_is_initialized = true;
-
     }
 
     private int videoFormatToInt () {
@@ -589,6 +590,7 @@ public class LibUsb_AutoDetect extends AppCompatActivity {
         resultIntent.putExtra("bTerminalID", bTerminalID);
         resultIntent.putExtra("bNumControlTerminal", bNumControlTerminal);
         resultIntent.putExtra("bNumControlUnit", bNumControlUnit);
+        resultIntent.putExtra("bcdUVC", bcdUVC);
         resultIntent.putExtra("bStillCaptureMethod", bStillCaptureMethod);
         resultIntent.putExtra("libUsb", libUsb);
 

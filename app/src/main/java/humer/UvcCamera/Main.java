@@ -46,6 +46,8 @@ import android.widget.Toast;
 
 import com.akexorcist.localizationactivity.ui.LocalizationActivity;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Locale;
 
 import noman.zoomtextview.ZoomTextView;
@@ -67,6 +69,7 @@ public class Main extends LocalizationActivity {
     public static byte bTerminalID;
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
+    public static byte[] bcdUVC;
     public static byte bStillCaptureMethod;
     public static boolean LIBUSB;
     public Button menu;
@@ -229,6 +232,7 @@ public class Main extends LocalizationActivity {
             bTerminalID = data.getByteExtra("bTerminalID", (byte) 0);
             bNumControlTerminal = data.getByteArrayExtra("bNumControlTerminal");
             bNumControlUnit = data.getByteArrayExtra("bNumControlUnit");
+            bcdUVC = data.getByteArrayExtra("bcdUVC");
             bStillCaptureMethod = data.getByteExtra("bStillCaptureMethod", (byte) 0);
             LIBUSB = data.getBooleanExtra("libUsb", false);
             if (camFrameInterval == 0)
@@ -351,6 +355,7 @@ public class Main extends LocalizationActivity {
                 bundle.putByte("bTerminalID",bTerminalID);
                 bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
                 bundle.putByteArray("bNumControlUnit", bNumControlUnit);
+                bundle.putByteArray("bcdUVC", bcdUVC);
                 bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
                 bundle.putBoolean("libUsb", LIBUSB);
 
@@ -379,6 +384,7 @@ public class Main extends LocalizationActivity {
             bundle.putByte("bTerminalID",bTerminalID);
             bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
             bundle.putByteArray("bNumControlUnit", bNumControlUnit);
+            bundle.putByteArray("bcdUVC", bcdUVC);
             bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
             bundle.putBoolean("libUsb", LIBUSB);
 
@@ -405,6 +411,7 @@ public class Main extends LocalizationActivity {
             bundle.putByte("bTerminalID",bTerminalID);
             bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
             bundle.putByteArray("bNumControlUnit", bNumControlUnit);
+            bundle.putByteArray("bcdUVC", bcdUVC);
             bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
             bundle.putBoolean("libUsb", LIBUSB);
 
@@ -467,6 +474,7 @@ public class Main extends LocalizationActivity {
                 bundle.putByte("bTerminalID",bTerminalID);
                 bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
                 bundle.putByteArray("bNumControlUnit", bNumControlUnit);
+                bundle.putByteArray("bcdUVC", bcdUVC);
                 bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
                 bundle.putBoolean("libUsb", LIBUSB);
 
@@ -500,6 +508,7 @@ public class Main extends LocalizationActivity {
                 bundle.putByte("bTerminalID",bTerminalID);
                 bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
                 bundle.putByteArray("bNumControlUnit", bNumControlUnit);
+                bundle.putByteArray("bcdUVC", bcdUVC);
                 bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
                 bundle.putBoolean("libUsb", LIBUSB);
 
@@ -522,12 +531,23 @@ public class Main extends LocalizationActivity {
         if (camFrameInterval == 0) tv.setText("Your current Values are:\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
                 "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat + "\nCamera Format Index = " + camFormatIndex + "\n" +
                 "Camera FrameIndex = " + camFrameIndex + "\nImage Width = "+ imageWidth + "\nImage Height = " + imageHeight + "\nCamera Frame Interval (fps) = " +
-                camFrameInterval + "\n\nUVC Values:\nbUnitID = " + bUnitID + "\nbTerminalID = " + bTerminalID  + "\nLibUsb = " + LIBUSB  );
+                camFrameInterval + "\n\nUVC Values:\nbUnitID = " + bUnitID + "\nbTerminalID = " + bTerminalID + "\nbcdUVC = " + getbcdUVC() + "\nLibUsb = " + LIBUSB  );
         else tv.setText("Your current Values are:\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
                 "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat + "\nCamera Format Index = " + camFormatIndex + "\n" +
                 "Camera FrameIndex = " + camFrameIndex + "\nImage Width = "+ imageWidth + "\nImage Height = " + imageHeight + "\nCamera Frame Interval (fps) = " +
-                (10000000 / camFrameInterval) + "\n\nUVC Values:\nbUnitID = " + bUnitID + "\nbTerminalID = " + bTerminalID  + "\nLibUsb = " + LIBUSB  );
+                (10000000 / camFrameInterval) + "\n\nUVC Values:\nbUnitID = " + bUnitID + "\nbTerminalID = " + bTerminalID  + "\nbcdUVC = " + getbcdUVC() + "\nLibUsb = " + LIBUSB  );
         tv.setTextColor(darker(Color.GREEN, 100));
+    }
+
+    private String getbcdUVC() {
+        if (bcdUVC != null) {
+            String a = new String(Integer.toString(bcdUVC[1]));
+            a += ".";
+            NumberFormat formatter = new DecimalFormat("00");
+            String s = formatter.format(bcdUVC[0]); // ----> 01
+            a += s;
+            return a;
+        } else return "?";
     }
 
     private boolean showStoragePermissionRead() {

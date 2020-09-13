@@ -78,6 +78,7 @@ public class SaveToFile  {
     public static byte bTerminalID;
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
+    public static byte[] bcdUVC;
     public static byte bStillCaptureMethod;
     private static String saveFilePathFolder = "UVC_Camera/save";
     private static String autoFilePathFolder = "UVC_Camera/autoDetection";
@@ -228,7 +229,11 @@ public class SaveToFile  {
 
             }
         });
+    }
 
+    private boolean checkForNullValues() {
+        if (bcdUVC != null) return true;
+        else return false;
     }
 
     public void startEditSave() {
@@ -475,6 +480,7 @@ public class SaveToFile  {
             bTerminalID = setUpTheUsbDevice.bTerminalID;
             bNumControlTerminal = setUpTheUsbDevice.bNumControlTerminal;
             bNumControlUnit = setUpTheUsbDevice.bNumControlUnit;
+            bcdUVC = setUpTheUsbDevice.bcdUVC;
             bStillCaptureMethod = setUpTheUsbDevice.bStillCaptureMethod;
             libUsb = setUpTheUsbDevice.libUsb;
         } else if (libUsb_autoDetect != null) {
@@ -493,6 +499,7 @@ public class SaveToFile  {
             bTerminalID = libUsb_autoDetect.bTerminalID;
             bNumControlTerminal = libUsb_autoDetect.bNumControlTerminal;
             bNumControlUnit = libUsb_autoDetect.bNumControlUnit;
+            bcdUVC = libUsb_autoDetect.bcdUVC;
             bStillCaptureMethod = libUsb_autoDetect.bStillCaptureMethod;
             libUsb = libUsb_autoDetect.libUsb;
         } else if (jna_autoDetect != null) {
@@ -511,6 +518,7 @@ public class SaveToFile  {
             bTerminalID = jna_autoDetect.bTerminalID;
             bNumControlTerminal = jna_autoDetect.bNumControlTerminal;
             bNumControlUnit = jna_autoDetect.bNumControlUnit;
+            bcdUVC = jna_autoDetect.bcdUVC;
             bStillCaptureMethod = jna_autoDetect.bStillCaptureMethod;
             libUsb = jna_autoDetect.libUsb;
         }
@@ -534,6 +542,7 @@ public class SaveToFile  {
             uvc_camera.bTerminalID = bTerminalID;
             uvc_camera.bNumControlUnit = bNumControlUnit;
             uvc_camera.bNumControlTerminal = bNumControlTerminal;
+            uvc_camera.bcdUVC = bcdUVC;
             uvc_camera.bStillCaptureMethod = bStillCaptureMethod;
             uvc_camera.LIBUSB = libUsb;
         } else if (setUpTheUsbDevice != null) {
@@ -552,6 +561,7 @@ public class SaveToFile  {
             setUpTheUsbDevice.bTerminalID = bTerminalID;
             setUpTheUsbDevice.bNumControlTerminal = bNumControlTerminal;
             setUpTheUsbDevice.bNumControlUnit = bNumControlUnit;
+            setUpTheUsbDevice.bcdUVC = bcdUVC;
             setUpTheUsbDevice.bStillCaptureMethod = bStillCaptureMethod;
             setUpTheUsbDevice.libUsb = libUsb;
         } else if (libUsb_autoDetect != null) {
@@ -570,6 +580,7 @@ public class SaveToFile  {
             libUsb_autoDetect.bTerminalID = bTerminalID;
             libUsb_autoDetect.bNumControlTerminal = bNumControlTerminal;
             libUsb_autoDetect.bNumControlUnit = bNumControlUnit;
+            libUsb_autoDetect.bcdUVC = bcdUVC;
             libUsb_autoDetect.bStillCaptureMethod = bStillCaptureMethod;
             libUsb_autoDetect.libUsb = libUsb;
         } else if (jna_autoDetect != null) {
@@ -588,6 +599,7 @@ public class SaveToFile  {
             jna_autoDetect.bTerminalID = bTerminalID;
             jna_autoDetect.bNumControlTerminal = bNumControlTerminal;
             jna_autoDetect.bNumControlUnit = bNumControlUnit;
+            jna_autoDetect.bcdUVC = bcdUVC;
             jna_autoDetect.bStillCaptureMethod = bStillCaptureMethod;
             jna_autoDetect.libUsb = libUsb;
         }
@@ -789,6 +801,7 @@ public class SaveToFile  {
             save.writeObject(bNumControlUnit);
             save.writeObject(bStillCaptureMethod);
             save.writeObject(libUsb);
+            save.writeObject(bcdUVC);
             save.close(); // This also closes saveFile.
         } catch (Exception e) { log("Error"); e.printStackTrace();}
         returnToMainLayout(String.format("Values edited and saved\nSavefile = %s", savePath));
@@ -816,6 +829,7 @@ public class SaveToFile  {
             bNumControlUnit  = (byte[]) save.readObject();
             bStillCaptureMethod = (Byte) save.readObject();
             libUsb = (Boolean) save.readObject();
+            bcdUVC  = (byte[]) save.readObject();
             save.close();
         }
         catch(Exception exc){
@@ -873,6 +887,8 @@ public class SaveToFile  {
         bTerminalID = uvc_desc.bTerminalID;
         bNumControlTerminal = uvc_desc.bNumControlTerminal;
         bNumControlUnit = uvc_desc.bNumControlUnit;
+        bcdUVC = uvc_desc.bcdUVC;
+        log ("bcdUVC = " + bcdUVC[0] + bcdUVC[1]);
         bStillCaptureMethod = uvc_desc.bStillCaptureMethod;
         for (int a=0; a<maxPacketSizeArray.length; a++) {
             log ("maxPacketSizeArray[" + a + "] = " + maxPacketSizeArray[a]);

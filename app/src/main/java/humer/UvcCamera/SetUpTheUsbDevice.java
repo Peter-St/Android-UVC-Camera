@@ -60,6 +60,7 @@ import androidx.appcompat.widget.PopupMenu;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.crowdfire.cfalertdialog.views.CFPushButton;
+import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
 
 import java.io.File;
@@ -67,6 +68,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -147,6 +150,7 @@ public class SetUpTheUsbDevice extends Activity {
     public byte bTerminalID;
     public byte[] bNumControlTerminal;
     public byte[] bNumControlUnit;
+    public static byte[] bcdUVC;
     public byte bStillCaptureMethod;
     public boolean libUsb;
     public boolean transferSucessful;
@@ -229,9 +233,6 @@ public class SetUpTheUsbDevice extends Activity {
     public String progress;
     public boolean submiterror;
 
-
-
-
     // Debug Camera Variables
     private CountDownLatch latch;
     private boolean automaticStart ;
@@ -276,9 +277,6 @@ public class SetUpTheUsbDevice extends Activity {
     public native void JniIsoStreamActivity(final Surface surface, int a, int b);
     public native void JniProbeCommitControl(int bmHint,int camFormatIndex,int camFrameIndex,int  camFrameInterval);
      */
-
-
-
 
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -1653,8 +1651,9 @@ public class SetUpTheUsbDevice extends Activity {
                     if(adress == null)  adress = camDevice.getDeviceName();
                     if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
                     if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
+                    int bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
                     JNA_I_LibUsb.INSTANCE.init(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                            camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, 0);
+                            camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, 0, bcdUVC_int);
                     libusb_is_initialized = true;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -1806,8 +1805,9 @@ public class SetUpTheUsbDevice extends Activity {
                     if(adress == null)  adress = camDevice.getDeviceName();
                     if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
                     if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
+                    int bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
                     JNA_I_LibUsb.INSTANCE.init(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                            camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, 0);
+                            camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, 0, bcdUVC_int);
                     libusb_is_initialized = true;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -1952,30 +1952,41 @@ public class SetUpTheUsbDevice extends Activity {
                             if(adress == null)  adress = camDevice.getDeviceName();
                             if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
                             if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
+                            int bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
                             JNA_I_LibUsb.INSTANCE.init(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                                    camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat,0 );
+                                    camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat,0, bcdUVC_int );
                             libusb_is_initialized = true;
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
-                    JNA_I_LibUsb.INSTANCE.setLogPrint(new JNA_I_LibUsb.logPrint(){
-                        public boolean callback(String msg) {
-                            log(msg);
-                            return false;
-                        }
-                    });
+                    int rc = -1;
+                    try {
+                        rc = libusb_openCam(true);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     Pointer ctlValues = JNA_I_LibUsb.INSTANCE.probeCommitControl(1, camFormatIndex, camFrameIndex,  camFrameInterval);
+                    if (ctlValues == null) {
+                        JNA_I_LibUsb.INSTANCE.probeCommitControl_cleanup();
+                        tv.setText("The Control Transfers to the Camera failed!\n\nSolutions: Try to connect the camera without LibUsb\n\n" );
+                        return ;
+                    }
                     byte[] buf = new byte[26];
-                    ctlValues.read(0, buf, 0, 26);
-                    //buf = ctlValues.getByteArray(0, 26);
+                    buf = ctlValues.getByteArray(4, 26);
+                    log((Arrays.toString(buf)));
                     initStreamingParms = dumpStreamingParms(buf);
-                    buf = ctlValues.getByteArray(47, 26);
+                    buf = ctlValues.getByteArray(51, 26);
+                    log((Arrays.toString(buf)));
                     probedStreamingParms = dumpStreamingParms(buf);
-                    buf = ctlValues.getByteArray(95, 26);
+                    buf = ctlValues.getByteArray(99, 26);
+                    log((Arrays.toString(buf)));
                     finalStreamingParms_first = dumpStreamingParms(buf);
-                    buf = ctlValues.getByteArray(143, 26);
+                    buf = ctlValues.getByteArray(147, 26);
+                    log((Arrays.toString(buf)));
                     finalStreamingParms = dumpStreamingParms(buf);
+                    if (compareStreamingParmsValues()) camIsOpen = true;
+                    else camIsOpen = false;
                     tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                     tv.setText(initStreamingParmsResult + "\n\nThe Control Transfers to the Camera has following Results:\n\n" +
                             "The first Probe Controltransfer for sending the Values to the Camera: \n" + initStreamingParms + "" +
@@ -1985,7 +1996,6 @@ public class SetUpTheUsbDevice extends Activity {
                     tv.setTextColor(Color.BLACK);
                     JNA_I_LibUsb.INSTANCE.probeCommitControl_cleanup();
                     log("Control probeCommitControl End");
-
                 }
             });
 
@@ -2044,6 +2054,36 @@ public class SetUpTheUsbDevice extends Activity {
         }
     }
 
+    private int libusb_openCam(boolean init)  {
+        libusb_openCameraDevice();
+        if (init) {
+            // Libusb Camera initialisation
+            // -1 on error
+            // 0 onSucess
+            int ret = libusb_initCamera();
+            if (ret < 0) displayMessage("Libusb Camera Initialisation failed");
+            else displayMessage("Libusb Camera Initialisation sucessful");
+            return ret;
+        }
+        log("Camera opened sucessfully");
+        return -1;
+    }
+
+    private int libusb_initCamera() {
+        return JNA_I_LibUsb.INSTANCE.initStreamingParms(camDeviceConnection.getFileDescriptor());
+    }
+
+    private void libusb_openCameraDevice() {
+        fd = camDeviceConnection.getFileDescriptor();
+        if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
+        int framesReceive = 1;
+        if (fiveFrames) framesReceive = 5;
+        int bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
+        JNA_I_LibUsb.INSTANCE.init(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, framesReceive, bcdUVC_int);
+        libusb_is_initialized = true;
+    }
+
     //////////////////////////////////  General Methods    //////////////////////////////////
 
     private static void packIntBrightness(int i, byte[] buf) {
@@ -2092,6 +2132,7 @@ public class SetUpTheUsbDevice extends Activity {
             bTerminalID = bundle.getByte("bTerminalID",(byte)0);
             bNumControlTerminal = bundle.getByteArray("bNumControlTerminal");
             bNumControlUnit = bundle.getByteArray("bNumControlUnit");
+            bcdUVC = bundle.getByteArray("bcdUVC");
             bStillCaptureMethod = bundle.getByte("bStillCaptureMethod", (byte)0);
             libUsb = bundle.getBoolean("libUsb" );
         } else {
@@ -2121,6 +2162,7 @@ public class SetUpTheUsbDevice extends Activity {
         resultIntent.putExtra("bTerminalID", bTerminalID);
         resultIntent.putExtra("bNumControlTerminal", bNumControlTerminal);
         resultIntent.putExtra("bNumControlUnit", bNumControlUnit);
+        resultIntent.putExtra("bcdUVC", bcdUVC);
         resultIntent.putExtra("bStillCaptureMethod", bStillCaptureMethod);
         resultIntent.putExtra("libUsb", libUsb);
         setResult(Activity.RESULT_OK, resultIntent);
@@ -2205,6 +2247,7 @@ public class SetUpTheUsbDevice extends Activity {
             bTerminalID = data.getByteExtra("bTerminalID", (byte) 0);
             bNumControlTerminal = data.getByteArrayExtra("bNumControlTerminal");
             bNumControlUnit = data.getByteArrayExtra("bNumControlUnit");
+            bcdUVC =  data.getByteArrayExtra("bcdUVC");
             bStillCaptureMethod = data.getByteExtra("bStillCaptureMethod", (byte) 0);
             libUsb = data.getBooleanExtra("libUsb", false);
 
@@ -2289,6 +2332,7 @@ public class SetUpTheUsbDevice extends Activity {
         bundle.putByte("bTerminalID",bTerminalID);
         bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
         bundle.putByteArray("bNumControlUnit", bNumControlUnit);
+        bundle.putByteArray("bcdUVC", bcdUVC);
         bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
         bundle.putBoolean("libUsb", libUsb);
         bundle.putBoolean("fiveFrames", fiveFrames);
@@ -2330,6 +2374,7 @@ public class SetUpTheUsbDevice extends Activity {
         bundle.putByte("bTerminalID",bTerminalID);
         bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
         bundle.putByteArray("bNumControlUnit", bNumControlUnit);
+        bundle.putByteArray("bcdUVC", bcdUVC);
         bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
         bundle.putBoolean("libUsb", libUsb);
         bundle.putBoolean("fiveFrames", fiveFrames);

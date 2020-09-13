@@ -26,6 +26,9 @@ import androidx.annotation.ColorInt;
 
 import android.text.TextUtils;
 import android.util.Log;
+
+import com.sun.jna.Memory;
+
 import org.webrtc.SurfaceTextureHelper;
 import org.webrtc.SurfaceViewRenderer;
 import org.webrtc.VideoCapturer;
@@ -91,6 +94,7 @@ public class UsbCapturer implements VideoCapturer {
     public static boolean camIsOpen;
     public static byte bUnitID;
     public static byte bTerminalID;
+    public static byte[] bcdUVC;
     public static byte bStillCaptureMethod;
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
@@ -194,6 +198,7 @@ public class UsbCapturer implements VideoCapturer {
         activeUrbs = callActivity.activeUrbs;
         bUnitID = callActivity.bUnitID;
         bTerminalID = callActivity.bTerminalID;
+        bcdUVC = callActivity.bcdUVC;
         bNumControlTerminal = callActivity.bNumControlTerminal;
         bNumControlUnit = callActivity.bNumControlUnit;
         bStillCaptureMethod = callActivity.bStillCaptureMethod;
@@ -240,8 +245,9 @@ public class UsbCapturer implements VideoCapturer {
                         if(adress == null)  adress = camDevice.getDeviceName();
                         if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
                         if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
+                        int bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
                         JNA_I_LibUsb.INSTANCE.init(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                                camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, 0);
+                                camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, 0, bcdUVC_int);
                         libusb_is_initialized = true;
                     } catch (Exception e) {
                         e.printStackTrace();

@@ -80,6 +80,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     public static byte bStillCaptureMethod;
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
+    public static byte[] bcdUVC;
     public static boolean LIBUSB;
 
 
@@ -788,6 +789,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         bTerminalID = bundle.getByte("bTerminalID",(byte)0);
         bNumControlTerminal = bundle.getByteArray("bNumControlTerminal");
         bNumControlUnit = bundle.getByteArray("bNumControlUnit");
+        bcdUVC = bundle.getByteArray("bcdUVC");
         bStillCaptureMethod = bundle.getByte("bStillCaptureMethod", (byte)0);
         LIBUSB = bundle.getBoolean("libUsb" );
     }
