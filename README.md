@@ -9,7 +9,7 @@ https://play.google.com/store/apps/details?id=humer.uvc_camera&hl=de
 This is a Android Studio Project. It connects to a usb camera from your Android Device. (OTG cabel or OTG Hub needed) (It works with Micro Usb and Usb Type C devices)
 
 
-# This Project was built to perform an Isochronous Video Stream from all Android Devices (Above 4.1 Ice Cream Sandwich)(Mediathek Devices too).
+# This Project was built to perform an Isochronous Video Stream from all Android Devices (Above 4.0.4 Ice Cream Sandwich)(Mediathek Devices too).
 
 The app connects to USB Cameras via variable, different input values for the camera driver creation.
 In most cases you won't need to set up your own camera driver, because other apps may do this for you automatically, but for some Android devices it could help to watch videos from Usb Cameras.
