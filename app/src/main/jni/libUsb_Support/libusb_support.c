@@ -403,7 +403,6 @@ int libUsb_open_def_fd(int vid, int pid, const char *serial, int FD, int busnum,
                             "libusb_init failed: %d\n", ret);
         return 1;
     }
-    libusb_device_handle *devh = NULL;
     ret = libusb_wrap_sys_device(NULL, (intptr_t)FD, &devh);
     if (ret < 0) {
         __android_log_print(ANDROID_LOG_INFO, TAG,
