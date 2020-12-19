@@ -24,168 +24,168 @@ Copyright 2018, The Android Open Source Project
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:ignore="MergeRootFrame">
-
-    <org.webrtc.SurfaceViewRenderer
-        android:id="@+id/fullscreen_video_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" />
-
-    <org.webrtc.SurfaceViewRenderer
-        android:id="@+id/pip_video_view"
-        android:layout_height="144dp"
-        android:layout_width="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"/>
-
-    <LinearLayout
-        android:id="@+id/generated_room_id"
-        android:orientation="horizontal"
-        android:layout_gravity="center|top"
-        android:layout_marginTop="32dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:textSize="30sp"
-        android:layout_centerHorizontal="true"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:background="#333333">
-
-        <TextView
-            android:id="@+id/roomID"
+    <!--
+        <org.webrtc.SurfaceViewRenderer
+            android:id="@+id/fullscreen_video_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView" />
-    </LinearLayout>
+            android:layout_gravity="center" />
 
-    <LinearLayout
-        android:id="@+id/buttons_call_container"
-        android:orientation="horizontal"
-        android:layout_gravity="center|bottom"
-        android:layout_marginTop="32dp"
-        android:layout_marginBottom="32dp"
-        android:paddingLeft="10dp"
-        android:layout_centerHorizontal="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#aaaaaa">
+        <org.webrtc.SurfaceViewRenderer
+            android:id="@+id/pip_video_view"
+            android:layout_height="144dp"
+            android:layout_width="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"/>
+   -->
+        <LinearLayout
+            android:id="@+id/generated_room_id"
+            android:orientation="horizontal"
+            android:layout_gravity="center|top"
+            android:layout_marginTop="32dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:textSize="30sp"
+            android:layout_centerHorizontal="true"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:background="#333333">
+
+            <TextView
+                android:id="@+id/roomID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/buttons_call_container"
+            android:orientation="horizontal"
+            android:layout_gravity="center|bottom"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="32dp"
+            android:paddingLeft="10dp"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#aaaaaa">
+
+            <ImageButton
+                android:id="@+id/button_call_disconnect"
+                android:background="@drawable/disconnect"
+                android:contentDescription="@string/disconnect_call"
+                android:layout_marginEnd="16dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginRight="16dp" />
+
+            <ImageButton
+                android:id="@+id/button_call_switch_camera"
+                android:background="@android:drawable/ic_menu_camera"
+                android:contentDescription="@string/switch_camera"
+                android:layout_marginEnd="8dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginRight="8dp" />
+
+            <ImageButton
+                android:id="@+id/button_call_toggle_mic"
+                android:background="@android:drawable/ic_btn_speak_now"
+                android:contentDescription="@string/toggle_mic"
+                android:layout_marginEnd="8dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginRight="8dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/buttons_call_container_usb"
+            android:orientation="horizontal"
+            android:layout_gravity="center|bottom"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="32dp"
+            android:paddingLeft="10dp"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#aaaaaa">
+
+            <ImageButton
+                android:id="@+id/usb_button_call_disconnect"
+                android:background="@drawable/disconnect"
+                android:contentDescription="@string/disconnect_call"
+                android:layout_marginEnd="16dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginRight="16dp" />
+
+            <ImageButton
+                android:id="@+id/usb_button_call_switch_image"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:background="@android:drawable/ic_menu_always_landscape_portrait"
+                android:contentDescription="@string/toggle_mic" />
+
+        </LinearLayout>
+
 
         <ImageButton
-            android:id="@+id/button_call_disconnect"
-            android:background="@drawable/disconnect"
-            android:contentDescription="@string/disconnect_call"
-            android:layout_marginEnd="16dp"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginRight="16dp" />
+            android:id="@+id/button_call_flip_left"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center|bottom"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="60dp"
+            android:layout_marginLeft="60dp"
+            android:layout_marginBottom="130dp"
+            android:background="@drawable/bg_button_flip_left"
+            android:onClick="flipLeft" />
 
         <ImageButton
-            android:id="@+id/button_call_switch_camera"
-            android:background="@android:drawable/ic_menu_camera"
-            android:contentDescription="@string/switch_camera"
-            android:layout_marginEnd="8dp"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginRight="8dp" />
+            android:id="@+id/button_call_flip_right"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignEnd="@+id/stopKameraknopf"
+            android:layout_alignRight="@+id/stopKameraknopf"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center|bottom"
+            android:layout_centerHorizontal="true"
+            android:layout_marginEnd="60dp"
+            android:layout_marginRight="60dp"
+            android:layout_marginBottom="131dp"
+            android:background="@drawable/bg_button_flip_right"
+            android:onClick="flipRight"
+            />
+
 
         <ImageButton
-            android:id="@+id/button_call_toggle_mic"
-            android:background="@android:drawable/ic_btn_speak_now"
-            android:contentDescription="@string/toggle_mic"
-            android:layout_marginEnd="8dp"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginRight="8dp" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/buttons_call_container_usb"
-        android:orientation="horizontal"
-        android:layout_gravity="center|bottom"
-        android:layout_marginTop="32dp"
-        android:layout_marginBottom="32dp"
-        android:paddingLeft="10dp"
-        android:layout_centerHorizontal="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#aaaaaa">
+            android:id="@+id/button_call_flip_vertical"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center|bottom"
+            android:layout_centerHorizontal="true"
+            android:layout_marginEnd="60dp"
+            android:layout_marginRight="58dp"
+            android:layout_marginBottom="280dp"
+            android:background="@drawable/bg_button_flip_vertical"
+            android:onClick="flipVertical"
+            />
 
         <ImageButton
-            android:id="@+id/usb_button_call_disconnect"
-            android:background="@drawable/disconnect"
-            android:contentDescription="@string/disconnect_call"
-            android:layout_marginEnd="16dp"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginRight="16dp" />
-
-        <ImageButton
-            android:id="@+id/usb_button_call_switch_image"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:background="@android:drawable/ic_menu_always_landscape_portrait"
-            android:contentDescription="@string/toggle_mic" />
-
-    </LinearLayout>
-
-
-    <ImageButton
-        android:id="@+id/button_call_flip_left"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center|bottom"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="60dp"
-        android:layout_marginLeft="60dp"
-        android:layout_marginBottom="130dp"
-        android:background="@drawable/bg_button_flip_left"
-        android:onClick="flipLeft" />
-
-    <ImageButton
-        android:id="@+id/button_call_flip_right"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_alignEnd="@+id/stopKameraknopf"
-        android:layout_alignRight="@+id/stopKameraknopf"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="center|bottom"
-        android:layout_centerHorizontal="true"
-        android:layout_marginEnd="60dp"
-        android:layout_marginRight="60dp"
-        android:layout_marginBottom="131dp"
-        android:background="@drawable/bg_button_flip_right"
-        android:onClick="flipRight"
-        />
-
-
-    <ImageButton
-        android:id="@+id/button_call_flip_vertical"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center|bottom"
-        android:layout_centerHorizontal="true"
-        android:layout_marginEnd="60dp"
-        android:layout_marginRight="58dp"
-        android:layout_marginBottom="280dp"
-        android:background="@drawable/bg_button_flip_vertical"
-        android:onClick="flipVertical"
-        />
-
-    <ImageButton
-        android:id="@+id/button_call_flip_horizontal"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center|bottom"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="60dp"
-        android:layout_marginLeft="60dp"
-        android:layout_marginBottom="280dp"
-        android:background="@drawable/bg_button_flip_horizontal"
-        android:onClick="flipHorizontal"
-        />
-</FrameLayout>
+            android:id="@+id/button_call_flip_horizontal"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center|bottom"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="60dp"
+            android:layout_marginLeft="60dp"
+            android:layout_marginBottom="280dp"
+            android:background="@drawable/bg_button_flip_horizontal"
+            android:onClick="flipHorizontal"
+            />
+    </FrameLayout>

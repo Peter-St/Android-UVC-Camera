@@ -18,7 +18,7 @@
 
     <uses-sdk
         android:targetSdkVersion="28"
-        tools:overrideLibrary="org.webrtc, org.opencv, bravobit.nl.ffmpegandroid"/>
+        tools:overrideLibrary="org.webrtc, com.akexorcist.localizationactivity, com.rafakob.floatingedittext"/>
 
     <application
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"

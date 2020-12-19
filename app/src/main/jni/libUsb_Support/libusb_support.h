@@ -22,7 +22,23 @@ typedef struct AutotransferStruct {
 
 extern AutotransferStruct get_autotransferStruct();
 
+////////////////////// TEST 1 FRAME METHODS //////////////////////////
 
+struct Test1FrameStruct; /* Forward declaration */
+typedef struct Test1FrameStruct {
+    int packetCnt;
+    int packet0Cnt;
+    int packet12Cnt;
+    int packetDataCnt;
+    int packetHdr8Ccnt;
+    int packetErrorCnt;
+    int frameCnt;
+    int frameLen;
+    int requestCnt;
+    int sframeLenArray[5];
+} Test1FrameStruct;
+
+extern Test1FrameStruct get_Test1FrameStruct();
 
 //////////////// Global Methods ////////////////////
 

@@ -15,71 +15,69 @@
         android:orientation="vertical"
         android:padding="1dp">
 
-
         <!--Configurations container-->
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <android.support.constraint.ConstraintLayout
             android:id="@+id/configuration_container"
             android:layout_width="match_parent"
             android:layout_height="264dp"
             android:orientation="vertical"
             android:visibility="visible">
 
-            <androidx.constraintlayout.widget.Guideline
+            <android.support.constraint.Guideline
                 android:id="@+id/guideline_vertical_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.1" />
 
-            <androidx.constraintlayout.widget.Guideline
+            <android.support.constraint.Guideline
                 android:id="@+id/guidelinehor_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintGuide_percent="0" />
 
-            <androidx.constraintlayout.widget.Guideline
+            <android.support.constraint.Guideline
                 android:id="@+id/guideline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.25" />
 
-            <androidx.constraintlayout.widget.Guideline
+            <android.support.constraint.Guideline
                 android:id="@+id/guideline2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.75" />
 
-            <androidx.constraintlayout.widget.Guideline
+            <android.support.constraint.Guideline
                 android:id="@+id/guidelinehor1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintGuide_percent="0.2" />
 
-            <androidx.constraintlayout.widget.Guideline
+            <android.support.constraint.Guideline
                 android:id="@+id/guidelinehor2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintGuide_percent="0.5" />
 
-            <androidx.constraintlayout.widget.Guideline
+            <android.support.constraint.Guideline
                 android:id="@+id/guidelinehor3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintGuide_percent="0.8" />
 
-            <androidx.constraintlayout.widget.Guideline
+            <android.support.constraint.Guideline
                 android:id="@+id/guidelinehor4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintGuide_percent="1" />
-
 
             <TextView
                 android:id="@+id/textView_setPackets"
@@ -89,10 +87,7 @@
                 app:layout_constraintTop_toTopOf="@id/guidelinehor_text"
                 app:layout_constraintLeft_toLeftOf="@id/guideline_vertical_text"
                 app:layout_constraintRight_toRightOf="@id/guideline_vertical_text"
-
-
                 />
-
 
             <com.crowdfire.cfalertdialog.views.CFPushButton
                 android:id="@+id/one"
@@ -106,12 +101,10 @@
                 android:textAllCaps="false"
                 android:textColor="@color/Black"
                 android:textSize="30dp"
-
                 app:layout_constraintBottom_toBottomOf="@id/guidelinehor1"
                 app:layout_constraintLeft_toLeftOf="@id/guideline"
                 app:layout_constraintRight_toRightOf="@id/guideline"
                 app:layout_constraintTop_toTopOf="@id/guidelinehor1" />
-
 
             <com.crowdfire.cfalertdialog.views.CFPushButton
                 android:id="@+id/two"
@@ -125,7 +118,6 @@
                 android:textAllCaps="false"
                 android:textColor="@color/Black"
                 android:textSize="30dp"
-
                 app:layout_constraintBottom_toBottomOf="@id/guidelinehor1"
                 app:layout_constraintLeft_toLeftOf="@id/guideline2"
                 app:layout_constraintRight_toRightOf="@id/guideline2"
@@ -143,12 +135,10 @@
                 android:textAllCaps="false"
                 android:textColor="@color/Black"
                 android:textSize="30dp"
-
                 app:layout_constraintBottom_toBottomOf="@id/guidelinehor2"
                 app:layout_constraintLeft_toLeftOf="@id/guideline"
                 app:layout_constraintRight_toRightOf="@id/guideline"
                 app:layout_constraintTop_toTopOf="@id/guidelinehor2" />
-
 
             <com.crowdfire.cfalertdialog.views.CFPushButton
                 android:id="@+id/four"
@@ -162,7 +152,6 @@
                 android:textAllCaps="false"
                 android:textColor="@color/Black"
                 android:textSize="30dp"
-
                 app:layout_constraintBottom_toBottomOf="@id/guidelinehor2"
                 app:layout_constraintLeft_toLeftOf="@id/guideline2"
                 app:layout_constraintRight_toRightOf="@id/guideline2"
@@ -180,12 +169,10 @@
                 android:textAllCaps="false"
                 android:textColor="@color/Black"
                 android:textSize="30dp"
-
                 app:layout_constraintBottom_toBottomOf="@id/guidelinehor3"
                 app:layout_constraintLeft_toLeftOf="@id/guideline"
                 app:layout_constraintRight_toRightOf="@id/guideline"
                 app:layout_constraintTop_toTopOf="@id/guidelinehor3" />
-
 
             <com.crowdfire.cfalertdialog.views.CFPushButton
                 android:id="@+id/six"
@@ -199,17 +186,13 @@
                 android:textAllCaps="false"
                 android:textColor="@color/Black"
                 android:textSize="30dp"
-
                 app:layout_constraintBottom_toBottomOf="@id/guidelinehor3"
                 app:layout_constraintLeft_toLeftOf="@id/guideline2"
                 app:layout_constraintRight_toRightOf="@id/guideline2"
                 app:layout_constraintTop_toTopOf="@id/guidelinehor3" />
 
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </android.support.constraint.ConstraintLayout>
 
     </LinearLayout>
-
-
 
 </RelativeLayout>

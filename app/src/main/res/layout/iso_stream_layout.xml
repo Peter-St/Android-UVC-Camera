@@ -180,7 +180,7 @@
             android:textColor="#000080"
             android:textSize="18sp" />
 
-        <androidx.appcompat.widget.SwitchCompat
+        <android.support.v7.widget.SwitchCompat
             android:id="@+id/switch_lowerResolution"
             style="@style/Switch"
             android:layout_width="wrap_content"

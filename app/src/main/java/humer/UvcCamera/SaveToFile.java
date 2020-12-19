@@ -31,6 +31,7 @@ import android.os.Build;
 import android.os.Environment;
 
 import android.os.Handler;
+import android.support.design.widget.TextInputLayout;
 import android.text.InputType;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -47,7 +48,6 @@ import android.widget.TextView;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.crowdfire.cfalertdialog.views.CFPushButton;
-import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -317,7 +317,6 @@ public class SaveToFile  {
                     }
                 });
                 builderSingle.show();
-
             }
         });
 

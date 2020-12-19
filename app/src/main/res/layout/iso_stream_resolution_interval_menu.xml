@@ -17,42 +17,42 @@
 
 
         <!--Configurations container-->
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <android.support.constraint.ConstraintLayout
             android:id="@+id/configuration_container"
             android:layout_width="match_parent"
             android:layout_height="264dp"
             android:orientation="vertical"
             android:visibility="visible">
 
-            <androidx.constraintlayout.widget.Guideline
+            <android.support.constraint.Guideline
                 android:id="@+id/guideline_vertical_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.1" />
 
-            <androidx.constraintlayout.widget.Guideline
+            <android.support.constraint.Guideline
                 android:id="@+id/guidelinehor_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintGuide_percent="0" />
 
-            <androidx.constraintlayout.widget.Guideline
+            <android.support.constraint.Guideline
                 android:id="@+id/guideline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.25" />
 
-            <androidx.constraintlayout.widget.Guideline
+            <android.support.constraint.Guideline
                 android:id="@+id/guideline2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.75" />
 
-            <androidx.constraintlayout.widget.Guideline
+            <android.support.constraint.Guideline
                 android:id="@+id/guidelinehor1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
                 app:layout_constraintGuide_percent="0.2" />
 
 
-            <androidx.constraintlayout.widget.Guideline
+            <android.support.constraint.Guideline
                 android:id="@+id/guidelinehor3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -114,7 +114,7 @@
                 app:layout_constraintTop_toTopOf="@id/guidelinehor3" />
 
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </android.support.constraint.ConstraintLayout>
 
     </LinearLayout>
 

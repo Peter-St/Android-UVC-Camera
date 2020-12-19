@@ -1,14 +1,14 @@
 package noman.zoomtextview;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
-import androidx.appcompat.widget.AppCompatTextView;
 
 /**
  * Created by nor on 11/23/2015.

@@ -1,0 +1,554 @@
+[
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-xxxhdpi_ic_launcher.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/layout_dialog_header_layout_20.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/layout/dialog_header_layout_20.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-xhdpi_country_korea.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-xhdpi/country_korea.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-xxxhdpi_ic_launcher_round.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_photo_clear.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/photo_clear.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_record.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/record.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/menu_iso_stream_select_terminal_unit.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/menu/iso_stream_select_terminal_unit.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_settings.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/settings.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable-ldpi_disconnect.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable-ldpi/disconnect.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable-hdpi_icon.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable-hdpi/icon.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-xxhdpi_ic_launcher_background.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-xxhdpi/ic_launcher_background.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_exit_program_24dp.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/exit_program_24dp.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-xhdpi_ic_launcher.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-xhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/layout_stf_select_max_package_layout.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/layout/stf_select_max_package_layout.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable-v24_ic_launcher_foreground.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable-v24/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-xhdpi_country_germany.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-xhdpi/country_germany.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/layout_iso_stream_layout.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/layout/iso_stream_layout.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/menu_iso_stream_resolution_frameinterval.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/menu/iso_stream_resolution_frameinterval.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_ic_launcher_background.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-xhdpi_country_america.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-xhdpi/country_america.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_ic_call_black_24px.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/ic_call_black_24px.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/layout_iso_stream_resolution_interval_menu.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/layout/iso_stream_resolution_interval_menu.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_flip_vertical.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/flip_vertical.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_bg_button_flip_vertical.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/bg_button_flip_vertical.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/layout_set_up_the_device_configuration.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/layout/set_up_the_device_configuration.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-hdpi_ic_launcher_background.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-hdpi/ic_launcher_background.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_right_pressed.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/right_pressed.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_left_pressed.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/left_pressed.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/menu_camera_settings.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/menu/camera_settings.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_ic_baseline_screen_rotation_24.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/ic_baseline_screen_rotation_24.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-hdpi_ic_launcher_round.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-hdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_one_frame_2.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/one_frame_2.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable-mdpi_ic_action_return_from_full_screen.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable-mdpi/ic_action_return_from_full_screen.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/layout_set_up_the_device_layout_main.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/layout/set_up_the_device_layout_main.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_round_button.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/round_button.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/menu_iso_stream_start_stream_menu.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/menu/iso_stream_start_stream_menu.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_flip_horizontal.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/flip_horizontal.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_listdev.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/listdev.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/layout_activity_call.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/layout/activity_call.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable-ldpi_icon.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable-ldpi/icon.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable-hdpi_ic_action_full_screen.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable-hdpi/ic_action_full_screen.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/layout_stf_select_active_urbs.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/layout/stf_select_active_urbs.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_ic_chat_bubble_outline_black_24px.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/ic_chat_bubble_outline_black_24px.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/xml_device_filter.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/xml/device_filter.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_ic_menu_camera.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/ic_menu_camera.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable-hdpi_disconnect.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable-hdpi/disconnect.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/layout_auto_detect_layout.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/layout/auto_detect_layout.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/layout_layout_language_chooser.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/layout/layout_language_chooser.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-xxhdpi_ic_launcher.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-xxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/layout_dialog_header_layout.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/layout/dialog_header_layout.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_setup_complete.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/setup_complete.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable-mdpi_disconnect.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable-mdpi/disconnect.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_ic_mail_outline_black_24px.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/ic_mail_outline_black_24px.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/menu_set_up_the_device_testrun_menubutton.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/menu/set_up_the_device_testrun_menubutton.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_photo_pressed.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/photo_pressed.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_ic_brightness_2green_24dp.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/ic_brightness_2green_24dp.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_bg_button_flip_left.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/bg_button_flip_left.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_bg_toggle_button_flip_horizontal.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/bg_toggle_button_flip_horizontal.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_flip_horizontal_pressed.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/flip_horizontal_pressed.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_bg_button_settings.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/bg_button_settings.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-xxxhdpi_ic_launcher_background.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-xxxhdpi/ic_launcher_background.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_ic_brightness_5_black_24dp.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/ic_brightness_5_black_24dp.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/raw_sound1.mp3.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/raw/sound1.mp3"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-xxhdpi_ic_launcher_round.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-mdpi_ic_launcher_background.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-mdpi/ic_launcher_background.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/layout_dialog_header_layout_40.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/layout/dialog_header_layout_40.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_controltransfer.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/controltransfer.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-xhdpi_ic_launcher_foreground.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_bg_toggle_button_flip_vertical.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/bg_toggle_button_flip_vertical.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_bg_button_flip_right.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/bg_button_flip_right.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_bg_button_flip_horizontal.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/bg_button_flip_horizontal.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-mdpi_ic_launcher_foreground.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_ic_frameinterval_24dp.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/ic_frameinterval_24dp.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-xhdpi_country_italy.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-xhdpi/country_italy.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_jpg.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/jpg.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-xxxhdpi_ic_launcher_foreground.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_ic_web_rtc_24dp.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/ic_web_rtc_24dp.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-hdpi_ic_launcher.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-hdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_bg_button_videoaufnahme.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/bg_button_videoaufnahme.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/layout_auto_detect_fragment.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/layout/auto_detect_fragment.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-xhdpi_country_russia.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-xhdpi/country_russia.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable-hdpi_ic_menu_camera.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable-hdpi/ic_menu_camera.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_bg_button_red.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/bg_button_red.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-xhdpi_ic_launcher_background.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-xhdpi/ic_launcher_background.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_ic_resolution_24dp.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/ic_resolution_24dp.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_background.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/background.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_ic_brightness_terminal_24dp.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/ic_brightness_terminal_24dp.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_ic_call_white_24px.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/ic_call_white_24px.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-xxhdpi_ic_launcher_foreground.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-mdpi_ic_launcher_round.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-mdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable-hdpi_ic_action_return_from_full_screen.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable-hdpi/ic_action_return_from_full_screen.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/menu_iso_stream_adjust_values_terminal.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/menu/iso_stream_adjust_values_terminal.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_lower_resolution_not_activated_24dp.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/lower_resolution_not_activated_24dp.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable-mdpi_ic_action_full_screen.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable-mdpi/ic_action_full_screen.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/layout_main_activity.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/layout/main_activity.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_bg_button.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/bg_button.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable-xhdpi_ic_action_return_from_full_screen.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable-xhdpi/ic_action_return_from_full_screen.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable-mdpi_icon.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable-mdpi/icon.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_settings_pressed.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/settings_pressed.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-xhdpi_country_thai.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-xhdpi/country_thai.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-xhdpi_ic_launcher_round.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_bg_button_stop.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/bg_button_stop.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-hdpi_ic_launcher_foreground.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_one_frame.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/one_frame.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_bg_button_yellow.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/bg_button_yellow.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_flip_vertical_pressed.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/flip_vertical_pressed.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/layout_activity_privacy_policyctivity.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/layout/activity_privacy_policyctivity.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-xhdpi_country_china.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-xhdpi/country_china.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable-ldpi_ic_action_full_screen.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable-ldpi/ic_action_full_screen.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_return_main_screen_24dp.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/return_main_screen_24dp.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_ic_wallpaper_lower_resolution_24dp.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/ic_wallpaper_lower_resolution_24dp.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/menu_iso_stream_adjust_values_unit.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/menu/iso_stream_adjust_values_unit.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable-ldpi_ic_action_return_from_full_screen.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable-ldpi/ic_action_return_from_full_screen.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_bg_button_bildaufnahme.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/bg_button_bildaufnahme.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable-xhdpi_ic_action_full_screen.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable-xhdpi/ic_action_full_screen.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_jpg_pressed.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/jpg_pressed.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/raw_sound2.mp3.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/raw/sound2.mp3"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_ic_brightness_green_24dp.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/ic_brightness_green_24dp.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_record_stop.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/record_stop.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_ic_chat_bubble_outline_white_24px.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/ic_chat_bubble_outline_white_24px.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_bg_button_settings_background.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/bg_button_settings_background.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/menu_libusb_menu.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/menu/libusb_menu.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_findcam.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/findcam.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_photo.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/photo.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/layout_layout_readme.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/layout/layout_readme.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_ic_mail_outline_white_24px.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/ic_mail_outline_white_24px.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_main_background.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/main_background.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/layout_layout_main.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/layout/layout_main.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-mdpi_ic_launcher.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-mdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_bg_button_green.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/bg_button_green.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_left.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/left.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-xhdpi_country_portugal.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-xhdpi/country_portugal.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/layout_set_up_the_device_manual_automatic.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/layout/set_up_the_device_manual_automatic.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-xhdpi_country_japan.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/mipmap-xhdpi/country_japan.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/menu_iso_stream_settings_button.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/menu/iso_stream_settings_button.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_right.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/right.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_bg_button_start_stream.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable/bg_button_start_stream.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable-xhdpi_disconnect.png.flat",
+        "source": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/res/drawable-xhdpi/disconnect.png"
+    }
+]

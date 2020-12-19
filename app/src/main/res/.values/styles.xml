@@ -1,0 +1,38 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+    <style name="HeaderBar">
+        <item name="android:background">#303F9F</item>
+    </style>
+
+    <style name="YOURSTYLE" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:itemBackground">@android:color/holo_blue_bright</item>
+    </style>
+
+    <style name="SwitchContainer">
+        <item name="android:layout_marginBottom">4dp</item>
+    </style>
+
+    <style name="Switch">
+        <item name="android:textOff">Disabled</item>
+        <item name="android:textOn">Activated</item>
+        <item name="android:thumb">@null</item>
+        <item name="android:checked">true</item>
+        <item name="showText">true</item>
+        <item name="android:layout_marginLeft">100dp</item>
+    </style>
+<style name="CallActivityTheme" parent="android:Theme.Material">
+    <item name="android:windowActionBar">false</item>
+    <item name="android:windowFullscreen">true</item>
+    <item name="android:windowNoTitle">true</item>
+  </style>
+
+
+</resources>

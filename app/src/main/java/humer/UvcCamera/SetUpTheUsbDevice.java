@@ -41,6 +41,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
@@ -50,17 +51,15 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.widget.PopupMenu;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.crowdfire.cfalertdialog.views.CFPushButton;
-import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
 
 import java.io.File;
@@ -68,8 +67,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -1659,13 +1656,6 @@ public class SetUpTheUsbDevice extends Activity {
                     e.printStackTrace();
                 }
             }
-            JNA_I_LibUsb.INSTANCE.setLogPrint(new JNA_I_LibUsb.logPrint(){
-                public boolean callback(String msg) {
-                    log(msg);
-                    return false;
-                }
-
-            });
             sframeCnt = 0;
             final long time0 = System.currentTimeMillis();
             final int time = 5000;
@@ -1813,12 +1803,6 @@ public class SetUpTheUsbDevice extends Activity {
                     e.printStackTrace();
                 }
             }
-            JNA_I_LibUsb.INSTANCE.setLogPrint(new JNA_I_LibUsb.logPrint(){
-                public boolean callback(String msg) {
-                    log(msg);
-                    return false;
-                }
-            });
             latch = new CountDownLatch(1);
             JNA_I_LibUsb.INSTANCE.setCallback(new JNA_I_LibUsb.eventCallback(){
                 public boolean callback(Pointer videoFrame, int frameSize) {
@@ -1998,7 +1982,6 @@ public class SetUpTheUsbDevice extends Activity {
                     log("Control probeCommitControl End");
                 }
             });
-
         } else {
             if(libusb_is_initialized) {
                 JNA_I_LibUsb.INSTANCE.stopStreaming();

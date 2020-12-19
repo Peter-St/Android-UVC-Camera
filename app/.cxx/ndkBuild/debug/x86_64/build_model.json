@@ -4,17 +4,18 @@
   "buildSettings": {
     "environmentVariables": []
   },
-  "cxxBuildFolder": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/.cxx/ndkBuild/debug/x86_64",
+  "cxxBuildFolder": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/.cxx/ndkBuild/debug/x86_64",
   "info": {
     "abi": "X86_64",
     "bitness": 64,
     "deprecated": false,
     "default": true
   },
-  "originalCxxBuildFolder": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/.cxx/ndkBuild/debug/x86_64",
+  "originalCxxBuildFolder": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/.cxx/ndkBuild/debug/x86_64",
   "variant": {
     "buildSystemArgumentList": [],
     "buildTargetSet": [],
+    "implicitBuildTargetSet": [],
     "cFlagsList": [
       "-DDEBUG\u003d1"
     ],
@@ -24,12 +25,12 @@
     "module": {
       "buildSystem": "NDK_BUILD",
       "cmakeToolchainFile": "/home/peter/Android/Sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake",
-      "cxxFolder": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/.cxx",
+      "cxxFolder": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/.cxx",
       "gradleModulePathName": ":app",
-      "intermediatesFolder": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates",
-      "makeFile": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk",
-      "moduleBuildFile": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build.gradle",
-      "moduleRootFolder": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app",
+      "intermediatesFolder": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates",
+      "makeFile": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/jni/Android.mk",
+      "moduleBuildFile": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build.gradle",
+      "moduleRootFolder": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app",
       "ndkDefaultAbiList": [
         "ARMEABI_V7A",
         "ARM64_V8A",
@@ -93,12 +94,12 @@
       "ndkDefaultStl": "SYSTEM",
       "ndkVersion": "21.1.6352462",
       "project": {
-        "compilerSettingsCacheFolder": "/home/peter/Downloads/Webcam/Android-UVC-Camera/.cxx",
-        "cxxFolder": "/home/peter/Downloads/Webcam/Android-UVC-Camera/.cxx",
+        "compilerSettingsCacheFolder": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/.cxx",
+        "cxxFolder": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/.cxx",
         "isBuildOnlyTargetAbiEnabled": true,
         "isCmakeBuildCohabitationEnabled": false,
         "isNativeCompilerSettingsCacheEnabled": false,
-        "rootBuildGradleFolder": "/home/peter/Downloads/Webcam/Android-UVC-Camera",
+        "rootBuildGradleFolder": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera",
         "sdkFolder": "/home/peter/Android/Sdk",
         "isPrefabEnabled": false
       },
@@ -115,7 +116,7 @@
         "SYSTEM": {}
       }
     },
-    "objFolder": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/debug/obj/local",
+    "objFolder": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/ndkBuild/debug/obj/local",
     "variantName": "debug",
     "validAbiList": [
       "ARMEABI_V7A",
@@ -123,8 +124,8 @@
       "X86",
       "X86_64"
     ],
-    "prefabDirectory": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/.cxx/ndkBuild/debug/prefab",
+    "prefabDirectory": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/.cxx/ndkBuild/debug/prefab",
     "prefabPackageDirectoryList": []
   },
-  "prefabFolder": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/.cxx/ndkBuild/debug/prefab/x86_64"
+  "prefabFolder": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/.cxx/ndkBuild/debug/prefab/x86_64"
 }

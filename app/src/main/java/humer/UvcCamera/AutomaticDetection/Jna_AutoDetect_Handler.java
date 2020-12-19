@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
-import com.google.android.material.textfield.TextInputLayout;
-
-import humer.UvcCamera.AutomaticDetection.Jna_AutoDetect;
 import humer.UvcCamera.SetUpTheUsbDevice;
 
 

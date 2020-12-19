@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -10,21 +10,21 @@
     android:background="@drawable/main_background"
     >
 
-    <androidx.constraintlayout.widget.Guideline
+    <android.support.constraint.Guideline
         android:id="@+id/h_line"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.9" />
 
-    <androidx.constraintlayout.widget.Guideline
+    <android.support.constraint.Guideline
         android:id="@+id/v_line"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
 
-    <androidx.core.widget.NestedScrollView
+    <android.support.v4.widget.NestedScrollView
 
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -45,13 +45,13 @@
         android:scrollbarThumbVertical="@color/colorSecondaryText"
         >
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             >
 
 
-            <androidx.constraintlayout.widget.Guideline
+            <android.support.constraint.Guideline
                 android:id="@+id/v_guideline1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -283,217 +283,163 @@
                 app:layout_constraintTop_toBottomOf="@id/ActiveUrbs"
                 />
 
-            <com.google.android.material.textfield.TextInputLayout
+            <com.rafakob.floatingedittext.FloatingEditText
                 android:id="@+id/alt"
                 android:layout_width="0dp"
                 android:layout_height="55dp"
                 app:layout_constraintLeft_toLeftOf="@id/v_guideline1"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:hint="between 1 and 10 ?"
+                android:inputType="number"
+                app:hintAnimationEnabled="true"
                 >
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/altsetttext"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="between 1 and 10 ?"
-                    android:inputType="number" />
-            </com.google.android.material.textfield.TextInputLayout>
+            </com.rafakob.floatingedittext.FloatingEditText>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <com.rafakob.floatingedittext.FloatingEditText
                 android:id="@+id/maxP"
                 android:layout_width="0dp"
                 android:layout_height="55dp"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintLeft_toLeftOf="@id/v_guideline1"
                 app:layout_constraintTop_toBottomOf="@id/alt"
+                android:hint="3072 ? 3000 ? 64 ?"
+                android:inputType="number"
+                app:hintAnimationEnabled="true"
                 >
+            </com.rafakob.floatingedittext.FloatingEditText>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/maxPtext"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="3072 ? 3000 ? 64 ?"
-                    android:inputType="number" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
+            <com.rafakob.floatingedittext.FloatingEditText
                 android:id="@+id/Format"
                 android:layout_width="0dp"
                 android:layout_height="55dp"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintLeft_toLeftOf="@id/v_guideline1"
                 app:layout_constraintTop_toBottomOf="@id/maxP"
+                app:hintAnimationEnabled="true"
+                android:hint="1 or 2 or 3 ?"
+                android:inputType="number"
                 >
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/FormatText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="1 or 2 or 3 ?"
-                    android:inputType="number" />
-            </com.google.android.material.textfield.TextInputLayout>
+            </com.rafakob.floatingedittext.FloatingEditText>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <com.rafakob.floatingedittext.FloatingEditText
                 android:id="@+id/Video"
                 android:layout_width="0dp"
                 android:layout_height="55dp"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintLeft_toLeftOf="@id/v_guideline1"
                 app:layout_constraintTop_toBottomOf="@id/Format"
-                >
+                app:hintAnimationEnabled="true"
+                android:focusable="false"
+                android:hint="MJPEG or YUY2">
+            </com.rafakob.floatingedittext.FloatingEditText>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/VideoText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:hint="MJPEG or YUY2"
-                    />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
+            <com.rafakob.floatingedittext.FloatingEditText
                 android:id="@+id/Frame"
                 android:layout_width="0dp"
                 android:layout_height="55dp"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintLeft_toLeftOf="@id/v_guideline1"
                 app:layout_constraintTop_toBottomOf="@id/Video"
-                >
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/FrameText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="between 1 and 10 ?"
-                    android:inputType="number" />
-            </com.google.android.material.textfield.TextInputLayout>
+                app:hintAnimationEnabled="true"
+                android:hint="between 1 and 10 ?"
+                android:inputType="number">
 
-            <com.google.android.material.textfield.TextInputLayout
+            </com.rafakob.floatingedittext.FloatingEditText>
+
+            <com.rafakob.floatingedittext.FloatingEditText
                 android:id="@+id/Imagewi"
                 android:layout_width="0dp"
                 android:layout_height="55dp"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintLeft_toLeftOf="@id/v_guideline1"
                 app:layout_constraintTop_toBottomOf="@id/Frame"
-                >
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/ImageWiText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="640 or 1920"
-                    android:inputType="number" />
-            </com.google.android.material.textfield.TextInputLayout>
+                app:hintAnimationEnabled="true"
+                android:hint="640 or 1920"
+                android:inputType="number">
 
-            <com.google.android.material.textfield.TextInputLayout
+            </com.rafakob.floatingedittext.FloatingEditText>
+
+            <com.rafakob.floatingedittext.FloatingEditText
                 android:id="@+id/ImageHei"
                 android:layout_width="0dp"
                 android:layout_height="55dp"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintLeft_toLeftOf="@id/v_guideline1"
                 app:layout_constraintTop_toBottomOf="@id/Imagewi"
+                app:hintAnimationEnabled="true"
+                android:hint="480 or 1080 or ..."
+                android:inputType="number"
                 >
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/ImageHeiText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="480 or 1080 or ..."
-                    android:inputType="number" />
-            </com.google.android.material.textfield.TextInputLayout>
+            </com.rafakob.floatingedittext.FloatingEditText>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <com.rafakob.floatingedittext.FloatingEditText
                 android:id="@+id/frameInt"
                 android:layout_width="0dp"
                 android:layout_height="55dp"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintLeft_toLeftOf="@id/v_guideline1"
                 app:layout_constraintTop_toBottomOf="@id/ImageHei"
+                app:hintAnimationEnabled="true"
+                android:hint="333333 = 30 fps"
+                android:inputType="number"
                 >
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/frameIntText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="333333 = 30 fps"
-                    android:inputType="number" />
-            </com.google.android.material.textfield.TextInputLayout>
+            </com.rafakob.floatingedittext.FloatingEditText>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <com.rafakob.floatingedittext.FloatingEditText
                 android:id="@+id/PacketsPer"
                 android:layout_width="0dp"
                 android:layout_height="55dp"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintLeft_toLeftOf="@id/v_guideline1"
                 app:layout_constraintTop_toBottomOf="@id/frameInt"
-                >
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/PacketsPerText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="4 or 8 or 64 ?"
-                    android:inputType="number" />
-            </com.google.android.material.textfield.TextInputLayout>
+                app:hintAnimationEnabled="true"
+                android:hint="4 or 8 or 64 ?"
+                android:inputType="number">
+            </com.rafakob.floatingedittext.FloatingEditText>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <com.rafakob.floatingedittext.FloatingEditText
                 android:id="@+id/ActiveUr"
                 android:layout_width="0dp"
                 android:layout_height="55dp"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintLeft_toLeftOf="@id/v_guideline1"
                 app:layout_constraintTop_toBottomOf="@id/PacketsPer"
-                >
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/ActiveUrText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="1 or 8 or 124 ?"
-                    android:inputType="number" />
-            </com.google.android.material.textfield.TextInputLayout>
+                app:hintAnimationEnabled="true"
+                android:hint="1 or 8 or 124 ?"
+                android:inputType="number">
+            </com.rafakob.floatingedittext.FloatingEditText>
 
-
-            <com.google.android.material.textfield.TextInputLayout
+            <com.rafakob.floatingedittext.FloatingEditText
                 android:id="@+id/LibUsb"
                 android:layout_width="0dp"
                 android:layout_height="55dp"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintLeft_toLeftOf="@id/v_guideline1"
                 app:layout_constraintTop_toBottomOf="@id/ActiveUr"
+                app:hintAnimationEnabled="true"
+                android:hint="Support for LibUsb"
+                android:focusable="false"
                 >
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/LibUsbText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Support for LibUsb"
-                    android:focusable="false"
-
-                    />
-            </com.google.android.material.textfield.TextInputLayout>
-
-
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    </androidx.core.widget.NestedScrollView>
-
-
-
+            </com.rafakob.floatingedittext.FloatingEditText>
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v4.widget.NestedScrollView>
 
     <Button
         android:id="@+id/button_ok"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:text="ok"
-
         app:layout_constraintTop_toTopOf="@id/h_line"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="@id/v_line"
         app:layout_constraintRight_toRightOf="parent"
         android:background="@drawable/bg_button_green"
-
         android:layout_marginEnd="5dp"
         android:layout_marginStart="5dp"
         android:layout_marginHorizontal="5dp"
         android:layout_marginVertical="5dp"
         />
-
 
     <Button
         android:id="@+id/button_cancel"
@@ -511,8 +457,7 @@
         android:layout_marginStart="5dp"
         android:layout_marginHorizontal="5dp"
         android:layout_marginVertical="5dp"
-
         />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</android.support.constraint.ConstraintLayout>

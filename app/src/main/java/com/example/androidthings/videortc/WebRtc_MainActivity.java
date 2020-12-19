@@ -23,17 +23,20 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.content.Intent;
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Button;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
+
 import humer.UvcCamera.R;
 
-
+/**
+ *
+ */
 public class WebRtc_MainActivity extends Activity {
 
     // Camera Values
@@ -72,7 +75,9 @@ public class WebRtc_MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
         setContentView(R.layout.main_activity);
+
         addListenerOnButton();
+
         int PERMISSION_ALL = 1;
         String[] PERMISSIONS = {Manifest.permission.INTERNET, Manifest.permission.CHANGE_NETWORK_STATE,  Manifest.permission.ACCESS_NETWORK_STATE,
                 Manifest.permission.RECORD_AUDIO, Manifest.permission.MODIFY_AUDIO_SETTINGS, Manifest.permission.CAMERA};

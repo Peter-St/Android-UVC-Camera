@@ -23,6 +23,7 @@ This Repository is provided "as is", without warranties of any kind.
 package humer.UvcCamera;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -30,13 +31,12 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import android.os.Handler;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -45,13 +45,13 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.akexorcist.localizationactivity.ui.LocalizationActivity;
-
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
 import noman.zoomtextview.ZoomTextView;
 
+//public class Main extends LocalizationActivity {
 public class Main extends LocalizationActivity {
 
     public static int camStreamingAltSetting;
@@ -335,7 +335,7 @@ public class Main extends LocalizationActivity {
     }
 
     public void setUpTheUsbDevice(View view){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (showStoragePermissionRead() && showStoragePermissionWrite() && showCameraPermissionCamera()) {
                 Intent intent = new Intent(this, SetUpTheUsbDevice.class);
                 Bundle bundle=new Bundle();
@@ -443,7 +443,7 @@ public class Main extends LocalizationActivity {
     public void isoStream(View view){
 
         if (showStoragePermissionRead() && showStoragePermissionWrite()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 if(!showCameraPermissionCamera()) return;
             }
             if (camFormatIndex == 0 || camFrameIndex == 0 ||camFrameInterval == 0 ||packetsPerRequest == 0 ||maxPacketSize == 0 ||imageWidth == 0 || activeUrbs == 0 ) {

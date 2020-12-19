@@ -3,6 +3,5 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/app/src/main/jni/libusb" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/jni/libuvc" vcs="Git" />
   </component>
 </project>

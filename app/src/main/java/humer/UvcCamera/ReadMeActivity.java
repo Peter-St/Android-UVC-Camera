@@ -22,15 +22,13 @@ This Repository is provided "as is", without warranties of any kind.
 
 package humer.UvcCamera;
 
-import android.app.Activity;
 import android.os.Bundle;
-
 import com.akexorcist.localizationactivity.ui.LocalizationActivity;
 
 public class ReadMeActivity extends LocalizationActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_readme);
     }

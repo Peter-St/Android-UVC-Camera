@@ -59,12 +59,12 @@ import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-import androidx.appcompat.widget.PopupMenu;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -82,8 +82,8 @@ import com.sample.timelapse.MJPEGGenerator ;
 import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
 
-import org.webrtc.VideoCapturer;
-import org.webrtc.VideoFrame;
+// import org.webrtc.VideoCapturer;
+// import org.webrtc.VideoFrame;
 
 import humer.UvcCamera.LibUsb.JNA_I_LibUsb;
 import humer.UvcCamera.UVC_Descriptor.IUVC_Descriptor;
@@ -250,10 +250,10 @@ public class StartIsoStreamActivity extends Activity {
     private static boolean isLoaded;
     static {
         if (!isLoaded) {
-            System.loadLibrary("usb100");
+            System.loadLibrary("usb1.0");
             System.loadLibrary("jpeg-turbo1500");
-            System.loadLibrary("uvc");
-            System.loadLibrary("Iso_stream");
+            //System.loadLibrary("uvc");
+            System.loadLibrary("Usb_Support");
             isLoaded = true;
         }
     }
@@ -1293,13 +1293,6 @@ public class StartIsoStreamActivity extends Activity {
 
                 if (!libusb_is_initialized) {
                     try {
-                        JNA_I_LibUsb.INSTANCE.setLogPrint(new JNA_I_LibUsb.logPrint(){
-                            public boolean callback(String msg) {
-                                log(msg);
-                                return false;
-                            }
-
-                        });
                         if (camDeviceConnection == null) {
                             findCam();
                             openCameraDevice(true);
@@ -2317,7 +2310,7 @@ public class StartIsoStreamActivity extends Activity {
         String hex = formatter.toString();
         System.out.println("hex " + hex);
     }
-
+/*
     public void a() {
         VideoCapturer v;
         VideoCapturer.CapturerObserver a;
@@ -2342,7 +2335,7 @@ public class StartIsoStreamActivity extends Activity {
         Executor executor;
         VideoCapturer capturer;
     }
-
+*/
     private byte[] convert_Yuy2_to_NV21(byte[] YUY2Source) {
         //byte YUY2Source[imageWidth * imageHeight * 2] = /* source frame */;
 

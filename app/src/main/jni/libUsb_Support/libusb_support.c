@@ -126,6 +126,7 @@ libusb_context *ctx;
 libusb_device_handle *devh = NULL;
 
 AutotransferStruct autoStruct;
+Test1FrameStruct OneFrameStruct;
 
 int initStreamingParmsIntArray[3];
 int probedStreamingParmsIntArray[3];
@@ -170,7 +171,10 @@ void getStreamingParmsArray(int *array, uint8_t *buf) {
     array[2] = (buf[pos + 3] << 24) | ((buf[pos + 2] & 0xFF) << 16) | ((buf[pos + 1] & 0xFF) << 8) | (buf[pos] & 0xFF);
 }
 
-
+eventCallback sendReceivedDataToJava = NULL;
+void setCallback(eventCallback evnHnd) {
+    sendReceivedDataToJava = evnHnd;
+}
 
 
 void initStreamingParms_controltransfer(libusb_device_handle *handle, bool createPointer) {
@@ -220,12 +224,13 @@ void initStreamingParms_controltransfer(libusb_device_handle *handle, bool creat
     if (len != sizeof (buffer)) {
         LOGD("\nCamera initialization failed. Streaming parms probe set failed, len= %d.\n", len);
     } else {
+        LOGD("1st: InitialContolTransfer Sucessful");
         LOGD("Camera initialization success, len= %d.\n", len);
     }
     len = libusb_control_transfer(handle, RT_CLASS_INTERFACE_GET, GET_CUR, (VS_PROBE_CONTROL << 8), camStreamingInterfaceNum, buffer, sizeof (buffer), 500);
     if (len != sizeof (buffer)) {
         LOGD("Camera initialization failed. Streaming parms probe set failed, len= %d.\n", len);
-    }
+    } else LOGD ("2nd: CTL suressful");
     if (createPointer == true) {
         memcpy(ctl_transfer_Data->ctl_transfer_values + 47, buffer, length);
     }
@@ -242,16 +247,18 @@ void initStreamingParms_controltransfer(libusb_device_handle *handle, bool creat
 */
     len = libusb_control_transfer(handle, RT_CLASS_INTERFACE_SET, SET_CUR, (VS_COMMIT_CONTROL << 8), camStreamingInterfaceNum, buffer, sizeof (buffer), 2000);
     if (len != sizeof (buffer)) {
+        LOGD("FAILED -- 3rd CTL failed");
         LOGD("Camera initialization failed. Streaming parms commit set failed, len= %d.", len);
-    }
+    } else LOGD("3rd: CTL Sucessful");
     if (createPointer == true) {
         memcpy(ctl_transfer_Data->ctl_transfer_values + 95, buffer, length);
     }
     getStreamingParmsArray(finalStreamingParmsIntArray_first , buffer);
     len = libusb_control_transfer(handle, RT_CLASS_INTERFACE_GET, GET_CUR, (short) (VS_COMMIT_CONTROL << 8), camStreamingInterfaceNum, buffer, sizeof (buffer), 2000);
     if (len != sizeof (buffer)) {
+        LOGD("ERROR 4th CTL FAILED");
         LOGD("Camera initialization failed. Streaming parms commit get failed, len= %d.", len);
-    }
+    } else LOGD("4th: FinalCTL Sucessful");
     if (createPointer == true) {
         memcpy(ctl_transfer_Data->ctl_transfer_values + 143, buffer, length);
     }
@@ -330,8 +337,6 @@ int print_device(libusb_device *dev, int level, libusb_device_handle *handle, st
         fflush(stdout);
         ret = libusb_open(dev, &handle);
         if (LIBUSB_SUCCESS == ret) {
-
-
             if (desc.iManufacturer) {
                 ret = libusb_get_string_descriptor_ascii(handle, desc.iManufacturer, string, sizeof (string));
                 if (ret > 0) {
@@ -343,7 +348,6 @@ int print_device(libusb_device *dev, int level, libusb_device_handle *handle, st
                          desc.idVendor);
             if (desc.iProduct) {
                 ret = libusb_get_string_descriptor_ascii(handle, desc.iProduct, string, sizeof (string));
-
                 if (ret > 0)
                     snprintf(description + strlen(description), sizeof (description) -
                                                                 strlen(description), "%s", string);
@@ -358,9 +362,6 @@ int print_device(libusb_device *dev, int level, libusb_device_handle *handle, st
                      desc.idVendor, desc.idProduct);
         }
         LOGD("%.*sDev (bus %d, device %d): %s\n", level * 2, "                    ", libusb_get_bus_number(dev), libusb_get_device_address(dev), description);
-
-        //Erstellen der Bus - und Geräteadressen
-
         if (handle && verbose) {
             if (desc.iSerialNumber) {
                 ret = libusb_get_string_descriptor_ascii(handle, desc.iSerialNumber, string, sizeof (string));
@@ -369,7 +370,6 @@ int print_device(libusb_device *dev, int level, libusb_device_handle *handle, st
                            "                    ", string);
             }
         }
-
         if (verbose) {
             for (i = 0; i < desc.bNumConfigurations; i++) {
                 struct libusb_config_descriptor *config;
@@ -378,15 +378,12 @@ int print_device(libusb_device *dev, int level, libusb_device_handle *handle, st
                     LOGD("  Couldn't retrieve descriptors\n");
                     continue;
                 }
-
                 print_configuration(config);
-
                 libusb_free_config_descriptor(config);
             }
         }
         return 0;
 }
-
 
 int libUsb_open_def_fd(int vid, int pid, const char *serial, int FD, int busnum, int devaddr) {
     int ret;
@@ -436,7 +433,7 @@ int libUsb_open_def_fd(int vid, int pid, const char *serial, int FD, int busnum,
     if (r != LIBUSB_SUCCESS) {
         LOGD("libusb_set_interface_alt_setting(devh, 1, 1) failed with error %d\n", r);
     } else {
-        LOGD("Die Alternativeinstellungen wurden erfolgreich gesetzt: %d ; Altsetting = 0\n", r);
+        LOGD("Altsettings sucessfuly set! %d ; Altsetting = 0\n", r);
     }
     initStreamingParms(devh);
     __android_log_print(ANDROID_LOG_INFO, TAG, "devh: %p\n", devh);
@@ -530,14 +527,12 @@ int initStreamingParms(int FD) {
         int ret;
         enum libusb_error rc;
         unsigned char data[64];
-
         rc = libusb_set_option(&ctx, LIBUSB_OPTION_WEAK_AUTHORITY, NULL);
         if (rc != LIBUSB_SUCCESS) {
             __android_log_print(ANDROID_LOG_ERROR, TAG,"libusb_init failed: %d\n", ret);
             return -1;
         }
         ret = libusb_init(&ctx);
-
         if (ret < 0) {
             __android_log_print(ANDROID_LOG_INFO, TAG,
                                 "libusb_init failed: %d\n", ret);
@@ -792,6 +787,186 @@ void probeCommitControl_cleanup()
     LOGD("probeCommitControl_cleanup Complete");
 }
 
+
+void stopStreaming() {
+
+    LOGD("native stopStreaming");
+
+
+    runningStream = false;
+    /*
+    for (i = 0; i < activeUrbs; i++) {
+        int res = libusb_cancel_transfer(xfers[i]);
+        if ((res < 0) && (res != LIBUSB_ERROR_NOT_FOUND)) {
+            LOGD("libusb_cancel_transfer failed");
+        } else LOGD("libusb_cancel_transfer sucess");
+    }
+     */
+    libusb_interrupt_event_handler(ctx);
+    LOGD("handle Events interrupted");
+    libusb_release_interface(devh, camStreamingInterfaceNum);
+
+    //libusb_release_interface(globalUVCHandle->usb_devh, global_UVC_ctrl.bInterfaceNumber);
+}
+
+void isoc_transfer_completion_handler_one_frame(struct libusb_transfer *the_transfer) {
+    LOGD("Iso Transfer Callback Function");
+    unsigned char *p;
+    int packetLen;
+    int i;
+    p = the_transfer->buffer;
+    OneFrameStruct.requestCnt ++;
+    for (i = 0; i < the_transfer->num_iso_packets; i++, p += maxPacketSize) {
+        if (the_transfer->iso_packet_desc[i].status == LIBUSB_TRANSFER_COMPLETED) {
+            OneFrameStruct.packetCnt ++;
+            packetLen = the_transfer->iso_packet_desc[i].actual_length;
+            // packet only contains an acknowledge?
+            if (packetLen == 0) {
+                OneFrameStruct.packet0Cnt++;
+            }
+            if (packetLen == 12) {
+                OneFrameStruct.packet12Cnt++;
+            }
+            if (packetLen < 2) {
+                continue;
+            }
+            // error packet
+            if (p[1] & UVC_STREAM_ERR) // bmHeaderInfoh
+            {
+                OneFrameStruct.packetErrorCnt ++;
+                LOGD("UVC_STREAM_ERR --> Package %d", i);
+                frameUeberspringen = 1;
+                continue;
+            }
+            packetLen -= p[0];
+            if (packetLen + total > videoFrameData->FrameBufferSize) {
+                if (ueberschreitungDerUebertragungslaenge == 1) {
+                    LOGD(stderr, "Die Framegröße musste gekürzt werden.\n");
+                    ueberschreitungDerUebertragungslaenge = 1;
+                    fflush(stdout);
+                }
+                packetLen = videoFrameData->FrameBufferSize - total;
+            }
+            memcpy(videoFrameData->videoframe + total, p + p[0], packetLen);
+            total += packetLen;
+            OneFrameStruct.frameLen += packetLen;
+            if (p[1] & UVC_STREAM_EOF) {
+                OneFrameStruct.sframeLenArray[OneFrameStruct.frameCnt] = OneFrameStruct.frameLen;
+                LOGD("Frame received");
+                ueberschreitungDerUebertragungslaenge = 0;
+                if (frameUeberspringen == 0) {
+                    ++totalFrame;
+                    if (total < videoFrameData->FrameBufferSize) {
+                        LOGD(stderr, "insufficient frame data.\n");
+                    }
+                    LOGD("Länge des Frames = %d\n", total);
+                    OneFrameStruct.frameCnt ++;
+                    LOGD("calling sendReceivedDataToJava");
+                    runningStream = false;
+                    sendReceivedDataToJava(videoFrameData, total);
+
+
+
+                    total = 0;
+                    OneFrameStruct.frameLen = 0;
+                } else {
+                    LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
+                    total = 0;
+                    frameUeberspringen = 0;
+                }
+            }
+        }
+    }
+    if (runningStream) if (libusb_submit_transfer(the_transfer) != 0) {
+            LOGD(stderr, "Die Übertragung ist gescheitert. \n");
+        }
+}
+
+void getFramesOverLibUsb(int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
+                         int camFrameInde, int camFrameInterva, int imageWidt, int imageHeigh, int yuvFrameIsZero, int stream ) {
+    packetsPerRequest = packetsPerReques;
+    maxPacketSize = maxPacketSiz;
+    activeUrbs = activeUrb;
+    camStreamingAltSetting = camStreamingAltSettin;
+    camFormatIndex = camFormatInde;
+    camFrameIndex = camFrameInde;
+    camFrameInterval = camFrameInterva;
+    imageWidth = imageWidt;
+    imageHeight = imageHeigh;
+    int requestMode = 0;
+
+    probeCommitControl(bmHint, camFormatIndex, camFrameIndex, camFrameInterval);
+    probeCommitControl_cleanup();
+
+    LOGD("ISO Stream");
+
+
+    runningStream = true;
+
+    int r = libusb_set_interface_alt_setting(devh, camStreamingInterfaceNum,
+                                             camStreamingAltSetting); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
+    if (r != LIBUSB_SUCCESS) {
+        LOGD("libusb_set_interface_alt_setting(devh, 1, 1) failed with error %d\n", r);
+    } else {
+        LOGD("Die Alternativeinstellungen wurden erfolgreich gesetzt: %d ; Altsetting = %d\n", r,
+             camStreamingAltSetting);
+    }
+    if (activeUrbs > 16) activeUrbs = 16;
+    struct libusb_transfer *xfers[activeUrbs];
+    for (i = 0; i < activeUrbs; i++) {
+        xfers[i] = libusb_alloc_transfer(packetsPerRequest);
+        uint8_t *data = malloc(maxPacketSize * packetsPerRequest);
+        libusb_fill_iso_transfer(
+                xfers[i], devh, camStreamingEndpoint,
+                data, maxPacketSize * packetsPerRequest, packetsPerRequest,
+                isoc_transfer_completion_handler_one_frame, NULL, 5000);
+        libusb_set_iso_packet_lengths(xfers[i], maxPacketSize);
+    }
+    runningStream = true;
+    for (i = 0; i < activeUrbs; i++) {
+        if (libusb_submit_transfer(xfers[i]) != 0) {
+            LOGD(stderr, "submit xfer failed.\n");
+        }
+    }
+    runningStream = true;
+    while (runningStream) {
+        if (runningStream == false) {
+            LOGD("stopped because runningStream == false !!  --> libusb_event_handling STOPPED");
+            break;
+        }
+        libusb_handle_events(ctx);
+    }
+
+}
+
+
+
+    /*
+    int r = libusb_set_interface_alt_setting(globalUVCHandle->usb_devh, global_UVC_ctrl.bInterfaceNumber, camStreamingAltSetting); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
+    if (r != LIBUSB_SUCCESS) {
+        LOGD("libusb_set_interface_alt_setting(devh, 1, 1) failed with error %d\n", r);
+    } else {
+        LOGD("Die Alternativeinstellungen wurden erfolgreich gesetzt: %d ; Altsetting = %d\n", r, camStreamingAltSetting);
+    }
+    if(activeUrbs > 16) activeUrbs = 16;
+    //struct libusb_transfer * xfers[activeUrbs];
+    for (i = 0; i < activeUrbs; i++) {
+        xfers[i] = libusb_alloc_transfer(packetsPerRequest);
+        uint8_t *data = malloc(maxPacketSize * packetsPerRequest);
+        libusb_fill_iso_transfer(
+                xfers[i], globalUVCHandle->usb_devh, camStreamingEndpoint,
+                data, maxPacketSize*packetsPerRequest, packetsPerRequest,
+                isoc_transfer_completion_handler, NULL, 5000);
+        libusb_set_iso_packet_lengths(xfers[i], maxPacketSize);
+    }
+    runningStream = true;
+    for (i = 0; i < activeUrbs; i++) {
+        if (libusb_submit_transfer(xfers[i]) != 0) {
+            LOGD(stderr, "submit xfer failed.\n");
+        }
+    }
+     *//*
+}
 
 
 
