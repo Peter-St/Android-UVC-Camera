@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-large-v4/values-large-v4.xml",
+            "outputFile": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-large-v4/values-large-v4.xml",
             "map": [
                 {
                     "source": "/home/peter/.gradle/caches/transforms-2/files-2.1/3c25d949127361693c3996e6817a65c8/appcompat-v7-26.1.0/res/values-large-v4/values-large-v4.xml",

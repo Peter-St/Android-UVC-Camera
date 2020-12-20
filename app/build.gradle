@@ -140,13 +140,13 @@ clean.dependsOn 'ndkClean'
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'net.java.dev.jna:jna:5.4.0@aar'
-    implementation 'com.android.support:appcompat-v7:27.0.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    implementation 'com.android.support:design:27.0.0'
+    implementation 'net.java.dev.jna:jna:5.6.0@aar'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support.constraint:constraint-layout:2.0.4'
+    testImplementation 'junit:junit:4.13.1'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation 'com.android.support:design:27.1.1'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
 
     //FabSpeedDial Button
@@ -156,19 +156,22 @@ dependencies {
     implementation 'com.crowdfire.cfalertdialog:cfalertdialog:1.1.0'
 
     //JNA
-    implementation 'net.java.dev.jna:jna:5.4.0@aar'
+    implementation 'net.java.dev.jna:jna:5.6.0@aar'
 
     // WebRtc
     implementation 'org.webrtc:google-webrtc:1.0.22672'
 
     // @ RequiresApi
-    implementation 'com.android.support:support-annotations:27.1.1'
+    implementation 'com.android.support:support-annotations:28.0.0'
 
     // Support Translation
     implementation 'com.akexorcist:localizationactivity:1.2.2'
 
     // TextInputLayout
     implementation 'com.rafakob:floatingedittext:1.0.5'
+
+    //fading TextView
+    implementation 'com.tomer:fadingtextview:2.6'
 
 }
 configurations.all {

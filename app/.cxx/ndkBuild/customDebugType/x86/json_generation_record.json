@@ -2,19 +2,19 @@
   {
     "level": "INFO",
     "message": "Start JSON generation. Platform version: 16 min SDK version: x86",
-    "file": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/jni/Android.mk",
+    "file": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk",
     "tag": "customDebugType|x86"
   },
   {
     "level": "INFO",
-    "message": "JSON \u0027/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/.cxx/ndkBuild/customDebugType/x86/android_gradle_build.json\u0027 was up-to-date",
-    "file": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/jni/Android.mk",
+    "message": "JSON \u0027/home/peter/Downloads/Webcam/Android-UVC-Camera/app/.cxx/ndkBuild/customDebugType/x86/android_gradle_build.json\u0027 was up-to-date",
+    "file": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk",
     "tag": "customDebugType|x86"
   },
   {
     "level": "INFO",
     "message": "JSON generation completed without problems",
-    "file": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/jni/Android.mk",
+    "file": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk",
     "tag": "customDebugType|x86"
   }
 ]

@@ -48,6 +48,7 @@ import android.widget.TextView;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.crowdfire.cfalertdialog.views.CFPushButton;
+import com.tomer.fadingtextview.FadingTextView;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -60,6 +61,8 @@ import java.util.Arrays;
 import humer.UvcCamera.AutomaticDetection.Jna_AutoDetect;
 import humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect;
 import humer.UvcCamera.UVC_Descriptor.UVC_Descriptor;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class SaveToFile  {
 
@@ -191,6 +194,9 @@ public class SaveToFile  {
                         "\nAltSetting = " + sALT_SETTING + "\nMaximal Packet Size = " + smaxPacketSize + "\nVideoformat = " + svideoformat + "\nCamera Format Index = " + scamFormatIndex + "\n" +
                         "Camera FrameIndex = " + scamFrameIndex + "\nImage Width = "+ simageWidth + "\nImage Height = " + simageHeight + "\nCamera Frame Interval (fps) = " + (10000000 / scamFrameInterval)  + "\nLibUsb = " + libUsb );
                 tv.setTextColor(Color.BLACK);
+                FadingTextView FTV = (FadingTextView) activity.findViewById(R.id.fadingTextView);
+                FTV.setVisibility(View.INVISIBLE);
+                FTV.setVisibility(View.GONE);
                 Button testrun  = activity.findViewById(R.id.testrun);
                 testrun.setOnClickListener(new View.OnClickListener() {
                     @Override

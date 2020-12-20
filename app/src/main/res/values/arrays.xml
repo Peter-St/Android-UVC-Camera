@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="examples">
+        <item>0   Sec</item>
+        <item>0,5 Sec</item>
+        <item>1   Sec</item>
+        <item>1,5 Sec</item>
+        <item>2   Sec</item>
+        <item>2,5 Sec</item>
+        <item>3   Sec</item>
+        <item>3,5 Sec</item>
+        <item>4   Sec</item>
+        <item>4,5 Sec</item>
+        <item>5   Sec</item>
+        <item>5,5 Sec</item>
+        <item>5   Sec</item>
+        <item>6,5 Sec</item>
+        <item>7   Sec</item>
+        <item>7,5 Sec</item>
+        <item>8   Sec</item>
+        <item>8,5 Sec</item>
+        <item>9   Sec</item>
+        <item>9,5 Sec</item>
+        <item>RESTART</item>
+
+    </string-array>
+</resources>

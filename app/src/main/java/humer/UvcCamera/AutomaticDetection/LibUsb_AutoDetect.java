@@ -141,6 +141,7 @@ public class LibUsb_AutoDetect extends AppCompatActivity {
     private static int busnum;
     private static int devaddr;
     private volatile boolean libusb_is_initialized;
+    private volatile boolean camera_is_initialized_over_libusb;
     private volatile boolean exit = false;
     private static String progress;
     private boolean fiveFrames;
@@ -225,11 +226,7 @@ public class LibUsb_AutoDetect extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-
             if (rc == 0) startLibusbAutoTransfer();
-
-
         }
     }
 
@@ -295,8 +292,23 @@ public class LibUsb_AutoDetect extends AppCompatActivity {
         return -1;
     }
 
+    private void libusb_openCameraDevice() {
+        fd = camDeviceConnection.getFileDescriptor();
+        if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
+        int framesReceive = 1;
+        if (fiveFrames) framesReceive = 5;
+        int bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
+        JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, framesReceive, bcdUVC_int);
+        libusb_is_initialized = true;
+    }
+
     private int libusb_initCamera() {
-        return JNA_I_LibUsb.INSTANCE.initStreamingParms(camDeviceConnection.getFileDescriptor());
+        if (!camera_is_initialized_over_libusb) {
+            camera_is_initialized_over_libusb = true;
+            return JNA_I_LibUsb.INSTANCE.initStreamingParms(camDeviceConnection.getFileDescriptor());
+        }
+        return 1;
     }
 
     private void findCam() throws Exception {
@@ -556,16 +568,7 @@ public class LibUsb_AutoDetect extends AppCompatActivity {
         }
     }
 
-    private void libusb_openCameraDevice() {
-        fd = camDeviceConnection.getFileDescriptor();
-        if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
-        int framesReceive = 1;
-        if (fiveFrames) framesReceive = 5;
-        int bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
-        JNA_I_LibUsb.INSTANCE.init(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, framesReceive, bcdUVC_int);
-        libusb_is_initialized = true;
-    }
+
 
     private int videoFormatToInt () {
         if(videoformat.equals("mjpeg")) return 1;

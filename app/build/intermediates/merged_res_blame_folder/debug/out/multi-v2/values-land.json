@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-land/values-land.xml",
+            "outputFile": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-land/values-land.xml",
             "map": [
                 {
                     "source": "/home/peter/.gradle/caches/transforms-2/files-2.1/eb1f1b8d3a1f68dae142764db18006d6/design-26.1.0/res/values-land/values-land.xml",

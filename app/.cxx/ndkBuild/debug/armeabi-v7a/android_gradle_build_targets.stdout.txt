@@ -1,0 +1,90 @@
+[armeabi-v7a] Compile arm    : Usb_Support <= libusb_support.c
+[armeabi-v7a] Compile thumb  : usb1.0 <= core.c
+[armeabi-v7a] Compile thumb  : usb1.0 <= descriptor.c
+[armeabi-v7a] Compile thumb  : usb1.0 <= hotplug.c
+[armeabi-v7a] Compile thumb  : usb1.0 <= io.c
+[armeabi-v7a] Compile thumb  : usb1.0 <= sync.c
+[armeabi-v7a] Compile thumb  : usb1.0 <= strerror.c
+[armeabi-v7a] Compile thumb  : usb1.0 <= linux_usbfs.c
+[armeabi-v7a] Compile thumb  : usb1.0 <= events_posix.c
+[armeabi-v7a] Compile thumb  : usb1.0 <= threads_posix.c
+[armeabi-v7a] Compile thumb  : usb1.0 <= linux_netlink.c
+[armeabi-v7a] SharedLibrary  : libusb1.0.so
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jcapimin.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jcapistd.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jccoefct.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jccolor.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jcdctmgr.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jchuff.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jcinit.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jcmainct.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jcmarker.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jcmaster.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jcomapi.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jcparam.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jcphuff.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jcprepct.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jcsample.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jctrans.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jdapimin.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jdapistd.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jdatadst.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jdatasrc.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jdcoefct.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jdcolor.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jddctmgr.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jdhuff.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jdinput.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jdmainct.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jdmarker.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jdmaster.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jdmerge.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jdphuff.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jdpostct.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jdsample.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jdtrans.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jerror.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jfdctflt.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jfdctfst.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jfdctint.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jidctflt.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jidctfst.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jidctint.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jidctred.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jquant1.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jquant2.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jutils.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jmemmgr.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jmemnobs.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jaricom.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jcarith.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jdarith.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= turbojpeg.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= transupp.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jdatadst-tj.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jdatasrc-tj.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jsimd_arm.c
+[armeabi-v7a] Compile arm    : jpeg-turbo1500_static <= jsimd_arm_neon.S
+[armeabi-v7a] StaticLibrary  : libjpeg-turbo1500_static.a
+[armeabi-v7a] SharedLibrary  : libjpeg-turbo1500.so
+[armeabi-v7a] SharedLibrary  : libUsb_Support.so
+[armeabi-v7a] Compile thumb  : dpfp <= dpfp.c
+[armeabi-v7a] Executable     : dpfp
+[armeabi-v7a] Compile thumb  : dpfp_threaded <= dpfp.c
+[armeabi-v7a] Executable     : dpfp_threaded
+[armeabi-v7a] Compile thumb  : fxload <= ezusb.c
+[armeabi-v7a] Compile thumb  : fxload <= fxload.c
+[armeabi-v7a] Executable     : fxload
+[armeabi-v7a] Compile thumb  : hotplugtest <= hotplugtest.c
+[armeabi-v7a] Executable     : hotplugtest
+make: Nothing to be done for 'jpeg-turbo1500'.
+[armeabi-v7a] Compile thumb  : listdevs <= listdevs.c
+[armeabi-v7a] Executable     : listdevs
+[armeabi-v7a] Compile thumb  : sam3u_benchmark <= sam3u_benchmark.c
+[armeabi-v7a] Executable     : sam3u_benchmark
+[armeabi-v7a] Compile thumb  : stress <= stress.c
+[armeabi-v7a] Compile thumb  : stress <= testlib.c
+[armeabi-v7a] Executable     : stress
+make: Nothing to be done for 'usb1.0'.
+[armeabi-v7a] Compile thumb  : xusb <= xusb.c
+[armeabi-v7a] Executable     : xusb

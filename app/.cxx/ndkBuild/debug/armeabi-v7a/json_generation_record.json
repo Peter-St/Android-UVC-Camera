@@ -2,19 +2,19 @@
   {
     "level": "INFO",
     "message": "Start JSON generation. Platform version: 16 min SDK version: armeabi-v7a",
-    "file": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/jni/Android.mk",
+    "file": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk",
     "tag": "debug|armeabi-v7a"
   },
   {
     "level": "INFO",
-    "message": "JSON \u0027/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/.cxx/ndkBuild/debug/armeabi-v7a/android_gradle_build.json\u0027 was up-to-date",
-    "file": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/jni/Android.mk",
+    "message": "JSON \u0027/home/peter/Downloads/Webcam/Android-UVC-Camera/app/.cxx/ndkBuild/debug/armeabi-v7a/android_gradle_build.json\u0027 was up-to-date",
+    "file": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk",
     "tag": "debug|armeabi-v7a"
   },
   {
     "level": "INFO",
     "message": "JSON generation completed without problems",
-    "file": "/home/peter/Downloads/Webcam/SDK27-Android-UVC-Camera/app/src/main/jni/Android.mk",
+    "file": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk",
     "tag": "debug|armeabi-v7a"
   }
 ]

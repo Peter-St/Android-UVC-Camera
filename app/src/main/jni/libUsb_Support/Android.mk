@@ -51,12 +51,13 @@ LOCAL_LDLIBS += -llog
 LOCAL_LDLIBS += -landroid
 
 LOCAL_SHARED_LIBRARIES += libusb1.0
-
+LOCAL_SHARED_LIBRARIES += jpeg-turbo1500
 
 LOCAL_ARM_MODE := arm
 
 LOCAL_SRC_FILES := \
 		        libusb_support.c\
+
 
 LOCAL_MODULE    := Usb_Support
 include $(BUILD_SHARED_LIBRARY)

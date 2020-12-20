@@ -235,12 +235,12 @@ public class StartIsoStreamActivity extends Activity {
     private static int devaddr;
     private volatile boolean libusb_is_initialized;
     private static final String DEFAULT_USBFS = "/dev/bus/usb";
-/*
+
     // JNI METHODS
     public native void JniIsoStreamActivitySurface(final Surface surface, int a, int b);
     public native void JniIsoStreamActivity(int a, int b);
     public native void JniProbeCommitControl(int bmHint,int camFormatIndex,int camFrameIndex,int  camFrameInterval);
-*/
+
 
     private Surface mPreviewSurface;
     private SurfaceView mUVCCameraView;
@@ -1289,34 +1289,29 @@ public class StartIsoStreamActivity extends Activity {
                     e.printStackTrace();
                 }
                 if (camDeviceConnection != null || camStreamingInterface != null) closeCameraDevice();
-
-
-                if (!libusb_is_initialized) {
-                    try {
-                        if (camDeviceConnection == null) {
-                            findCam();
-                            openCameraDevice(true);
-                        }
-                        if (fd == 0) fd = camDeviceConnection.getFileDescriptor();
-                        if(productID == 0) productID = camDevice.getProductId();
-                        if(vendorID == 0) vendorID = camDevice.getVendorId();
-                        if(adress == null)  adress = camDevice.getDeviceName();
-                        if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
-                        if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
-                        int bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
-                        JNA_I_LibUsb.INSTANCE.init(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                                camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat,0, bcdUVC_int);
-                        libusb_is_initialized = true;
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                try {
+                    if (camDeviceConnection == null) {
+                        findCam();
+                        openCameraDevice(true);
                     }
+                    if (fd == 0) fd = camDeviceConnection.getFileDescriptor();
+                    if(productID == 0) productID = camDevice.getProductId();
+                    if(vendorID == 0) vendorID = camDevice.getVendorId();
+                    if(adress == null)  adress = camDevice.getDeviceName();
+                    if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
+                    if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
+                    int bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
+                    JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                            camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat,0, bcdUVC_int);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-
-/*
-                I_LibUsb.INSTANCE.setCallback(new I_LibUsb.eventCallback(){
+                if (!libusb_is_initialized) {
+                    libusb_is_initialized = true;
+                }
+                JNA_I_LibUsb.INSTANCE.setCallback(new JNA_I_LibUsb.eventCallback(){
                     public boolean callback(Pointer videoFrame, int frameSize) {
                         log("frame received");
-
                         /*
                         if(framePool.size() < 8) {
                             Frame frame = new Frame();
@@ -1330,6 +1325,8 @@ public class StartIsoStreamActivity extends Activity {
                         log("frame received");
                         if (processing) return false;
                         processing = true;
+
+                        */
                         if (videoformat.equals("mjpeg") ) {
                             try {
                                 processReceivedMJpegVideoFrameKamera(videoFrame.getByteArray(0,frameSize));
@@ -1350,9 +1347,10 @@ public class StartIsoStreamActivity extends Activity {
                         return true;
                     }
                 });
+
+
                 /*
-                I_LibUsb.INSTANCE.getFramesOverLibUsb(packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                        camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, videoFormatToInt(), 1);
+                I_LibUsb.INSTANCE.getFramesOverLibUsb(videoFormatToInt(), 1);
                  */
 
 
@@ -1363,6 +1361,14 @@ public class StartIsoStreamActivity extends Activity {
 
                 //JniIsoStreamActivitySurface(mPreviewSurface, 1, 1);
                 //camera.setPreviewDisplay(holder.getSurface());
+
+                mPreviewSurface = mUVCCameraView.getHolder().getSurface();
+                //final SurfaceHolder holder = mPreviewSurface;
+                JniIsoStreamActivitySurface(mPreviewSurface, 1, 1);
+                //JniIsoStreamActivity( 1, 1);
+
+
+
 
 
                 //*/
@@ -1610,7 +1616,6 @@ public class StartIsoStreamActivity extends Activity {
         }else if (videoformat.equals("YUV_422_888")){
             videoFromat = Videoformat.YUV_422_888;
         } else videoFromat = Videoformat.mjpeg;
-
         try {
             processReceivedVideoFrameYuv(frameData, videoFromat);
         } catch (IOException e) {

@@ -1,4 +1,5 @@
-make: Nothing to be done for 'Usb_Support'.
+[arm64-v8a] Compile        : Usb_Support <= libusb_support.c
+[arm64-v8a] SharedLibrary  : libUsb_Support.so
 make: Nothing to be done for 'dpfp'.
 make: Nothing to be done for 'dpfp_threaded'.
 make: Nothing to be done for 'fxload'.

@@ -24,8 +24,8 @@ extern AutotransferStruct get_autotransferStruct();
 
 ////////////////////// TEST 1 FRAME METHODS //////////////////////////
 
-struct Test1FrameStruct; /* Forward declaration */
-typedef struct Test1FrameStruct {
+struct ManualTestFrameStruct; /* Forward declaration */
+typedef struct ManualTestFrameStruct {
     int packetCnt;
     int packet0Cnt;
     int packet12Cnt;
@@ -36,13 +36,13 @@ typedef struct Test1FrameStruct {
     int frameLen;
     int requestCnt;
     int sframeLenArray[5];
-} Test1FrameStruct;
+} ManualTestFrameStruct;
 
-extern Test1FrameStruct get_Test1FrameStruct();
+extern ManualTestFrameStruct get_ManualTestFrameStruct();
 
 //////////////// Global Methods ////////////////////
 
-extern int init (int FD, int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
+extern int set_the_native_Values (int FD, int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
                  int camFrameInde, int camFrameInterva, int imageWidt, int imageHeigh, int camStreamingEndpointAdress, int camStreamingInterfaceNumber,
                  const char* frameformat, int numberOfAutoFrame, int bcdUVC_int);
 
@@ -58,8 +58,7 @@ extern void setAutoStreamComplete(autoStreamComplete autoStream);
 
 extern int libUsb_open_def_fd(int vid, int pid, const char *serial, int fd, int busnum, int devaddr);
 
-extern void getFramesOverLibUsb(int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
-                                int camFrameInde, int camFrameInterva, int imageWidt, int imageHeigh, int yuvFrameIsZero, int stream );
+extern void getFramesOverLibUsb(int yuvFrameIsZero, int stream, int whichTestrun);
 
 
 extern int awaitFrame () ;
@@ -77,7 +76,7 @@ extern unsigned char * probeCommitControl();
 
 extern int eheckEventHandling();
 
-extern unsigned char * probeCommitControl(int bmHin, int camFormatInde, int camFrameInde, int camFrameInterva);
+extern unsigned char * probeCommitControl(int bmHin, int camFormatInde, int camFrameInde, int camFrameInterva, int FD);
 
 extern void probeCommitControl_cleanup();
 

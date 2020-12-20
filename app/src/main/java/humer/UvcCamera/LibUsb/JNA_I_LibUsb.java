@@ -11,7 +11,7 @@ public interface JNA_I_LibUsb extends Library {
 
     public static final JNA_I_LibUsb INSTANCE = Native.load("Usb_Support", JNA_I_LibUsb.class);
 
-    public void init (int FD, int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
+    public void set_the_native_Values (int FD, int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
                       int camFrameInde, int camFrameInterva, int imageWidt, int imageHeigh, int camStreamingEndpoint, int camStreamingInterfaceNumber,
                       String frameFormat, int numberOfAutoFrames, int bcdUVC_int);
 
@@ -58,12 +58,11 @@ public interface JNA_I_LibUsb extends Library {
     public void exit();
 
     public Pointer probeCommitControl(int bmHint, int camFormatInde,
-                                      int camFrameInde, int camFrameInterva);
+                                      int camFrameInde, int camFrameInterva, int FD);
 
-    public void probeCommitControl_cleanup();
+    //public void probeCommitControl_cleanup();
 
-    public void getFramesOverLibUsb(int packetsPerRequest, int maxPacketSize, int activeUrbs, int camStreamingAltSetting, int camFormatIndex,
-                                    int camFrameIndex, int camFrameInterval, int imageWidth, int imageHeight, int yuvFrameIsZero, int stream );
+    public void getFramesOverLibUsb(int yuvFrameIsZero, int stream, int whichTestrun);
 
 
 }

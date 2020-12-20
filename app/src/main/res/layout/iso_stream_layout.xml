@@ -7,13 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".Main">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignEnd="@+id/stopKameraknopf"
-        android:layout_alignRight="@+id/stopKameraknopf"
-        android:adjustViewBounds="false" />
 
     <SurfaceView
         android:id="@+id/surfaceView"
@@ -22,6 +15,17 @@
         android:adjustViewBounds="false"
 
         />
+
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignEnd="@+id/stopKameraknopf"
+        android:layout_alignRight="@+id/stopKameraknopf"
+        android:adjustViewBounds="false" />
+
+
 
 
     <ImageButton

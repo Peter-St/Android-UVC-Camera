@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SDK27-Android-UVC-Camera.iml" filepath="$PROJECT_DIR$/.idea/modules/SDK27-Android-UVC-Camera.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/SDK27-Android-UVC-Camera.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/SDK27-Android-UVC-Camera.app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/jna/SDK27-Android-UVC-Camera.jna.iml" filepath="$PROJECT_DIR$/.idea/modules/jna/SDK27-Android-UVC-Camera.jna.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Android-UVC-Camera.iml" filepath="$PROJECT_DIR$/.idea/modules/Android-UVC-Camera.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Android-UVC-Camera.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Android-UVC-Camera.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/jna/Android-UVC-Camera.jna.iml" filepath="$PROJECT_DIR$/.idea/modules/jna/Android-UVC-Camera.jna.iml" />
     </modules>
   </component>
 </project>
