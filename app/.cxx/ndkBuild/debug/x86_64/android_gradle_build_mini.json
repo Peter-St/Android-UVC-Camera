@@ -29,13 +29,6 @@
       "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/debug/obj/local/x86_64/fxload",
       "runtimeFiles": []
     },
-    "jpeg-turbo1500_static-debug-x86_64": {
-      "artifactName": "jpeg-turbo1500_static",
-      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003dx86_64 NDK_ALL_ABIS\u003dx86_64 NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/debug/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/debug/lib APP_CFLAGS+\u003d-DDEBUG\u003d1 /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/debug/obj/local/x86_64/libjpeg-turbo1500_static.a",
-      "abi": "x86_64",
-      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/debug/obj/local/x86_64/libjpeg-turbo1500_static.a",
-      "runtimeFiles": []
-    },
     "stress-debug-x86_64": {
       "artifactName": "stress",
       "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003dx86_64 NDK_ALL_ABIS\u003dx86_64 NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/debug/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/debug/lib APP_CFLAGS+\u003d-DDEBUG\u003d1 /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/debug/obj/local/x86_64/stress",
@@ -69,13 +62,6 @@
       "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003dx86_64 NDK_ALL_ABIS\u003dx86_64 NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/debug/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/debug/lib APP_CFLAGS+\u003d-DDEBUG\u003d1 /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/debug/obj/local/x86_64/libUsb_Support.so",
       "abi": "x86_64",
       "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/debug/obj/local/x86_64/libUsb_Support.so",
-      "runtimeFiles": []
-    },
-    "jpeg-turbo1500-debug-x86_64": {
-      "artifactName": "jpeg-turbo1500",
-      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003dx86_64 NDK_ALL_ABIS\u003dx86_64 NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/debug/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/debug/lib APP_CFLAGS+\u003d-DDEBUG\u003d1 /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/debug/obj/local/x86_64/libjpeg-turbo1500.so",
-      "abi": "x86_64",
-      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/debug/obj/local/x86_64/libjpeg-turbo1500.so",
       "runtimeFiles": []
     },
     "dpfp_threaded-debug-x86_64": {

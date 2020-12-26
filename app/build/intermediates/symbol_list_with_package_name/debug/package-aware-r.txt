@@ -1384,6 +1384,7 @@ id btn_portugal
 id btn_russia
 id btn_thai
 id buttonPanel
+id buttonView
 id button_call_disconnect
 id button_call_flip_horizontal
 id button_call_flip_left
@@ -1435,6 +1436,7 @@ id default_activity_button
 id default_state
 id deltaRelative
 id dependency_ordering
+id descripton
 id design_bottom_sheet
 id design_menu_item_action_area
 id design_menu_item_action_area_stub
@@ -1469,6 +1471,7 @@ id expand_activities_button
 id expanded_menu
 id fab
 id fadingTextView
+id fadingTextViewLayout
 id fill
 id fill_horizontal
 id fill_vertical
@@ -1730,6 +1733,8 @@ id utwo
 id v_guideline1
 id v_line
 id videoProbeCommit
+id videoView
+id video_fragment_container
 id videoaufnahme
 id viewPrivatePolicyButton
 id view_offset_helper
@@ -1816,6 +1821,7 @@ layout fab_menu_item_end
 layout fab_menu_item_start
 layout fab_speed_dial_bottom
 layout fab_speed_dial_top
+layout iso_stream_fragment
 layout iso_stream_layout
 layout iso_stream_resolution_interval_menu
 layout layout_language_chooser
@@ -1924,6 +1930,7 @@ string character_counter_pattern
 string china
 string connect_description
 string connecting_to
+string descriptor_read_frames_5_sec
 string disconnect_call
 string favorites
 string format_description

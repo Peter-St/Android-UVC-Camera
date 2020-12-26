@@ -10,78 +10,36 @@
 [x86_64] Compile        : usb1.0 <= threads_posix.c
 [x86_64] Compile        : usb1.0 <= linux_netlink.c
 [x86_64] SharedLibrary  : libusb1.0.so
-[x86_64] Compile        : jpeg-turbo1500_static <= jcapimin.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jcapistd.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jccoefct.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jccolor.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jcdctmgr.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jchuff.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jcinit.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jcmainct.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jcmarker.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jcmaster.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jcomapi.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jcparam.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jcphuff.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jcprepct.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jcsample.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jctrans.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jdapimin.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jdapistd.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jdatadst.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jdatasrc.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jdcoefct.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jdcolor.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jddctmgr.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jdhuff.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jdinput.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jdmainct.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jdmarker.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jdmaster.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jdmerge.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jdphuff.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jdpostct.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jdsample.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jdtrans.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jerror.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jfdctflt.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jfdctfst.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jfdctint.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jidctflt.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jidctfst.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jidctint.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jidctred.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jquant1.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jquant2.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jutils.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jmemmgr.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jmemnobs.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jaricom.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jcarith.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jdarith.c
-[x86_64] Compile        : jpeg-turbo1500_static <= turbojpeg.c
-[x86_64] Compile        : jpeg-turbo1500_static <= transupp.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jdatadst-tj.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jdatasrc-tj.c
-[x86_64] Compile        : jpeg-turbo1500_static <= jsimd_x86_64.c
-[x86_64] Assemble       : jpeg-turbo1500_static <= jfdctflt-sse-64.asm
-[x86_64] Assemble       : jpeg-turbo1500_static <= jccolor-sse2-64.asm
-[x86_64] Assemble       : jpeg-turbo1500_static <= jcgray-sse2-64.asm
-[x86_64] Assemble       : jpeg-turbo1500_static <= jcsample-sse2-64.asm
-[x86_64] Assemble       : jpeg-turbo1500_static <= jdcolor-sse2-64.asm
-[x86_64] Assemble       : jpeg-turbo1500_static <= jdmerge-sse2-64.asm
-[x86_64] Assemble       : jpeg-turbo1500_static <= jdsample-sse2-64.asm
-[x86_64] Assemble       : jpeg-turbo1500_static <= jfdctfst-sse2-64.asm
-[x86_64] Assemble       : jpeg-turbo1500_static <= jfdctint-sse2-64.asm
-[x86_64] Assemble       : jpeg-turbo1500_static <= jidctflt-sse2-64.asm
-[x86_64] Assemble       : jpeg-turbo1500_static <= jidctfst-sse2-64.asm
-[x86_64] Assemble       : jpeg-turbo1500_static <= jidctint-sse2-64.asm
-[x86_64] Assemble       : jpeg-turbo1500_static <= jidctred-sse2-64.asm
-[x86_64] Assemble       : jpeg-turbo1500_static <= jquantf-sse2-64.asm
-[x86_64] Assemble       : jpeg-turbo1500_static <= jquanti-sse2-64.asm
-[x86_64] Assemble       : jpeg-turbo1500_static <= jchuff-sse2-64.asm
-[x86_64] StaticLibrary  : libjpeg-turbo1500_static.a
-[x86_64] SharedLibrary  : libjpeg-turbo1500.so
+[x86_64] Compile++      : Yuv <= compare.cc
+[x86_64] Compile++      : Yuv <= compare_common.cc
+[x86_64] Compile++      : Yuv <= compare_neon64.cc
+[x86_64] Compile++      : Yuv <= compare_gcc.cc
+[x86_64] Compile++      : Yuv <= convert.cc
+[x86_64] Compile++      : Yuv <= convert_argb.cc
+[x86_64] Compile++      : Yuv <= convert_from.cc
+[x86_64] Compile++      : Yuv <= convert_from_argb.cc
+[x86_64] Compile++      : Yuv <= convert_to_argb.cc
+[x86_64] Compile++      : Yuv <= convert_to_i420.cc
+[x86_64] Compile++      : Yuv <= cpu_id.cc
+[x86_64] Compile++      : Yuv <= planar_functions.cc
+[x86_64] Compile++      : Yuv <= rotate.cc
+[x86_64] Compile++      : Yuv <= rotate_argb.cc
+[x86_64] Compile++      : Yuv <= rotate_mips.cc
+[x86_64] Compile++      : Yuv <= rotate_neon64.cc
+[x86_64] Compile++      : Yuv <= row_any.cc
+[x86_64] Compile++      : Yuv <= row_common.cc
+[x86_64] Compile++      : Yuv <= row_mips.cc
+[x86_64] Compile++      : Yuv <= row_neon64.cc
+[x86_64] Compile++      : Yuv <= row_gcc.cc
+[x86_64] Compile++      : Yuv <= scale.cc
+[x86_64] Compile++      : Yuv <= scale_any.cc
+[x86_64] Compile++      : Yuv <= scale_argb.cc
+[x86_64] Compile++      : Yuv <= scale_common.cc
+[x86_64] Compile++      : Yuv <= scale_mips.cc
+[x86_64] Compile++      : Yuv <= scale_neon64.cc
+[x86_64] Compile++      : Yuv <= scale_gcc.cc
+[x86_64] Compile++      : Yuv <= video_common.cc
+[x86_64] SharedLibrary  : libYuv.so
 [x86_64] SharedLibrary  : libUsb_Support.so
 [x86_64] Compile        : dpfp <= dpfp.c
 [x86_64] Executable     : dpfp
@@ -92,7 +50,6 @@
 [x86_64] Executable     : fxload
 [x86_64] Compile        : hotplugtest <= hotplugtest.c
 [x86_64] Executable     : hotplugtest
-make: Nothing to be done for 'jpeg-turbo1500'.
 [x86_64] Compile        : listdevs <= listdevs.c
 [x86_64] Executable     : listdevs
 [x86_64] Compile        : sam3u_benchmark <= sam3u_benchmark.c

@@ -26,10 +26,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
-import com.sun.jna.Memory;
-import com.sun.jna.Native;
-import com.sun.jna.NativeLibrary;
-
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;

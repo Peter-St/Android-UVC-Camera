@@ -103,6 +103,12 @@ android {
         pickFirst 'lib/x86/libjpeg-turbo1500.so'
         pickFirst 'lib/armeabi-v7a/libjpeg-turbo1500.so'
         pickFirst 'lib/arm64-v8a/libjpeg-turbo1500.so'
+
+        pickFirst 'lib/x86_64/libYuv.so'
+        pickFirst 'lib/armeabi/libYuv.so'
+        pickFirst 'lib/x86/libYuv.so'
+        pickFirst 'lib/armeabi-v7a/libYuv.so'
+        pickFirst 'lib/arm64-v8a/libYuv.so'
     }
 }
 

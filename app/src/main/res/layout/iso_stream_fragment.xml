@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/large_margin"
+    android:paddingEnd="@dimen/large_margin"
+    android:paddingStart="@dimen/large_margin"
+    android:paddingTop="@dimen/large_margin"
+    >
+
+    <ImageView
+        android:id="@+id/videoView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignEnd="@+id/stopKameraknopf"
+        android:layout_alignRight="@+id/stopKameraknopf"
+        android:adjustViewBounds="false" />
+
+
+</LinearLayout>

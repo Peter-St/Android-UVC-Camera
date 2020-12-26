@@ -23,6 +23,9 @@ This Repository is provided "as is", without warranties of any kind.
 package humer.UvcCamera;
 
 import android.app.Activity;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -42,11 +45,11 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
-import android.media.ImageReader;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
@@ -75,11 +78,12 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.example.androidthings.videortc.WebRtc_MainActivity;
 import com.sample.timelapse.MJPEGGenerator ;
-import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
 
 // import org.webrtc.VideoCapturer;
@@ -96,7 +100,7 @@ import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
 import static java.lang.Integer.parseInt;
 
-public class StartIsoStreamActivity extends Activity {
+public class StartIsoStreamActivity extends FragmentActivity {
 
     private static final String ACTION_USB_PERMISSION = "humer.uvc_camera.USB_PERMISSION";
 
@@ -171,7 +175,7 @@ public class StartIsoStreamActivity extends Activity {
     public StringBuilder stringBuilder;
     private int [] convertedMaxPacketSize;
     private boolean lowerResolution;
-    private static enum Videoformat {yuv, mjpeg, YUY2, YV12, YUV_422_888, YUV_420_888, NV21}
+    public static enum Videoformat {yuv, mjpeg, YUY2, YV12, YUV_422_888, YUV_420_888, NV21}
 
     // Buttons & Views
     protected ImageView imageView;
@@ -195,6 +199,7 @@ public class StartIsoStreamActivity extends Activity {
     private MJPEGGenerator generator;
     private BitmapToVideoEncoder bitmapToVideoEncoder;
     private volatile StartIsoStreamActivity.IsochronousStream runningStream;
+    private volatile IsochronousStreamLibUsb runningStreamLibUsb;
     private SeekBar simpleSeekBar;
     private Button defaultButton;
     private Switch switchAuto;
@@ -239,26 +244,22 @@ public class StartIsoStreamActivity extends Activity {
     // JNI METHODS
     public native void JniIsoStreamActivitySurface(final Surface surface, int a, int b);
     public native void JniIsoStreamActivity(int a, int b);
-    public native void JniProbeCommitControl(int bmHint,int camFormatIndex,int camFrameIndex,int  camFrameInterval);
+    public native void JniSetSurface(final Surface surface);
+    byte[] videoData;
 
-
+    //public native void JniProbeCommitControl(int bmHint,int camFormatIndex,int camFrameIndex,int  camFrameInterval);
     private Surface mPreviewSurface;
     private SurfaceView mUVCCameraView;
-
-
 
     private static boolean isLoaded;
     static {
         if (!isLoaded) {
             System.loadLibrary("usb1.0");
-            System.loadLibrary("jpeg-turbo1500");
-            //System.loadLibrary("uvc");
+            System.loadLibrary("Yuv");
             System.loadLibrary("Usb_Support");
             isLoaded = true;
         }
     }
-
-
 
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -277,6 +278,31 @@ public class StartIsoStreamActivity extends Activity {
                     }
                 }
             }
+        }
+    };
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                log("BroadcastReceiver receiver");
+                int resultCode = bundle.getInt(StartIsoStreamService.RESULT);
+                if (resultCode == RESULT_OK) {
+
+                } else {
+                    displayMessage("Stream failed");
+                }
+            }
+        }
+    };
+
+    protected Handler videoHandler;
+
+    protected  Runnable myRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if(videoData != null) processReceivedVideoFrameYuvFromJni(videoData);
         }
     };
 
@@ -467,12 +493,7 @@ public class StartIsoStreamActivity extends Activity {
                                     new File(saveDir, children[i]).delete();
                             }}
                         saveDir.delete();
-
                         displayMessage("Record started");
-
-
-
-
                         startTime = System.currentTimeMillis();
                         currentTime = System.currentTimeMillis();
                     }
@@ -643,42 +664,27 @@ public class StartIsoStreamActivity extends Activity {
         defaultButton = (Button) findViewById(R.id.defaultButton); defaultButton.setEnabled(false); defaultButton.setAlpha(0); defaultButton = null;
         switchAuto = (Switch) findViewById(R.id.switchAuto); switchAuto.setEnabled(false); switchAuto.setVisibility(View.GONE); switchAuto = null;
         usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
-
         mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
         IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
         registerReceiver(mUsbReceiver, filter);
-
-
-
         ImageButton flip = (ImageButton) findViewById(R.id.flipLeftButton); flip.setEnabled(false); flip.setBackgroundDrawable(null);
         flip = (ImageButton) findViewById(R.id.flipRightButton); flip.setEnabled(false); flip.setBackgroundDrawable(null);
         ToggleButton flip2 = (ToggleButton) findViewById(R.id.flipHorizontalButton); flip2.setEnabled(false); flip2.setBackgroundDrawable(null);
         flip2 = (ToggleButton) findViewById(R.id.flipVerticalButton); flip2.setEnabled(false); flip2.setBackgroundDrawable(null);
-
-        /*
-        try {
-            findCam();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        */
-
         if (LIBUSB) {
             //mUVCCameraView = (SurfaceView)findViewById(R.id.surfaceView);
             //mUVCCameraView.getHolder().addCallback(mSurfaceViewCallback);
         } else {
             mUVCCameraView = (SurfaceView)findViewById(R.id.surfaceView);
-            mUVCCameraView.setZOrderOnTop(true);    // necessary
-            SurfaceHolder sfhTrackHolder = mUVCCameraView.getHolder();
-            sfhTrackHolder.setFormat(PixelFormat.TRANSPARENT);
         }
-
         mUVCCameraView = (SurfaceView)findViewById(R.id.surfaceView);
-        mUVCCameraView.setZOrderOnTop(true);    // necessary
-        SurfaceHolder sfhTrackHolder = mUVCCameraView.getHolder();
-        sfhTrackHolder.setFormat(PixelFormat.TRANSPARENT);
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(StartIsoStreamService.NOTIFICATION));
+    }
 
-
+    public void restartIntent() {
+        Intent intent = new Intent(this, StartIsoStreamService.class);
+        intent.putExtra(StartIsoStreamService.FILENAME, "Resume");
+        startService(intent);
     }
 
     @Override
@@ -1309,33 +1315,128 @@ public class StartIsoStreamActivity extends Activity {
                 if (!libusb_is_initialized) {
                     libusb_is_initialized = true;
                 }
-                JNA_I_LibUsb.INSTANCE.setCallback(new JNA_I_LibUsb.eventCallback(){
-                    public boolean callback(Pointer videoFrame, int frameSize) {
-                        log("frame received");
-                        /*
-                        if(framePool.size() < 8) {
-                            Frame frame = new Frame();
-                            frame.frameData = videoFrame;
-                            frame.len = frameSize;
-                            framePool.add(frame);
-                        } else {
-                            // do nothing
-                        }
-                        //
-                        log("frame received");
-                        if (processing) return false;
-                        processing = true;
 
-                        */
+
+
+
+
+
+                log("starting Service");
+
+
+
+
+                ///   SURFACE METHOD ACTIVITY
+                /*
+                mPreviewSurface = mUVCCameraView.getHolder().getSurface();
+                JniIsoStreamActivitySurface(mPreviewSurface, 1, 1);
+                 */
+
+
+
+
+
+
+
+                /////////////// Service Method
+                mPreviewSurface = mUVCCameraView.getHolder().getSurface();
+                JniSetSurface(mPreviewSurface);
+                Intent intent = new Intent(this, StartIsoStreamService.class);
+                intent.putExtra(StartIsoStreamService.INIT, "INIT");
+                intent.putExtra(StartIsoStreamService.FILENAME, "Resume");
+                startService(intent);
+                log("service started ... waiting for intent");
+                /*
+
+                 */
+
+
+
+                //videoData = new byte[imageWidth * imageHeight *2];
+                //videoHandler = new Handler();
+                //videoHandler.post(myRunnable);
+
+
+
+                //final SurfaceHolder holder = mPreviewSurface;
+                //JniProbeCommitControl(1, camFormatIndex, camFrameIndex,  camFrameInterval);
+                //JniIsoStreamActivity( 1, 1);
+
+
+
+                ///// Native Surface Method
+                /*
+                mPreviewSurface = mUVCCameraView.getHolder().getSurface();
+                JniIsoStreamActivitySurface(mPreviewSurface, 1, 1);
+                 */
+
+
+
+
+
+                //camera.setPreviewDisplay(holder.getSurface());
+
+
+
+
+                /////////  JNI ISO STREAM METHOD IMAGE VIEW
+                // /*
+
+
+                //runningStreamLibUsb = new IsochronousStreamLibUsb(this);
+                //runningStreamLibUsb.start();
+
+
+                /*
+                JniIsoStreamActivity( 1, 1);
+                //processReceivedVideoFrameYuvFromJni(videoData);
+
+                //JNA_I_LibUsb.INSTANCE.stopJavaVM();
+*/
+
+
+
+
+
+
+
+
+/*
+                while(!stopKamera) {
+                    processReceivedVideoFrameYuvFromJni(videoData);
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+*/
+
+
+
+
+
+
+
+                 //*/
+
+
+
+                /*
+                ///////// JNA Image View
+                JNA_I_LibUsb.INSTANCE.setJnaFrameCallback(new JNA_I_LibUsb.jnaFrameCallback(){
+                    public boolean callback(JNA_I_LibUsb.Header videoFrame, int frameSize) {
+                        log("frame received");
+
                         if (videoformat.equals("mjpeg") ) {
                             try {
-                                processReceivedMJpegVideoFrameKamera(videoFrame.getByteArray(0,frameSize));
+                                processReceivedMJpegVideoFrameKamera(videoFrame.buffer);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }else if (videoformat.equals("YUY2")){
                             try {
-                                processReceivedVideoFrameYuv(videoFrame.getByteArray(0,frameSize), Videoformat.YUY2);
+                                processReceivedVideoFrameYuv(videoFrame.buffer, Videoformat.YUY2);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -1347,26 +1448,15 @@ public class StartIsoStreamActivity extends Activity {
                         return true;
                     }
                 });
+                JNA_I_LibUsb.INSTANCE.getFramesOverLibUsb(videoFormatToInt(), 1, 0);
+                 //*/
 
 
+                //////// Surface Method !!!!!!!!!!!
                 /*
-                I_LibUsb.INSTANCE.getFramesOverLibUsb(videoFormatToInt(), 1);
-                 */
-
-
-                //mPreviewSurface = mUVCCameraView.getHolder().getSurface();
-                //final SurfaceHolder holder = mPreviewSurface;
-                //JniProbeCommitControl(1, camFormatIndex, camFrameIndex,  camFrameInterval);
-                //JniIsoStreamActivity( 1, 1);
-
-                //JniIsoStreamActivitySurface(mPreviewSurface, 1, 1);
-                //camera.setPreviewDisplay(holder.getSurface());
-
                 mPreviewSurface = mUVCCameraView.getHolder().getSurface();
-                //final SurfaceHolder holder = mPreviewSurface;
                 JniIsoStreamActivitySurface(mPreviewSurface, 1, 1);
-                //JniIsoStreamActivity( 1, 1);
-
+                 */
 
 
 
@@ -1415,6 +1505,10 @@ public class StartIsoStreamActivity extends Activity {
                 }
             }
         }
+    }
+
+    public void initializeStreamArray(byte[] data) {
+        videoData = data;
     }
 
     private void findCam() throws Exception {
@@ -1572,24 +1666,33 @@ public class StartIsoStreamActivity extends Activity {
 
     }
 
+    private int flipToInt (boolean value) {
+        if (value) return 1;
+        else return 0;
+    }
+
     public void flipLeft (View view) {
         if (rotate == 0) rotate = 270;
         else rotate -= 90;
+        if (LIBUSB) JNA_I_LibUsb.INSTANCE.setRotation(rotate, flipToInt(horizontalFlip), flipToInt(verticalFlip));
     }
 
     public void flipRight (View view) {
         if (rotate == 270) rotate = 0;
         else rotate += 90;
+        if (LIBUSB) JNA_I_LibUsb.INSTANCE.setRotation(rotate, flipToInt(horizontalFlip), flipToInt(verticalFlip));
     }
 
     public void flipHorizontal (View view) {
         if (horizontalFlip == false) horizontalFlip = true;
         else horizontalFlip = false;
+        if (LIBUSB) JNA_I_LibUsb.INSTANCE.setRotation(rotate, flipToInt(horizontalFlip), flipToInt(verticalFlip));
     }
 
     public void flipVertical (View view) {
         if (verticalFlip == false) verticalFlip = true;
         else verticalFlip = false;
+        if (LIBUSB) JNA_I_LibUsb.INSTANCE.setRotation(rotate, flipToInt(horizontalFlip), flipToInt(verticalFlip));
     }
 
     private void writeBytesToFile(String fileName, byte[] data) throws IOException {
@@ -2118,9 +2221,6 @@ public class StartIsoStreamActivity extends Activity {
                 enableStreaming(true);
                 usbIso64.submitUrbs();
                 Libyuv.INSTANCE.initialize_orig(imageWidth, imageHeight, imageWidth, imageHeight, FILE_NAME_ORIG, FILE_NAME);
-
-
-
                 while (true) {
                     if (pauseCamera) {
                         Thread.sleep(200);
@@ -2219,6 +2319,32 @@ public class StartIsoStreamActivity extends Activity {
                 e.printStackTrace();
             }
             runningStream = null;
+        }
+    }
+
+    public class IsochronousStreamLibUsb extends Thread {
+        private Activity activity;
+        private boolean reapTheLastFrames;
+        private int lastReapedFrames = 0;
+        private boolean write = false;
+        private int framecnt = 0;
+        ExecutorService mExecutorThread = Executors.newSingleThreadExecutor();
+
+        public IsochronousStreamLibUsb(Context mContext) {
+            setPriority(Thread.MAX_PRIORITY);
+            activity = (Activity) mContext;
+        }
+        public void run() {
+            try {
+                mExecutorThread.execute(new Runnable() { public void run() {                 JniIsoStreamActivity( 1, 1);
+                }});
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            log("OK");
+            runningStreamLibUsb = null;
         }
     }
 
@@ -2429,7 +2555,6 @@ public class StartIsoStreamActivity extends Activity {
         else
             return 0;
     }
-
 
     private int videoFormatToInt () {
         if(videoformat.equals("mjpeg")) return 1;

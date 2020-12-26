@@ -64,12 +64,12 @@
         "source": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/res/drawable/listdev.png"
     },
     {
-        "merged": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-mdpi_ic_launcher_foreground.png.flat",
-        "source": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png"
-    },
-    {
         "merged": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable-hdpi_icon.png.flat",
         "source": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/res/drawable-hdpi/icon.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-mdpi_ic_launcher_foreground.png.flat",
+        "source": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png"
     },
     {
         "merged": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable-ldpi_ic_action_return_from_full_screen.png.flat",
@@ -92,12 +92,12 @@
         "source": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/res/drawable/ic_resolution_24dp.xml"
     },
     {
-        "merged": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_flip_vertical_pressed.png.flat",
-        "source": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/res/drawable/flip_vertical_pressed.png"
-    },
-    {
         "merged": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_bg_button.xml.flat",
         "source": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/res/drawable/bg_button.xml"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_flip_vertical_pressed.png.flat",
+        "source": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/res/drawable/flip_vertical_pressed.png"
     },
     {
         "merged": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable-mdpi_ic_action_full_screen.png.flat",
@@ -462,6 +462,10 @@
     {
         "merged": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/res/merged/debug/mipmap-xhdpi_country_thai.png.flat",
         "source": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/res/mipmap-xhdpi/country_thai.png"
+    },
+    {
+        "merged": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/res/merged/debug/layout_iso_stream_fragment.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/res/layout/iso_stream_fragment.xml"
     },
     {
         "merged": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable_photo_pressed.png.flat",

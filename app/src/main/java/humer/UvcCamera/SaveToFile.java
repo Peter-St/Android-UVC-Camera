@@ -43,6 +43,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -194,6 +195,11 @@ public class SaveToFile  {
                         "\nAltSetting = " + sALT_SETTING + "\nMaximal Packet Size = " + smaxPacketSize + "\nVideoformat = " + svideoformat + "\nCamera Format Index = " + scamFormatIndex + "\n" +
                         "Camera FrameIndex = " + scamFrameIndex + "\nImage Width = "+ simageWidth + "\nImage Height = " + simageHeight + "\nCamera Frame Interval (fps) = " + (10000000 / scamFrameInterval)  + "\nLibUsb = " + libUsb );
                 tv.setTextColor(Color.BLACK);
+
+                RelativeLayout fadingTextView = (RelativeLayout) activity.findViewById(R.id.fadingTextViewLayout);
+                fadingTextView.setVisibility(View.GONE);
+                fadingTextView.setVisibility(View.INVISIBLE);
+
                 FadingTextView FTV = (FadingTextView) activity.findViewById(R.id.fadingTextView);
                 FTV.setVisibility(View.INVISIBLE);
                 FTV.setVisibility(View.GONE);

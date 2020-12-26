@@ -150,22 +150,52 @@
         app:layout_constraintGuide_percent="1" />
 
 
-    <com.tomer.fadingtextview.FadingTextView
-        android:id="@+id/fadingTextView"
+    <RelativeLayout
+        android:id="@+id/fadingTextViewLayout"
+        style="@style/SwitchContainer"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="3dp"
-        android:layout_marginRight="3dp"
-        android:layout_marginBottom="3dp"
-        android:textSize="25dp"
-        android:visibility="invisible"
+        android:layout_height="100dp"
 
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/setUpWithUVC"
-        app:texts="@array/examples"
-        app:timeout="500" />
+
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="40dp"
+        android:layout_marginRight="40dp"
+
+        >
+
+        <TextView
+            android:id="@+id/descripton"
+            android:layout_width="wrap_content"
+            android:layout_height="70dp"
+            android:layout_marginTop="0dp"
+            android:text="@string/descriptor_read_frames_5_sec"
+            android:textColor="#000080"
+            android:textSize="18sp"
+            android:layout_alignParentTop="true"
+            android:layout_centerInParent="true"
+            />
+
+        <com.tomer.fadingtextview.FadingTextView
+            android:id="@+id/fadingTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            android:layout_marginBottom="3dp"
+
+            android:layout_below="@id/descripton"
+            android:layout_centerInParent="true"
+
+            android:textSize="25dp"
+
+            app:texts="@array/examples"
+            app:timeout="500" />
+    </RelativeLayout>
+
 
 
     <ScrollView

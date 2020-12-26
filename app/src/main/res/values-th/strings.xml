@@ -244,6 +244,7 @@ https://github.com/Peter-St/Android-UVC-Camera/
 
     <string name="menu_item_lower_resolution">LowerResolution</string>
 
+    <string name="descriptor_read_frames_5_sec">The Camera Stream will be read out for 5 seconds!</string>
 
 
 

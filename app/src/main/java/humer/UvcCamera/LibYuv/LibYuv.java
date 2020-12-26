@@ -6,7 +6,7 @@ import com.sun.jna.Native;
 
 public interface LibYuv extends Library {
 
-    public static final LibYuv INSTANCE = Native.load("yuv", LibYuv.class);
+    public static final LibYuv INSTANCE = Native.load("Yuv", LibYuv.class);
 
 
     void rgbToBgrInternal(byte[] rgb, int width, int height, byte[] bgr) throws LastErrorException;

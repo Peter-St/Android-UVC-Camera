@@ -7,6 +7,7 @@ import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 
+
 public interface JNA_I_LibUsb extends Library {
 
     public static final JNA_I_LibUsb INSTANCE = Native.load("Usb_Support", JNA_I_LibUsb.class);
@@ -55,6 +56,8 @@ public interface JNA_I_LibUsb extends Library {
 
     public void stopStreaming();
 
+    public void stopJavaVM();
+
     public void exit();
 
     public Pointer probeCommitControl(int bmHint, int camFormatInde,
@@ -63,6 +66,8 @@ public interface JNA_I_LibUsb extends Library {
     //public void probeCommitControl_cleanup();
 
     public void getFramesOverLibUsb(int yuvFrameIsZero, int stream, int whichTestrun);
+
+    public void setRotation(int rot, int horizontalFlip, int verticalFlip);
 
 
 }

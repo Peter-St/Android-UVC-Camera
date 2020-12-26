@@ -53,6 +53,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -407,9 +408,10 @@ public class SetUpTheUsbDevice extends Activity {
         Button button2 = findViewById(R.id.lowerSize_setUp);
         button2.setEnabled(false); button2.setAlpha(0);
 
-        FadingTextView FTV = (FadingTextView) findViewById(R.id.fadingTextView);
-        FTV.setVisibility(View.INVISIBLE);
-        FTV.setVisibility(View.GONE);
+
+        RelativeLayout fadingTextView = (RelativeLayout) findViewById(R.id.fadingTextViewLayout);
+        fadingTextView.setVisibility(View.INVISIBLE);
+        fadingTextView.setVisibility(View.GONE);
     }
 
     @Override
@@ -1827,13 +1829,15 @@ public class SetUpTheUsbDevice extends Activity {
                             public void run() {
                                 tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                                 tv.setVisibility(View.GONE);
+                                RelativeLayout fadingTextView = (RelativeLayout) findViewById(R.id.fadingTextViewLayout);
+                                fadingTextView.setVisibility(View.VISIBLE);
                                 FadingTextView FTV = (FadingTextView) findViewById(R.id.fadingTextView);
                                 FTV.setTimeout(250, MILLISECONDS);
                                 FTV.setVisibility(View.VISIBLE);
+                                String[] texts = {"0   Sec","0,5 Sec","1   Sec","1,5 Sec","2   Sec","2,5 Sec","3   Sec", "3,5 Sec","4   Sec","4,5 Sec","5   Sec","5,5 Sec",
+                                        "6   Sec","6,5 Sec","7   Sec", "7,5 Sec","8   Sec", "8,5 Sec","9   Sec","9,5 Sec"};
+                                FTV.setTexts(texts);
                                 FTV.forceRefresh();
-                                //tv.setText(String.format("The camera stream will be read out for %d Seconds\nLasting seconds: ",(time/1000), (time/1000))+((System.currentTimeMillis()-startTime)/1000));
-                                //tv.setTextColor(Color.BLACK);
-                                //if ((time0+100) < System.currentTimeMillis()) if (latch.getCount() > 0) latch.countDown();
                             }
                         });
                         try {
@@ -1874,9 +1878,11 @@ public class SetUpTheUsbDevice extends Activity {
                                 stringBuilder.append(s);
                             }
                             tv.setText(stringBuilder.toString());
+                            RelativeLayout fadingTextView = (RelativeLayout) findViewById(R.id.fadingTextViewLayout);
+                            fadingTextView.setVisibility(View.GONE);
+                            fadingTextView.setVisibility(View.INVISIBLE);
                             FadingTextView FTV = (FadingTextView) findViewById(R.id.fadingTextView);
                             FTV.setVisibility(View.GONE);
-                            FTV.stop();
                             FTV.setVisibility(View.INVISIBLE);
                         }
                     });
@@ -2335,7 +2341,8 @@ public class SetUpTheUsbDevice extends Activity {
                     break;
                 default:
                     break;
-            }        }
+            }
+        }
     }
 
     private void startLibUsbAutoDetection() {

@@ -80,8 +80,9 @@
             android:screenOrientation="fullUser"
             android:theme="@style/CallActivityTheme"/>
         <activity android:name="com.example.androidthings.videortc.WebRtc_MainActivity">
-
         </activity>
+        <service android:name="humer.UvcCamera.StartIsoStreamService" >
+        </service>
     </application>
 
 </manifest>
