@@ -8,7 +8,7 @@
 7-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:19:5-21:112
 8        android:minSdkVersion="15"
 8-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:19:5-21:112
-9        android:targetSdkVersion="27" />
+9        android:targetSdkVersion="29" />
 9-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:20:9-38
 10
 11    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />

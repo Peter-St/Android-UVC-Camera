@@ -101,7 +101,6 @@ import static java.lang.Integer.parseInt;
 public class StartIsoStreamActivity extends FragmentActivity {
 
     private static final String ACTION_USB_PERMISSION = "humer.uvc_camera.USB_PERMISSION";
-
     // USB codes:
 // Request types (bmRequestType):
     private static final int RT_STANDARD_INTERFACE_SET = 0x01;
@@ -158,8 +157,6 @@ public class StartIsoStreamActivity extends FragmentActivity {
     public static byte[] bcdUVC;
     public static boolean LIBUSB;
     public static boolean moveToNative;
-
-
 
     // Vales for debuging the camera
     private boolean bildaufnahme = false;
@@ -229,7 +226,6 @@ public class StartIsoStreamActivity extends FragmentActivity {
     private static final String FILE_NAME = Environment.getExternalStorageDirectory().getAbsolutePath() + "/test.yuv";
 
     // NEW LIBUSB VALUES
-
     private static int fd;
     private static int productID;
     private static int vendorID;
@@ -682,6 +678,11 @@ public class StartIsoStreamActivity extends FragmentActivity {
         }
         mUVCCameraView = (SurfaceView)findViewById(R.id.surfaceView);
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(StartIsoStreamService.NOTIFICATION));
+        if(!LIBUSB || videoformat.equals("MJPEG")) {
+            mUVCCameraView = (SurfaceView) findViewById(R.id.surfaceView);
+            mUVCCameraView.setVisibility(View.GONE);
+            mUVCCameraView.setVisibility(View.INVISIBLE);
+        }
     }
 
     public void restartIntent() {
@@ -2177,7 +2178,6 @@ public class StartIsoStreamActivity extends FragmentActivity {
                 byte[] data = new byte[maxPacketSize];
                 enableStreaming(true);
                 usbIso64.submitUrbs();
-                Libyuv.INSTANCE.initialize_orig(imageWidth, imageHeight, imageWidth, imageHeight, FILE_NAME_ORIG, FILE_NAME);
                 while (true) {
                     if (pauseCamera) {
                         Thread.sleep(200);

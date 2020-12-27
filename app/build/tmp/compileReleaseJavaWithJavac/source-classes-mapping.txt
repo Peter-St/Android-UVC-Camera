@@ -161,56 +161,11 @@ humer/UvcCamera/UsbIso64/Ioctl.java
  humer.UvcCamera.UsbIso64.Ioctl
 org/appspot/apprtc/util/AppRTCUtils.java
  org.appspot.apprtc.util.AppRTCUtils
-humer/UvcCamera/StartIsoStreamActivity.java
- humer.UvcCamera.StartIsoStreamActivity
- humer.UvcCamera.StartIsoStreamActivity$1
- humer.UvcCamera.StartIsoStreamActivity$10
- humer.UvcCamera.StartIsoStreamActivity$11
- humer.UvcCamera.StartIsoStreamActivity$11$1
- humer.UvcCamera.StartIsoStreamActivity$11$2
- humer.UvcCamera.StartIsoStreamActivity$12
- humer.UvcCamera.StartIsoStreamActivity$12$1
- humer.UvcCamera.StartIsoStreamActivity$12$1$1
- humer.UvcCamera.StartIsoStreamActivity$12$1$2
- humer.UvcCamera.StartIsoStreamActivity$12$1$3
- humer.UvcCamera.StartIsoStreamActivity$12$2
- humer.UvcCamera.StartIsoStreamActivity$12$2$1
- humer.UvcCamera.StartIsoStreamActivity$12$2$2
- humer.UvcCamera.StartIsoStreamActivity$12$2$3
- humer.UvcCamera.StartIsoStreamActivity$13
- humer.UvcCamera.StartIsoStreamActivity$13$1
- humer.UvcCamera.StartIsoStreamActivity$13$1$1
- humer.UvcCamera.StartIsoStreamActivity$13$1$2
- humer.UvcCamera.StartIsoStreamActivity$13$2
- humer.UvcCamera.StartIsoStreamActivity$13$2$1
- humer.UvcCamera.StartIsoStreamActivity$13$2$2
- humer.UvcCamera.StartIsoStreamActivity$14
- humer.UvcCamera.StartIsoStreamActivity$15
- humer.UvcCamera.StartIsoStreamActivity$16
- humer.UvcCamera.StartIsoStreamActivity$17
- humer.UvcCamera.StartIsoStreamActivity$18
- humer.UvcCamera.StartIsoStreamActivity$19
- humer.UvcCamera.StartIsoStreamActivity$2
- humer.UvcCamera.StartIsoStreamActivity$3
- humer.UvcCamera.StartIsoStreamActivity$4
- humer.UvcCamera.StartIsoStreamActivity$4$1
- humer.UvcCamera.StartIsoStreamActivity$5
- humer.UvcCamera.StartIsoStreamActivity$5$1
- humer.UvcCamera.StartIsoStreamActivity$5$1$1
- humer.UvcCamera.StartIsoStreamActivity$5$1$2
- humer.UvcCamera.StartIsoStreamActivity$5$1$3
- humer.UvcCamera.StartIsoStreamActivity$5$1$4
- humer.UvcCamera.StartIsoStreamActivity$5$1$5
- humer.UvcCamera.StartIsoStreamActivity$6
- humer.UvcCamera.StartIsoStreamActivity$7
- humer.UvcCamera.StartIsoStreamActivity$8
- humer.UvcCamera.StartIsoStreamActivity$8$1
- humer.UvcCamera.StartIsoStreamActivity$9
- humer.UvcCamera.StartIsoStreamActivity$Frame
- humer.UvcCamera.StartIsoStreamActivity$IsochronousStream
- humer.UvcCamera.StartIsoStreamActivity$IsochronousStreamLibUsb
- humer.UvcCamera.StartIsoStreamActivity$IsochronousStreamLibUsb$1
- humer.UvcCamera.StartIsoStreamActivity$Videoformat
+humer/UvcCamera/UVC_Descriptor/UVC_Descriptor.java
+ humer.UvcCamera.UVC_Descriptor.UVC_Descriptor
+ humer.UvcCamera.UVC_Descriptor.UVC_Descriptor$FormatIndex
+ humer.UvcCamera.UVC_Descriptor.UVC_Descriptor$FormatIndex$FrameIndex
+ humer.UvcCamera.UVC_Descriptor.UVC_Descriptor$FormatIndex$Videoformat
 org/appspot/apprtc/PeerConnectionClient.java
  org.appspot.apprtc.PeerConnectionClient
  org.appspot.apprtc.PeerConnectionClient$1
@@ -266,14 +221,10 @@ noman/zoomtextview/ZoomTextView.java
  noman.zoomtextview.ZoomTextView$1
  noman.zoomtextview.ZoomTextView$GestureListener
  noman.zoomtextview.ZoomTextView$ScaleListener
-humer/UvcCamera/Main.java
- humer.UvcCamera.Main
- humer.UvcCamera.Main$1
- humer.UvcCamera.Main$2
- humer.UvcCamera.Main$3
- humer.UvcCamera.Main$4
- humer.UvcCamera.Main$5
- humer.UvcCamera.Main$6
+org/appspot/apprtc/RoomParametersFetcher.java
+ org.appspot.apprtc.RoomParametersFetcher
+ org.appspot.apprtc.RoomParametersFetcher$1
+ org.appspot.apprtc.RoomParametersFetcher$RoomParametersFetcherEvents
 humer/UvcCamera/AutomaticDetection/Jna_AutoDetect_Handler.java
  humer.UvcCamera.AutomaticDetection.Jna_AutoDetect_Handler
 humer/UvcCamera/SetCameraVariables.java
@@ -301,8 +252,8 @@ humer/UvcCamera/BuildConfig.java
 com/example/androidthings/videortc/WebRtc_MainActivity.java
  com.example.androidthings.videortc.WebRtc_MainActivity
  com.example.androidthings.videortc.WebRtc_MainActivity$1
-humer/UvcCamera/Libyuv.java
- humer.UvcCamera.Libyuv
+com/example/androidthings/videortc/WebRtcService.java
+ com.example.androidthings.videortc.WebRtcService
 humer/UvcCamera/SaveToFile.java
  humer.UvcCamera.SaveToFile
  humer.UvcCamera.SaveToFile$1
@@ -357,14 +308,61 @@ humer/UvcCamera/LibUsb/JNA_I_LibUsb.java
  humer.UvcCamera.LibUsb.JNA_I_LibUsb$autoStreamComplete
  humer.UvcCamera.LibUsb.JNA_I_LibUsb$eventCallback
  humer.UvcCamera.LibUsb.JNA_I_LibUsb$logPrint
-org/appspot/apprtc/RoomParametersFetcher.java
- org.appspot.apprtc.RoomParametersFetcher
- org.appspot.apprtc.RoomParametersFetcher$1
- org.appspot.apprtc.RoomParametersFetcher$RoomParametersFetcherEvents
-humer/UvcCamera/UVC_Descriptor/UVC_Descriptor.java
- humer.UvcCamera.UVC_Descriptor.UVC_Descriptor
- humer.UvcCamera.UVC_Descriptor.UVC_Descriptor$FormatIndex
- humer.UvcCamera.UVC_Descriptor.UVC_Descriptor$FormatIndex$FrameIndex
- humer.UvcCamera.UVC_Descriptor.UVC_Descriptor$FormatIndex$Videoformat
-com/example/androidthings/videortc/WebRtcService.java
- com.example.androidthings.videortc.WebRtcService
+humer/UvcCamera/StartIsoStreamActivity.java
+ humer.UvcCamera.StartIsoStreamActivity
+ humer.UvcCamera.StartIsoStreamActivity$1
+ humer.UvcCamera.StartIsoStreamActivity$10
+ humer.UvcCamera.StartIsoStreamActivity$11
+ humer.UvcCamera.StartIsoStreamActivity$11$1
+ humer.UvcCamera.StartIsoStreamActivity$11$2
+ humer.UvcCamera.StartIsoStreamActivity$12
+ humer.UvcCamera.StartIsoStreamActivity$12$1
+ humer.UvcCamera.StartIsoStreamActivity$12$1$1
+ humer.UvcCamera.StartIsoStreamActivity$12$1$2
+ humer.UvcCamera.StartIsoStreamActivity$12$1$3
+ humer.UvcCamera.StartIsoStreamActivity$12$2
+ humer.UvcCamera.StartIsoStreamActivity$12$2$1
+ humer.UvcCamera.StartIsoStreamActivity$12$2$2
+ humer.UvcCamera.StartIsoStreamActivity$12$2$3
+ humer.UvcCamera.StartIsoStreamActivity$13
+ humer.UvcCamera.StartIsoStreamActivity$13$1
+ humer.UvcCamera.StartIsoStreamActivity$13$1$1
+ humer.UvcCamera.StartIsoStreamActivity$13$1$2
+ humer.UvcCamera.StartIsoStreamActivity$13$2
+ humer.UvcCamera.StartIsoStreamActivity$13$2$1
+ humer.UvcCamera.StartIsoStreamActivity$13$2$2
+ humer.UvcCamera.StartIsoStreamActivity$14
+ humer.UvcCamera.StartIsoStreamActivity$15
+ humer.UvcCamera.StartIsoStreamActivity$16
+ humer.UvcCamera.StartIsoStreamActivity$17
+ humer.UvcCamera.StartIsoStreamActivity$18
+ humer.UvcCamera.StartIsoStreamActivity$19
+ humer.UvcCamera.StartIsoStreamActivity$2
+ humer.UvcCamera.StartIsoStreamActivity$3
+ humer.UvcCamera.StartIsoStreamActivity$4
+ humer.UvcCamera.StartIsoStreamActivity$4$1
+ humer.UvcCamera.StartIsoStreamActivity$5
+ humer.UvcCamera.StartIsoStreamActivity$5$1
+ humer.UvcCamera.StartIsoStreamActivity$5$1$1
+ humer.UvcCamera.StartIsoStreamActivity$5$1$2
+ humer.UvcCamera.StartIsoStreamActivity$5$1$3
+ humer.UvcCamera.StartIsoStreamActivity$5$1$4
+ humer.UvcCamera.StartIsoStreamActivity$5$1$5
+ humer.UvcCamera.StartIsoStreamActivity$6
+ humer.UvcCamera.StartIsoStreamActivity$7
+ humer.UvcCamera.StartIsoStreamActivity$8
+ humer.UvcCamera.StartIsoStreamActivity$8$1
+ humer.UvcCamera.StartIsoStreamActivity$9
+ humer.UvcCamera.StartIsoStreamActivity$Frame
+ humer.UvcCamera.StartIsoStreamActivity$IsochronousStream
+ humer.UvcCamera.StartIsoStreamActivity$IsochronousStreamLibUsb
+ humer.UvcCamera.StartIsoStreamActivity$IsochronousStreamLibUsb$1
+ humer.UvcCamera.StartIsoStreamActivity$Videoformat
+humer/UvcCamera/Main.java
+ humer.UvcCamera.Main
+ humer.UvcCamera.Main$1
+ humer.UvcCamera.Main$2
+ humer.UvcCamera.Main$3
+ humer.UvcCamera.Main$4
+ humer.UvcCamera.Main$5
+ humer.UvcCamera.Main$6

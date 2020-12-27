@@ -99,7 +99,6 @@ ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidM
 uses-sdk
 ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:19:5-21:112
 INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:19:5-21:112
-INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:19:5-21:112
 MERGED from [net.java.dev.jna:jna:5.6.0] /home/peter/.gradle/caches/transforms-2/files-2.1/87ff61d5b8c2d1ad9746b71423643f71/jna-5.6.0/AndroidManifest.xml:7:5-47
 MERGED from [net.java.dev.jna:jna:5.6.0] /home/peter/.gradle/caches/transforms-2/files-2.1/87ff61d5b8c2d1ad9746b71423643f71/jna-5.6.0/AndroidManifest.xml:7:5-47
 MERGED from [com.android.support.constraint:constraint-layout:2.0.4] /home/peter/.gradle/caches/transforms-2/files-2.1/fad1a7e519eb7450d63f57ae39a33a7b/constraint-layout-2.0.4/AndroidManifest.xml:5:5-7:41
@@ -146,14 +145,11 @@ MERGED from [com.rafakob:floatingedittext:1.0.5] /home/peter/.gradle/caches/tran
 MERGED from [com.rafakob:floatingedittext:1.0.5] /home/peter/.gradle/caches/transforms-2/files-2.1/81d84b2d04a7d6edc485f20390718987/floatingedittext-1.0.5/AndroidManifest.xml:8:5-10:41
 MERGED from [android.arch.lifecycle:runtime:1.0.0] /home/peter/.gradle/caches/transforms-2/files-2.1/c0fa89e2fe47ee55a9f37cece79b22a6/runtime-1.0.0/AndroidManifest.xml:20:5-22:41
 MERGED from [android.arch.lifecycle:runtime:1.0.0] /home/peter/.gradle/caches/transforms-2/files-2.1/c0fa89e2fe47ee55a9f37cece79b22a6/runtime-1.0.0/AndroidManifest.xml:20:5-22:41
-INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:19:5-21:112
 INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:19:5-21:112
 	tools:overrideLibrary
 		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:21:9-110
 	android:targetSdkVersion
 		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:20:9-38
-		INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml
-		INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml
 	android:minSdkVersion
 		INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml
 		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:19:5-21:112
