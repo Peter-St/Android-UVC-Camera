@@ -21,7 +21,7 @@
     "cFlagsList": [],
     "cmakeSettingsConfiguration": "android-gradle-plugin-predetermined-name",
     "cppFlagsList": [],
-    "isDebuggableEnabled": true,
+    "isDebuggableEnabled": false,
     "module": {
       "buildSystem": "NDK_BUILD",
       "cmakeToolchainFile": "/home/peter/Android/Sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake",

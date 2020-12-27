@@ -8,7 +8,7 @@
 7-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:19:5-21:112
 8        android:minSdkVersion="15"
 8-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:19:5-21:112
-9        android:targetSdkVersion="27" />
+9        android:targetSdkVersion="29" />
 9-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:20:9-38
 10
 11    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -56,179 +56,178 @@
 27-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:23:5-89:19
 28        android:allowBackup="true"
 28-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:25:9-35
-29        android:debuggable="true"
-30        android:icon="@mipmap/ic_launcher"
-30-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:26:9-43
-31        android:label="@string/app_name"
-31-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:27:9-41
-32        android:largeHeap="true"
-32-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:29:9-33
-33        android:roundIcon="@mipmap/ic_launcher_round"
-33-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:28:9-54
-34        android:supportsRtl="true"
-34-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:30:9-35
-35        android:theme="@style/Theme.AppCompat.Light.NoActionBar" >
-35-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:24:9-65
-36        <activity android:name="humer.UvcCamera.Main" >
-36-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:31:9-41:20
-36-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:31:19-54
-37            <intent-filter>
-37-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:32:13-34:29
-38                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-38-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:33:17-89
-38-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:33:25-87
-39            </intent-filter>
-40
-41            <meta-data
-41-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:35:13-126
-42                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
-42-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:35:24-86
-43                android:resource="@xml/device_filter" />
-43-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:35:87-124
-44
-45            <intent-filter>
-45-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:36:13-39:29
-46                <action android:name="android.intent.action.MAIN" />
-46-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:37:17-69
-46-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:37:25-66
-47
-48                <category android:name="android.intent.category.LAUNCHER" />
-48-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:17-77
-48-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:27-74
-49            </intent-filter>
-50        </activity>
-51        <activity android:name="humer.UvcCamera.PrivacyPolicyActivity" >
-51-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:42:9-43:20
-51-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:42:19-71
-52        </activity>
-53        <activity android:name="humer.UvcCamera.ReadMeActivity" >
-53-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:44:9-45:20
-53-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:44:19-64
-54        </activity>
-55        <activity android:name="humer.UvcCamera.StartIsoStreamActivity" >
-55-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:46:9-52:20
-55-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:46:19-72
-56            <intent-filter>
-56-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:47:13-51:29
-57                <category android:name="android.intent.category.LAUNCHER" />
-57-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:17-77
-57-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:27-74
-58
-59                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-59-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:33:17-89
-59-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:33:25-87
-60                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
-60-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:50:17-90
-60-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:50:25-87
-61            </intent-filter>
-62        </activity>
-63        <activity android:name="humer.UvcCamera.SetUpTheUsbDevice" >
-63-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:53:9-59:20
-63-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:53:19-67
-64            <intent-filter>
-64-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:47:13-51:29
-65                <category android:name="android.intent.category.LAUNCHER" />
-65-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:17-77
-65-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:27-74
-66
-67                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-67-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:33:17-89
-67-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:33:25-87
-68                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
-68-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:50:17-90
-68-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:50:25-87
-69            </intent-filter>
-70        </activity>
-71        <activity
-71-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:60:9-66:20
-72            android:name="humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect"
-72-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:60:19-86
-73            android:theme="@style/Theme.Transparent" >
-73-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:60:87-127
-74            <intent-filter>
-74-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:47:13-51:29
-75                <category android:name="android.intent.category.LAUNCHER" />
-75-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:17-77
-75-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:27-74
-76
-77                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-77-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:33:17-89
-77-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:33:25-87
-78                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
-78-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:50:17-90
-78-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:50:25-87
-79            </intent-filter>
-80        </activity>
-81        <activity
-81-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:67:9-73:20
-82            android:name="humer.UvcCamera.AutomaticDetection.Jna_AutoDetect"
-82-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:67:19-83
-83            android:theme="@style/Theme.Transparent" >
-83-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:67:84-124
-84            <intent-filter>
-84-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:47:13-51:29
-85                <category android:name="android.intent.category.LAUNCHER" />
-85-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:17-77
-85-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:27-74
-86
-87                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-87-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:33:17-89
-87-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:33:25-87
-88                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
-88-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:50:17-90
-88-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:50:25-87
-89            </intent-filter>
-90        </activity>
-91        <activity
-91-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:74:9-81:55
-92            android:name="com.example.androidthings.videortc.CallActivity"
-92-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:75:13-75
-93            android:configChanges="orientation|screenSize"
-93-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:76:13-59
-94            android:hardwareAccelerated="true"
-94-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:77:13-47
-95            android:label="@string/app_name"
-95-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:78:13-45
-96            android:launchMode="singleInstance"
-96-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:79:13-48
-97            android:screenOrientation="fullUser"
-97-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:80:13-49
-98            android:theme="@style/CallActivityTheme" />
-98-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:81:13-53
-99        <activity android:name="com.example.androidthings.videortc.WebRtc_MainActivity" >
-99-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:82:9-83:20
-99-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:82:19-88
-100        </activity>
-101
-102        <service android:name="humer.UvcCamera.LibUsb.StartIsoStreamService" >
-102-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:84:9-85:19
-102-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:84:18-77
-103        </service>
-104        <service android:name="com.example.androidthings.videortc.WebRtcService" >
-104-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:86:9-87:19
-104-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:86:18-81
-105        </service>
-106
-107        <meta-data
-107-->[com.android.support:design:26.1.0] /home/peter/.gradle/caches/transforms-2/files-2.1/eb1f1b8d3a1f68dae142764db18006d6/design-26.1.0/AndroidManifest.xml:26:9-28:38
-108            android:name="android.support.VERSION"
-108-->[com.android.support:design:26.1.0] /home/peter/.gradle/caches/transforms-2/files-2.1/eb1f1b8d3a1f68dae142764db18006d6/design-26.1.0/AndroidManifest.xml:27:13-51
-109            android:value="26.1.0" />
-109-->[com.android.support:design:26.1.0] /home/peter/.gradle/caches/transforms-2/files-2.1/eb1f1b8d3a1f68dae142764db18006d6/design-26.1.0/AndroidManifest.xml:28:13-35
-110
-111        <activity
-111-->[com.akexorcist:localizationactivity:1.2.2] /home/peter/.gradle/caches/transforms-2/files-2.1/8bc5defd73e1e60c1ad853f5971af44c/localizationactivity-1.2.2/AndroidManifest.xml:12:9-14:69
-112            android:name="com.akexorcist.localizationactivity.ui.BlankDummyActivity"
-112-->[com.akexorcist:localizationactivity:1.2.2] /home/peter/.gradle/caches/transforms-2/files-2.1/8bc5defd73e1e60c1ad853f5971af44c/localizationactivity-1.2.2/AndroidManifest.xml:13:13-85
-113            android:theme="@android:style/Theme.Black.NoTitleBar" />
-113-->[com.akexorcist:localizationactivity:1.2.2] /home/peter/.gradle/caches/transforms-2/files-2.1/8bc5defd73e1e60c1ad853f5971af44c/localizationactivity-1.2.2/AndroidManifest.xml:14:13-66
-114
-115        <meta-data
-115-->[android.arch.lifecycle:runtime:1.0.0] /home/peter/.gradle/caches/transforms-2/files-2.1/c0fa89e2fe47ee55a9f37cece79b22a6/runtime-1.0.0/AndroidManifest.xml:25:9-27:47
-116            android:name="android.arch.lifecycle.VERSION"
-116-->[android.arch.lifecycle:runtime:1.0.0] /home/peter/.gradle/caches/transforms-2/files-2.1/c0fa89e2fe47ee55a9f37cece79b22a6/runtime-1.0.0/AndroidManifest.xml:26:13-58
-117            android:value="27.0.0-SNAPSHOT" />
-117-->[android.arch.lifecycle:runtime:1.0.0] /home/peter/.gradle/caches/transforms-2/files-2.1/c0fa89e2fe47ee55a9f37cece79b22a6/runtime-1.0.0/AndroidManifest.xml:27:13-44
-118    </application>
-119
-120</manifest>
+29        android:icon="@mipmap/ic_launcher"
+29-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:26:9-43
+30        android:label="@string/app_name"
+30-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:27:9-41
+31        android:largeHeap="true"
+31-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:29:9-33
+32        android:roundIcon="@mipmap/ic_launcher_round"
+32-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:28:9-54
+33        android:supportsRtl="true"
+33-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:30:9-35
+34        android:theme="@style/Theme.AppCompat.Light.NoActionBar" >
+34-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:24:9-65
+35        <activity android:name="humer.UvcCamera.Main" >
+35-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:31:9-41:20
+35-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:31:19-54
+36            <intent-filter>
+36-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:32:13-34:29
+37                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+37-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:33:17-89
+37-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:33:25-87
+38            </intent-filter>
+39
+40            <meta-data
+40-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:35:13-126
+41                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+41-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:35:24-86
+42                android:resource="@xml/device_filter" />
+42-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:35:87-124
+43
+44            <intent-filter>
+44-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:36:13-39:29
+45                <action android:name="android.intent.action.MAIN" />
+45-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:37:17-69
+45-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:37:25-66
+46
+47                <category android:name="android.intent.category.LAUNCHER" />
+47-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:17-77
+47-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:27-74
+48            </intent-filter>
+49        </activity>
+50        <activity android:name="humer.UvcCamera.PrivacyPolicyActivity" >
+50-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:42:9-43:20
+50-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:42:19-71
+51        </activity>
+52        <activity android:name="humer.UvcCamera.ReadMeActivity" >
+52-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:44:9-45:20
+52-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:44:19-64
+53        </activity>
+54        <activity android:name="humer.UvcCamera.StartIsoStreamActivity" >
+54-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:46:9-52:20
+54-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:46:19-72
+55            <intent-filter>
+55-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:47:13-51:29
+56                <category android:name="android.intent.category.LAUNCHER" />
+56-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:17-77
+56-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:27-74
+57
+58                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+58-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:33:17-89
+58-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:33:25-87
+59                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+59-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:50:17-90
+59-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:50:25-87
+60            </intent-filter>
+61        </activity>
+62        <activity android:name="humer.UvcCamera.SetUpTheUsbDevice" >
+62-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:53:9-59:20
+62-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:53:19-67
+63            <intent-filter>
+63-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:47:13-51:29
+64                <category android:name="android.intent.category.LAUNCHER" />
+64-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:17-77
+64-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:27-74
+65
+66                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+66-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:33:17-89
+66-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:33:25-87
+67                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+67-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:50:17-90
+67-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:50:25-87
+68            </intent-filter>
+69        </activity>
+70        <activity
+70-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:60:9-66:20
+71            android:name="humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect"
+71-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:60:19-86
+72            android:theme="@style/Theme.Transparent" >
+72-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:60:87-127
+73            <intent-filter>
+73-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:47:13-51:29
+74                <category android:name="android.intent.category.LAUNCHER" />
+74-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:17-77
+74-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:27-74
+75
+76                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+76-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:33:17-89
+76-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:33:25-87
+77                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+77-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:50:17-90
+77-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:50:25-87
+78            </intent-filter>
+79        </activity>
+80        <activity
+80-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:67:9-73:20
+81            android:name="humer.UvcCamera.AutomaticDetection.Jna_AutoDetect"
+81-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:67:19-83
+82            android:theme="@style/Theme.Transparent" >
+82-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:67:84-124
+83            <intent-filter>
+83-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:47:13-51:29
+84                <category android:name="android.intent.category.LAUNCHER" />
+84-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:17-77
+84-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:27-74
+85
+86                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+86-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:33:17-89
+86-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:33:25-87
+87                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+87-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:50:17-90
+87-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:50:25-87
+88            </intent-filter>
+89        </activity>
+90        <activity
+90-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:74:9-81:55
+91            android:name="com.example.androidthings.videortc.CallActivity"
+91-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:75:13-75
+92            android:configChanges="orientation|screenSize"
+92-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:76:13-59
+93            android:hardwareAccelerated="true"
+93-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:77:13-47
+94            android:label="@string/app_name"
+94-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:78:13-45
+95            android:launchMode="singleInstance"
+95-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:79:13-48
+96            android:screenOrientation="fullUser"
+96-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:80:13-49
+97            android:theme="@style/CallActivityTheme" />
+97-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:81:13-53
+98        <activity android:name="com.example.androidthings.videortc.WebRtc_MainActivity" >
+98-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:82:9-83:20
+98-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:82:19-88
+99        </activity>
+100
+101        <service android:name="humer.UvcCamera.LibUsb.StartIsoStreamService" >
+101-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:84:9-85:19
+101-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:84:18-77
+102        </service>
+103        <service android:name="com.example.androidthings.videortc.WebRtcService" >
+103-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:86:9-87:19
+103-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:86:18-81
+104        </service>
+105
+106        <meta-data
+106-->[com.android.support:design:26.1.0] /home/peter/.gradle/caches/transforms-2/files-2.1/eb1f1b8d3a1f68dae142764db18006d6/design-26.1.0/AndroidManifest.xml:26:9-28:38
+107            android:name="android.support.VERSION"
+107-->[com.android.support:design:26.1.0] /home/peter/.gradle/caches/transforms-2/files-2.1/eb1f1b8d3a1f68dae142764db18006d6/design-26.1.0/AndroidManifest.xml:27:13-51
+108            android:value="26.1.0" />
+108-->[com.android.support:design:26.1.0] /home/peter/.gradle/caches/transforms-2/files-2.1/eb1f1b8d3a1f68dae142764db18006d6/design-26.1.0/AndroidManifest.xml:28:13-35
+109
+110        <activity
+110-->[com.akexorcist:localizationactivity:1.2.2] /home/peter/.gradle/caches/transforms-2/files-2.1/8bc5defd73e1e60c1ad853f5971af44c/localizationactivity-1.2.2/AndroidManifest.xml:12:9-14:69
+111            android:name="com.akexorcist.localizationactivity.ui.BlankDummyActivity"
+111-->[com.akexorcist:localizationactivity:1.2.2] /home/peter/.gradle/caches/transforms-2/files-2.1/8bc5defd73e1e60c1ad853f5971af44c/localizationactivity-1.2.2/AndroidManifest.xml:13:13-85
+112            android:theme="@android:style/Theme.Black.NoTitleBar" />
+112-->[com.akexorcist:localizationactivity:1.2.2] /home/peter/.gradle/caches/transforms-2/files-2.1/8bc5defd73e1e60c1ad853f5971af44c/localizationactivity-1.2.2/AndroidManifest.xml:14:13-66
+113
+114        <meta-data
+114-->[android.arch.lifecycle:runtime:1.0.0] /home/peter/.gradle/caches/transforms-2/files-2.1/c0fa89e2fe47ee55a9f37cece79b22a6/runtime-1.0.0/AndroidManifest.xml:25:9-27:47
+115            android:name="android.arch.lifecycle.VERSION"
+115-->[android.arch.lifecycle:runtime:1.0.0] /home/peter/.gradle/caches/transforms-2/files-2.1/c0fa89e2fe47ee55a9f37cece79b22a6/runtime-1.0.0/AndroidManifest.xml:26:13-58
+116            android:value="27.0.0-SNAPSHOT" />
+116-->[android.arch.lifecycle:runtime:1.0.0] /home/peter/.gradle/caches/transforms-2/files-2.1/c0fa89e2fe47ee55a9f37cece79b22a6/runtime-1.0.0/AndroidManifest.xml:27:13-44
+117    </application>
+118
+119</manifest>
