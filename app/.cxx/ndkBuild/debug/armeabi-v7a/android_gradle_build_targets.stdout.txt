@@ -1,66 +1,13 @@
-[armeabi-v7a] Compile arm    : Usb_Support <= libusb_support.c
-[armeabi-v7a] Compile thumb  : usb1.0 <= core.c
-[armeabi-v7a] Compile thumb  : usb1.0 <= descriptor.c
-[armeabi-v7a] Compile thumb  : usb1.0 <= hotplug.c
-[armeabi-v7a] Compile thumb  : usb1.0 <= io.c
-[armeabi-v7a] Compile thumb  : usb1.0 <= sync.c
-[armeabi-v7a] Compile thumb  : usb1.0 <= strerror.c
-[armeabi-v7a] Compile thumb  : usb1.0 <= linux_usbfs.c
-[armeabi-v7a] Compile thumb  : usb1.0 <= events_posix.c
-[armeabi-v7a] Compile thumb  : usb1.0 <= threads_posix.c
-[armeabi-v7a] Compile thumb  : usb1.0 <= linux_netlink.c
-[armeabi-v7a] SharedLibrary  : libusb1.0.so
-[armeabi-v7a] Compile++ thumb: Yuv <= compare.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= compare_common.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= compare_neon64.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= compare_gcc.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= convert.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= convert_argb.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= convert_from.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= convert_from_argb.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= convert_to_argb.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= convert_to_i420.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= cpu_id.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= planar_functions.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= rotate.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= rotate_argb.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= rotate_mips.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= rotate_neon64.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= row_any.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= row_common.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= row_mips.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= row_neon64.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= row_gcc.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= scale.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= scale_any.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= scale_argb.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= scale_common.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= scale_mips.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= scale_neon64.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= scale_gcc.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= video_common.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= compare_neon.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= rotate_neon.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= row_neon.cc
-[armeabi-v7a] Compile++ thumb: Yuv <= scale_neon.cc
-[armeabi-v7a] SharedLibrary  : libYuv.so
-[armeabi-v7a] SharedLibrary  : libUsb_Support.so
-[armeabi-v7a] Compile thumb  : dpfp <= dpfp.c
-[armeabi-v7a] Executable     : dpfp
-[armeabi-v7a] Compile thumb  : dpfp_threaded <= dpfp.c
-[armeabi-v7a] Executable     : dpfp_threaded
-[armeabi-v7a] Compile thumb  : fxload <= ezusb.c
-[armeabi-v7a] Compile thumb  : fxload <= fxload.c
-[armeabi-v7a] Executable     : fxload
-[armeabi-v7a] Compile thumb  : hotplugtest <= hotplugtest.c
-[armeabi-v7a] Executable     : hotplugtest
-[armeabi-v7a] Compile thumb  : listdevs <= listdevs.c
-[armeabi-v7a] Executable     : listdevs
-[armeabi-v7a] Compile thumb  : sam3u_benchmark <= sam3u_benchmark.c
-[armeabi-v7a] Executable     : sam3u_benchmark
-[armeabi-v7a] Compile thumb  : stress <= stress.c
-[armeabi-v7a] Compile thumb  : stress <= testlib.c
-[armeabi-v7a] Executable     : stress
+Android NDK: WARNING:/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libyuv/Android.mk:yuv_static: LOCAL_LDLIBS is always ignored for static libraries    
+make: Nothing to be done for 'Usb_Support'.
+make: Nothing to be done for 'dpfp'.
+make: Nothing to be done for 'dpfp_threaded'.
+make: Nothing to be done for 'fxload'.
+make: Nothing to be done for 'hotplugtest'.
+make: Nothing to be done for 'jpeg'.
+make: Nothing to be done for 'listdevs'.
+make: Nothing to be done for 'sam3u_benchmark'.
+make: Nothing to be done for 'stress'.
 make: Nothing to be done for 'usb1.0'.
-[armeabi-v7a] Compile thumb  : xusb <= xusb.c
-[armeabi-v7a] Executable     : xusb
+make: Nothing to be done for 'xusb'.
+make: Nothing to be done for 'yuv'.

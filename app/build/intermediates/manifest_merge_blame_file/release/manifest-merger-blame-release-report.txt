@@ -1,8 +1,8 @@
 1<?xml version="1.0" encoding="utf-8"?>
 2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
 3    package="humer.uvc_camera"
-4    android:versionCode="75"
-5    android:versionName="1.7.8" >
+4    android:versionCode="77"
+5    android:versionName="1.8.0" >
 6
 7    <uses-sdk
 7-->/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:19:5-21:112

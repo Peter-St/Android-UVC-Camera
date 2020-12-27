@@ -52,7 +52,7 @@ import java.util.Locale;
 import noman.zoomtextview.ZoomTextView;
 
 //public class Main extends LocalizationActivity {
-public class Main extends LocalizationActivity {
+public class Main extends Activity {
 
     public static int camStreamingAltSetting;
     public static int camFormatIndex;
@@ -104,7 +104,7 @@ public class Main extends LocalizationActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
-
+ /*
         ImageButton language = findViewById(R.id.language);
 
         Locale currentLanguage = getCurrentLanguage();
@@ -134,7 +134,7 @@ public class Main extends LocalizationActivity {
         LinearLayout sv_language_chooser = findViewById(R.id.languageChooser);
         sv_language_chooser.setEnabled(false);
         sv_language_chooser.setAlpha(0); // 100% transparent
-
+*/
         tv = (ZoomTextView) findViewById(R.id.textDarstellung);
 
         if (camFrameInterval == 0) tv.setText(getResources().getString(R.string.intro) + "\n\n" + getResources().getString(R.string.packetsPerRequest) + " = " + packetsPerRequest + "\n" + getResources().getString(R.string.activeUrbs) + " = " + activeUrbs +
@@ -257,7 +257,7 @@ public class Main extends LocalizationActivity {
     }
 
     ////////////////   BUTTONS  //////////////////////////////////////////
-
+/*
     public void changeTheLanguage(View view){
         if(isLanguageChooserEnabled()) {
             disableLanguageChooser();
@@ -281,7 +281,7 @@ public class Main extends LocalizationActivity {
             findViewById(R.id.btn_defaultLanguage).setOnClickListener(onDefaultLanguageSelected());
         }
     }
-
+*/
     public void raiseSize(View view){
         final int TIME_TO_WAIT = 2500;
         Button button = findViewById(R.id.raiseSize);
@@ -646,7 +646,7 @@ public class Main extends LocalizationActivity {
     }
 
     // Language Buttons Methods
-
+/*
     private View.OnClickListener onAmericaLanguageSelected() {
         return view -> setLanguage("en");
     }
@@ -693,6 +693,12 @@ public class Main extends LocalizationActivity {
         sv_language_chooser.setAlpha(0); // 100% transparent
     }
 
+       private boolean isLanguageChooserEnabled () {
+        LinearLayout sv_language_chooser = findViewById(R.id.languageChooser);
+        if(sv_language_chooser.isEnabled()) return true;
+        return false;
+    }
+*/
     private void displayIntro() {
         tv.setEnabled(true);
         tv.setAlpha(1);
@@ -708,10 +714,6 @@ public class Main extends LocalizationActivity {
                 (10000000 / camFrameInterval) + "\nLibUsb = " + LIBUSB  +  "" +
                 "\n\nYou can edit these Settings by clicking on (Set Up The Camera Device).\nYou can then save the values and later restore them.");
     }
-    private boolean isLanguageChooserEnabled () {
-        LinearLayout sv_language_chooser = findViewById(R.id.languageChooser);
-        if(sv_language_chooser.isEnabled()) return true;
-        return false;
-    }
+
 
 }

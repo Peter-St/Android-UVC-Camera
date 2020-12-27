@@ -270,15 +270,20 @@ public class SetUpTheUsbDevice extends Activity {
         }
     };
 
-    /*
+
     // JNI METHODS
     private static boolean isLoaded;
     static {
         if (!isLoaded) {
-            System.loadLibrary("Iso_stream");
+            System.loadLibrary("usb1.0");
+            System.loadLibrary("jpeg");
+            System.loadLibrary("yuv");
+            System.loadLibrary("Usb_Support");
             isLoaded = true;
         }
     }
+
+    /*
     public native void JniIsoStreamActivity(final Surface surface, int a, int b);
     public native void JniProbeCommitControl(int bmHint,int camFormatIndex,int camFrameIndex,int  camFrameInterval);
      */

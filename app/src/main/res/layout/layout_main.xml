@@ -9,18 +9,17 @@
 
 
     <ImageButton
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/language"
-        android:onClick="changeTheLanguage"
         android:layout_width="@dimen/btn_language_size"
         android:layout_height="@dimen/btn_language_size"
-        android:layout_marginEnd="@dimen/padding"
         android:background="@color/transparent"
         android:contentDescription="@string/america"
+        android:onClick="changeTheLanguage"
         android:scaleType="fitCenter"
         android:src="@mipmap/country_america"
-        android:layout_marginRight="@dimen/padding" />
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <Button
@@ -186,17 +185,19 @@
     </ScrollView>
 
 
-
     <include
         android:id="@+id/languageChooser"
         layout="@layout/layout_language_chooser"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/readMeButton"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        />
+
+        app:layout_constraintTop_toBottomOf="@id/readMeButton"
+        tools:visibility="gone" />
+
 
         <Button
             android:id="@+id/raiseSize"

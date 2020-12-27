@@ -98,7 +98,7 @@ import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
 import static java.lang.Integer.parseInt;
 
-public class StartIsoStreamActivity extends FragmentActivity {
+public class StartIsoStreamActivity extends Activity {
 
     private static final String ACTION_USB_PERMISSION = "humer.uvc_camera.USB_PERMISSION";
     // USB codes:
@@ -252,9 +252,9 @@ public class StartIsoStreamActivity extends FragmentActivity {
     static {
         if (!isLoaded) {
             System.loadLibrary("usb1.0");
+            System.loadLibrary("jpeg");
             System.loadLibrary("yuv");
             System.loadLibrary("Usb_Support");
-            System.loadLibrary("jpeg");
             isLoaded = true;
         }
     }

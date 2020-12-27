@@ -17,55 +17,11 @@ humer/UvcCamera/BitmapToVideoEncoder.java
  humer.UvcCamera.BitmapToVideoEncoder$IBitmapToVideoEncoderCallback
 humer/UvcCamera/LockCameraVariables.java
  humer.UvcCamera.LockCameraVariables
-humer/UvcCamera/SetUpTheUsbDevice.java
- humer.UvcCamera.SetUpTheUsbDevice
- humer.UvcCamera.SetUpTheUsbDevice$1
- humer.UvcCamera.SetUpTheUsbDevice$10
- humer.UvcCamera.SetUpTheUsbDevice$11
- humer.UvcCamera.SetUpTheUsbDevice$12
- humer.UvcCamera.SetUpTheUsbDevice$13
- humer.UvcCamera.SetUpTheUsbDevice$14
- humer.UvcCamera.SetUpTheUsbDevice$15
- humer.UvcCamera.SetUpTheUsbDevice$16
- humer.UvcCamera.SetUpTheUsbDevice$17
- humer.UvcCamera.SetUpTheUsbDevice$18
- humer.UvcCamera.SetUpTheUsbDevice$19
- humer.UvcCamera.SetUpTheUsbDevice$2
- humer.UvcCamera.SetUpTheUsbDevice$20
- humer.UvcCamera.SetUpTheUsbDevice$21
- humer.UvcCamera.SetUpTheUsbDevice$22
- humer.UvcCamera.SetUpTheUsbDevice$23
- humer.UvcCamera.SetUpTheUsbDevice$24
- humer.UvcCamera.SetUpTheUsbDevice$25
- humer.UvcCamera.SetUpTheUsbDevice$25$1
- humer.UvcCamera.SetUpTheUsbDevice$26
- humer.UvcCamera.SetUpTheUsbDevice$27
- humer.UvcCamera.SetUpTheUsbDevice$28
- humer.UvcCamera.SetUpTheUsbDevice$28$1
- humer.UvcCamera.SetUpTheUsbDevice$29
- humer.UvcCamera.SetUpTheUsbDevice$3
- humer.UvcCamera.SetUpTheUsbDevice$30
- humer.UvcCamera.SetUpTheUsbDevice$30$1
- humer.UvcCamera.SetUpTheUsbDevice$30$2
- humer.UvcCamera.SetUpTheUsbDevice$30$3
- humer.UvcCamera.SetUpTheUsbDevice$31
- humer.UvcCamera.SetUpTheUsbDevice$32
- humer.UvcCamera.SetUpTheUsbDevice$33
- humer.UvcCamera.SetUpTheUsbDevice$34
- humer.UvcCamera.SetUpTheUsbDevice$35
- humer.UvcCamera.SetUpTheUsbDevice$4
- humer.UvcCamera.SetUpTheUsbDevice$5
- humer.UvcCamera.SetUpTheUsbDevice$6
- humer.UvcCamera.SetUpTheUsbDevice$7
- humer.UvcCamera.SetUpTheUsbDevice$8
- humer.UvcCamera.SetUpTheUsbDevice$9
- humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead
- humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead$1
- humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead$1$1
- humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead$2
- humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead1Frame
- humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead1Frame$1
- humer.UvcCamera.SetUpTheUsbDevice$Options
+humer/UvcCamera/UVC_Descriptor/UVC_Descriptor.java
+ humer.UvcCamera.UVC_Descriptor.UVC_Descriptor
+ humer.UvcCamera.UVC_Descriptor.UVC_Descriptor$FormatIndex
+ humer.UvcCamera.UVC_Descriptor.UVC_Descriptor$FormatIndex$FrameIndex
+ humer.UvcCamera.UVC_Descriptor.UVC_Descriptor$FormatIndex$Videoformat
 humer/UvcCamera/UsbIso64/usbdevice_fs_util.java
  humer.UvcCamera.UsbIso64.usbdevice_fs_util
 humer/UvcCamera/AutomaticDetection/AutoDetect_Fragment.java
@@ -222,8 +178,13 @@ org/appspot/apprtc/RoomParametersFetcher.java
  org.appspot.apprtc.RoomParametersFetcher
  org.appspot.apprtc.RoomParametersFetcher$1
  org.appspot.apprtc.RoomParametersFetcher$RoomParametersFetcherEvents
-humer/UvcCamera/AutomaticDetection/Jna_AutoDetect_Handler.java
- humer.UvcCamera.AutomaticDetection.Jna_AutoDetect_Handler
+humer/UvcCamera/LibUsb/JNA_I_LibUsb.java
+ humer.UvcCamera.LibUsb.JNA_I_LibUsb
+ humer.UvcCamera.LibUsb.JNA_I_LibUsb$Libusb_Auto_Values
+ humer.UvcCamera.LibUsb.JNA_I_LibUsb$Libusb_Auto_Values$ByValue
+ humer.UvcCamera.LibUsb.JNA_I_LibUsb$autoStreamComplete
+ humer.UvcCamera.LibUsb.JNA_I_LibUsb$eventCallback
+ humer.UvcCamera.LibUsb.JNA_I_LibUsb$logPrint
 humer/UvcCamera/SetCameraVariables.java
  humer.UvcCamera.SetCameraVariables
  humer.UvcCamera.SetCameraVariables$1
@@ -249,65 +210,6 @@ humer/UvcCamera/BuildConfig.java
 com/example/androidthings/videortc/WebRtc_MainActivity.java
  com.example.androidthings.videortc.WebRtc_MainActivity
  com.example.androidthings.videortc.WebRtc_MainActivity$1
-humer/UvcCamera/UVC_Descriptor/UVC_Descriptor.java
- humer.UvcCamera.UVC_Descriptor.UVC_Descriptor
- humer.UvcCamera.UVC_Descriptor.UVC_Descriptor$FormatIndex
- humer.UvcCamera.UVC_Descriptor.UVC_Descriptor$FormatIndex$FrameIndex
- humer.UvcCamera.UVC_Descriptor.UVC_Descriptor$FormatIndex$Videoformat
-humer/UvcCamera/SaveToFile.java
- humer.UvcCamera.SaveToFile
- humer.UvcCamera.SaveToFile$1
- humer.UvcCamera.SaveToFile$1$1
- humer.UvcCamera.SaveToFile$1$2
- humer.UvcCamera.SaveToFile$10
- humer.UvcCamera.SaveToFile$11
- humer.UvcCamera.SaveToFile$12
- humer.UvcCamera.SaveToFile$13
- humer.UvcCamera.SaveToFile$14
- humer.UvcCamera.SaveToFile$15
- humer.UvcCamera.SaveToFile$16
- humer.UvcCamera.SaveToFile$17
- humer.UvcCamera.SaveToFile$18
- humer.UvcCamera.SaveToFile$19
- humer.UvcCamera.SaveToFile$2
- humer.UvcCamera.SaveToFile$2$1
- humer.UvcCamera.SaveToFile$2$2
- humer.UvcCamera.SaveToFile$20
- humer.UvcCamera.SaveToFile$21
- humer.UvcCamera.SaveToFile$22
- humer.UvcCamera.SaveToFile$23
- humer.UvcCamera.SaveToFile$24
- humer.UvcCamera.SaveToFile$25
- humer.UvcCamera.SaveToFile$26
- humer.UvcCamera.SaveToFile$27
- humer.UvcCamera.SaveToFile$28
- humer.UvcCamera.SaveToFile$29
- humer.UvcCamera.SaveToFile$3
- humer.UvcCamera.SaveToFile$3$1
- humer.UvcCamera.SaveToFile$3$2
- humer.UvcCamera.SaveToFile$30
- humer.UvcCamera.SaveToFile$31
- humer.UvcCamera.SaveToFile$32
- humer.UvcCamera.SaveToFile$33
- humer.UvcCamera.SaveToFile$34
- humer.UvcCamera.SaveToFile$35
- humer.UvcCamera.SaveToFile$36
- humer.UvcCamera.SaveToFile$37
- humer.UvcCamera.SaveToFile$4
- humer.UvcCamera.SaveToFile$5
- humer.UvcCamera.SaveToFile$5$1
- humer.UvcCamera.SaveToFile$6
- humer.UvcCamera.SaveToFile$7
- humer.UvcCamera.SaveToFile$8
- humer.UvcCamera.SaveToFile$9
- humer.UvcCamera.SaveToFile$OptionForSaveFile
-humer/UvcCamera/LibUsb/JNA_I_LibUsb.java
- humer.UvcCamera.LibUsb.JNA_I_LibUsb
- humer.UvcCamera.LibUsb.JNA_I_LibUsb$Libusb_Auto_Values
- humer.UvcCamera.LibUsb.JNA_I_LibUsb$Libusb_Auto_Values$ByValue
- humer.UvcCamera.LibUsb.JNA_I_LibUsb$autoStreamComplete
- humer.UvcCamera.LibUsb.JNA_I_LibUsb$eventCallback
- humer.UvcCamera.LibUsb.JNA_I_LibUsb$logPrint
 humer/UvcCamera/StartIsoStreamActivity.java
  humer.UvcCamera.StartIsoStreamActivity
  humer.UvcCamera.StartIsoStreamActivity$1
@@ -358,6 +260,102 @@ humer/UvcCamera/StartIsoStreamActivity.java
  humer.UvcCamera.StartIsoStreamActivity$IsochronousStreamLibUsb
  humer.UvcCamera.StartIsoStreamActivity$IsochronousStreamLibUsb$1
  humer.UvcCamera.StartIsoStreamActivity$Videoformat
+humer/UvcCamera/SaveToFile.java
+ humer.UvcCamera.SaveToFile
+ humer.UvcCamera.SaveToFile$1
+ humer.UvcCamera.SaveToFile$1$1
+ humer.UvcCamera.SaveToFile$1$2
+ humer.UvcCamera.SaveToFile$10
+ humer.UvcCamera.SaveToFile$11
+ humer.UvcCamera.SaveToFile$12
+ humer.UvcCamera.SaveToFile$13
+ humer.UvcCamera.SaveToFile$14
+ humer.UvcCamera.SaveToFile$15
+ humer.UvcCamera.SaveToFile$16
+ humer.UvcCamera.SaveToFile$17
+ humer.UvcCamera.SaveToFile$18
+ humer.UvcCamera.SaveToFile$19
+ humer.UvcCamera.SaveToFile$2
+ humer.UvcCamera.SaveToFile$2$1
+ humer.UvcCamera.SaveToFile$2$2
+ humer.UvcCamera.SaveToFile$20
+ humer.UvcCamera.SaveToFile$21
+ humer.UvcCamera.SaveToFile$22
+ humer.UvcCamera.SaveToFile$23
+ humer.UvcCamera.SaveToFile$24
+ humer.UvcCamera.SaveToFile$25
+ humer.UvcCamera.SaveToFile$26
+ humer.UvcCamera.SaveToFile$27
+ humer.UvcCamera.SaveToFile$28
+ humer.UvcCamera.SaveToFile$29
+ humer.UvcCamera.SaveToFile$3
+ humer.UvcCamera.SaveToFile$3$1
+ humer.UvcCamera.SaveToFile$3$2
+ humer.UvcCamera.SaveToFile$30
+ humer.UvcCamera.SaveToFile$31
+ humer.UvcCamera.SaveToFile$32
+ humer.UvcCamera.SaveToFile$33
+ humer.UvcCamera.SaveToFile$34
+ humer.UvcCamera.SaveToFile$35
+ humer.UvcCamera.SaveToFile$36
+ humer.UvcCamera.SaveToFile$37
+ humer.UvcCamera.SaveToFile$4
+ humer.UvcCamera.SaveToFile$5
+ humer.UvcCamera.SaveToFile$5$1
+ humer.UvcCamera.SaveToFile$6
+ humer.UvcCamera.SaveToFile$7
+ humer.UvcCamera.SaveToFile$8
+ humer.UvcCamera.SaveToFile$9
+ humer.UvcCamera.SaveToFile$OptionForSaveFile
+humer/UvcCamera/SetUpTheUsbDevice.java
+ humer.UvcCamera.SetUpTheUsbDevice
+ humer.UvcCamera.SetUpTheUsbDevice$1
+ humer.UvcCamera.SetUpTheUsbDevice$10
+ humer.UvcCamera.SetUpTheUsbDevice$11
+ humer.UvcCamera.SetUpTheUsbDevice$12
+ humer.UvcCamera.SetUpTheUsbDevice$13
+ humer.UvcCamera.SetUpTheUsbDevice$14
+ humer.UvcCamera.SetUpTheUsbDevice$15
+ humer.UvcCamera.SetUpTheUsbDevice$16
+ humer.UvcCamera.SetUpTheUsbDevice$17
+ humer.UvcCamera.SetUpTheUsbDevice$18
+ humer.UvcCamera.SetUpTheUsbDevice$19
+ humer.UvcCamera.SetUpTheUsbDevice$2
+ humer.UvcCamera.SetUpTheUsbDevice$20
+ humer.UvcCamera.SetUpTheUsbDevice$21
+ humer.UvcCamera.SetUpTheUsbDevice$22
+ humer.UvcCamera.SetUpTheUsbDevice$23
+ humer.UvcCamera.SetUpTheUsbDevice$24
+ humer.UvcCamera.SetUpTheUsbDevice$25
+ humer.UvcCamera.SetUpTheUsbDevice$25$1
+ humer.UvcCamera.SetUpTheUsbDevice$26
+ humer.UvcCamera.SetUpTheUsbDevice$27
+ humer.UvcCamera.SetUpTheUsbDevice$28
+ humer.UvcCamera.SetUpTheUsbDevice$28$1
+ humer.UvcCamera.SetUpTheUsbDevice$29
+ humer.UvcCamera.SetUpTheUsbDevice$3
+ humer.UvcCamera.SetUpTheUsbDevice$30
+ humer.UvcCamera.SetUpTheUsbDevice$30$1
+ humer.UvcCamera.SetUpTheUsbDevice$30$2
+ humer.UvcCamera.SetUpTheUsbDevice$30$3
+ humer.UvcCamera.SetUpTheUsbDevice$31
+ humer.UvcCamera.SetUpTheUsbDevice$32
+ humer.UvcCamera.SetUpTheUsbDevice$33
+ humer.UvcCamera.SetUpTheUsbDevice$34
+ humer.UvcCamera.SetUpTheUsbDevice$35
+ humer.UvcCamera.SetUpTheUsbDevice$4
+ humer.UvcCamera.SetUpTheUsbDevice$5
+ humer.UvcCamera.SetUpTheUsbDevice$6
+ humer.UvcCamera.SetUpTheUsbDevice$7
+ humer.UvcCamera.SetUpTheUsbDevice$8
+ humer.UvcCamera.SetUpTheUsbDevice$9
+ humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead
+ humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead$1
+ humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead$1$1
+ humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead$2
+ humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead1Frame
+ humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead1Frame$1
+ humer.UvcCamera.SetUpTheUsbDevice$Options
 humer/UvcCamera/Main.java
  humer.UvcCamera.Main
  humer.UvcCamera.Main$1
@@ -366,3 +364,5 @@ humer/UvcCamera/Main.java
  humer.UvcCamera.Main$4
  humer.UvcCamera.Main$5
  humer.UvcCamera.Main$6
+humer/UvcCamera/AutomaticDetection/Jna_AutoDetect_Handler.java
+ humer.UvcCamera.AutomaticDetection.Jna_AutoDetect_Handler
