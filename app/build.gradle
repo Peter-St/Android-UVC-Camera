@@ -98,17 +98,17 @@ android {
         pickFirst 'lib/armeabi-v7a/libuvc.so'
         pickFirst 'lib/arm64-v8a/libuvc.so'
 
-        pickFirst 'lib/x86_64/libjpeg-turbo1500.so'
-        pickFirst 'lib/armeabi/libjpeg-turbo1500.so'
-        pickFirst 'lib/x86/libjpeg-turbo1500.so'
-        pickFirst 'lib/armeabi-v7a/libjpeg-turbo1500.so'
-        pickFirst 'lib/arm64-v8a/libjpeg-turbo1500.so'
+        pickFirst 'lib/x86_64/libjpeg.so'
+        pickFirst 'lib/armeabi/libjpeg.so'
+        pickFirst 'lib/x86/libjpeg.so'
+        pickFirst 'lib/armeabi-v7a/libjpeg.so'
+        pickFirst 'lib/arm64-v8a/libjpeg.so'
 
-        pickFirst 'lib/x86_64/libYuv.so'
-        pickFirst 'lib/armeabi/libYuv.so'
-        pickFirst 'lib/x86/libYuv.so'
-        pickFirst 'lib/armeabi-v7a/libYuv.so'
-        pickFirst 'lib/arm64-v8a/libYuv.so'
+        pickFirst 'lib/x86_64/libyuv.so'
+        pickFirst 'lib/armeabi/libyuv.so'
+        pickFirst 'lib/x86/libyuv.so'
+        pickFirst 'lib/armeabi-v7a/libyuv.so'
+        pickFirst 'lib/arm64-v8a/libyuv.so'
     }
 }
 

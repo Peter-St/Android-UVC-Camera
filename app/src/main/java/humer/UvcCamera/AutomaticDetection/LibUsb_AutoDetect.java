@@ -57,6 +57,8 @@ public class LibUsb_AutoDetect extends AppCompatActivity {
     public static byte[] bcdUVC;
     public static byte bStillCaptureMethod;
     public static boolean libUsb = true;
+    public static boolean moveToNative;
+
 
     private volatile boolean running = false;
 
@@ -567,7 +569,7 @@ public class LibUsb_AutoDetect extends AppCompatActivity {
 
 
     private int videoFormatToInt () {
-        if(videoformat.equals("mjpeg")) return 1;
+        if(videoformat.equals("MJPEG")) return 1;
         else if (videoformat.equals("YUY2")) return 0;
         else return 0;
     }

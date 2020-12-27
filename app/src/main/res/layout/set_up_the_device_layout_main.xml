@@ -150,33 +150,31 @@
         app:layout_constraintGuide_percent="1" />
 
 
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
         android:id="@+id/fadingTextViewLayout"
         style="@style/SwitchContainer"
         android:layout_width="wrap_content"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
 
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/setUpWithUVC"
 
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="40dp"
-        android:layout_marginRight="40dp"
-
         >
 
         <TextView
             android:id="@+id/descripton"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="70dp"
-            android:layout_marginTop="0dp"
             android:text="@string/descriptor_read_frames_5_sec"
             android:textColor="#000080"
             android:textSize="18sp"
-            android:layout_alignParentTop="true"
-            android:layout_centerInParent="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/fadingTextView"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:gravity="center"
             />
 
         <com.tomer.fadingtextview.FadingTextView
@@ -186,15 +184,16 @@
             android:layout_marginLeft="3dp"
             android:layout_marginRight="3dp"
             android:layout_marginBottom="3dp"
-
             android:layout_below="@id/descripton"
-            android:layout_centerInParent="true"
-
+            app:layout_constraintTop_toBottomOf="@+id/descripton"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
             android:textSize="25dp"
-
+            android:gravity="center"
             app:texts="@array/examples"
             app:timeout="500" />
-    </RelativeLayout>
+    </android.support.constraint.ConstraintLayout>
 
 
 

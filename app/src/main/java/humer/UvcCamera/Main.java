@@ -72,6 +72,8 @@ public class Main extends LocalizationActivity {
     public static byte[] bcdUVC;
     public static byte bStillCaptureMethod;
     public static boolean LIBUSB;
+    public static boolean moveToNative;
+
     public Button menu;
     private ZoomTextView tv;
 
@@ -140,7 +142,7 @@ public class Main extends LocalizationActivity {
                         "\n" + getResources().getString(R.string.camFormatIndex) + " = " + camFormatIndex + "\n" +
                         " " + getResources().getString(R.string.camFrameIndex) + " = " + camFrameIndex + "\n" + getResources().getString(R.string.imageWidth) + " = " + imageWidth + "\n" + getResources().getString(R.string.imageHeight) + " = " + imageHeight +
                         "\n" + getResources().getString(R.string.camFrameInterval) + " (fps) = " + camFrameInterval + "\nLibUsb = " + LIBUSB);
-        else tv.setText("Hello\n\nThis App may not work on Android 9 (PIE) and Android 10 (Q) Devices. In this case please use other Usb Camera Apps from the Play Store" +
+        else tv.setText("Hello\n\nThe App should works on Android 9 (PIE) and Android 10 (Q) Devices." +
                 "\n\nYour current Values are:\n\n( - this is a sroll and zoom field - )\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
                 "\nAltSetting = " + camStreamingAltSetting + "\nMaxPacketSize = " + maxPacketSize + "\nVideoformat = " + videoformat + "\ncamFormatIndex = " + camFormatIndex + "\n" +
                 "camFrameIndex = " + camFrameIndex + "\nimageWidth = "+ imageWidth + "\nimageHeight = " + imageHeight + "\ncamFrameInterval (fps) = " +
@@ -235,6 +237,7 @@ public class Main extends LocalizationActivity {
             bcdUVC = data.getByteArrayExtra("bcdUVC");
             bStillCaptureMethod = data.getByteExtra("bStillCaptureMethod", (byte) 0);
             LIBUSB = data.getBooleanExtra("libUsb", false);
+            moveToNative = data.getBooleanExtra("moveToNative", false);
             if (camFrameInterval == 0)
                 tv.setText("Your current Values are:\n\nPackets Per Request = " + packetsPerRequest + "\nActive Urbs = " + activeUrbs +
                         "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat +
@@ -358,6 +361,8 @@ public class Main extends LocalizationActivity {
                 bundle.putByteArray("bcdUVC", bcdUVC);
                 bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
                 bundle.putBoolean("libUsb", LIBUSB);
+                bundle.putBoolean("moveToNative", moveToNative);
+
 
                 intent.putExtra("bun",bundle);
                 super.onResume();
@@ -387,6 +392,7 @@ public class Main extends LocalizationActivity {
             bundle.putByteArray("bcdUVC", bcdUVC);
             bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
             bundle.putBoolean("libUsb", LIBUSB);
+            bundle.putBoolean("moveToNative", moveToNative);
 
             intent.putExtra("bun",bundle);
             super.onResume();
@@ -414,6 +420,7 @@ public class Main extends LocalizationActivity {
             bundle.putByteArray("bcdUVC", bcdUVC);
             bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
             bundle.putBoolean("libUsb", LIBUSB);
+            bundle.putBoolean("moveToNative", moveToNative);
 
             intent.putExtra("bun",bundle);
             super.onResume();
@@ -477,6 +484,7 @@ public class Main extends LocalizationActivity {
                 bundle.putByteArray("bcdUVC", bcdUVC);
                 bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
                 bundle.putBoolean("libUsb", LIBUSB);
+                bundle.putBoolean("moveToNative", moveToNative);
 
                 intent.putExtra("bun",bundle);
                 startActivityForResult(intent, ActivityStartIsoStreamRequestCode);
@@ -511,6 +519,7 @@ public class Main extends LocalizationActivity {
                 bundle.putByteArray("bcdUVC", bcdUVC);
                 bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
                 bundle.putBoolean("libUsb", LIBUSB);
+                bundle.putBoolean("moveToNative", moveToNative);
 
                 intent.putExtra("bun",bundle);
                 startActivityForResult(intent, ActivityStartIsoStreamRequestCode);

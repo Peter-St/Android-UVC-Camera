@@ -96,7 +96,6 @@
 #define PIXEL16_BGR			PIXEL_BGR * 16
 #define PIXEL16_RGBX		PIXEL_RGBX * 16
 
-
 volatile bool write_Ctl_Buffer = false;
 int ueberschreitungDerUebertragungslaenge = 0 ;
 
@@ -126,7 +125,7 @@ static uint16_t bcdUVC;
 static int laufzeit = 2;
 static int fd, i, j, result = -1;
 static int camStreamingInterfaceNum;
-static const char* frameFormat;
+const char* frameFormat;    //  MJPEG   YUY2
 volatile int total = 0;
 volatile int totalFrame = 0;
 volatile bool initialized = false;
@@ -134,6 +133,7 @@ volatile  bool runningStream = false;
 volatile bool runningStreamFragment = false;
 static uint8_t frameUeberspringen = 0;
 static uint8_t numberOfAutoFrames;
+static int streamEndPointAdressOverNative;
 
 #define UVC_STREAM_EOH (1 << 7)
 #define UVC_STREAM_ERR (1 << 6)
@@ -183,6 +183,12 @@ AutotransferStruct get_autotransferStruct () {
     return autoStruct;
 }
 
+typedef struct _Frame_Data
+{
+    int FrameSize;
+    int  FrameBufferSize;
+    unsigned char videoframe[];
+} FrameData;
 FrameData *videoFrameData;
 
 uint8_t streamControl[48];
@@ -277,6 +283,9 @@ enum uvc_frame_format {
     UVC_FRAME_FORMAT_BY8,
     /** Number of formats understood */
     UVC_FRAME_FORMAT_COUNT,
+    // YVU420SemiPlanar
+    UVC_FRAME_FORMAT__NV21 = 5,
+
 };
 
 
@@ -478,6 +487,53 @@ uvc_error_t uvc_yuyv2rgbx(uvc_frame_t *out) {
     return UVC_SUCCESS;
 }
 
+uvc_error_t uvc_yuyv2yuv420SP(uvc_frame_t *out) {
+
+
+    out->frame_format = UVC_FRAME_FORMAT__NV21;
+    out->width = imageWidth;
+    out->height = imageHeight;
+    if (out->library_owns_data)
+        out->step = imageWidth * PIXEL_RGBX;
+    out->sequence = 0;
+    gettimeofday(&out->capture_time, NULL);
+    out->source = devh;
+
+    const uint8_t *src = videoFrameData->videoframe;
+    uint8_t *dest = out->data;
+    const int32_t width = imageWidth;
+    const int32_t height = imageHeight;
+    const int32_t src_width = imageWidth;
+    const int32_t src_height = imageHeight;
+    const int32_t dest_width = out->width = out->step = imageWidth;
+    const int32_t dest_height = out->height = imageHeight;
+
+    const uint32_t hh = src_height < dest_height ? src_height : dest_height;
+    uint8_t *uv = dest + dest_width * dest_height;
+    int h, w;
+    for (h = 0; h < hh - 1; h += 2) {
+        uint8_t *y0 = dest + width * h;
+        uint8_t *y1 = y0 + width;
+        const uint8_t *yuv = src + src_width * h;
+        for (w = 0; w < width; w += 4) {
+            *(y0++) = yuv[0];	// y
+            *(y0++) = yuv[2];	// y'
+            *(y0++) = yuv[4];	// y''
+            *(y0++) = yuv[6];	// y'''
+            *(uv++) = yuv[1];	// u
+            *(uv++) = yuv[3];	// v
+            *(uv++) = yuv[5];	// u
+            *(uv++) = yuv[7];	// v
+            *(y1++) = yuv[src_width+0];	// y on next low
+            *(y1++) = yuv[src_width+2];	// y' on next low
+            *(y1++) = yuv[src_width+4];	// y''  on next low
+            *(y1++) = yuv[src_width+6];	// y'''  on next low
+            yuv += 8;	// (1pixel=2bytes)x4pixels=8bytes
+        }
+    }
+    return UVC_SUCCESS;
+}
+
 
 /** @brief Allocate a frame structure
  * @ingroup frame
@@ -513,18 +569,23 @@ uvc_frame_t *uvc_allocate_frame(size_t data_bytes) {
 }
 
 /// JNI Values
+JavaVM* javaVm;
 jclass class;
-jmethodID javaProcessReceivedMJpegVideoFrameKamera;
-jmethodID javaProcessReceivedVideoFrameYuv;
+jclass jniHelperClass;
+jclass mainActivityObj;
+ANativeWindow *mCaptureWindow;
+
+// Stream - Activity
+jmethodID javaRetrievedStreamActivityFrameFromLibUsb;
 jmethodID javainitializeStreamArray;
 
 // SERVICE
 jmethodID javaServicePublishResults;
 jmethodID javaServiceReturnToStreamActivity;
-JavaVM* javaVm;
-jclass jniHelperClass;
-jclass mainActivityObj;
-ANativeWindow *mCaptureWindow;
+
+
+// WebRtc
+jmethodID javaRetrievedFrameFromLibUsb;
 
 int rotation = 0;
 volatile bool horizontalFlip = false;
@@ -565,7 +626,7 @@ uvc_frame_t *flip_horizontal(uvc_frame_t *frame) {
     flip_img->capture_time = frame->capture_time;
     flip_img->source = devh;
     int src_stride_argb = frame->width * 4;
-    uint8* dst_argb = flip_img->data;
+    uint* dst_argb = flip_img->data;
     int width = frame->width;
     int height = frame->height;
     int dst_stride_argb = frame->width * 4;
@@ -606,7 +667,7 @@ uvc_frame_t *checkRotation(uvc_frame_t *rgb) {
     rot_img->capture_time = rgb->capture_time;
     rot_img->source = devh;
     int src_stride_argb = imageWidth * 4;
-    uint8* dst_argb = rot_img->data;
+    uint* dst_argb = rot_img->data;
     int src_width = imageWidth;
     int src_height = imageHeight;
 
@@ -755,8 +816,8 @@ void initStreamingParms_controltransfer(libusb_device_handle *handle, bool creat
 
 void print_endpoint(const struct libusb_endpoint_descriptor *endpoint, int bInterfaceNumber) {
     int i, ret;
-    if (bInterfaceNumber == camStreamingInterfaceNum) {
-        int endpunktadresse = endpoint->bEndpointAddress;
+    if (bInterfaceNumber == 1) {
+        streamEndPointAdressOverNative = endpoint->bEndpointAddress;
     }
     LOGD("        wMaxPacketSize:   %d\n", endpoint->wMaxPacketSize);
     fflush(stdout);
@@ -968,6 +1029,7 @@ int set_the_native_Values (int FD, int packetsPerReques, int maxPacketSiz, int a
     camStreamingInterfaceNum = camStreamingInterfaceNumber;
     imageWidth = imageWidt;
     imageHeight = imageHeigh;
+    frameFormat = frameformat;
     mUsbFs = mUsbFs;
     vendorID = vendorID;
     productID = productID;
@@ -1054,6 +1116,32 @@ int initStreamingParms(int FD) {
     camIsOpen = compareStreamingParmsValues();
     if (camIsOpen) return 0;
     else return -4;
+}
+
+int fetchTheCamStreamingEndpointAdress (int FD) {
+    if (!camIsOpen) {
+        int ret;
+        enum libusb_error rc;
+        if (!cameraDevice_is_wraped) {
+            if (wrap_camera_device(FD) == 0) LOGD("Successfully wraped The CameraDevice");
+        }
+        camIsOpen = true;
+    }
+    for (int if_num = 0; if_num < (2); if_num++) {
+        if (libusb_kernel_driver_active(devh, if_num)) {
+            libusb_detach_kernel_driver(devh, if_num);
+        }
+        int rc = libusb_claim_interface(devh, if_num);
+        if (rc < 0) {
+            fprintf(stderr, "Error claiming interface: %s\n",
+                    libusb_error_name(rc));
+        } else {
+            printf("Interface %d erfolgreich eingehängt;\n", if_num);
+        }
+    }
+    struct libusb_device_descriptor desc;
+    print_device(libusb_get_device(devh) , 0, devh, desc);
+    return streamEndPointAdressOverNative;
 }
 
 unsigned char * probeCommitControl(int bmHin, int camFormatInde, int camFrameInde, int camFrameInterva, int FD) {
@@ -1311,7 +1399,7 @@ void isoc_transfer_completion_handler_five_sec(struct libusb_transfer *the_trans
             //manualFrameStruct.frameLen += packetLen;
             if (p[1] & UVC_STREAM_EOF) {
                 //manualFrameStruct.sframeLenArray[manualFrameStruct.frameCnt] = manualFrameStruct.frameLen;
-                LOGD("Frame received");
+                LOGD("Frame received_5_frame");
                 ueberschreitungDerUebertragungslaenge = 0;
                 if (frameUeberspringen == 0) {
                     ++totalFrame;
@@ -1395,7 +1483,7 @@ void isoc_transfer_completion_handler_one_frame(struct libusb_transfer *the_tran
             manualFrameStruct.frameLen += packetLen;
             if (p[1] & UVC_STREAM_EOF) {
                 manualFrameStruct.sframeLenArray[manualFrameStruct.frameCnt] = manualFrameStruct.frameLen;
-                LOGD("Frame received");
+                LOGD("Frame received_one_Frame");
                 ueberschreitungDerUebertragungslaenge = 0;
                 if (frameUeberspringen == 0) {
                     ++totalFrame;
@@ -1685,6 +1773,19 @@ void cb_jni_stream_ImageView(struct libusb_transfer *the_transfer) {
         }
 }
 
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniSetTheMethodsStreamActivityMJPEG
+        (JNIEnv *env, jobject obj) {
+    int status = (*env)->GetJavaVM(env, &javaVm);
+    if(status != 0) {
+        LOGE("failed to attach javaVm");
+    }
+    class = (*env)->GetObjectClass(env, obj);
+    jniHelperClass = (*env)->NewGlobalRef(env, class);
+    mainActivityObj = (*env)->NewGlobalRef(env, obj);
+    javaRetrievedStreamActivityFrameFromLibUsb = (*env)->GetMethodID(env, jniHelperClass, "retrievedStreamActivityFrameFromLibUsb", "([B)V");
+}
+
+
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamActivity
         (JNIEnv *env, jobject obj, jint stream, jint frameIndex) {
     if (initialized) {
@@ -1699,8 +1800,8 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamA
         jniHelperClass = (*env)->NewGlobalRef(env, class);
         mainActivityObj = (*env)->NewGlobalRef(env, obj);
         javainitializeStreamArray = (*env)->GetMethodID(env, jniHelperClass, "initializeStreamArray", "([B)V");
-        javaProcessReceivedMJpegVideoFrameKamera = (*env)->GetMethodID(env, jniHelperClass, "processReceivedMJpegVideoFrameKamera", "([B)V");
-        javaProcessReceivedVideoFrameYuv = (*env)->GetMethodID(env, jniHelperClass, "processReceivedVideoFrameYuvFromJni", "([B)V");
+        //javaProcessReceivedMJpegVideoFrameKamera = (*env)->GetMethodID(env, jniHelperClass, "processReceivedMJpegVideoFrameKamera", "([B)V");
+        //javaProcessReceivedVideoFrameYuv = (*env)->GetMethodID(env, jniHelperClass, "processReceivedVideoFrameYuvFromJni", "([B)V");
         runningStream = true;
         int r = libusb_set_interface_alt_setting(devh, camStreamingInterfaceNum,
                                                  camStreamingAltSetting); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
@@ -1801,7 +1902,7 @@ void cb_jni_stream_Surface_Activity(struct libusb_transfer *the_transfer) {
             memcpy(videoFrameData->videoframe + total, p + p[0], packetLen);
             total += packetLen;
             if (p[1] & UVC_STREAM_EOF) {
-                LOGD("Frame received");
+                LOGD("Frame received_Surface_Act");
                 ueberschreitungDerUebertragungslaenge = 0;
                 if (frameUeberspringen == 0) {
                     ++totalFrame;
@@ -1853,9 +1954,8 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamA
         class = (*env)->GetObjectClass(env, obj);
         jniHelperClass = (*env)->NewGlobalRef(env, class);
         mainActivityObj = (*env)->NewGlobalRef(env, obj);
-        javaProcessReceivedMJpegVideoFrameKamera = (*env)->GetMethodID(env, jniHelperClass, "processReceivedMJpegVideoFrameKamera", "([B)V");
-        javaProcessReceivedVideoFrameYuv = (*env)->GetMethodID(env, jniHelperClass, "processReceivedVideoFrameYuvFromJni", "([B)V");
-        runningStream = true;
+        //javaProcessReceivedMJpegVideoFrameKamera = (*env)->GetMethodID(env, jniHelperClass, "processReceivedMJpegVideoFrameKamera", "([B)V");
+        //javaProcessReceivedVideoFrameYuv = (*env)->GetMethodID(env, jniHelperClass, "processReceivedVideoFrameYuvFromJni", "([B)V");
         int r = libusb_set_interface_alt_setting(devh, camStreamingInterfaceNum,
                                                  camStreamingAltSetting); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
         if (r != LIBUSB_SUCCESS) {
@@ -1892,27 +1992,45 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamA
     }
 }
 
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniSetSurfaceYuv
+        (JNIEnv *env, jobject obj, jobject jSurface) {
+    ANativeWindow *preview_window = jSurface ? ANativeWindow_fromSurface(env, jSurface) : NULL;
+    // WINDOW_FORMAT_RGBA_8888
+    ANativeWindow_setBuffersGeometry(preview_window, imageWidth, imageHeight, WINDOW_FORMAT_RGBA_8888);
+    mCaptureWindow = preview_window;
+    int status = (*env)->GetJavaVM(env, &javaVm);
+    if(status != 0) {
+        LOGE("failed to attach javaVm");
+    }
+    class = (*env)->GetObjectClass(env, obj);
+    jniHelperClass = (*env)->NewGlobalRef(env, class);
+    mainActivityObj = (*env)->NewGlobalRef(env, obj);
+    javaRetrievedStreamActivityFrameFromLibUsb = (*env)->GetMethodID(env, jniHelperClass, "retrievedStreamActivityFrameFromLibUsb", "([B)V");
+
+}
+
 //////////// SERVICE
 
 // Init SurfaceView for Service
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamService_JniPrepairForStreamingfromService
+JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniPrepairForStreamingfromService
         (JNIEnv *env, jobject obj) {
     if (initialized) {
         probeCommitControl(bmHint, camFormatIndex, camFrameIndex, camFrameInterval, fd);
         //probeCommitControl_cleanup();
-        LOGD("ISO Stream");
-        int status = (*env)->GetJavaVM(env, &javaVm);
-        if(status != 0) {
-            LOGE("failed to attach javaVm");
-        }
-        class = (*env)->GetObjectClass(env, obj);
-        jniHelperClass = (*env)->NewGlobalRef(env, class);
-        mainActivityObj = (*env)->NewGlobalRef(env, obj);
+        /*
+       LOGD("ISO Stream");
+       int status = (*env)->GetJavaVM(env, &javaVm);
+       if(status != 0) {
+           LOGE("failed to attach javaVm");
+       }
 
+       class = (*env)->GetObjectClass(env, obj);
+       jniHelperClass = (*env)->NewGlobalRef(env, class);
+       mainActivityObj = (*env)->NewGlobalRef(env, obj);
+       javaServicePublishResults = (*env)->GetMethodID(env, jniHelperClass, "publishResults", "([B)V");
+       javaServiceReturnToStreamActivity = (*env)->GetMethodID(env, jniHelperClass, "returnToStreamActivity", "()V");;
 
-        javaServicePublishResults = (*env)->GetMethodID(env, jniHelperClass, "publishResults", "([B)V");
-        javaServiceReturnToStreamActivity = (*env)->GetMethodID(env, jniHelperClass, "returnToStreamActivity", "()V");;
-
+         */
 
         runningStream = true;
         int r = libusb_set_interface_alt_setting(devh, camStreamingInterfaceNum,
@@ -1928,103 +2046,12 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamService_JniPrepairForS
 }
 
 
-void cb_jni_Service(struct libusb_transfer *the_transfer) {
-    //LOGD("Iso Transfer Callback Function");
-    unsigned char *p;
-    int packetLen;
-    int i;
-    p = the_transfer->buffer;
-    for (i = 0; i < the_transfer->num_iso_packets; i++, p += maxPacketSize) {
-        if (the_transfer->iso_packet_desc[i].status == LIBUSB_TRANSFER_COMPLETED) {
-            packetLen = the_transfer->iso_packet_desc[i].actual_length;
-            if (packetLen < 2) {
-                continue;
-            }
-            // error packet
-            if (p[1] & UVC_STREAM_ERR) // bmHeaderInfoh
-            {
-                LOGD("UVC_STREAM_ERR --> Package %d", i);
-                frameUeberspringen = 1;
-                continue;
-            }
-            packetLen -= p[0];
-            if (packetLen + total > videoFrameData->FrameBufferSize) {
-                if (ueberschreitungDerUebertragungslaenge == 1) {
-                    ueberschreitungDerUebertragungslaenge = 1;
-                    fflush(stdout);
-                }
-                packetLen = videoFrameData->FrameBufferSize - total;
-            }
-            memcpy(videoFrameData->videoframe + total, p + p[0], packetLen);
-            total += packetLen;
-            if (p[1] & UVC_STREAM_EOF) {
-                LOGD("cb_jni_Service --> Frame received");
-                ueberschreitungDerUebertragungslaenge = 0;
-                if (frameUeberspringen == 0) {
-                    ++totalFrame;
-                    if (runningStream == false) stopStreaming();
-                    JNIEnv * jenv;
-                    int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
-                    jbyteArray array = (*jenv)->NewByteArray(jenv, videoFrameData->FrameBufferSize);
-
-                    // Service
-                    (*jenv)->SetByteArrayRegion(jenv, array, 0, videoFrameData->FrameBufferSize, (jbyte *) videoFrameData->videoframe);
-                    (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaServicePublishResults, array);
 
 
-                    total = 0;
-                    runningStream = false;
-                    // **
-                    // **
-                    // JAVA THREAD NEEDS TO BE DETACHED SOMEWHERE ELSE !!!!!!!!!!
-                    //(*fragmentJavaVm)->DetachCurrentThread(fragmentJavaVm);
-                } else {
-                    LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
-                    total = 0;
-                    frameUeberspringen = 0;
-                }
-            }
-        }
-    }
-    if (runningStream) if (libusb_submit_transfer(the_transfer) != 0) {
-            LOGD(stderr, "SUBMISSION FAILED. \n");
-        }
-}
 
-JNIEXPORT jbyteArray JNICALL Java_humer_UvcCamera_StartIsoStreamService_JniGetAnotherFrame
-        (JNIEnv *env, jobject obj) {
-
-
-    struct libusb_transfer *xfers[activeUrbs];
-    for (i = 0; i < activeUrbs; i++) {
-        xfers[i] = libusb_alloc_transfer(packetsPerRequest);
-        uint8_t *data = malloc(maxPacketSize * packetsPerRequest);
-        libusb_fill_iso_transfer(
-                xfers[i], devh, camStreamingEndpoint,
-                data, maxPacketSize * packetsPerRequest, packetsPerRequest,
-                cb_jni_Service, NULL, 5000);
-        libusb_set_iso_packet_lengths(xfers[i], maxPacketSize);
-    }
-    runningStreamFragment = true;
-    for (i = 0; i < activeUrbs; i++) {
-        if (libusb_submit_transfer(xfers[i]) != 0) {
-            LOGD(stderr, "submit xfer failed.\n");
-        }
-    }
-    runningStream = true;
-    while (runningStream) {
-        if (runningStream == false) {
-            LOGD("stopped because runningStream == false !!  --> libusb_event_handling STOPPED");
-            break;
-        }
-        libusb_handle_events(ctx);
-    }
-    LOGD("ISO Stream Start -- finished");
-}
 
 void cb_jni_stream_Surface_Service(struct libusb_transfer *the_transfer) {
     if (runningStream == false) stopStreaming();
-
     //LOGD("Iso Transfer Callback Function");
     unsigned char *p;
     int packetLen;
@@ -2033,6 +2060,9 @@ void cb_jni_stream_Surface_Service(struct libusb_transfer *the_transfer) {
     for (i = 0; i < the_transfer->num_iso_packets; i++, p += maxPacketSize) {
         if (the_transfer->iso_packet_desc[i].status == LIBUSB_TRANSFER_COMPLETED) {
             packetLen = the_transfer->iso_packet_desc[i].actual_length;
+            if (packetLen == 0) {
+                continue;
+            }
             if (packetLen < 2) {
                 continue;
             }
@@ -2054,33 +2084,76 @@ void cb_jni_stream_Surface_Service(struct libusb_transfer *the_transfer) {
             memcpy(videoFrameData->videoframe + total, p + p[0], packetLen);
             total += packetLen;
             if (p[1] & UVC_STREAM_EOF) {
-                //LOGD("Frame received");
+                //LOGD("Frame received from Surface Callback Service");
                 ueberschreitungDerUebertragungslaenge = 0;
                 if (frameUeberspringen == 0) {
                     ++totalFrame;
                     if (runningStream == false) stopStreaming();
-                    total = 0;
-                    uvc_frame_t *rgb;
-                    uvc_error_t ret;
-                    // We'll convert the image from YUV/JPEG to BGR, so allocate space
-                    rgb = uvc_allocate_frame(imageWidth * imageHeight * 4);
-                    if (!rgb) {
-                        printf("unable to allocate rgb frame!");
-                        return;
+                    //LOGD("frameFormat = %s", frameFormat);
+                    if (strcmp(frameFormat, "MJPEG") == 0) {
+                        JNIEnv * jenv;
+                        int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
+                        jbyteArray array = (*jenv)->NewByteArray(jenv, total);
+                        // Main Activity
+                        (*jenv)->SetByteArrayRegion(jenv, array, 0, total, (jbyte *) videoFrameData->videoframe);
+                        (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaRetrievedStreamActivityFrameFromLibUsb, array);
+                        total = 0;
+                        /*
+                        uvc_frame_t *rgb;
+                        uvc_error_t ret;
+                        rgb = uvc_allocate_frame(imageWidth * imageHeight * 4);
+                        rgb->width = imageWidth;
+                        rgb->height = imageHeight;
+                        rgb->frame_format = UVC_FRAME_FORMAT_RGBX;
+                        if (rgb->library_owns_data)
+                            rgb->step = imageWidth * PIXEL_RGBX;
+                        rgb->sequence = 0;
+                        gettimeofday(&rgb->capture_time, NULL);
+                        rgb->source = devh;
+                        MJPGToARGB (videoFrameData->videoframe, rgb->width * rgb->height * 3,
+                                    rgb->data, imageWidth * 4,
+                                    rgb->width, rgb->height,
+                                    rgb->width, rgb->height
+                        );
+                        ret = uvc_yuyv2rgbx(rgb);
+                        if (ret) {
+                            uvc_perror(ret, "uvc_any2bgr");
+                            uvc_free_frame(rgb);
+                            return;
+                        }
+                        uvc_frame_t *rgb_rot_nFlip = checkRotation(rgb);
+                        copyToSurface(rgb_rot_nFlip, &mCaptureWindow);
+                        uvc_free_frame(rgb_rot_nFlip);
+
+                        /*
+                         *  MJPGToARGB(const uint8* sample,
+                        size_t sample_size,
+                        uint8* argb, int argb_stride,
+                        int w, int h,
+                        int dw, int dh)
+                         */
+                    } else if (strcmp(frameFormat, "YUY2") == 0) {
+                        LOGD("YUY2");
+                        uvc_frame_t *rgb;
+                        uvc_error_t ret;
+                        // We'll convert the image from YUV/JPEG to BGR, so allocate space
+                        rgb = uvc_allocate_frame(imageWidth * imageHeight * 4);
+                        if (!rgb) {
+                            printf("unable to allocate rgb frame!");
+                            return;
+                        }
+                        // Do the BGR conversion
+                        ret = uvc_yuyv2rgbx(rgb);
+                        if (ret) {
+                            uvc_perror(ret, "uvc_any2bgr");
+                            uvc_free_frame(rgb);
+                            return;
+                        }
+                        uvc_frame_t *rgb_rot_nFlip = checkRotation(rgb);
+                        copyToSurface(rgb_rot_nFlip, &mCaptureWindow);
+                        uvc_free_frame(rgb_rot_nFlip);
+                        total = 0;
                     }
-                    // Do the BGR conversion
-                    ret = uvc_yuyv2rgbx(rgb);
-                    if (ret) {
-                        uvc_perror(ret, "uvc_any2bgr");
-                        uvc_free_frame(rgb);
-                        return;
-                    }
-                    uvc_frame_t *rgb_rot_nFlip = checkRotation(rgb);
-
-                    copyToSurface(rgb_rot_nFlip, &mCaptureWindow);
-
-                    uvc_free_frame(rgb_rot_nFlip);
-
                 } else {
                     LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
                     total = 0;
@@ -2095,16 +2168,8 @@ void cb_jni_stream_Surface_Service(struct libusb_transfer *the_transfer) {
 }
 
 
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniSetSurface
-        (JNIEnv *env, jobject obj, jobject jSurface) {
-    ANativeWindow *preview_window = jSurface ? ANativeWindow_fromSurface(env, jSurface) : NULL;
-    // WINDOW_FORMAT_RGBA_8888
-    ANativeWindow_setBuffersGeometry(preview_window, imageWidth, imageHeight, WINDOW_FORMAT_RGBA_8888);
-    mCaptureWindow = preview_window;
-}
 
-
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamService_JniServiceOverSurface
+JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniServiceOverSurface
         (JNIEnv *env, jobject obj) {
     if (initialized) {
 
@@ -2135,6 +2200,139 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamService_JniServiceOver
     }
 }
 
+
+
+
+//////////////////////// Webrtc WebRtc webrtc
+
+
+void cb_jni_WebRtc_Service(struct libusb_transfer *the_transfer) {
+    //LOGD("Iso Transfer Callback Function");
+    unsigned char *p;
+    int packetLen;
+    int i;
+    p = the_transfer->buffer;
+    for (i = 0; i < the_transfer->num_iso_packets; i++, p += maxPacketSize) {
+        if (the_transfer->iso_packet_desc[i].status == LIBUSB_TRANSFER_COMPLETED) {
+            packetLen = the_transfer->iso_packet_desc[i].actual_length;
+            if (packetLen < 2) {
+                continue;
+            }
+            // error packet
+            if (p[1] & UVC_STREAM_ERR) // bmHeaderInfoh
+            {
+                LOGD("UVC_STREAM_ERR --> Package %d", i);
+                frameUeberspringen = 1;
+                continue;
+            }
+            packetLen -= p[0];
+            if (packetLen + total > videoFrameData->FrameBufferSize) {
+                if (ueberschreitungDerUebertragungslaenge == 1) {
+                    ueberschreitungDerUebertragungslaenge = 1;
+                    fflush(stdout);
+                }
+                packetLen = videoFrameData->FrameBufferSize - total;
+            }
+            memcpy(videoFrameData->videoframe + total, p + p[0], packetLen);
+            total += packetLen;
+            if (p[1] & UVC_STREAM_EOF) {
+                ueberschreitungDerUebertragungslaenge = 0;
+                if (frameUeberspringen == 0) {
+                    ++totalFrame;
+                    if (runningStream == false) stopStreaming();
+                    uvc_frame_t *nv21;
+                    uvc_error_t ret;
+                    nv21 = uvc_allocate_frame(imageWidth * imageHeight * 4);
+                    if (!nv21) {
+                        printf("unable to allocate rgb frame!");
+                        return;
+                    }
+                    // Do the NV21 conversion
+                    ret = uvc_yuyv2yuv420SP(nv21);
+                    if (ret) {
+                        uvc_perror(ret, "uvc_any2bgr");
+                        uvc_free_frame(nv21);
+                        return;
+                    }
+                    JNIEnv * jenv;
+                    int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
+                    jbyteArray array = (*jenv)->NewByteArray(jenv, nv21->data);
+                    (*jenv)->SetByteArrayRegion(jenv, array, 0, videoFrameData->FrameBufferSize, (jbyte *) videoFrameData->videoframe);
+                    // Service
+                    (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaRetrievedFrameFromLibUsb, array);
+                    total = 0;
+                    uvc_free_frame(nv21);
+                } else {
+                    LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
+                    total = 0;
+                    frameUeberspringen = 0;
+                }
+            }
+        }
+    }
+    if (runningStream) if (libusb_submit_transfer(the_transfer) != 0) {
+            LOGD(stderr, "SUBMISSION FAILED. \n");
+        }
+}
+
+JNIEXPORT void JNICALL Java_com_example_androidthings_videortc_UsbCapturer_JniWebRtcJavaMethods
+        (JNIEnv *env, jobject obj) {
+    if (initialized) {
+
+        class = (*env)->GetObjectClass(env, obj);
+        jniHelperClass = (*env)->NewGlobalRef(env, class);
+        mainActivityObj = (*env)->NewGlobalRef(env, obj);
+
+        javaRetrievedFrameFromLibUsb = (*env)->GetMethodID(env, jniHelperClass, "retrievedFrameFromLibUsb", "([B)V");
+        //javaProcessReceivedMJpegVideoFrameKamera = (*env)->GetMethodID(env, jniHelperClass, "processReceivedMJpegVideoFrameKamera", "([B)V");
+        //javaProcessReceivedVideoFrameYuv = (*env)->GetMethodID(env, jniHelperClass, "processReceivedVideoFrameYuvFromJni", "([B)V");
+
+        LOGD("ISO Stream complete");
+    }
+}
+
+void prepairTheStream_WebRtc_Service() {
+    int r = libusb_set_interface_alt_setting(devh, camStreamingInterfaceNum,
+                                             camStreamingAltSetting); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
+    if (r != LIBUSB_SUCCESS) {
+        LOGD("libusb_set_interface_alt_setting(devh, 1, 1) failed with error %d\n", r);
+    } else {
+        LOGD("Die Alternativeinstellungen wurden erfolgreich gesetzt: %d ; Altsetting = %d\n", r,
+             camStreamingAltSetting);
+    }
+    if (activeUrbs > 16) activeUrbs = 16;
+
+}
+
+void lunchTheStream_WebRtc_Service() {
+    if (initialized) {
+
+        struct libusb_transfer *xfers[activeUrbs];
+        for (i = 0; i < activeUrbs; i++) {
+            xfers[i] = libusb_alloc_transfer(packetsPerRequest);
+            uint8_t *data = malloc(maxPacketSize * packetsPerRequest);
+            libusb_fill_iso_transfer(
+                    xfers[i], devh, camStreamingEndpoint,
+                    data, maxPacketSize * packetsPerRequest, packetsPerRequest,
+                    cb_jni_WebRtc_Service, NULL, 5000);
+            libusb_set_iso_packet_lengths(xfers[i], maxPacketSize);
+        }
+        runningStream = true;
+        for (i = 0; i < activeUrbs; i++) {
+            if (libusb_submit_transfer(xfers[i]) != 0) {
+                LOGD(stderr, "submit xfer failed.\n");
+            }
+        }
+        while (runningStream) {
+            if (runningStream == false) {
+                LOGD("stopped because runningStream == false !!  --> libusb_event_handling STOPPED");
+                break;
+            }
+            libusb_handle_events(ctx);
+        }
+        LOGD("ISO Stream Start -- finished");
+    }
+}
 
 
 
@@ -2481,7 +2679,7 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamA
         class = (*env)->GetObjectClass(env, obj);
         activity = (*env)->NewGlobalRef(env, obj);
 
-        if(!strcmp(frameFormat, "mjpeg"))
+        if(!strcmp(frameFormat, "MJPEG"))
         {
             javaProcessReceivedMJpegVideoFrameKamera = (*env)->GetMethodID(env, class, "processReceivedMJpegVideoFrameKamera", "([B)V");
             LOGD("javaProcessReceivedMJpegVideoFrameKamera set");
@@ -2557,7 +2755,7 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamA
         }
         class = (*env)->GetObjectClass(env, obj);
         activity = (*env)->NewGlobalRef(env, obj);
-        if(!strcmp(frameFormat, "mjpeg"))
+        if(!strcmp(frameFormat, "MJPEG"))
         {
             javaProcessReceivedMJpegVideoFrameKamera = (*env)->GetMethodID(env, class, "processReceivedMJpegVideoFrameKamera", "([B)V");
             LOGD("javaProcessReceivedMJpegVideoFrameKamera set");
@@ -2647,7 +2845,7 @@ JNIEXPORT void JNICALL Java_com_example_androidthings_videortc_UsbCapturer_JniWe
         }
         class = (*env)->GetObjectClass(env, obj);
         activity = (*env)->NewGlobalRef(env, obj);
-        if(!strcmp(frameFormat, "mjpeg"))
+        if(!strcmp(frameFormat, "MJPEG"))
         {
             javaProcessReceivedMJpegVideoFrameKamera = (*env)->GetMethodID(env, class, "processReceivedMJpegVideoFrameKamera", "([B)V");
             LOGD("javaProcessReceivedMJpegVideoFrameKamera set");

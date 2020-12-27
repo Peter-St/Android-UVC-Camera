@@ -27,6 +27,7 @@ import android.util.Log;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.List;
 
 public class UVC_Descriptor {
 
@@ -49,7 +50,15 @@ public class UVC_Descriptor {
     private final static byte VS_frame_mjpeg = 0x07;
     private final static byte VS_colour_format = 0x0D;
 
-    public final ArrayList<UVC_Descriptor.FormatIndex> formatIndex = new ArrayList<>();
+    // Descriptors
+    private final static byte Stand_VS_Interface_Desc_Size                           = 0x09;
+    private final static byte INTERFACE_descriptor_type                              = 0x04;
+    private final static byte Standard_VS_Isochronous_Video_Data_Endpoint_Descriptor = 0x07;
+    private final static byte ENDPOINT_descriptor_type                               = 0x05;
+
+
+
+    public ArrayList<UVC_Descriptor.FormatIndex> formatIndex;
     private static ByteBuffer uvcData;
 
     // Values for Controltransfers when setting the brightness ...
@@ -62,6 +71,9 @@ public class UVC_Descriptor {
     // Version of UVC
     public static byte[] bcdUVC;
 
+    //MaxPacketSize
+    public static List<Integer> maxPacketSizeArray = new ArrayList<Integer>();
+
 
     public UVC_Descriptor(ByteBuffer data) {  //convertedMaxPacketSize
         this.uvcData = ByteBuffer.allocate(data.limit());
@@ -69,11 +81,19 @@ public class UVC_Descriptor {
     }
 
     public int phraseUvcData() {
+
+        formatIndex = new ArrayList<>();
         try {
             boolean foundPROCESSING_UNIT = false;
             boolean foundINPUT_TERMINAL = false;
             boolean foundINPUT_HEADER_IN_Endpoint = false;
             boolean videoStreamInterfaceDescriptor = false;
+            int number_of_Standard_VS_Interface_Descriptor = 0;
+
+
+
+
+
             ArrayList<byte []> frameData = new ArrayList<>();
             byte[] formatData = null;
             int positionAbsolute = 0;
@@ -161,6 +181,19 @@ public class UVC_Descriptor {
                         }
                     }
                 }
+                if (descSize == Stand_VS_Interface_Desc_Size && descType == INTERFACE_descriptor_type && videoStreamInterfaceDescriptor)  number_of_Standard_VS_Interface_Descriptor ++;
+                if (descSize == Standard_VS_Isochronous_Video_Data_Endpoint_Descriptor && descType == ENDPOINT_descriptor_type && videoStreamInterfaceDescriptor) {
+
+                    byte a = uvcData.get(pos + 4);
+                    byte b = uvcData.get(pos + 5);
+                    int packetSize  = (((uvcData.get(pos + 5) & 0xFF) << 8) | uvcData.get(pos + 4) & 0xFF);
+                    maxPacketSizeArray.add(packetSize);
+                }
+
+
+
+
+
                 positionAbsolute += descSize;
                 uvcData.position(positionAbsolute);
             } while (uvcData.limit() > positionAbsolute);
@@ -170,6 +203,26 @@ public class UVC_Descriptor {
         } catch ( Exception e ) {e.printStackTrace(); }
 
         return -1;
+    }
+
+    private int returnConvertedValue(int wSize){
+        String st = Integer.toBinaryString(wSize);
+        StringBuilder result = new StringBuilder();
+        result.append(st);
+        if (result.length()<12) return Integer.parseInt(result.toString(), 2);
+        else if (result.length() == 12) {
+            String a = result.substring(0, 1);
+            String b = result.substring(1, 12);
+            int c = Integer.parseInt(a, 2);
+            int d = Integer.parseInt(b, 2);
+            return (c+1)*d;
+        } else {
+            String a = result.substring(0, 2);
+            String b = result.substring(2,13);
+            int c = Integer.parseInt(a, 2);
+            int d = Integer.parseInt(b, 2);
+            return (c+1)*d;
+        }
     }
 
     public FormatIndex getFormatIndex(int n) {
@@ -198,7 +251,7 @@ public class UVC_Descriptor {
         public final ArrayList<byte []> frameData;
         public int formatIndexNumber;
         public int numberOfFrameDescriptors;
-        public enum Videoformat {yuv, mjpeg, YUY2, YV12, YUV_422_888, YUV_420_888}
+        public enum Videoformat {YUV, MJPEG, YUY2, YV12, YUV_422_888, YUV_420_888}
         public Videoformat videoformat;
         public String guidFormat = new String();
 
@@ -244,7 +297,7 @@ public class UVC_Descriptor {
                 else guidFormat = "unknown";
             }
             else if (formatData[2] ==  VS_format_mjpeg ) {
-                videoformat = Videoformat.mjpeg;
+                videoformat = Videoformat.MJPEG;
             }
 
             for (int i = 0; i < frameData.size(); i++) {

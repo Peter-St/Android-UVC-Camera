@@ -31,6 +31,7 @@ import android.os.Build;
 import android.os.Environment;
 
 import android.os.Handler;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TextInputLayout;
 import android.text.InputType;
 import android.text.SpannableString;
@@ -90,6 +91,8 @@ public class SaveToFile  {
     private TextInputLayout valueInput_libUsb;
     private boolean init = false;
     private static boolean libUsb;
+    public static boolean moveToNative;
+
 
     private LibUsb_AutoDetect libUsb_autoDetect;
     private SetUpTheUsbDevice setUpTheUsbDevice;
@@ -196,7 +199,7 @@ public class SaveToFile  {
                         "Camera FrameIndex = " + scamFrameIndex + "\nImage Width = "+ simageWidth + "\nImage Height = " + simageHeight + "\nCamera Frame Interval (fps) = " + (10000000 / scamFrameInterval)  + "\nLibUsb = " + libUsb );
                 tv.setTextColor(Color.BLACK);
 
-                RelativeLayout fadingTextView = (RelativeLayout) activity.findViewById(R.id.fadingTextViewLayout);
+                ConstraintLayout fadingTextView = (ConstraintLayout) activity.findViewById(R.id.fadingTextViewLayout);
                 fadingTextView.setVisibility(View.GONE);
                 fadingTextView.setVisibility(View.INVISIBLE);
 
@@ -311,7 +314,7 @@ public class SaveToFile  {
                         }
                         else if (input == "MJPEG") {
                             valueInput = (TextInputLayout) activity.findViewById(R.id.Video);
-                            valueInput.getEditText().setText("mjpeg");
+                            valueInput.getEditText().setText("MJPEG");
                         }
                         else if (input == "YV12") {
                             valueInput = (TextInputLayout) activity.findViewById(R.id.Video);
@@ -463,7 +466,7 @@ public class SaveToFile  {
                 }
                 if (input == "MJPEG") {
                     valueInput = (TextInputLayout) activity.findViewById(R.id.Video);
-                    valueInput.getEditText().setText("mjpeg");
+                    valueInput.getEditText().setText("MJPEG");
                 }
                 System.out.println("svideoformat = " + svideoformat);
             }
@@ -494,6 +497,8 @@ public class SaveToFile  {
             bcdUVC = setUpTheUsbDevice.bcdUVC;
             bStillCaptureMethod = setUpTheUsbDevice.bStillCaptureMethod;
             libUsb = setUpTheUsbDevice.libUsb;
+            moveToNative = setUpTheUsbDevice.moveToNative;
+
         } else if (libUsb_autoDetect != null) {
             sALT_SETTING = libUsb_autoDetect.camStreamingAltSetting;
             svideoformat = libUsb_autoDetect.videoformat;
@@ -513,6 +518,8 @@ public class SaveToFile  {
             bcdUVC = libUsb_autoDetect.bcdUVC;
             bStillCaptureMethod = libUsb_autoDetect.bStillCaptureMethod;
             libUsb = libUsb_autoDetect.libUsb;
+            moveToNative = libUsb_autoDetect.moveToNative;
+
         } else if (jna_autoDetect != null) {
             sALT_SETTING = jna_autoDetect.camStreamingAltSetting;
             svideoformat = jna_autoDetect.videoformat;
@@ -532,6 +539,8 @@ public class SaveToFile  {
             bcdUVC = jna_autoDetect.bcdUVC;
             bStillCaptureMethod = jna_autoDetect.bStillCaptureMethod;
             libUsb = jna_autoDetect.libUsb;
+            moveToNative = jna_autoDetect.moveToNative;
+
         }
 
     }
@@ -556,6 +565,9 @@ public class SaveToFile  {
             uvc_camera.bcdUVC = bcdUVC;
             uvc_camera.bStillCaptureMethod = bStillCaptureMethod;
             uvc_camera.LIBUSB = libUsb;
+            uvc_camera.moveToNative = moveToNative;
+
+
         } else if (setUpTheUsbDevice != null) {
             setUpTheUsbDevice.camStreamingAltSetting = sALT_SETTING;
             setUpTheUsbDevice.videoformat = svideoformat;
@@ -575,6 +587,8 @@ public class SaveToFile  {
             setUpTheUsbDevice.bcdUVC = bcdUVC;
             setUpTheUsbDevice.bStillCaptureMethod = bStillCaptureMethod;
             setUpTheUsbDevice.libUsb = libUsb;
+            setUpTheUsbDevice.moveToNative = moveToNative;
+
         } else if (libUsb_autoDetect != null) {
             libUsb_autoDetect.camStreamingAltSetting = sALT_SETTING;
             libUsb_autoDetect.videoformat = svideoformat;
@@ -594,6 +608,8 @@ public class SaveToFile  {
             libUsb_autoDetect.bcdUVC = bcdUVC;
             libUsb_autoDetect.bStillCaptureMethod = bStillCaptureMethod;
             libUsb_autoDetect.libUsb = libUsb;
+            libUsb_autoDetect.moveToNative = moveToNative;
+
         } else if (jna_autoDetect != null) {
             jna_autoDetect.camStreamingAltSetting = sALT_SETTING;
             jna_autoDetect.videoformat = svideoformat;
@@ -613,6 +629,8 @@ public class SaveToFile  {
             jna_autoDetect.bcdUVC = bcdUVC;
             jna_autoDetect.bStillCaptureMethod = bStillCaptureMethod;
             jna_autoDetect.libUsb = libUsb;
+            jna_autoDetect.moveToNative = moveToNative;
+
         }
     }
 
@@ -812,6 +830,7 @@ public class SaveToFile  {
             save.writeObject(bNumControlUnit);
             save.writeObject(bStillCaptureMethod);
             save.writeObject(libUsb);
+            save.writeObject(moveToNative);
             save.writeObject(bcdUVC);
             save.close(); // This also closes saveFile.
         } catch (Exception e) { log("Error"); e.printStackTrace();}
@@ -840,6 +859,7 @@ public class SaveToFile  {
             bNumControlUnit  = (byte[]) save.readObject();
             bStillCaptureMethod = (Byte) save.readObject();
             libUsb = (Boolean) save.readObject();
+            moveToNative = (Boolean) save.readObject();
             bcdUVC  = (byte[]) save.readObject();
             save.close();
         }
@@ -1228,7 +1248,7 @@ public class SaveToFile  {
                 return;
             } else {
                 for (int a = 0; a < uvc_descriptor.formatIndex.size(); a++) {
-                    if (textmsg[a].equals("mjpeg")) {
+                    if (textmsg[a].equals("MJPEG")) {
                         scamFormatIndex = numberFormatIndexes[a];
                         formatIndex = uvc_descriptor.getFormatIndex(a);
                         svideoformat = formatIndex.videoformat.toString();
@@ -1238,7 +1258,7 @@ public class SaveToFile  {
                     }
                 }
                 for (int a = 0; a < uvc_descriptor.formatIndex.size(); a++) {
-                    if (textmsg[a].equals("yuv") || textmsg[a].equals("YUY2") || textmsg[a].equals("YV12") || textmsg[a].equals("YUV_422_888") || textmsg[a].equals("YUV_420_888")) {
+                    if (textmsg[a].equals("YUV") || textmsg[a].equals("YUY2") || textmsg[a].equals("YV12") || textmsg[a].equals("YUV_422_888") || textmsg[a].equals("YUV_420_888")) {
                         scamFormatIndex = numberFormatIndexes[a];
                         formatIndex = uvc_descriptor.getFormatIndex(a);
                         svideoformat = formatIndex.videoformat.toString();

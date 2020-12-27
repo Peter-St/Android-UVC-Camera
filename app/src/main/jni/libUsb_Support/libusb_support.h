@@ -65,15 +65,7 @@ extern int awaitFrame () ;
 typedef int ( *eventCallback)(unsigned char *videoframe, int value);
 extern void setCallback(eventCallback evnHnd);
 
-
-typedef struct _Frame_Data
-{
-    int FrameSize;
-    int  FrameBufferSize;
-    unsigned char videoframe[];
-} FrameData;
-
-typedef int ( *jnaFrameCallback)(FrameData *videoframe, int value);
+typedef int ( *jnaFrameCallback)(void  *videoframe, int value);
 extern void setJnaFrameCallback(jnaFrameCallback evnHnd);
 
 extern void stopStreaming();
@@ -99,40 +91,51 @@ extern int setPreviewDisplay(ANativeWindow *preview_window);
 // horizontalFlip == 1) horizontalFlip = true;
 extern void setRotation(int rot, int horizontalFl, int verticalFl);
 
+
+
 //////////////// JNI Methods ////////////////////
 
 
 
 ////////// Activity Strteam
+extern int fetchTheCamStreamingEndpointAdress (int FD);
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamActivitySurface
         (JNIEnv *, jobject, jobject, jint, jint);
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamActivity
         (JNIEnv *, jobject, jint, jint);
 JNIEXPORT unsigned char * JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniProbeCommitControl
         (JNIEnv *, jobject, jint, jint, jint, jint);
-
-
-
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniSetSurface
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniPrepairForStreamingfromService
+        (JNIEnv *, jobject);
+// MJPEG
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniSetTheMethodsStreamActivityMJPEG
+        (JNIEnv *, jobject);
+// YUV
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniSetSurfaceYuv
         (JNIEnv *, jobject, jobject);
 
 
 
 ///////////////   Stream Service
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamService_JniServiceOverSurface
+JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniServiceOverSurface
         (JNIEnv *, jobject);
-JNIEXPORT jbyteArray JNICALL Java_humer_UvcCamera_StartIsoStreamService_JniGetAnotherFrame
+JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniGetAnotherFrame
         (JNIEnv *, jobject);
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamService_JniPrepairForStreamingfromService
+JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniPrepairForStreamingfromService
         (JNIEnv *, jobject);
+
+
 
 ////////    SetUpTheDevice
 JNIEXPORT void JNICALL Java_humer_UvcCamera_SetUpTheUsbDevice_JniIsoStreamActivity
         (JNIEnv *, jobject, jobject, jint, jint);
 
-JNIEXPORT void JNICALL Java_com_example_androidthings_videortc_UsbCapturer_JniWebRtc
-        (JNIEnv *, jobject, jint, jint);
 
+////////// WebRTC
+extern void prepairTheStream_WebRtc_Service();
+extern void lunchTheStream_WebRtc_Service();
+JNIEXPORT void JNICALL Java_com_example_androidthings_videortc_UsbCapturer_JniWebRtcJavaMethods
+        (JNIEnv *, jobject);
 
 
 

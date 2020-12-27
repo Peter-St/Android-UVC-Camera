@@ -64,6 +64,10 @@
         "source": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/res/drawable/listdev.png"
     },
     {
+        "merged": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/res/merged/debug/layout_set_up_the_device_move_to_native.xml.flat",
+        "source": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/res/layout/set_up_the_device_move_to_native.xml"
+    },
+    {
         "merged": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/res/merged/debug/drawable-hdpi_icon.png.flat",
         "source": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/res/drawable-hdpi/icon.png"
     },

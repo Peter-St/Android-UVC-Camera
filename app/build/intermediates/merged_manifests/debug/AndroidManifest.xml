@@ -100,7 +100,9 @@
         <activity android:name="com.example.androidthings.videortc.WebRtc_MainActivity" >
         </activity>
 
-        <service android:name="humer.UvcCamera.StartIsoStreamService" >
+        <service android:name="humer.UvcCamera.LibUsb.StartIsoStreamService" >
+        </service>
+        <service android:name="com.example.androidthings.videortc.WebRtcService" >
         </service>
 
         <meta-data

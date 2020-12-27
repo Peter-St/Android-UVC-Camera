@@ -17,7 +17,7 @@
     <uses-feature android:name="android.hardware.usb.host" />
 
     <uses-sdk
-        android:targetSdkVersion="28"
+        android:targetSdkVersion="29"
         tools:overrideLibrary="org.webrtc, com.akexorcist.localizationactivity, com.rafakob.floatingedittext"/>
 
     <application
@@ -81,8 +81,11 @@
             android:theme="@style/CallActivityTheme"/>
         <activity android:name="com.example.androidthings.videortc.WebRtc_MainActivity">
         </activity>
-        <service android:name="humer.UvcCamera.StartIsoStreamService" >
+        <service android:name="humer.UvcCamera.LibUsb.StartIsoStreamService" >
         </service>
+        <service android:name="com.example.androidthings.videortc.WebRtcService" >
+        </service>
+
     </application>
 
 </manifest>

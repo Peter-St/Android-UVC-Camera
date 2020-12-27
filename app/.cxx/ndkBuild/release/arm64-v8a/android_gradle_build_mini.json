@@ -15,18 +15,18 @@
       "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/listdevs",
       "runtimeFiles": []
     },
-    "xusb-release-arm64-v8a": {
-      "artifactName": "xusb",
-      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darm64-v8a NDK_ALL_ABIS\u003darm64-v8a NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/xusb",
+    "jpeg-release-arm64-v8a": {
+      "artifactName": "jpeg",
+      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darm64-v8a NDK_ALL_ABIS\u003darm64-v8a NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/libjpeg.so",
       "abi": "arm64-v8a",
-      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/xusb",
+      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/libjpeg.so",
       "runtimeFiles": []
     },
-    "Usb_Support-release-arm64-v8a": {
-      "artifactName": "Usb_Support",
-      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darm64-v8a NDK_ALL_ABIS\u003darm64-v8a NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/libUsb_Support.so",
+    "yuv_static-release-arm64-v8a": {
+      "artifactName": "yuv_static",
+      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darm64-v8a NDK_ALL_ABIS\u003darm64-v8a NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/libyuv_static.a",
       "abi": "arm64-v8a",
-      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/libUsb_Support.so",
+      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/libyuv_static.a",
       "runtimeFiles": []
     },
     "usb1.0-release-arm64-v8a": {
@@ -43,18 +43,46 @@
       "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/sam3u_benchmark",
       "runtimeFiles": []
     },
+    "stress-release-arm64-v8a": {
+      "artifactName": "stress",
+      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darm64-v8a NDK_ALL_ABIS\u003darm64-v8a NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/stress",
+      "abi": "arm64-v8a",
+      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/stress",
+      "runtimeFiles": []
+    },
+    "yuv-release-arm64-v8a": {
+      "artifactName": "yuv",
+      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darm64-v8a NDK_ALL_ABIS\u003darm64-v8a NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/libyuv.so",
+      "abi": "arm64-v8a",
+      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/libyuv.so",
+      "runtimeFiles": []
+    },
+    "dpfp-release-arm64-v8a": {
+      "artifactName": "dpfp",
+      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darm64-v8a NDK_ALL_ABIS\u003darm64-v8a NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/dpfp",
+      "abi": "arm64-v8a",
+      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/dpfp",
+      "runtimeFiles": []
+    },
+    "xusb-release-arm64-v8a": {
+      "artifactName": "xusb",
+      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darm64-v8a NDK_ALL_ABIS\u003darm64-v8a NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/xusb",
+      "abi": "arm64-v8a",
+      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/xusb",
+      "runtimeFiles": []
+    },
+    "Usb_Support-release-arm64-v8a": {
+      "artifactName": "Usb_Support",
+      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darm64-v8a NDK_ALL_ABIS\u003darm64-v8a NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/libUsb_Support.so",
+      "abi": "arm64-v8a",
+      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/libUsb_Support.so",
+      "runtimeFiles": []
+    },
     "hotplugtest-release-arm64-v8a": {
       "artifactName": "hotplugtest",
       "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darm64-v8a NDK_ALL_ABIS\u003darm64-v8a NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/hotplugtest",
       "abi": "arm64-v8a",
       "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/hotplugtest",
-      "runtimeFiles": []
-    },
-    "Yuv-release-arm64-v8a": {
-      "artifactName": "Yuv",
-      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darm64-v8a NDK_ALL_ABIS\u003darm64-v8a NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/libYuv.so",
-      "abi": "arm64-v8a",
-      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/libYuv.so",
       "runtimeFiles": []
     },
     "dpfp_threaded-release-arm64-v8a": {
@@ -69,20 +97,6 @@
       "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darm64-v8a NDK_ALL_ABIS\u003darm64-v8a NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/fxload",
       "abi": "arm64-v8a",
       "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/fxload",
-      "runtimeFiles": []
-    },
-    "stress-release-arm64-v8a": {
-      "artifactName": "stress",
-      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darm64-v8a NDK_ALL_ABIS\u003darm64-v8a NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/stress",
-      "abi": "arm64-v8a",
-      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/stress",
-      "runtimeFiles": []
-    },
-    "dpfp-release-arm64-v8a": {
-      "artifactName": "dpfp",
-      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darm64-v8a NDK_ALL_ABIS\u003darm64-v8a NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/dpfp",
-      "abi": "arm64-v8a",
-      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/arm64-v8a/dpfp",
       "runtimeFiles": []
     }
   }

@@ -69,5 +69,12 @@ public interface JNA_I_LibUsb extends Library {
 
     public void setRotation(int rot, int horizontalFlip, int verticalFlip);
 
+    // WebRtc Methods
+    public void prepairTheStream_WebRtc_Service();
+    public void lunchTheStream_WebRtc_Service();
+
+    // Stream Activity
+    public int fetchTheCamStreamingEndpointAdress (int FD);
+
 
 }

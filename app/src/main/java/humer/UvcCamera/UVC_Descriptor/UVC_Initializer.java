@@ -16,7 +16,7 @@ public class UVC_Initializer implements IUVC_Descriptor {
         UVC_Descriptor.FormatIndex mJpegFormatIndex = null;
         UVC_Descriptor.FormatIndex yUvFormatIndex = null;
         for (int i = 0; i < uvc_desc.formatIndex.size() ; i++) {
-            if (uvc_desc.formatIndex.get(i).videoformat == UVC_Descriptor.FormatIndex.Videoformat.mjpeg)
+            if (uvc_desc.formatIndex.get(i).videoformat == UVC_Descriptor.FormatIndex.Videoformat.MJPEG)
                 mJpegFormatIndex = uvc_desc.getFormatIndex(i);
             else yUvFormatIndex = uvc_desc.getFormatIndex(i);
         }

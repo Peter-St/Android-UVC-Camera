@@ -6,7 +6,7 @@ include $(PROJ_PATH)/libusb/android/jni/Android.mk
 include $(PROJ_PATH)/libUsb_Support/Android.mk
 include $(PROJ_PATH)/libyuv/Android.mk
 
-#include $(PROJ_PATH)/libjpeg-turbo-1.5.0/Android.mk
+include $(PROJ_PATH)/libjpeg-turbo-android/Android.mk
 
 #include $(PROJ_PATH)/libuvc/android/jni/Android.mk
 
