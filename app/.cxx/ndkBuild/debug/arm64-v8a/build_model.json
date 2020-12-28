@@ -96,6 +96,7 @@
       "project": {
         "compilerSettingsCacheFolder": "/home/peter/Downloads/Webcam/Android-UVC-Camera/.cxx",
         "cxxFolder": "/home/peter/Downloads/Webcam/Android-UVC-Camera/.cxx",
+        "ideBuildTargetAbi": "arm64-v8a,armeabi-v7a,armeabi",
         "isBuildOnlyTargetAbiEnabled": true,
         "isCmakeBuildCohabitationEnabled": false,
         "isNativeCompilerSettingsCacheEnabled": false,
@@ -119,10 +120,7 @@
     "objFolder": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/debug/obj/local",
     "variantName": "debug",
     "validAbiList": [
-      "ARMEABI_V7A",
-      "ARM64_V8A",
-      "X86",
-      "X86_64"
+      "ARM64_V8A"
     ],
     "prefabDirectory": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/.cxx/ndkBuild/debug/prefab",
     "prefabPackageDirectoryList": []

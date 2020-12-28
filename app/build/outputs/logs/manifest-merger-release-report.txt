@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:2:1-91:12
-INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:2:1-91:12
-INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:2:1-91:12
-INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:2:1-91:12
+ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:2:1-92:12
+INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:2:1-92:12
+INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:2:1-92:12
+INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:2:1-92:12
 MERGED from [net.java.dev.jna:jna:5.6.0] /home/peter/.gradle/caches/transforms-2/files-2.1/87ff61d5b8c2d1ad9746b71423643f71/jna-5.6.0/AndroidManifest.xml:2:1-8:12
 MERGED from [com.android.support.constraint:constraint-layout:2.0.4] /home/peter/.gradle/caches/transforms-2/files-2.1/fad1a7e519eb7450d63f57ae39a33a7b/constraint-layout-2.0.4/AndroidManifest.xml:2:1-11:12
 MERGED from [io.github.yavski:fab-speed-dial:1.0.7] /home/peter/.gradle/caches/transforms-2/files-2.1/b86cefa92a9cce6371b45327015cf094/fab-speed-dial-1.0.7/AndroidManifest.xml:17:1-28:12
@@ -27,22 +27,22 @@ MERGED from [com.android.support:support-compat:26.1.0] /home/peter/.gradle/cach
 MERGED from [com.android.support:cardview-v7:26.1.0] /home/peter/.gradle/caches/transforms-2/files-2.1/a01ccbc0b75e70adb48befeb12e78fb3/cardview-v7-26.1.0/AndroidManifest.xml:17:1-28:12
 MERGED from [com.rafakob:floatingedittext:1.0.5] /home/peter/.gradle/caches/transforms-2/files-2.1/81d84b2d04a7d6edc485f20390718987/floatingedittext-1.0.5/AndroidManifest.xml:2:1-12:12
 MERGED from [android.arch.lifecycle:runtime:1.0.0] /home/peter/.gradle/caches/transforms-2/files-2.1/c0fa89e2fe47ee55a9f37cece79b22a6/runtime-1.0.0/AndroidManifest.xml:17:1-30:12
-INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:2:1-91:12
-INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:2:1-91:12
-INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:2:1-91:12
+INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:2:1-92:12
+INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:2:1-92:12
+INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:2:1-92:12
 	package
 		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:4:5-30
 		INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml
 		INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml
 	android:versionName
 		INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:2:1-91:12
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:2:1-92:12
 		INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml
 	xmlns:tools
 		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:3:5-51
 	android:versionCode
 		INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:2:1-91:12
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:2:1-92:12
 		INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml
 	xmlns:android
 		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:2:11-69
@@ -156,7 +156,7 @@ INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/Andro
 		MERGED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:19:5-21:112
 		INJECTED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml
 application
-ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:23:5-89:19
+ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:23:5-90:19
 MERGED from [com.android.support.constraint:constraint-layout:2.0.4] /home/peter/.gradle/caches/transforms-2/files-2.1/fad1a7e519eb7450d63f57ae39a33a7b/constraint-layout-2.0.4/AndroidManifest.xml:9:5-20
 MERGED from [com.android.support.constraint:constraint-layout:2.0.4] /home/peter/.gradle/caches/transforms-2/files-2.1/fad1a7e519eb7450d63f57ae39a33a7b/constraint-layout-2.0.4/AndroidManifest.xml:9:5-20
 MERGED from [io.github.yavski:fab-speed-dial:1.0.7] /home/peter/.gradle/caches/transforms-2/files-2.1/b86cefa92a9cce6371b45327015cf094/fab-speed-dial-1.0.7/AndroidManifest.xml:26:5-20
@@ -208,93 +208,93 @@ MERGED from [android.arch.lifecycle:runtime:1.0.0] /home/peter/.gradle/caches/tr
 	android:theme
 		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:24:9-65
 activity#humer.UvcCamera.Main
-ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:31:9-41:20
+ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:32:9-42:20
 	android:name
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:31:19-54
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:32:19-54
 intent-filter#action:name:android.hardware.usb.action.USB_DEVICE_ATTACHED
-ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:32:13-34:29
+ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:33:13-35:29
 action#android.hardware.usb.action.USB_DEVICE_ATTACHED
-ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:33:17-89
+ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:34:17-89
 	android:name
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:33:25-87
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:34:25-87
 meta-data#android.hardware.usb.action.USB_DEVICE_ATTACHED
-ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:35:13-126
+ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:36:13-126
 	android:resource
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:35:87-124
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:36:87-124
 	android:name
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:35:24-86
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:36:24-86
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:36:13-39:29
+ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:37:13-40:29
 action#android.intent.action.MAIN
-ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:37:17-69
+ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:17-69
 	android:name
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:37:25-66
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:25-66
 category#android.intent.category.LAUNCHER
-ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:17-77
+ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:39:17-77
 	android:name
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:38:27-74
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:39:27-74
 activity#humer.UvcCamera.PrivacyPolicyActivity
-ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:42:9-43:20
+ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:43:9-44:20
 	android:name
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:42:19-71
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:43:19-71
 activity#humer.UvcCamera.ReadMeActivity
-ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:44:9-45:20
+ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:45:9-46:20
 	android:name
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:44:19-64
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:45:19-64
 activity#humer.UvcCamera.StartIsoStreamActivity
-ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:46:9-52:20
+ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:47:9-53:20
 	android:name
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:46:19-72
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:47:19-72
 intent-filter#action:name:android.hardware.usb.action.USB_DEVICE_ATTACHED+action:name:android.hardware.usb.action.USB_DEVICE_DETACHED+category:name:android.intent.category.LAUNCHER
-ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:47:13-51:29
+ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:48:13-52:29
 action#android.hardware.usb.action.USB_DEVICE_DETACHED
-ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:50:17-90
+ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:51:17-90
 	android:name
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:50:25-87
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:51:25-87
 activity#humer.UvcCamera.SetUpTheUsbDevice
-ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:53:9-59:20
+ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:54:9-60:20
 	android:name
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:53:19-67
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:54:19-67
 activity#humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect
-ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:60:9-66:20
+ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:61:9-67:20
 	android:theme
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:60:87-127
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:61:87-127
 	android:name
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:60:19-86
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:61:19-86
 activity#humer.UvcCamera.AutomaticDetection.Jna_AutoDetect
-ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:67:9-73:20
+ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:68:9-74:20
 	android:theme
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:67:84-124
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:68:84-124
 	android:name
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:67:19-83
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:68:19-83
 activity#com.example.androidthings.videortc.CallActivity
-ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:74:9-81:55
+ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:75:9-82:55
 	android:screenOrientation
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:80:13-49
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:81:13-49
 	android:label
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:78:13-45
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:79:13-45
 	android:launchMode
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:79:13-48
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:80:13-48
 	android:hardwareAccelerated
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:77:13-47
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:78:13-47
 	android:configChanges
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:76:13-59
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:77:13-59
 	android:theme
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:81:13-53
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:82:13-53
 	android:name
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:75:13-75
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:76:13-75
 activity#com.example.androidthings.videortc.WebRtc_MainActivity
-ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:82:9-83:20
+ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:83:9-84:20
 	android:name
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:82:19-88
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:83:19-88
 service#humer.UvcCamera.LibUsb.StartIsoStreamService
-ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:84:9-85:19
+ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:85:9-86:19
 	android:name
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:84:18-77
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:85:18-77
 service#com.example.androidthings.videortc.WebRtcService
-ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:86:9-87:19
+ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:87:9-88:19
 	android:name
-		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:86:18-81
+		ADDED from /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/AndroidManifest.xml:87:18-81
 meta-data#android.support.VERSION
 ADDED from [com.android.support:design:26.1.0] /home/peter/.gradle/caches/transforms-2/files-2.1/eb1f1b8d3a1f68dae142764db18006d6/design-26.1.0/AndroidManifest.xml:26:9-28:38
 MERGED from [com.android.support:appcompat-v7:26.1.0] /home/peter/.gradle/caches/transforms-2/files-2.1/3c25d949127361693c3996e6817a65c8/appcompat-v7-26.1.0/AndroidManifest.xml:26:9-28:38

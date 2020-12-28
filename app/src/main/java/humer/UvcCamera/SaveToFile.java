@@ -44,7 +44,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -63,8 +62,6 @@ import java.util.Arrays;
 import humer.UvcCamera.AutomaticDetection.Jna_AutoDetect;
 import humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect;
 import humer.UvcCamera.UVC_Descriptor.UVC_Descriptor;
-
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class SaveToFile  {
 
@@ -85,8 +82,8 @@ public class SaveToFile  {
     public static byte[] bNumControlUnit;
     public static byte[] bcdUVC;
     public static byte bStillCaptureMethod;
-    private static String saveFilePathFolder = "UVC_Camera/save";
-    private static String autoFilePathFolder = "UVC_Camera/autoDetection";
+    private static String saveFilePathFolder = "values_for_the_camera";
+    private static String autoFilePathFolder = "autoDetection";
     private TextInputLayout valueInput;
     private TextInputLayout valueInput_libUsb;
     private boolean init = false;
@@ -646,31 +643,30 @@ public class SaveToFile  {
         rootdirStr = null;
         stringBuilder = new StringBuilder();
         paths = new ArrayList<>(50);
-        final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() ;
-        final File file = new File(rootPath, "/" + saveFilePathFolder);
+
+        Context context = activity.getApplicationContext();
+        File directory = context.getFilesDir();
+        File file = new File(directory, saveFilePathFolder);
         if (!file.exists()) {
-            log("creating directory");
             if (!file.mkdirs()) {
                 Log.e("TravellerLog :: ", "Problem creating Image folder");
             }
-
-            file.mkdirs();
         }
-        log("Path: " + rootPath.toString());
         rootdirStr = file.toString();
         rootdirStr += "/";
-        //final File folder = new File("/home/you/Desktop");
         listFilesForFolder(file);
         if (paths.isEmpty() == true && optionForSaveFile == OptionForSaveFile.restorefromfile) {
-            returnToMainLayout(String.format("No savefiles found in the save directory.\nDirectory: &s", rootdirStr ));
+            returnToMainLayout(String.format("No savefiles found in the save directory.\nDirectory: &s", file.getAbsolutePath() ));
         } else {
             stringBuilder.append("Click on 'ok' to auto select a name, or type the number infront of a shown file, or type in a unique name.\n");
             for (int i = 0; i < paths.size(); i++) {
                 stringBuilder.append(String.format("%d   ->   ", (i+1)));
                 String entry = paths.get(i);
-                String root = Environment.getExternalStorageDirectory().getAbsolutePath();
-                root += "/UVC_Camera/save/";
-                stringBuilder.append(entry.substring(root.length(), (entry.length() - 4) ));
+                String root = context.getFilesDir().getAbsolutePath();
+                root  += "/";
+                root += saveFilePathFolder ;
+                root += "/";
+                stringBuilder.append(entry.substring(root.length()));
                 stringBuilder.append("\n");
             }
             log(stringBuilder.toString());
@@ -682,7 +678,7 @@ public class SaveToFile  {
                 for (int i = 0; i < paths.size(); i++) {
                     StringBuilder sb = new StringBuilder();
 
-                    sb.append(paths.get(i).substring(0, (paths.get(i).length()-4)));
+                    sb.append(paths.get(i).substring(0, (paths.get(i).length())));
                     int end = rootdirStr.length();
                     sb.delete(0, end);
                     arrayAdapter.add(sb.toString());
@@ -698,10 +694,11 @@ public class SaveToFile  {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String strName = arrayAdapter.getItem(which);
-                        String path = rootdirStr;
-                        path += strName;
-                        path+= ".sav";
-                        restoreFromFile(path);
+                        //String path = rootdirStr;
+                        //path += strName;
+                        //path+= ".sav";
+                        restoreFromFile(strName);
+
                     }
                 });
                 builderSingle.show();
@@ -722,15 +719,19 @@ public class SaveToFile  {
                         if (input.getText().equals(null))  {
                             name = sdeviceName;
                         } else {
-                            log("Die Eingabe war: " + input.getText().toString());
+                            log("You entered: " + input.getText().toString());
                             name = input.getText().toString();
                         }
                         if (name.isEmpty() == true) {
                             switch(option) {
-                                case savetofile: saveValuesToFile(rootdirStr += sdeviceName += ".sav");
+                                case savetofile:
+                                    if (sdeviceName != null) saveValuesToFile(sdeviceName);
+                                    else saveValuesToFile("Random");
+                                    name = "Random";
                                     log("sdeviceName = " + sdeviceName);
                                     break;
-                                case restorefromfile: restoreFromFile(rootdirStr += sdeviceName += ".sav");
+                                case restorefromfile:
+                                    if (sdeviceName != null) restoreFromFile(sdeviceName);
                                     break;
                             }
                         }
@@ -743,8 +744,14 @@ public class SaveToFile  {
                             switch(option) {
                                 case savetofile:
                                     fileName = paths.get((Integer.parseInt(name) - 1));
-                                    try { saveValuesToFile(fileName); }
+                                    log("fileName = " + fileName);
+                                    String root = context.getFilesDir().getAbsolutePath();
+                                    root  += "/";
+                                    root += saveFilePathFolder ;
+                                    root += "/";
+                                    try { saveValuesToFile(fileName.substring(root.length())); }
                                     catch (Exception e) { log("Save Failed ; Exception = " + e); e.printStackTrace();}
+                                    name = fileName.substring(root.length());
                                     break;
                                 case restorefromfile:
                                     restoreFromFile(paths.get((Integer.parseInt(name) - 1)));
@@ -753,10 +760,10 @@ public class SaveToFile  {
                         } else {
                             switch(option) {
                                 case savetofile:
-                                    saveValuesToFile((rootdirStr += name += ".sav"));      log("Saving ...");
+                                    saveValuesToFile((name));      log("Saving ...");
                                     break;
                                 case restorefromfile:
-                                    restoreFromFile((rootdirStr += name += ".sav"));      log("Saving ...");
+                                    restoreFromFile(( name ));      log("Saving ...");
                                     break;
                             }
                         }
@@ -772,7 +779,7 @@ public class SaveToFile  {
                                     int index = rootdirStr.length()- (rootdirStr.length() - rootdirString.length());
                                     fileN = rootdirStr.substring(index, rootdirStr.length());
                                 }
-                                returnToMainLayout("Values written and saved:\n\nName of the savefile:\n" + fileN + "\n\nFolder of the savefile:\n" + rootdirString );
+                                returnToMainLayout("Values written and saved:\n\nName of the savefile:\n" + name + "\n\nFolder of the savefile:\n" + activity.getApplicationContext().getFilesDir().getAbsolutePath() );
                                 break;
                             case restorefromfile:
                                 returnToMainLayout(String.format("Values sucessfully restored"));
@@ -803,9 +810,13 @@ public class SaveToFile  {
 
     public void saveValuesToFile (String savePath) {
 
-        log("savePath = " + savePath);
+        Context context = activity.getApplicationContext();
+        File directory = context.getFilesDir();
+        File saveDir = new File(directory, saveFilePathFolder);
+
+        log("saveName = " + savePath);
         try {  // Catch errors in I/O if necessary.
-            File file = new File(savePath);
+            File file = new File(saveDir, savePath);
             //file = new File(savePath).getAbsoluteFile();
             log("AbsolutePath = " + file.getAbsolutePath());
             //file.getParentFile().mkdirs();
@@ -838,8 +849,11 @@ public class SaveToFile  {
     }
 
     public void restoreFromFile(String pathToFile){
+        Context context = activity.getApplicationContext();
+        File directory = context.getFilesDir();
+        File saveDir = new File(directory, saveFilePathFolder);
         try{
-            FileInputStream saveFile = new FileInputStream(pathToFile);
+            FileInputStream saveFile = new FileInputStream(new File(saveDir, pathToFile));
             ObjectInputStream save = new ObjectInputStream(saveFile);
             sALT_SETTING = (Integer) save.readObject();
             svideoformat = (String) save.readObject();
@@ -870,7 +884,8 @@ public class SaveToFile  {
         writeTheValues();
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("Restored Values:\n"));
-        sb.append(String.format("Altsetting = %d\nVideoFormat = %s\nImageWidth = %d\nImageHeight = %d\nFrameInterval = %d\nPacketsPerRequest = %d\nActiveUrbs = %d", sALT_SETTING, svideoformat, simageWidth, simageHeight, (10000000 / scamFrameInterval), spacketsPerRequest, sactiveUrbs));
+        if (scamFrameInterval != 0) sb.append(String.format("Altsetting = %d\nVideoFormat = %s\nImageWidth = %d\nImageHeight = %d\nFrameInterval = %d\nPacketsPerRequest = %d\nActiveUrbs = %d", sALT_SETTING, svideoformat, simageWidth, simageHeight, (10000000 / scamFrameInterval), spacketsPerRequest, sactiveUrbs));
+        else sb.append(String.format("Altsetting = %d\nVideoFormat = %s\nImageWidth = %d\nImageHeight = %d\nPacketsPerRequest = %d\nActiveUrbs = %d", sALT_SETTING, svideoformat, simageWidth, simageHeight, spacketsPerRequest, sactiveUrbs));
         setTextViewMain();
         writeMsgMain(sb.toString());
     }
@@ -1517,36 +1532,34 @@ public class SaveToFile  {
         name = null;
         rootdirStr = null;
 
-        final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
-        final File file = new File(rootPath, "/" + autoFilePathFolder);
-        if (!file.exists()) {
+
+        Context context = activity.getApplicationContext();
+        File directory = context.getFilesDir();
+        File saveDir = new File(directory, autoFilePathFolder);
+        if (!saveDir.exists()) {
             log("creating directory");
-            if (!file.mkdirs()) {
+            if (!saveDir.mkdirs()) {
                 Log.e("TravellerLog :: ", "Problem creating Image folder");
             }
-            file.mkdirs();
         }
-        log("Path: " + rootPath.toString());
-        rootdirStr = file.toString();
+        log("Path: " + saveDir.toString());
+        rootdirStr = saveDir.toString();
         rootdirStr += "/";
         autoDetectFileValuesString = new String("AutoDetectFileValues");
         autoDetectFileOrdersString = new String("AutoDetectFileOrders");
 
         if (save) {
             log("saveAutoOrders Path = " + rootdirStr + autoDetectFileOrdersString + ".sav");
-
             log("saveValuesToFile Path = " + rootdirStr + autoDetectFileValuesString + ".sav");
 
-            saveAutoOrders(rootdirStr += autoDetectFileOrdersString += ".sav");
-            rootdirStr = file.toString();
-            rootdirStr += "/";
-            saveValuesToFile(rootdirStr += autoDetectFileValuesString += ".sav");
+            saveAutoOrders(autoDetectFileOrdersString);
+            saveValuesToFile(autoDetectFileValuesString);
             return;
         }
-        if (listFilesAutoDetectFolder(file)) {
+        if (listFilesAutoDetectFolder(directory)) {
             log("checking Auto Values ...");
-            restoreAutoOrders(rootdirStr += autoDetectFileOrdersString += ".sav");
-            restoreFromFile(rootdirStr += autoDetectFileValuesString += ".sav");
+            restoreAutoOrders(autoDetectFileOrdersString);
+            restoreFromFile(autoDetectFileValuesString);
             selectMaxPacketSize(true);
         }
     }
@@ -1571,7 +1584,16 @@ public class SaveToFile  {
 
     public void restoreAutoOrders(String pathToFile){
         try{
-            FileInputStream saveFile = new FileInputStream(pathToFile);
+            Context context = activity.getApplicationContext();
+            File directory = context.getFilesDir();
+            File saveDir = new File(directory, autoFilePathFolder);
+            if (!saveDir.exists()) {
+                log("creating directory");
+                if (!saveDir.mkdirs()) {
+                    Log.e("TravellerLog :: ", "Problem creating Image folder");
+                }
+            }
+            FileInputStream saveFile = new FileInputStream(new File(saveDir, pathToFile));
             ObjectInputStream save = new ObjectInputStream(saveFile);
             completed = (Boolean) save.readObject();
             highQuality = (Boolean) save.readObject();
@@ -1592,9 +1614,22 @@ public class SaveToFile  {
     }
 
     private void saveAutoOrders (String savePath) {
-        log("savePath AutoOrder = " + savePath);
+
+        Context context = activity.getApplicationContext();
+        File directory = context.getFilesDir();
+        File saveDir = new File(directory, autoFilePathFolder);
+        if (!saveDir.exists()) {
+            log("creating directory");
+            if (!saveDir.mkdirs()) {
+                Log.e("TravellerLog :: ", "Problem creating Image folder");
+            }
+        }
+
+
+
+        log("Name AutoOrder = " + savePath);
         try {  // Catch errors in I/O if necessary.
-            File file = new File(savePath);
+            File file = new File(saveDir, savePath);
             //file = new File(savePath).getAbsoluteFile();
             log("AbsolutePath = " + file.getAbsolutePath());
             //file.getParentFile().mkdirs();
