@@ -3,7 +3,6 @@ make: Nothing to be done for 'dpfp'.
 make: Nothing to be done for 'dpfp_threaded'.
 make: Nothing to be done for 'fxload'.
 make: Nothing to be done for 'hotplugtest'.
-make: Nothing to be done for 'jpeg'.
 make: Nothing to be done for 'listdevs'.
 make: Nothing to be done for 'sam3u_benchmark'.
 make: Nothing to be done for 'stress'.

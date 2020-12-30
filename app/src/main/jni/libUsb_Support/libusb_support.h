@@ -99,6 +99,8 @@ extern void setRotation(int rot, int horizontalFl, int verticalFl);
 
 ////////// Activity Strteam
 extern int fetchTheCamStreamingEndpointAdress (int FD);
+extern void setImageCapture();
+
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamActivitySurface
         (JNIEnv *, jobject, jobject, jint, jint);
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamActivity

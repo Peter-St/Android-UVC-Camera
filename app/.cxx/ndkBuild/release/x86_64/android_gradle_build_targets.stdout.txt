@@ -1,12 +1,132 @@
-make: Nothing to be done for 'Usb_Support'.
-make: Nothing to be done for 'dpfp'.
-make: Nothing to be done for 'dpfp_threaded'.
-make: Nothing to be done for 'fxload'.
-make: Nothing to be done for 'hotplugtest'.
+[x86_64] Compile        : Usb_Support <= libusb_support.c
+[x86_64] Compile        : usb1.0 <= core.c
+[x86_64] Compile        : usb1.0 <= descriptor.c
+[x86_64] Compile        : usb1.0 <= hotplug.c
+[x86_64] Compile        : usb1.0 <= io.c
+[x86_64] Compile        : usb1.0 <= sync.c
+[x86_64] Compile        : usb1.0 <= strerror.c
+[x86_64] Compile        : usb1.0 <= linux_usbfs.c
+[x86_64] Compile        : usb1.0 <= events_posix.c
+[x86_64] Compile        : usb1.0 <= threads_posix.c
+[x86_64] Compile        : usb1.0 <= linux_netlink.c
+[x86_64] SharedLibrary  : libusb1.0.so
+[x86_64] Compile        : jpeg <= jcapimin.c
+[x86_64] Compile        : jpeg <= jcapistd.c
+[x86_64] Compile        : jpeg <= jccoefct.c
+[x86_64] Compile        : jpeg <= jccolor.c
+[x86_64] Compile        : jpeg <= jcdctmgr.c
+[x86_64] Compile        : jpeg <= jchuff.c
+[x86_64] Compile        : jpeg <= jcinit.c
+[x86_64] Compile        : jpeg <= jcmainct.c
+[x86_64] Compile        : jpeg <= jcmarker.c
+[x86_64] Compile        : jpeg <= jcmaster.c
+[x86_64] Compile        : jpeg <= jcomapi.c
+[x86_64] Compile        : jpeg <= jcparam.c
+[x86_64] Compile        : jpeg <= jcprepct.c
+[x86_64] Compile        : jpeg <= jcsample.c
+[x86_64] Compile        : jpeg <= jctrans.c
+[x86_64] Compile        : jpeg <= jdapimin.c
+[x86_64] Compile        : jpeg <= jdapistd.c
+[x86_64] Compile        : jpeg <= jdatadst.c
+[x86_64] Compile        : jpeg <= jdatasrc.c
+[x86_64] Compile        : jpeg <= jdcoefct.c
+[x86_64] Compile        : jpeg <= jdcolor.c
+[x86_64] Compile        : jpeg <= jddctmgr.c
+[x86_64] Compile        : jpeg <= jdhuff.c
+[x86_64] Compile        : jpeg <= jdinput.c
+[x86_64] Compile        : jpeg <= jdmainct.c
+[x86_64] Compile        : jpeg <= jdmarker.c
+[x86_64] Compile        : jpeg <= jdmaster.c
+[x86_64] Compile        : jpeg <= jdmerge.c
+[x86_64] Compile        : jpeg <= jdpostct.c
+[x86_64] Compile        : jpeg <= jdsample.c
+[x86_64] Compile        : jpeg <= jdtrans.c
+[x86_64] Compile        : jpeg <= jerror.c
+[x86_64] Compile        : jpeg <= jfdctflt.c
+[x86_64] Compile        : jpeg <= jfdctfst.c
+[x86_64] Compile        : jpeg <= jfdctint.c
+[x86_64] Compile        : jpeg <= jidctflt.c
+[x86_64] Compile        : jpeg <= jidctfst.c
+[x86_64] Compile        : jpeg <= jidctint.c
+[x86_64] Compile        : jpeg <= jquant1.c
+[x86_64] Compile        : jpeg <= jquant2.c
+[x86_64] Compile        : jpeg <= jutils.c
+[x86_64] Compile        : jpeg <= jmemmgr.c
+[x86_64] Compile        : jpeg <= jcarith.c
+[x86_64] Compile        : jpeg <= jdarith.c
+[x86_64] Compile        : jpeg <= jaricom.c
+[x86_64] Compile        : jpeg <= jmemnobs.c
+[x86_64] SharedLibrary  : libjpeg.so
+[x86_64] Compile++      : yuv_static <= compare.cc
+[x86_64] Compile++      : yuv_static <= compare_common.cc
+[x86_64] Compile++      : yuv_static <= compare_gcc.cc
+[x86_64] Compile++      : yuv_static <= compare_mmi.cc
+[x86_64] Compile++      : yuv_static <= compare_msa.cc
+[x86_64] Compile++      : yuv_static <= compare_neon.cc
+[x86_64] Compile++      : yuv_static <= compare_neon64.cc
+[x86_64] Compile++      : yuv_static <= compare_win.cc
+[x86_64] Compile++      : yuv_static <= convert.cc
+[x86_64] Compile++      : yuv_static <= convert_argb.cc
+[x86_64] Compile++      : yuv_static <= convert_from.cc
+[x86_64] Compile++      : yuv_static <= convert_from_argb.cc
+[x86_64] Compile++      : yuv_static <= convert_to_argb.cc
+[x86_64] Compile++      : yuv_static <= convert_to_i420.cc
+[x86_64] Compile++      : yuv_static <= cpu_id.cc
+[x86_64] Compile++      : yuv_static <= planar_functions.cc
+[x86_64] Compile++      : yuv_static <= rotate.cc
+[x86_64] Compile++      : yuv_static <= rotate_any.cc
+[x86_64] Compile++      : yuv_static <= rotate_argb.cc
+[x86_64] Compile++      : yuv_static <= rotate_common.cc
+[x86_64] Compile++      : yuv_static <= rotate_gcc.cc
+[x86_64] Compile++      : yuv_static <= rotate_mmi.cc
+[x86_64] Compile++      : yuv_static <= rotate_msa.cc
+[x86_64] Compile++      : yuv_static <= rotate_neon.cc
+[x86_64] Compile++      : yuv_static <= rotate_neon64.cc
+[x86_64] Compile++      : yuv_static <= rotate_win.cc
+[x86_64] Compile++      : yuv_static <= row_any.cc
+[x86_64] Compile++      : yuv_static <= row_common.cc
+[x86_64] Compile++      : yuv_static <= row_gcc.cc
+[x86_64] Compile++      : yuv_static <= row_mmi.cc
+[x86_64] Compile++      : yuv_static <= row_msa.cc
+[x86_64] Compile++      : yuv_static <= row_neon.cc
+[x86_64] Compile++      : yuv_static <= row_neon64.cc
+[x86_64] Compile++      : yuv_static <= row_win.cc
+[x86_64] Compile++      : yuv_static <= scale.cc
+[x86_64] Compile++      : yuv_static <= scale_any.cc
+[x86_64] Compile++      : yuv_static <= scale_argb.cc
+[x86_64] Compile++      : yuv_static <= scale_common.cc
+[x86_64] Compile++      : yuv_static <= scale_gcc.cc
+[x86_64] Compile++      : yuv_static <= scale_mmi.cc
+[x86_64] Compile++      : yuv_static <= scale_msa.cc
+[x86_64] Compile++      : yuv_static <= scale_neon.cc
+[x86_64] Compile++      : yuv_static <= scale_neon64.cc
+[x86_64] Compile++      : yuv_static <= scale_uv.cc
+[x86_64] Compile++      : yuv_static <= scale_win.cc
+[x86_64] Compile++      : yuv_static <= video_common.cc
+[x86_64] Compile++      : yuv_static <= convert_jpeg.cc
+[x86_64] Compile++      : yuv_static <= mjpeg_decoder.cc
+[x86_64] Compile++      : yuv_static <= mjpeg_validate.cc
+[x86_64] StaticLibrary  : libyuv_static.a
+[x86_64] SharedLibrary  : libyuv.so
+[x86_64] SharedLibrary  : libUsb_Support.so
+[x86_64] Compile        : dpfp <= dpfp.c
+[x86_64] Executable     : dpfp
+[x86_64] Compile        : dpfp_threaded <= dpfp.c
+[x86_64] Executable     : dpfp_threaded
+[x86_64] Compile        : fxload <= ezusb.c
+[x86_64] Compile        : fxload <= fxload.c
+[x86_64] Executable     : fxload
+[x86_64] Compile        : hotplugtest <= hotplugtest.c
+[x86_64] Executable     : hotplugtest
 make: Nothing to be done for 'jpeg'.
-make: Nothing to be done for 'listdevs'.
-make: Nothing to be done for 'sam3u_benchmark'.
-make: Nothing to be done for 'stress'.
+[x86_64] Compile        : listdevs <= listdevs.c
+[x86_64] Executable     : listdevs
+[x86_64] Compile        : sam3u_benchmark <= sam3u_benchmark.c
+[x86_64] Executable     : sam3u_benchmark
+[x86_64] Compile        : stress <= stress.c
+[x86_64] Compile        : stress <= testlib.c
+[x86_64] Executable     : stress
 make: Nothing to be done for 'usb1.0'.
-make: Nothing to be done for 'xusb'.
+[x86_64] Compile        : xusb <= xusb.c
+[x86_64] Executable     : xusb
 make: Nothing to be done for 'yuv'.

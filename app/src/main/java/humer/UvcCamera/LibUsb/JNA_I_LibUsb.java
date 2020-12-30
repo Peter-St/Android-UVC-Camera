@@ -75,6 +75,7 @@ public interface JNA_I_LibUsb extends Library {
 
     // Stream Activity
     public int fetchTheCamStreamingEndpointAdress (int FD);
+    public void setImageCapture();
 
 
 }

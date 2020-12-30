@@ -8,8 +8,8 @@ android {
     defaultConfig {
         applicationId "humer.uvc_camera"
         minSdkVersion 15
-        versionCode 79
-        versionName "1.8.2"
+        versionCode 80
+        versionName "1.8.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

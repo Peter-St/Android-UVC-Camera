@@ -52,6 +52,7 @@ LOCAL_LDLIBS += -landroid
 
 LOCAL_SHARED_LIBRARIES += libusb1.0
 LOCAL_SHARED_LIBRARIES += libyuv
+LOCAL_SHARED_LIBRARIES += libjpeg
 
 LOCAL_ARM_MODE := arm
 
@@ -60,7 +61,6 @@ LOCAL_SRC_FILES := \
 
 
 LOCAL_MODULE    := Usb_Support
-        LOCAL_C_INCLUDES :=
 include $(BUILD_SHARED_LIBRARY)
 LOCAL_LDLIBS := -llog
 

@@ -18,6 +18,8 @@
 #include <libusb.h>
 #include <libyuv/include/libyuv.h>
 
+#include "jpeg8d/jpeglib.h"
+
 
 #define  LOG_TAG    "From Native"
 
@@ -578,6 +580,9 @@ ANativeWindow *mCaptureWindow;
 // Stream - Activity
 jmethodID javaRetrievedStreamActivityFrameFromLibUsb;
 jmethodID javainitializeStreamArray;
+// For capturing Images during YUV stream (byte[] is MJPEG)
+jmethodID javaPicturCapture;
+
 
 // SERVICE
 jmethodID javaServicePublishResults;
@@ -590,6 +595,7 @@ jmethodID javaRetrievedFrameFromLibUsb;
 int rotation = 0;
 volatile bool horizontalFlip = false;
 volatile bool verticalFlip = false;
+volatile bool imageCapture = false;
 
 void setRotation(int rot, int horizontalFl, int verticalFl) {
     rotation = rot;
@@ -1142,6 +1148,10 @@ int fetchTheCamStreamingEndpointAdress (int FD) {
     struct libusb_device_descriptor desc;
     print_device(libusb_get_device(devh) , 0, devh, desc);
     return streamEndPointAdressOverNative;
+}
+
+void setImageCapture() {
+    imageCapture = true;
 }
 
 unsigned char * probeCommitControl(int bmHin, int camFormatInde, int camFrameInde, int camFrameInterva, int FD) {
@@ -2006,7 +2016,7 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniSetSurface
     jniHelperClass = (*env)->NewGlobalRef(env, class);
     mainActivityObj = (*env)->NewGlobalRef(env, obj);
     javaRetrievedStreamActivityFrameFromLibUsb = (*env)->GetMethodID(env, jniHelperClass, "retrievedStreamActivityFrameFromLibUsb", "([B)V");
-
+    javaPicturCapture  = (*env)->GetMethodID(env, jniHelperClass, "picturCapture", "([B)V");
 }
 
 //////////// SERVICE
@@ -2133,7 +2143,7 @@ void cb_jni_stream_Surface_Service(struct libusb_transfer *the_transfer) {
                         int dw, int dh)
                          */
                     } else if (strcmp(frameFormat, "YUY2") == 0) {
-                        LOGD("YUY2");
+                        //LOGD("YUY2");
                         uvc_frame_t *rgb;
                         uvc_error_t ret;
                         // We'll convert the image from YUV/JPEG to BGR, so allocate space
@@ -2150,6 +2160,18 @@ void cb_jni_stream_Surface_Service(struct libusb_transfer *the_transfer) {
                             return;
                         }
                         uvc_frame_t *rgb_rot_nFlip = checkRotation(rgb);
+
+                        if (imageCapture) {
+
+
+                            imageCapture = false;
+                            JNIEnv * jenv;
+                            int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
+                            jbyteArray array = (*jenv)->NewByteArray(jenv, total);
+                            // Main Activity
+                            (*jenv)->SetByteArrayRegion(jenv, array, 0, total, (jbyte *) videoFrameData->videoframe);
+                            (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaPicturCapture, array);
+                        }
                         copyToSurface(rgb_rot_nFlip, &mCaptureWindow);
                         uvc_free_frame(rgb_rot_nFlip);
                         total = 0;

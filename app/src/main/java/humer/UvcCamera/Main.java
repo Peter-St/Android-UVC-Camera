@@ -49,6 +49,8 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+import humer.UvcCamera.LibUsb.JNA_I_LibUsb;
+import humer.UvcCamera.LibUsb.unRootedSample;
 import noman.zoomtextview.ZoomTextView;
 
 //public class Main extends LocalizationActivity {

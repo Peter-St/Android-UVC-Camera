@@ -15,7 +15,6 @@ dpfp
 dpfp_threaded
 fxload
 hotplugtest
-jpeg
 listdevs
 sam3u_benchmark
 stress

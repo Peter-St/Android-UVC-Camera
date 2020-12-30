@@ -725,7 +725,11 @@ public class SaveToFile  {
                         if (name.isEmpty() == true) {
                             switch(option) {
                                 case savetofile:
-                                    if (sdeviceName != null) saveValuesToFile(sdeviceName);
+                                    if (sdeviceName != null) {
+                                        saveValuesToFile(sdeviceName);
+                                        name = sdeviceName;
+                                        break;
+                                    }
                                     else saveValuesToFile("Random");
                                     name = "Random";
                                     log("sdeviceName = " + sdeviceName);

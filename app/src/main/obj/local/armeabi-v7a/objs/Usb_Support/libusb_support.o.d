@@ -20,7 +20,9 @@
   jni/libyuv/include/libyuv/scale_row.h \
   jni/libyuv/include/libyuv/scale_uv.h \
   jni/libyuv/include/libyuv/version.h \
-  jni/libyuv/include/libyuv/video_common.h
+  jni/libyuv/include/libyuv/video_common.h \
+  jni/libUsb_Support/../jpeg8d/jpeglib.h jni/jpeg8d/jconfig.h \
+  jni/jpeg8d/jmorecfg.h
 
 jni/libUsb_Support/libusb_support.h:
 
@@ -67,3 +69,9 @@ jni/libyuv/include/libyuv/scale_uv.h:
 jni/libyuv/include/libyuv/version.h:
 
 jni/libyuv/include/libyuv/video_common.h:
+
+jni/libUsb_Support/../jpeg8d/jpeglib.h:
+
+jni/jpeg8d/jconfig.h:
+
+jni/jpeg8d/jmorecfg.h:

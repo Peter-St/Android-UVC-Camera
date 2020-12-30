@@ -22,7 +22,10 @@
   /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libyuv/include/libyuv/scale_row.h \
   /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libyuv/include/libyuv/scale_uv.h \
   /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libyuv/include/libyuv/version.h \
-  /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libyuv/include/libyuv/video_common.h
+  /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libyuv/include/libyuv/video_common.h \
+  /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/../jpeg8d/jpeglib.h \
+  /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/jpeg8d/jconfig.h \
+  /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/jpeg8d/jmorecfg.h
 
 /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.h:
 
@@ -69,3 +72,9 @@
 /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libyuv/include/libyuv/version.h:
 
 /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libyuv/include/libyuv/video_common.h:
+
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/../jpeg8d/jpeglib.h:
+
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/jpeg8d/jconfig.h:
+
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/jpeg8d/jmorecfg.h:

@@ -32,7 +32,6 @@ public class StartIsoStreamService extends IntentService {
         if (init != null && init.equals("INIT")) {
             if (intent.getStringExtra(FRAMEFORMAT).equals("MFPEG")) JniPrepairForStreamingfromService();
             else JniPrepairForStreamingfromService();
-
         }
 
         String fileName = intent.getStringExtra(ACCESS_LIBUSB);
@@ -49,7 +48,6 @@ public class StartIsoStreamService extends IntentService {
             result = Activity.RESULT_OK;
             return;
         }
-
         result = Activity.RESULT_OK;
     }
 
