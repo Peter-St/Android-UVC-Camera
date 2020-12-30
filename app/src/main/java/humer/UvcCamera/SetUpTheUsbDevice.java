@@ -498,34 +498,6 @@ public class SetUpTheUsbDevice extends Activity {
     }
 
     public void showTestRunMenu(View v) {
-
-
-        // unRootedAndroid unRooted unroot
-
-        log ("unRoot start");
-
-        camDeviceConnection = camDeviceConnection = usbManager.openDevice(camDevice);
-        unRootedSample.INSTANCE.main( camDeviceConnection.getFileDescriptor());
-        log ("unRoot finished");
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         if (camDevice == null) {
             runOnUiThread(new Runnable() {
                 @Override
