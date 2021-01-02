@@ -1,428 +1,415 @@
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:447:17: warning: incompatible pointer types assigning to 'uvc_device_handle_t *' (aka 'struct uvc_device_handle *') from 'libusb_device_handle *' (aka 'struct libusb_device_handle *') [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:469:17: warning: incompatible pointer types assigning to 'uvc_device_handle_t *' (aka 'struct uvc_device_handle *') from 'libusb_device_handle *' (aka 'struct libusb_device_handle *') [-Wincompatible-pointer-types]
     out->source = devh;
                 ^ ~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:502:17: warning: incompatible pointer types assigning to 'uvc_device_handle_t *' (aka 'struct uvc_device_handle *') from 'libusb_device_handle *' (aka 'struct libusb_device_handle *') [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:524:17: warning: incompatible pointer types assigning to 'uvc_device_handle_t *' (aka 'struct uvc_device_handle *') from 'libusb_device_handle *' (aka 'struct libusb_device_handle *') [-Wincompatible-pointer-types]
     out->source = devh;
                 ^ ~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:633:22: warning: incompatible pointer types assigning to 'uvc_device_handle_t *' (aka 'struct uvc_device_handle *') from 'libusb_device_handle *' (aka 'struct libusb_device_handle *') [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1068:22: warning: incompatible pointer types assigning to 'uvc_device_handle_t *' (aka 'struct uvc_device_handle *') from 'libusb_device_handle *' (aka 'struct libusb_device_handle *') [-Wincompatible-pointer-types]
     flip_img->source = devh;
                      ^ ~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:643:5: warning: incompatible pointer types passing 'uint *' (aka 'unsigned int *') to parameter of type 'uint8_t *' (aka 'unsigned char *') [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1077:5: warning: incompatible pointer types passing 'uint *' (aka 'unsigned int *') to parameter of type 'uint8_t *' (aka 'unsigned char *') [-Wincompatible-pointer-types]
     dst_argb, dst_stride_argb,
     ^~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libyuv/include/libyuv/planar_functions.h:350:25: note: passing argument to parameter 'dst_argb' here
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:994:25: note: passing argument to parameter 'dst_argb' here
                uint8_t* dst_argb,
                         ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:674:21: warning: incompatible pointer types assigning to 'uvc_device_handle_t *' (aka 'struct uvc_device_handle *') from 'libusb_device_handle *' (aka 'struct libusb_device_handle *') [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1099:21: warning: incompatible pointer types assigning to 'uvc_device_handle_t *' (aka 'struct uvc_device_handle *') from 'libusb_device_handle *' (aka 'struct libusb_device_handle *') [-Wincompatible-pointer-types]
     rot_img->source = devh;
                     ^ ~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:887:14: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1314:14: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
         LOGD(stderr, "failed to get device descriptor");
              ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:896:86: warning: passing 'char [256]' to parameter of type 'unsigned char *' converts between pointers to integer types with different sign [-Wpointer-sign]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1323:86: warning: passing 'char [256]' to parameter of type 'unsigned char *' converts between pointers to integer types with different sign [-Wpointer-sign]
                 ret = libusb_get_string_descriptor_ascii(handle, desc.iManufacturer, string, sizeof (string));
                                                                                      ^~~~~~
 /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libusb/android/jni/../../libusb/libusb.h:1850:37: note: passing argument to parameter 'data' here
         uint8_t desc_index, unsigned char *data, int length);
                                            ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:905:81: warning: passing 'char [256]' to parameter of type 'unsigned char *' converts between pointers to integer types with different sign [-Wpointer-sign]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1332:81: warning: passing 'char [256]' to parameter of type 'unsigned char *' converts between pointers to integer types with different sign [-Wpointer-sign]
                 ret = libusb_get_string_descriptor_ascii(handle, desc.iProduct, string, sizeof (string));
                                                                                 ^~~~~~
 /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libusb/android/jni/../../libusb/libusb.h:1850:37: note: passing argument to parameter 'data' here
         uint8_t desc_index, unsigned char *data, int length);
                                            ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:922:86: warning: passing 'char [256]' to parameter of type 'unsigned char *' converts between pointers to integer types with different sign [-Wpointer-sign]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1349:86: warning: passing 'char [256]' to parameter of type 'unsigned char *' converts between pointers to integer types with different sign [-Wpointer-sign]
                 ret = libusb_get_string_descriptor_ascii(handle, desc.iSerialNumber, string, sizeof (string));
                                                                                      ^~~~~~
 /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libusb/android/jni/../../libusb/libusb.h:1850:37: note: passing argument to parameter 'data' here
         uint8_t desc_index, unsigned char *data, int length);
                                            ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:946:28: warning: incompatible pointer types passing 'libusb_context **' (aka 'struct libusb_context **') to parameter of type 'libusb_context *' (aka 'struct libusb_context *'); remove & [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1373:28: warning: incompatible pointer types passing 'libusb_context **' (aka 'struct libusb_context **') to parameter of type 'libusb_context *' (aka 'struct libusb_context *'); remove & [-Wincompatible-pointer-types]
     rc = libusb_set_option(&ctx, LIBUSB_OPTION_WEAK_AUTHORITY, NULL);
                            ^~~~
 /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libusb/android/jni/../../libusb/libusb.h:2107:51: note: passing argument to parameter 'ctx' here
 int LIBUSB_CALL libusb_set_option(libusb_context *ctx, enum libusb_option option, ...);
                                                   ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:983:18: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1410:18: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
             LOGD(stderr, "Error claiming interface: %s\n",
                  ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1001:24: warning: incompatible pointer to integer conversion passing 'libusb_device_handle *' (aka 'struct libusb_device_handle *') to parameter of type 'int' [-Wint-conversion]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1428:24: warning: incompatible pointer to integer conversion passing 'libusb_device_handle *' (aka 'struct libusb_device_handle *') to parameter of type 'int' [-Wint-conversion]
     initStreamingParms(devh);
                        ^~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.h:49:35: note: passing argument to parameter 'FD' here
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.h:71:35: note: passing argument to parameter 'FD' here
 extern int initStreamingParms(int FD);
                                   ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1018:1: warning: function declared 'noreturn' should not return [-Winvalid-noreturn]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1445:1: warning: function declared 'noreturn' should not return [-Winvalid-noreturn]
 }
 ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1057:27: warning: sizeof on array function parameter will return size of 'int *' instead of 'int []' [-Wsizeof-array-argument]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1484:27: warning: sizeof on array function parameter will return size of 'int *' instead of 'int []' [-Wsizeof-array-argument]
     if(memcmp(a, b, sizeof(a)) == 0) return true;
                           ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1056:24: note: declared here
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1483:24: note: declared here
 bool compareArrays(int a[], int b[]) {
                        ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1057:28: warning: 'memcmp' call operates on objects of type 'int' while the size is based on a different type 'int *' [-Wsizeof-pointer-memaccess]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1484:28: warning: 'memcmp' call operates on objects of type 'int' while the size is based on a different type 'int *' [-Wsizeof-pointer-memaccess]
     if(memcmp(a, b, sizeof(a)) == 0) return true;
               ~            ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1057:28: note: did you mean to dereference the argument to 'sizeof' (and multiply it by the number of elements)?
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1484:28: note: did you mean to dereference the argument to 'sizeof' (and multiply it by the number of elements)?
     if(memcmp(a, b, sizeof(a)) == 0) return true;
                            ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1070:66: warning: adding 'int' to a string does not append to the string [-Wstring-plus-int]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1497:66: warning: adding 'int' to a string does not append to the string [-Wstring-plus-int]
             LOGD("Your entered 'Camera Frame Index' Values is: " + initStreamingParmsIntArray[1], "\n");
                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1070:66: note: use array indexing to silence this warning
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1497:66: note: use array indexing to silence this warning
             LOGD("Your entered 'Camera Frame Index' Values is: " + initStreamingParmsIntArray[1], "\n");
                                                                  ^
                  &                                               [
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1197:27: warning: incompatible pointer types returning 'CtlData *' (aka 'struct _CTL_Data *') from a function with result type 'unsigned char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1628:27: warning: incompatible pointer types returning 'CtlData *' (aka 'struct _CTL_Data *') from a function with result type 'unsigned char *' [-Wincompatible-pointer-types]
     if (camIsOpen) return ctl_transfer_Data;
                           ^~~~~~~~~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1198:17: warning: incompatible pointer types returning 'CtlData *' (aka 'struct _CTL_Data *') from a function with result type 'unsigned char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1629:17: warning: incompatible pointer types returning 'CtlData *' (aka 'struct _CTL_Data *') from a function with result type 'unsigned char *' [-Wincompatible-pointer-types]
     else return ctl_transfer_Data;
                 ^~~~~~~~~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1233:26: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1664:26: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
                     LOGD(stderr, "Die Framegröße musste gekürzt werden.\n");
                          ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1250:30: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1681:30: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
                         LOGD(stderr, "insufficient frame data.\n");
                              ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1273:18: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1704:18: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
             LOGD(stderr, "Die Übertragung ist gescheitert. \n");
                  ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1401:26: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1832:26: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
                     LOGD(stderr, "Die Framegröße musste gekürzt werden.\n");
                          ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1417:30: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1848:30: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
                         LOGD(stderr, "insufficient frame data.\n");
                              ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1423:44: warning: incompatible pointer types passing 'FrameData *' (aka 'struct _Frame_Data *') to parameter of type 'unsigned char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1854:44: warning: incompatible pointer types passing 'FrameData *' (aka 'struct _Frame_Data *') to parameter of type 'unsigned char *' [-Wincompatible-pointer-types]
                     sendReceivedDataToJava(videoFrameData, total);
                                            ^~~~~~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1449:18: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1880:18: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
             LOGD(stderr, "Die Übertragung ist gescheitert. \n");
                  ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1485:26: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1916:26: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
                     LOGD(stderr, "Die Framegröße musste gekürzt werden.\n");
                          ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1501:30: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1932:30: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
                         LOGD(stderr, "insufficient frame data.\n");
                              ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1507:44: warning: incompatible pointer types passing 'FrameData *' (aka 'struct _Frame_Data *') to parameter of type 'unsigned char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1938:44: warning: incompatible pointer types passing 'FrameData *' (aka 'struct _Frame_Data *') to parameter of type 'unsigned char *' [-Wincompatible-pointer-types]
                     sendReceivedDataToJava(videoFrameData, total);
                                            ^~~~~~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1522:18: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1953:18: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
             LOGD(stderr, "Die Übertragung ist gescheitert. \n");
                  ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1564:26: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1995:26: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
                     LOGD(stderr, "Die Framegröße musste gekürzt werden.\n");
                          ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1578:30: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2009:30: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
                         LOGD(stderr, "insufficient frame data.\n");
                              ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1594:18: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2025:18: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
             LOGD(stderr, "Die Übertragung ist gescheitert. \n");
                  ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1652:18: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2083:18: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
             LOGD(stderr, "submit xfer failed.\n");
                  ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1764:76: warning: incompatible pointer types passing 'void **' to parameter of type 'JNIEnv **' (aka 'const struct JNINativeInterface ***') [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2195:76: warning: incompatible pointer types passing 'void **' to parameter of type 'JNIEnv **' (aka 'const struct JNINativeInterface ***') [-Wincompatible-pointer-types]
                     int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
                                                                            ^~~~~~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1782:18: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2213:18: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
             LOGD(stderr, "SUBMISSION FAILED. \n");
                  ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1838:22: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2267:22: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
                 LOGD(stderr, "submit xfer failed.\n");
                      ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1869:22: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2298:22: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
                 LOGD(stderr, "submit xfer failed.\n");
                      ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1947:18: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2376:18: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
             LOGD(stderr, "SUBMISSION FAILED. \n");
                  ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:1990:22: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2417:22: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
                 LOGD(stderr, "submit xfer failed.\n");
                      ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2105:80: warning: incompatible pointer types passing 'void **' to parameter of type 'JNIEnv **' (aka 'const struct JNINativeInterface ***') [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2510:80: warning: incompatible pointer types passing 'void **' to parameter of type 'JNIEnv **' (aka 'const struct JNINativeInterface ***') [-Wincompatible-pointer-types]
                         int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
                                                                                ^~~~~~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2138:25: warning: '/*' within block comment [-Wcomment]
-                        /*
-                        ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2169:84: warning: incompatible pointer types passing 'void **' to parameter of type 'JNIEnv **' (aka 'const struct JNINativeInterface ***') [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2548:52: warning: format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
+                            LOGD("_jpegSize = %d", _jpegSize);
+                                              ~~   ^~~~~~~~~
+                                              %lu
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
+#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
+                                                                    ^~~~~~~~~~~
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2550:84: warning: incompatible pointer types passing 'void **' to parameter of type 'JNIEnv **' (aka 'const struct JNINativeInterface ***') [-Wincompatible-pointer-types]
                             int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
                                                                                    ^~~~~~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2188:18: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2560:84: warning: incompatible pointer types passing 'void **' to parameter of type 'JNIEnv **' (aka 'const struct JNINativeInterface ***') [-Wincompatible-pointer-types]
+                            int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
+                                                                                   ^~~~~~~~~~~~~~
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2580:52: warning: format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
+                            LOGD("_jpegSize = %d", _jpegSize);
+                                              ~~   ^~~~~~~~~
+                                              %lu
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
+#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
+                                                                    ^~~~~~~~~~~
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2582:84: warning: incompatible pointer types passing 'void **' to parameter of type 'JNIEnv **' (aka 'const struct JNINativeInterface ***') [-Wincompatible-pointer-types]
+                            int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
+                                                                                   ^~~~~~~~~~~~~~
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2590:84: warning: incompatible pointer types passing 'void **' to parameter of type 'JNIEnv **' (aka 'const struct JNINativeInterface ***') [-Wincompatible-pointer-types]
+                            int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
+                                                                                   ^~~~~~~~~~~~~~
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2610:18: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
             LOGD(stderr, "SUBMISSION FAILED. \n");
                  ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2211:22: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2631:22: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
                 LOGD(stderr, "submit xfer failed.\n");
                      ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2280:76: warning: incompatible pointer types passing 'void **' to parameter of type 'JNIEnv **' (aka 'const struct JNINativeInterface ***') [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2696:76: warning: incompatible pointer types passing 'void **' to parameter of type 'JNIEnv **' (aka 'const struct JNINativeInterface ***') [-Wincompatible-pointer-types]
                     int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
                                                                            ^~~~~~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2281:68: warning: incompatible pointer to integer conversion passing 'void *' to parameter of type 'jsize' (aka 'int') [-Wint-conversion]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2697:68: warning: incompatible pointer to integer conversion passing 'void *' to parameter of type 'jsize' (aka 'int') [-Wint-conversion]
                     jbyteArray array = (*jenv)->NewByteArray(jenv, nv21->data);
                                                                    ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2296:18: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2712:18: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
             LOGD(stderr, "SUBMISSION FAILED. \n");
                  ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2345:22: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2756:22: warning: incompatible pointer types passing 'FILE *' (aka 'struct __sFILE *') to parameter of type 'const char *' [-Wincompatible-pointer-types]
                 LOGD(stderr, "submit xfer failed.\n");
                      ^~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h:76:16: note: expanded from macro 'stderr'
 #define stderr (&__sF[2])
                ^~~~~~~~~~
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:26:69: note: expanded from macro 'LOGD'
+/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:48:69: note: expanded from macro 'LOGD'
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
                                                                     ^~~~~~~~~~~
 /home/peter/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h:98:64: note: passing argument to parameter 'fmt' here
 int __android_log_print(int prio, const char* tag, const char* fmt, ...)
                                                                ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2396:1: warning: '/*' within block comment [-Wcomment]
-/*
-^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2505:5: warning: '/*' within block comment [-Wcomment]
-    /*
-    ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2541:5: warning: '/*' within block comment [-Wcomment]
-    /*
-    ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2769:9: warning: '/*' within block comment [-Wcomment]
-        /*
-        ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2859:9: warning: '/*' within block comment [-Wcomment]
-        /*
-        ^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:2931:1: warning: '/*' within block comment [-Wcomment]
-/*
-^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:3009:1: warning: '/*' within block comment [-Wcomment]
-/*
-^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:3031:1: warning: '/*' within block comment [-Wcomment]
-/*
-^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:3059:1: warning: '/*' within block comment [-Wcomment]
-/* This callback function runs once per frame. Use it to perform any
-^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:3092:1: warning: '/*' within block comment [-Wcomment]
-/* increment x to 100 *//*
-^
-/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libUsb_Support/libusb_support.c:3096:1: warning: '/*' within block comment [-Wcomment]
-/* the function must return something - NULL will do */ /*
-^
-59 warnings generated.
+52 warnings generated.

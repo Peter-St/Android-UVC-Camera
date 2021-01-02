@@ -28,14 +28,20 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.app.LocaleChangerAppCompatDelegate;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -44,17 +50,17 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
-import com.akexorcist.localizationactivity.ui.LocalizationActivity;
+import com.franmontiel.localechanger.utils.ActivityRecreationHelper;
+
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
-import humer.UvcCamera.LibUsb.JNA_I_LibUsb;
-import humer.UvcCamera.LibUsb.unRootedSample;
 import noman.zoomtextview.ZoomTextView;
 
-//public class Main extends LocalizationActivity {
-public class Main extends Activity {
+public class Main extends AppCompatActivity {
 
     public static int camStreamingAltSetting;
     public static int camFormatIndex;
@@ -101,44 +107,55 @@ public class Main extends Activity {
         }
     };
 
+    // Language Support
+    private LocaleChangerAppCompatDelegate localeChangerAppCompatDelegate;
+
+    @NonNull
+    @Override
+    public AppCompatDelegate getDelegate() {
+        if (localeChangerAppCompatDelegate == null) {
+            localeChangerAppCompatDelegate = new LocaleChangerAppCompatDelegate(super.getDelegate());
+        }
+
+        return localeChangerAppCompatDelegate;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
- /*
         ImageButton language = findViewById(R.id.language);
-
-        Locale currentLanguage = getCurrentLanguage();
-        //displayMessage(currentLanguage.toString());
-        if (Locale.ENGLISH.equals(currentLanguage)) {
-            language.setImageResource(R.mipmap.country_america);
-        } else if (Locale.CHINESE.equals(currentLanguage)) {
-            language.setImageResource(R.mipmap.country_china);
-        } else if ("ru".equals((currentLanguage.toString()))) {
-            language.setImageResource(R.mipmap.country_russia);
-        }else if (Locale.ITALIAN.equals(currentLanguage)) {
-            language.setImageResource(R.mipmap.country_italy);
-        } else if (Locale.KOREAN.equals(currentLanguage)) {
-            language.setImageResource(R.mipmap.country_korea);
-        } else if (Locale.US.equals(currentLanguage)) {
-            language.setImageResource(R.mipmap.country_america);
-        } else if (Locale.JAPANESE.equals(currentLanguage)) {
-            language.setImageResource(R.mipmap.country_japan);
-        } else if ("pt".equals(currentLanguage.toString())) {
-            language.setImageResource(R.mipmap.country_portugal);
-        } else if ("th".equals(currentLanguage.toString())) {
-            language.setImageResource(R.mipmap.country_thai);
-        } else if ("de".equals(currentLanguage.toString())) {
-            language.setImageResource(R.mipmap.country_germany);
-        }
-
         LinearLayout sv_language_chooser = findViewById(R.id.languageChooser);
         sv_language_chooser.setEnabled(false);
         sv_language_chooser.setAlpha(0); // 100% transparent
-*/
+        Locale currentLanguage = getResources().getConfiguration().locale;;
+        if (currentLanguage.getLanguage().equals("en")) {
+            language.setImageResource(R.mipmap.country_america);
+        } else if (currentLanguage.getLanguage().equals("de")) {
+            language.setImageResource(R.mipmap.country_germany);
+        } else if (currentLanguage.getLanguage().equals(("ru"))) {
+            language.setImageResource(R.mipmap.country_russia);
+        } else if (currentLanguage.getLanguage().equals("it")) {
+            language.setImageResource(R.mipmap.country_italy);
+        } else if (currentLanguage.getLanguage().equals("ko")) {
+            language.setImageResource(R.mipmap.country_korea);
+        } else if (currentLanguage.getLanguage().equals("ja")) {
+            language.setImageResource(R.mipmap.country_japan);
+        } else if (currentLanguage.getLanguage().equals("pt")) {
+            language.setImageResource(R.mipmap.country_portugal);
+        } else if (currentLanguage.getLanguage().equals("th")) {
+            language.setImageResource(R.mipmap.country_thai);
+        } else if (currentLanguage.getLanguage().equals("zh")) {
+            language.setImageResource(R.mipmap.country_china);
+        }
         tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-
         if (camFrameInterval == 0) tv.setText(getResources().getString(R.string.intro) + "\n\n" + getResources().getString(R.string.packetsPerRequest) + " = " + packetsPerRequest + "\n" + getResources().getString(R.string.activeUrbs) + " = " + activeUrbs +
                 "\n" + getResources().getString(R.string.camStreamingAltSetting) + " = " + camStreamingAltSetting + "\n" + getResources().getString(R.string.maxPacketSize) + " = " + maxPacketSize + "\n" + getResources().getString(R.string.videoformat) + " = " + videoformat +
                         "\n" + getResources().getString(R.string.camFormatIndex) + " = " + camFormatIndex + "\n" +
@@ -150,7 +167,6 @@ public class Main extends Activity {
                 "camFrameIndex = " + camFrameIndex + "\nimageWidth = "+ imageWidth + "\nimageHeight = " + imageHeight + "\ncamFrameInterval (fps) = " +
                 (10000000 / camFrameInterval) + "\nLibUsb = " + LIBUSB  +  "" +
                 "\n\nYou can edit these Settings by clicking on (Set Up The Camera Device).\nYou can then save the values and later restore them.");
-        tv.setTextColor(darker(Color.BLACK, 100));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             ScrollView scrollView = findViewById(R.id.scrolli);
             scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
@@ -167,10 +183,8 @@ public class Main extends Activity {
                     button.setAlpha(0.8f);
                     Button button2 = findViewById(R.id.lowerSize);
                     button2.setEnabled(true); button2.setAlpha(0.8f);
-
                     buttonHandler = new Handler();
                     buttonHandler.postDelayed(myRunnable, TIME_TO_WAIT);
-
                 }
             });
         }
@@ -179,7 +193,6 @@ public class Main extends Activity {
         Button button2 = findViewById(R.id.lowerSize);
         button2.setEnabled(false); button2.setAlpha(0);
     }
-
 
     @Override
     public void onRequestPermissionsResult(
@@ -259,31 +272,22 @@ public class Main extends Activity {
     }
 
     ////////////////   BUTTONS  //////////////////////////////////////////
-/*
+
     public void changeTheLanguage(View view){
         if(isLanguageChooserEnabled()) {
+            log ("languageChooser is enabled");
             disableLanguageChooser();
             displayIntro();
         } else{
+            log ("enabling languageChooser");
             tv.setEnabled(false);
             tv.setAlpha(0);
             LinearLayout sv_language_chooser = findViewById(R.id.languageChooser);
             sv_language_chooser.setEnabled(true);
             sv_language_chooser.setAlpha(1); // 100% transparent
-            findViewById(R.id.btn_america).setOnClickListener(onAmericaLanguageSelected());
-            findViewById(R.id.btn_china).setOnClickListener(onChinaLanguageSelected());
-            findViewById(R.id.btn_italy).setOnClickListener(onItalyLanguageSelected());
-            findViewById(R.id.btn_japan).setOnClickListener(onJapanLanguageSelected());
-            findViewById(R.id.btn_korea).setOnClickListener(onKoreaLanguageSelected());
-            findViewById(R.id.btn_portugal).setOnClickListener(onPortugalLanguageSelected());
-            findViewById(R.id.btn_thai).setOnClickListener(onThaiLanguageSelected());
-            findViewById(R.id.btn_russia).setOnClickListener(onRussiaLanguageSelected());
-            findViewById(R.id.btn_ger).setOnClickListener(onGermanyLanguageSelected());
-            // default Language
-            findViewById(R.id.btn_defaultLanguage).setOnClickListener(onDefaultLanguageSelected());
         }
     }
-*/
+
     public void raiseSize(View view){
         final int TIME_TO_WAIT = 2500;
         Button button = findViewById(R.id.raiseSize);
@@ -298,10 +302,8 @@ public class Main extends Activity {
         Button button2 = findViewById(R.id.lowerSize);
         button2.setEnabled(true); button2.setAlpha(0.8f);
         tv.raiseSize();
-
         buttonHandler = new Handler();
         buttonHandler.postDelayed(myRunnable, TIME_TO_WAIT);
-
     }
 
     public void lowerSize(View view){
@@ -430,10 +432,6 @@ public class Main extends Activity {
         }
     }
 
-    public void log(String msg) {
-        Log.i("UVC_Camera_Main", msg);
-    }
-
     public void restoreCameraSettings (View view) {
         if (showStoragePermissionRead() && showStoragePermissionWrite()) {
             SaveToFile  stf;
@@ -529,6 +527,121 @@ public class Main extends Activity {
         }
     }
 
+    // Language Buttons Methods
+    public void onAmericaLanguageSelected(View view) {
+        String languageToLoad  = "en"; // your language
+        Locale locale = new Locale(languageToLoad);
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getBaseContext().getResources().updateConfiguration(config,
+                getBaseContext().getResources().getDisplayMetrics());
+        ActivityRecreationHelper.recreate(this, true);
+    }
+
+    public void onGermanyLanguageSelected(View view) {
+        String languageToLoad  = "de"; // your language
+        Locale locale = new Locale(languageToLoad);
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getBaseContext().getResources().updateConfiguration(config,
+                getBaseContext().getResources().getDisplayMetrics());
+        //LocaleChanger.setLocale(new Locale("de", "DE"));
+        ActivityRecreationHelper.recreate(this, true);
+        log("German Button Click Event");
+    }
+
+    public void onItalyLanguageSelected(View view) {
+        String languageToLoad  = "it"; // your language
+        Locale locale = new Locale(languageToLoad);
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getBaseContext().getResources().updateConfiguration(config,
+                getBaseContext().getResources().getDisplayMetrics());
+        ActivityRecreationHelper.recreate(this, true);
+    }
+
+    public void onJapanLanguageSelected(View view) {
+        String languageToLoad  = "ja"; // your language
+        Locale locale = new Locale(languageToLoad);
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getBaseContext().getResources().updateConfiguration(config,
+                getBaseContext().getResources().getDisplayMetrics());
+        ActivityRecreationHelper.recreate(this, true);
+    }
+
+    public void onKoreaLanguageSelected(View view) {
+        String languageToLoad  = "ko"; // your language
+        Locale locale = new Locale(languageToLoad);
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getBaseContext().getResources().updateConfiguration(config,
+                getBaseContext().getResources().getDisplayMetrics());
+        ActivityRecreationHelper.recreate(this, true);
+    }
+
+    public void onPortugalLanguageSelected(View view) {
+        String languageToLoad  = "pt"; // your language
+        Locale locale = new Locale(languageToLoad);
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getBaseContext().getResources().updateConfiguration(config,
+                getBaseContext().getResources().getDisplayMetrics());
+        ActivityRecreationHelper.recreate(this, true);
+    }
+
+    public void onRussiaLanguageSelected(View view) {
+        String languageToLoad  = "ru"; // your language
+        Locale locale = new Locale(languageToLoad);
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getBaseContext().getResources().updateConfiguration(config,
+                getBaseContext().getResources().getDisplayMetrics());
+        ActivityRecreationHelper.recreate(this, true);
+    }
+
+    public void onThaiLanguageSelected(View view) {
+        String languageToLoad  = "th"; // your language
+        Locale locale = new Locale(languageToLoad);
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getBaseContext().getResources().updateConfiguration(config,
+                getBaseContext().getResources().getDisplayMetrics());
+        ActivityRecreationHelper.recreate(this, true);
+    }
+
+    public void onChinaLanguageSelected(View view) {
+        String languageToLoad  = "zh"; // your language
+        Locale locale = new Locale(languageToLoad);
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getBaseContext().getResources().updateConfiguration(config,
+                getBaseContext().getResources().getDisplayMetrics());
+        ActivityRecreationHelper.recreate(this, true);
+    }
+
+    public void onDefaultLanguageSelected(View view) {
+        String languageToLoad  = "en"; // your language
+        Locale locale = new Locale(languageToLoad);
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getBaseContext().getResources().updateConfiguration(config,
+                getBaseContext().getResources().getDisplayMetrics());
+        ActivityRecreationHelper.recreate(this, true);
+    }
+
+    // Other Methods
+
     public void displayMessage(final String msg) {
         runOnUiThread(new Runnable() {
             @Override
@@ -537,6 +650,11 @@ public class Main extends Activity {
             }
         });
     }
+
+    public void log(String msg) {
+        Log.i("UVC_Camera_Main", msg);
+    }
+
 
     public void setTextTextView () {
         if (camFrameInterval == 0) tv.setText("Your current Values are:\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
@@ -647,60 +765,18 @@ public class Main extends Activity {
                 Math.max( (int)(b * factor), 0 ) );
     }
 
-    // Language Buttons Methods
-/*
-    private View.OnClickListener onAmericaLanguageSelected() {
-        return view -> setLanguage("en");
-    }
-
-    private View.OnClickListener onChinaLanguageSelected() {
-        return view -> setLanguage("zh");
-    }
-
-    private View.OnClickListener onItalyLanguageSelected() {
-        return view -> setLanguage("it");
-    }
-
-    private View.OnClickListener onJapanLanguageSelected() {
-        return view -> setLanguage("ja");
-    }
-
-    private View.OnClickListener onKoreaLanguageSelected() {
-        return view -> setLanguage("ko");
-    }
-
-    private View.OnClickListener onPortugalLanguageSelected() {
-        return view -> setLanguage("pt");
-    }
-
-    private View.OnClickListener onThaiLanguageSelected() {
-        return view -> setLanguage("th");
-    }
-
-    private View.OnClickListener onRussiaLanguageSelected() {
-        return view -> setLanguage("ru");
-    }
-
-    private View.OnClickListener onGermanyLanguageSelected() {
-        return view -> setLanguage("de");
-    }
-
-    private View.OnClickListener onDefaultLanguageSelected() {
-        return view -> setLanguage("en");
-    }
-
     private void disableLanguageChooser() {
         LinearLayout sv_language_chooser = findViewById(R.id.languageChooser);
         sv_language_chooser.setEnabled(false);
         sv_language_chooser.setAlpha(0); // 100% transparent
     }
 
-       private boolean isLanguageChooserEnabled () {
+    private boolean isLanguageChooserEnabled () {
         LinearLayout sv_language_chooser = findViewById(R.id.languageChooser);
         if(sv_language_chooser.isEnabled()) return true;
         return false;
     }
-*/
+
     private void displayIntro() {
         tv.setEnabled(true);
         tv.setAlpha(1);

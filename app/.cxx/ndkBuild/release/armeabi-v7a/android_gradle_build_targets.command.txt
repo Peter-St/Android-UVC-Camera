@@ -15,12 +15,11 @@ dpfp
 dpfp_threaded
 fxload
 hotplugtest
-jpeg
+jpeg-turbo
 listdevs
 sam3u_benchmark
 stress
 usb1.0
 xusb
-yuv
 jvmArgs : 
 

@@ -10,9 +10,9 @@
         android:id="@+id/btn_defaultLanguage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Default Language"
         android:background="@drawable/bg_button_green"
-        />
+        android:onClick="onDefaultLanguageSelected"
+        android:text="Default Language" />
 
 
     <HorizontalScrollView
@@ -31,99 +31,108 @@
                 android:layout_width="@dimen/btn_language_size"
                 android:layout_height="@dimen/btn_language_size"
                 android:layout_marginEnd="@dimen/padding"
+                android:layout_marginRight="@dimen/padding"
                 android:background="@color/transparent"
                 android:contentDescription="@string/america"
+                android:onClick="onAmericaLanguageSelected"
                 android:scaleType="fitCenter"
-                android:src="@mipmap/country_america"
-                android:layout_marginRight="@dimen/padding" />
+                android:src="@mipmap/country_america" />
 
             <ImageButton
                 android:id="@+id/btn_russia"
                 android:layout_width="@dimen/btn_language_size"
                 android:layout_height="@dimen/btn_language_size"
                 android:layout_marginEnd="@dimen/padding"
+                android:layout_marginRight="@dimen/padding"
                 android:background="@color/transparent"
                 android:contentDescription="@string/russia"
+                android:onClick="onRussiaLanguageSelected"
                 android:scaleType="fitCenter"
-                android:src="@mipmap/country_russia"
-                android:layout_marginRight="@dimen/padding" />
+                android:src="@mipmap/country_russia" />
 
             <ImageButton
                 android:id="@+id/btn_china"
                 android:layout_width="@dimen/btn_language_size"
                 android:layout_height="@dimen/btn_language_size"
                 android:layout_marginEnd="@dimen/padding"
+                android:layout_marginRight="@dimen/padding"
                 android:background="@color/transparent"
                 android:contentDescription="@string/china"
+                android:onClick="onChinaLanguageSelected"
                 android:scaleType="fitCenter"
-                android:src="@mipmap/country_china"
-                android:layout_marginRight="@dimen/padding" />
+                android:src="@mipmap/country_china" />
 
             <ImageButton
                 android:id="@+id/btn_italy"
                 android:layout_width="@dimen/btn_language_size"
                 android:layout_height="@dimen/btn_language_size"
                 android:layout_marginEnd="@dimen/padding"
+                android:layout_marginRight="@dimen/padding"
                 android:background="@color/transparent"
                 android:contentDescription="@string/italy"
+                android:onClick="onItalyLanguageSelected"
                 android:scaleType="fitCenter"
-                android:src="@mipmap/country_italy"
-                android:layout_marginRight="@dimen/padding" />
+                android:src="@mipmap/country_italy" />
 
             <ImageButton
                 android:id="@+id/btn_japan"
                 android:layout_width="@dimen/btn_language_size"
                 android:layout_height="@dimen/btn_language_size"
                 android:layout_marginEnd="@dimen/padding"
+                android:layout_marginRight="@dimen/padding"
                 android:background="@color/transparent"
                 android:contentDescription="@string/japan"
+                android:onClick="onJapanLanguageSelected"
                 android:scaleType="fitCenter"
-                android:src="@mipmap/country_japan"
-                android:layout_marginRight="@dimen/padding" />
+                android:src="@mipmap/country_japan" />
 
             <ImageButton
                 android:id="@+id/btn_korea"
                 android:layout_width="@dimen/btn_language_size"
                 android:layout_height="@dimen/btn_language_size"
                 android:layout_marginEnd="@dimen/padding"
+                android:layout_marginRight="@dimen/padding"
                 android:background="@color/transparent"
                 android:contentDescription="@string/korea"
+                android:onClick="onKoreaLanguageSelected"
                 android:scaleType="fitCenter"
-                android:src="@mipmap/country_korea"
-                android:layout_marginRight="@dimen/padding" />
+                android:src="@mipmap/country_korea" />
 
             <ImageButton
                 android:id="@+id/btn_portugal"
                 android:layout_width="@dimen/btn_language_size"
                 android:layout_height="@dimen/btn_language_size"
                 android:layout_marginEnd="@dimen/padding"
+                android:layout_marginRight="@dimen/padding"
                 android:background="@color/transparent"
                 android:contentDescription="@string/portugal"
+                android:onClick="onPortugalLanguageSelected"
                 android:scaleType="fitCenter"
-                android:src="@mipmap/country_portugal"
-                android:layout_marginRight="@dimen/padding" />
+                android:src="@mipmap/country_portugal" />
 
             <ImageButton
                 android:id="@+id/btn_thai"
                 android:layout_width="@dimen/btn_language_size"
                 android:layout_height="@dimen/btn_language_size"
                 android:layout_marginEnd="@dimen/padding"
+                android:layout_marginRight="@dimen/padding"
                 android:background="@color/transparent"
                 android:contentDescription="@string/thai"
+                android:onClick="onThaiLanguageSelected"
                 android:scaleType="fitCenter"
-                android:src="@mipmap/country_thai"
-                android:layout_marginRight="@dimen/padding" />
+                android:src="@mipmap/country_thai" />
 
             <ImageButton
                 android:id="@+id/btn_ger"
                 android:layout_width="@dimen/btn_language_size"
                 android:layout_height="@dimen/btn_language_size"
                 android:layout_marginEnd="@dimen/padding"
+                android:layout_marginRight="@dimen/padding"
                 android:background="@color/transparent"
                 android:contentDescription="@string/thai"
+                android:onClick="onGermanyLanguageSelected"
                 android:scaleType="fitCenter"
-                android:src="@mipmap/country_germany"
-                android:layout_marginRight="@dimen/padding" />
+                android:src="@mipmap/country_germany" />
         </LinearLayout>
     </HorizontalScrollView>
 </LinearLayout>

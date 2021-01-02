@@ -1,12 +1,95 @@
-Android NDK: WARNING:/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libyuv/Android.mk:yuv_static: LOCAL_LDLIBS is always ignored for static libraries    
-make: Nothing to be done for 'Usb_Support'.
-make: Nothing to be done for 'dpfp'.
-make: Nothing to be done for 'dpfp_threaded'.
-make: Nothing to be done for 'fxload'.
-make: Nothing to be done for 'hotplugtest'.
-make: Nothing to be done for 'listdevs'.
-make: Nothing to be done for 'sam3u_benchmark'.
-make: Nothing to be done for 'stress'.
+Android NDK: WARNING: Unsupported source file extensions in /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/android-libjpeg-turbo/jni/vendor/libjpeg-turbo/Android.mk for module jpeg-turbo    
+Android NDK:   libjpeg-turbo-2.0.1/cdjpeg.h    
+[armeabi-v7a] Compile arm    : Usb_Support <= libusb_support.c
+[armeabi-v7a] Compile thumb  : usb1.0 <= core.c
+[armeabi-v7a] Compile thumb  : usb1.0 <= descriptor.c
+[armeabi-v7a] Compile thumb  : usb1.0 <= hotplug.c
+[armeabi-v7a] Compile thumb  : usb1.0 <= io.c
+[armeabi-v7a] Compile thumb  : usb1.0 <= sync.c
+[armeabi-v7a] Compile thumb  : usb1.0 <= strerror.c
+[armeabi-v7a] Compile thumb  : usb1.0 <= linux_usbfs.c
+[armeabi-v7a] Compile thumb  : usb1.0 <= events_posix.c
+[armeabi-v7a] Compile thumb  : usb1.0 <= threads_posix.c
+[armeabi-v7a] Compile thumb  : usb1.0 <= linux_netlink.c
+[armeabi-v7a] SharedLibrary  : libusb1.0.so
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jsimd.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jsimd_neon.S
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jcapimin.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jcapistd.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jccoefct.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jccolor.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jcdctmgr.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jchuff.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jcinit.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jcmainct.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jcmarker.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jcmaster.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jcomapi.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jcparam.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jcphuff.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jcprepct.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jcsample.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jctrans.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jdapimin.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jdapistd.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jdatadst.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jdatasrc.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jdcoefct.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jdcolor.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jddctmgr.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jdhuff.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jdinput.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jdmainct.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jdmarker.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jdmaster.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jdmerge.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jdphuff.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jdpostct.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jdsample.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jdtrans.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jerror.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jfdctflt.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jfdctfst.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jfdctint.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jidctflt.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jidctfst.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jidctint.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jidctred.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jquant1.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jquant2.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jutils.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jmemmgr.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jmemnobs.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= rdbmp.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= wrbmp.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= rdppm.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= wrppm.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jaricom.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jcarith.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jdarith.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= turbojpeg.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= transupp.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jdatadst-tj.c
+[armeabi-v7a] Compile thumb  : jpeg-turbo <= jdatasrc-tj.c
+[armeabi-v7a] SharedLibrary  : libjpeg-turbo.so
+[armeabi-v7a] SharedLibrary  : libUsb_Support.so
+[armeabi-v7a] Compile thumb  : dpfp <= dpfp.c
+[armeabi-v7a] Executable     : dpfp
+[armeabi-v7a] Compile thumb  : dpfp_threaded <= dpfp.c
+[armeabi-v7a] Executable     : dpfp_threaded
+[armeabi-v7a] Compile thumb  : fxload <= ezusb.c
+[armeabi-v7a] Compile thumb  : fxload <= fxload.c
+[armeabi-v7a] Executable     : fxload
+[armeabi-v7a] Compile thumb  : hotplugtest <= hotplugtest.c
+[armeabi-v7a] Executable     : hotplugtest
+make: Nothing to be done for 'jpeg-turbo'.
+[armeabi-v7a] Compile thumb  : listdevs <= listdevs.c
+[armeabi-v7a] Executable     : listdevs
+[armeabi-v7a] Compile thumb  : sam3u_benchmark <= sam3u_benchmark.c
+[armeabi-v7a] Executable     : sam3u_benchmark
+[armeabi-v7a] Compile thumb  : stress <= stress.c
+[armeabi-v7a] Compile thumb  : stress <= testlib.c
+[armeabi-v7a] Executable     : stress
 make: Nothing to be done for 'usb1.0'.
-make: Nothing to be done for 'xusb'.
-make: Nothing to be done for 'yuv'.
+[armeabi-v7a] Compile thumb  : xusb <= xusb.c
+[armeabi-v7a] Executable     : xusb

@@ -1,4 +1,5 @@
 package com.example.androidthings.videortc;
+
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -141,12 +142,10 @@ public class UsbCapturer implements VideoCapturer {
 
     private static boolean isLoaded;
     static {
-        if (!isLoaded) {
+        if (!isLoaded && LIBUSB) {
             System.loadLibrary("usb1.0");
-            System.loadLibrary("yuv");
             System.loadLibrary("Usb_Support");
-            System.loadLibrary("jpeg");
-
+            System.loadLibrary("jpeg-turbo");
             isLoaded = true;
         }
     }
@@ -854,15 +853,15 @@ public class UsbCapturer implements VideoCapturer {
                     yuvImage.compressToJpeg(new Rect(0, 0, imageWidth, imageHeight), 100, os);
                     byte[] jpegByteArray = os.toByteArray();
                     final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
-                    final byte [] yuvimage;
+                    final byte [] NV21image;
                     if (callActivity.horizontalFlip || callActivity.verticalFlip || callActivity.rotate != 0) {
-                        yuvimage = getNV21(imageWidth, imageHeight, flipImage(bitmap));
+                        NV21image = getNV21(imageWidth, imageHeight, flipImage(bitmap));
                         log("before flip Capturer Observer");
                     } else {
-                        yuvimage = getNV21(imageWidth, imageHeight, bitmap);
+                        NV21image = getNV21(imageWidth, imageHeight, bitmap);
                         log("before Capturer Observer");
                     }
-                    capturerObserver.onByteBufferFrameCaptured(yuvimage, imageWidth, imageHeight, 0, imageTime);
+                    capturerObserver.onByteBufferFrameCaptured(NV21image, imageWidth, imageHeight, 0, imageTime);
                 }
             }
         }
@@ -879,40 +878,30 @@ public class UsbCapturer implements VideoCapturer {
     }
 
     private byte [] getNV21 (int inputWidth, int inputHeight, Bitmap scaled) {
-
         int [] argb = new int[inputWidth * inputHeight];
-
         scaled.getPixels(argb, 0, inputWidth, 0, 0, inputWidth, inputHeight);
-
         byte [] yuv = new byte[inputWidth*inputHeight*3/2];
         encodeYUV420SP(yuv, argb, inputWidth, inputHeight);
-
         scaled.recycle();
-
         return yuv;
     }
 
     void encodeYUV420SP(byte[] yuv420sp, int[] argb, int width, int height) {
         final int frameSize = width * height;
-
         int yIndex = 0;
         int uvIndex = frameSize;
-
         int a, R, G, B, Y, U, V;
         int index = 0;
         for (int j = 0; j < height; j++) {
             for (int i = 0; i < width; i++) {
-
                 a = (argb[index] & 0xff000000) >> 24; // a is not used obviously
                 R = (argb[index] & 0xff0000) >> 16;
                 G = (argb[index] & 0xff00) >> 8;
                 B = (argb[index] & 0xff) >> 0;
-
                 // well known RGB to YUV algorithm
                 Y = ( (  66 * R + 129 * G +  25 * B + 128) >> 8) +  16;
                 U = ( ( -38 * R -  74 * G + 112 * B + 128) >> 8) + 128;
                 V = ( ( 112 * R -  94 * G -  18 * B + 128) >> 8) + 128;
-
                 // NV21 has a plane of Y and interleaved planes of VU each sampled by a factor of 2
                 //    meaning for every 4 Y pixels there are 1 V and 1 U.  Note the sampling is every other
                 //    pixel AND every other scanline.
@@ -921,12 +910,10 @@ public class UsbCapturer implements VideoCapturer {
                     yuv420sp[uvIndex++] = (byte)((V<0) ? 0 : ((V > 255) ? 255 : V));
                     yuv420sp[uvIndex++] = (byte)((U<0) ? 0 : ((U > 255) ? 255 : U));
                 }
-
                 index ++;
             }
         }
     }
-
 
     private byte[] rgbValuesFromBitmap(Bitmap bitmap)
     {
@@ -936,18 +923,14 @@ public class UsbCapturer implements VideoCapturer {
         Bitmap argbBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(),
                 Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(argbBitmap);
-
         Paint paint = new Paint();
-
         paint.setColorFilter(colorFilter);
         canvas.drawBitmap(bitmap, 0, 0, paint);
-
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
         int componentsPerPixel = 3;
         int totalPixels = width * height;
         int totalBytes = totalPixels * componentsPerPixel;
-
         byte[] rgbValues = new byte[totalBytes];
         @ColorInt int[] argbPixels = new int[totalPixels];
         argbBitmap.getPixels(argbPixels, 0, width, 0, 0, width, height);
@@ -960,7 +943,6 @@ public class UsbCapturer implements VideoCapturer {
             rgbValues[i * componentsPerPixel + 1] = (byte) green;
             rgbValues[i * componentsPerPixel + 2] = (byte) blue;
         }
-
         return rgbValues;
     }
 
@@ -974,39 +956,26 @@ public class UsbCapturer implements VideoCapturer {
                 final int r = rgb[rgbIndex] & 0xFF;
                 final int g = rgb[rgbIndex + 1] & 0xFF;
                 final int b = rgb[rgbIndex + 2] & 0xFF;
-
                 final int y = (int) (0.257 * r + 0.504 * g + 0.098 * b + 16);
                 final int u = (int) (-0.148 * r - 0.291 * g + 0.439 * b + 128);
                 final int v = (int) (0.439 * r - 0.368 * g - 0.071 * b + 128);
-
                 yuv[yIndex++] = (byte) Math.max(0, Math.min(255, y));
                 if ((i & 0x01) == 0 && (j & 0x01) == 0) {
                     yuv[uvIndex++] = (byte) Math.max(0, Math.min(255, v));
                     yuv[uvIndex++] = (byte) Math.max(0, Math.min(255, u));
                 }
-
                 rgbIndex += 3;
             }
         }
     }
 
-
-
-
-
     public void processReceivedMJpegVideoFrameKamera(byte[] mjpegFrameData) throws Exception {
-
         byte[] jpegFrameData = convertMjpegFrameToJpegKamera(mjpegFrameData);
         Bitmap bitmap = BitmapFactory.decodeByteArray(jpegFrameData, 0, jpegFrameData.length);
         byte [] yuv = new byte[imageWidth*imageHeight*3/2];
-
         if (callActivity.horizontalFlip || callActivity.verticalFlip || callActivity.rotate != 0) {
             rgbToYuv(rgbValuesFromBitmap(flipImage(bitmap)), imageWidth, imageHeight, yuv);
         } else rgbToYuv(rgbValuesFromBitmap(bitmap), imageWidth, imageHeight, yuv);
-
-        //rgbToNV21(jpegFrameData, bitmap.getWidth(), bitmap.getHeight(), yuv);
-        //encodeYUV420SP(yuv, rgbValuesFromBitmap(bitmap), imageWidth, imageHeight);
-
         final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
         final File file = new File(rootPath, "/" + saveFilePathFolder);
         if (!file.exists()) {
@@ -1025,7 +994,6 @@ public class UsbCapturer implements VideoCapturer {
             try (FileOutputStream fos = new FileOutputStream(rootdirStr)) {
                 fos.write(yuv);
                 value++;
-                //fos.close(); There is no more need for this line since you had created the instance of "fos" inside the try. And this will automatically close the OutputStream
             }
         }
         if (exit == false) {
@@ -1054,7 +1022,6 @@ public class UsbCapturer implements VideoCapturer {
             e.printStackTrace();
         }
     }
-
 
     // see USB video class standard, USB_Video_Payload_MJPEG_1.5.pdf
     private byte[] convertMjpegFrameToJpegKamera(byte[] frameData) throws Exception {
@@ -1087,8 +1054,6 @@ public class UsbCapturer implements VideoCapturer {
                 return a;
             } else
                 return null;
-
-
         }
     }
 
@@ -1113,7 +1078,6 @@ public class UsbCapturer implements VideoCapturer {
     }
 
     public void stopTheCameraStream() {
-
         stopKamera = true;
         if (LIBUSB) {
             JNA_I_LibUsb.INSTANCE.stopStreaming();
@@ -1152,7 +1116,6 @@ public class UsbCapturer implements VideoCapturer {
         return result;
     }
 
-
     public int getBus(String myString) {
         if(myString.length() > 3)
             return parseInt(myString.substring(myString.length()-7 , myString.length() - 4) ) ;
@@ -1166,105 +1129,4 @@ public class UsbCapturer implements VideoCapturer {
         else
             return 0;
     }
-
 }
-
-/*
- if (FFmpeg.getInstance(callActivity.getApplicationContext()).isSupported()) {
-            //versionFFmpeg();
-            String resolution = new String();
-            resolution += imageWidth;
-            resolution += "x";
-            resolution += imageHeight;
-
-            String[] cmd = {"-i", "jpegFrameData", "output.mov", "-s", resolution , "-pix_fmt" , "nv21", "test-yuv420p.yuv"};
-
-
-            // ffmpeg -i test-640x480.jpg -s 640x480 -pix_fmt yuv420p test-yuv420p.yuv
-
-            FFmpeg ffmpeg = FFmpeg.getInstance(callActivity.getApplicationContext());
-            ffmpeg.execute(cmd, new ExecuteBinaryResponseHandler() {
-
-                @Override
-                public void onStart() {Timber.d( "on start");}
-
-                @Override
-                public void onProgress(String message) {Timber.d(message);}
-
-                @Override
-                public void onFailure(String message) {Timber.d(message);}
-
-                @Override
-                public void onSuccess(String message) {Timber.d(message);}
-
-                @Override
-                public void onFinish() {Timber.d("on finish");}
-
-            });
-
-        } else {
-            // ffmpeg is not supported
-        }
-        //byte[] jpegFrameData = convertMjpegFrameToJpegKamera(mjpegFrameData);
-
- */
-/*
-    private void versionFFmpeg() {
-        FFmpeg.getInstance(callActivity.getApplicationContext()).execute(new String[]{"-version"}, new ExecuteBinaryResponseHandler() {
-            @Override
-            public void onSuccess(String message) {
-                Timber.d(message);
-            }
-
-            @Override
-            public void onProgress(String message) {
-                Timber.d(message);
-            }
-        });
-
-    }
-*/
-
-/*
-
-    /** Convert YV12 (YYYYYYYY:UU:VV) to NV21 (YYYYYYYYY:VUVU) */  /*
-public byte[] YV12toNV21(final byte[] input, byte[] output, final int width, final int height) {
-    if (output == null) {
-        output = new byte[input.length];
-    }
-    final int size = width * height;
-    final int quarter = size / 4;
-    final int u0 = size + quarter;
-
-    System.arraycopy(input, 0, output, 0, size); // Y is same
-
-    for (int v = size, u = u0, o = size; v < u0; u++, v++, o += 2) {
-        output[o] = input[v]; // For NV21, V first
-        output[o + 1] = input[u]; // For NV21, U second
-    }
-    return output;
-}
- */
-
-    /*
-    if (!OpenCVLoader.initDebug())
-            Log.e("OpenCv", "Unable to load OpenCV");
-        else
-            Log.d("OpenCv", "OpenCV loaded");
-     */
-
-     /*
-        Mat rgbaMat = new Mat(imageWidth, imageHeight, CvType.CV_8UC3);
-        Utils.bitmapToMat(bitmap, rgbaMat);
-        // convert to NV21 ...
-        Mat nv12Mat = new Mat(imageWidth, imageHeight, CvType.CV_8UC2);
-        Imgproc.cvtColor( rgbaMat, nv12Mat, Imgproc.COLOR_BGR2YUV_I420 );
-        byte[] nv12buffer = new byte[(int) (nv12Mat.total() * nv12Mat.channels())];
-        nv12Mat.get(0, 0, nv12buffer);
-        byte [] nv21Array = YV12toNV21 (nv12buffer, null , imageWidth, imageHeight);
-
-        if (exit == false) {
-            Long imageTime = System.currentTimeMillis();
-            capturerObserver.onByteBufferFrameCaptured(nv21Array, imageWidth, imageHeight, 0, imageTime);
-        }
-        //*/

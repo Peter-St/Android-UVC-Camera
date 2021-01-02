@@ -24,6 +24,13 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
 
+    <android.support.constraint.Guideline
+        android:id="@+id/v_line_20"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.2" />
+
     <android.support.v4.widget.NestedScrollView
 
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -429,7 +436,7 @@
         android:id="@+id/button_ok"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:text="ok"
+        android:text="OK"
         app:layout_constraintTop_toTopOf="@id/h_line"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="@id/v_line"
@@ -445,19 +452,32 @@
         android:id="@+id/button_cancel"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:text="cancel"
-
+        android:text="CANCEL"
         app:layout_constraintTop_toTopOf="@id/h_line"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintLeft_toLeftOf="@+id/v_line_20"
+        app:layout_constraintLeft_toRightOf="@+id/button_delete"
         app:layout_constraintRight_toRightOf="@id/v_line"
         android:background="@drawable/bg_button"
-
         android:layout_marginEnd="5dp"
         android:layout_marginStart="5dp"
         android:layout_marginHorizontal="5dp"
         android:layout_marginVertical="5dp"
         />
+
+    <Button
+        android:id="@+id/button_delete"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginVertical="5dp"
+        android:background="@drawable/bg_button_red"
+        android:text="delete\nFile"
+        android:textSize="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/button_cancel"
+        app:layout_constraintTop_toTopOf="@id/h_line" />
 
 
 </android.support.constraint.ConstraintLayout>

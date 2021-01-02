@@ -39,7 +39,6 @@ import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.support.constraint.ConstraintLayout;
@@ -58,16 +57,11 @@ import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.Toast;
 
-
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.crowdfire.cfalertdialog.views.CFPushButton;
-import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
 import com.tomer.fadingtextview.FadingTextView;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -80,7 +74,6 @@ import humer.UvcCamera.AutomaticDetection.Jna_AutoDetect;
 import humer.UvcCamera.AutomaticDetection.Jna_AutoDetect_Handler;
 import humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect;
 import humer.UvcCamera.LibUsb.JNA_I_LibUsb;
-import humer.UvcCamera.LibUsb.unRootedSample;
 import humer.UvcCamera.UVC_Descriptor.UVC_Descriptor;
 import humer.UvcCamera.UsbIso64.USBIso;
 import humer.UvcCamera.UsbIso64.usbdevice_fs_util;
@@ -278,9 +271,11 @@ public class SetUpTheUsbDevice extends Activity {
     static {
         if (!isLoaded) {
             System.loadLibrary("usb1.0");
-            System.loadLibrary("jpeg");
-            System.loadLibrary("yuv");
+            //System.loadLibrary("jpeg");
+            //System.loadLibrary("yuv");
             System.loadLibrary("Usb_Support");
+            System.loadLibrary("jpeg-turbo");
+
             isLoaded = true;
         }
     }
@@ -415,19 +410,9 @@ public class SetUpTheUsbDevice extends Activity {
         button.setEnabled(false); button.setAlpha(0);
         Button button2 = findViewById(R.id.lowerSize_setUp);
         button2.setEnabled(false); button2.setAlpha(0);
-
-
         ConstraintLayout fadingTextView = (ConstraintLayout) findViewById(R.id.fadingTextViewLayout);
         fadingTextView.setVisibility(View.INVISIBLE);
         fadingTextView.setVisibility(View.GONE);
-
-
-
-
-
-
-
-
     }
 
     @Override
@@ -1680,7 +1665,6 @@ public class SetUpTheUsbDevice extends Activity {
                 if ( a >= 10) break;
             }
         }
-        //if (camDeviceConnection != null || camStreamingInterface != null) closeCameraDevice();
         if(libUsb) {
             if(!libusb_is_initialized) {
                 libusb_is_initialized = true;
@@ -1722,36 +1706,6 @@ public class SetUpTheUsbDevice extends Activity {
                     stringBuilder.append("Length = " + frameSize + "\n");
                     if (frameSize == (imageWidth*imageHeight*2)) stringBuilder.append("\nThe Frame length matches it's expected size.\nThis are the first 20 bytes of the frame:");
                     stringBuilder.append("\ndata = " + hexDump(videoFrame.getByteArray(0,50), Math.min(32, 50)));
-                    /*
-                    byte [] data = videoFrame.getByteArray(0, frameSize);
-                    String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
-                    File file = new File(rootPath);
-                    if (!file.exists()) {
-                        file.mkdirs();
-                    }
-                    String fileName = new File(rootPath + "bin" + ".yuv").getPath() ;
-                    FileOutputStream fileOutputStream = null;
-                    try {
-                        fileOutputStream = null;
-                        try {
-                            fileOutputStream = new FileOutputStream(fileName);
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            fileOutputStream.write(data);
-                            fileOutputStream.flush();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    } finally {
-                        try {
-                            fileOutputStream.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                     */
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -1763,7 +1717,6 @@ public class SetUpTheUsbDevice extends Activity {
                     return true;
                 }
             });
-            //JniIsoStreamActivity(null, 0, 0);
             JNA_I_LibUsb.INSTANCE.getFramesOverLibUsb( videoFormatToInt(), 0, 1);
             try {
                 latch.await();
@@ -1773,9 +1726,6 @@ public class SetUpTheUsbDevice extends Activity {
             JNA_I_LibUsb.INSTANCE.stopStreaming();
         } else {
             if(libusb_is_initialized) {
-                //JNA_I_LibUsb.INSTANCE.stopStreaming();
-                //JNA_I_LibUsb.INSTANCE.closeLibUsb();
-                //JNA_I_LibUsb.INSTANCE.exit();
                 try {
                     findCam();
                     openCam(true);

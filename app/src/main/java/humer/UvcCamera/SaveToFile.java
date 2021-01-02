@@ -432,6 +432,139 @@ public class SaveToFile  {
 
             }
         });
+        Button button_delete = (Button) activity.findViewById(R.id.button_delete);
+        button_delete.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                log("delete button clicked");
+
+
+
+                CFAlertDialog.Builder builder = new CFAlertDialog.Builder(mContext);
+                builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+                builder.setTitle("Delete Savefile:");
+                builder.setMessage("Select the file your want to delete:");
+
+
+                int selectedItem = 0;
+
+
+
+                fileName = null;
+                name = null;
+                rootdirStr = null;
+                stringBuilder = new StringBuilder();
+                paths = new ArrayList<>(50);
+
+
+
+
+                Context context = activity.getApplicationContext();
+                File directory = context.getFilesDir();
+                File file = new File(directory, saveFilePathFolder);
+                if (!file.exists()) {
+                    if (!file.mkdirs()) {
+                        Log.e("TravellerLog :: ", "Problem creating Image folder");
+                    }
+                }
+                rootdirStr = file.toString();
+                rootdirStr += "/";
+                listFilesForFolder(file);
+
+                if (paths.isEmpty() == true) returnToMainLayout("No save files stored on your Device\n");
+                else {
+                    for (int i = 0; i < paths.size(); i++) {
+                        stringBuilder.append(String.format("%d   ->   ", (i+1)));
+                        String entry = paths.get(i);
+                        String root = context.getFilesDir().getAbsolutePath();
+                        root  += "/";
+                        root += saveFilePathFolder ;
+                        root += "/";
+                        stringBuilder.append(entry.substring(root.length()));
+                        stringBuilder.append("\n");
+                    }
+                    AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
+                    builderSingle.setIcon(R.drawable.ic_menu_camera);
+                    builderSingle.setTitle("Please select the file to delete");
+                    final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
+                    for (int i = 0; i < paths.size(); i++) {
+                        StringBuilder sb = new StringBuilder();
+
+                        sb.append(paths.get(i).substring(0, (paths.get(i).length())));
+                        int end = rootdirStr.length();
+                        sb.delete(0, end);
+                        arrayAdapter.add(sb.toString());
+                    }
+                    builderSingle.setNegativeButton("cancel restore", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String strName = arrayAdapter.getItem(which);
+                            //String path = rootdirStr;
+                            //path += strName;
+                            //path+= ".sav";
+
+                            String deleteFile = context.getFilesDir().getAbsolutePath();
+                            deleteFile  += "/";
+                            deleteFile += saveFilePathFolder ;
+                            deleteFile += "/";
+                            deleteFile += strName;
+
+                            log("deleteFile = " + deleteFile);
+
+                            File file =new File (deleteFile);
+                            file.delete();
+
+                            returnToMainLayout("File deleted:\n" + strName);
+
+
+                            //restoreFromFile(strName);
+
+                        }
+                    });
+                    builderSingle.show();
+                }
+
+
+
+
+
+/*
+                for (int a =0; a<maxPacketsSizeArray.length; a++) {
+                    if (maxPacketsSizeArray[a] == smaxPacketSize) selectedItem = a;
+                }
+                int coise;
+                builder.setSingleChoiceItems(maxPacketSizeStr, selectedItem, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int index) {
+                        smaxPacketSize = Integer.parseInt(maxPacketSizeStr[index]);
+                        sALT_SETTING = index +1;
+                        System.out.println("sALT_SETTING = " + sALT_SETTING);
+                        System.out.println("smaxPacketSize = " + smaxPacketSize);
+                    }
+                });
+
+                builder.addButton("DONE", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.END, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int index) {
+                        if(sALT_SETTING == 0) sALT_SETTING = index +1;
+                        if(smaxPacketSize == 0) smaxPacketSize = Integer.parseInt(maxPacketSizeStr[index]);
+                        selectPackets(automatic);
+                        dialogInterface.dismiss();
+                    }
+                });
+                builder.show();
+*/
+
+
+                return;
+            }
+        });
 
     }
 
@@ -669,7 +802,7 @@ public class SaveToFile  {
                 stringBuilder.append(entry.substring(root.length()));
                 stringBuilder.append("\n");
             }
-            log(stringBuilder.toString());
+            //log(stringBuilder.toString());
             if (option == OptionForSaveFile.restorefromfile) {
                 AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
                 builderSingle.setIcon(R.drawable.ic_menu_camera);
@@ -694,11 +827,7 @@ public class SaveToFile  {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String strName = arrayAdapter.getItem(which);
-                        //String path = rootdirStr;
-                        //path += strName;
-                        //path+= ".sav";
                         restoreFromFile(strName);
-
                     }
                 });
                 builderSingle.show();

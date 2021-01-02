@@ -17,7 +17,6 @@
         android:onClick="changeTheLanguage"
         android:scaleType="fitCenter"
         android:src="@mipmap/country_america"
-        android:visibility="gone"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -176,11 +175,11 @@
             android:id="@+id/textDarstellung"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textColor="@android:color/holo_blue_bright"
-            android:gravity="fill_vertical"
             android:layout_marginLeft="3dp"
             android:layout_marginRight="3dp"
             android:layout_marginBottom="3dp"
+            android:gravity="fill_vertical"
+            android:textColor="@android:color/black"
             />
     </ScrollView>
 
@@ -190,13 +189,11 @@
         layout="@layout/layout_language_chooser"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-
         app:layout_constraintTop_toBottomOf="@id/readMeButton"
-        tools:visibility="gone" />
+      />
 
 
         <Button
