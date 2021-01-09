@@ -21,6 +21,7 @@
         tools:overrideLibrary="org.webrtc, com.akexorcist.localizationactivity, com.rafakob.floatingedittext"/>
 
     <application
+        android:name=".UVC_Camera_Controller"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -85,6 +86,8 @@
         <service android:name="humer.UvcCamera.LibUsb.StartIsoStreamService" >
         </service>
         <service android:name="com.example.androidthings.videortc.WebRtcService" >
+        </service>
+        <service android:name="humer.UvcCamera.LibUsb.LibUsbManagerService" >
         </service>
 
     </application>

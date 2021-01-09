@@ -1,0 +1,26 @@
+[
+  {
+    "level": "INFO",
+    "message": "android.ndkVersion from module build.gradle is [21.1.6352462]"
+  },
+  {
+    "level": "INFO",
+    "message": "android.ndkPath from module build.gradle is not set"
+  },
+  {
+    "level": "INFO",
+    "message": "ndk.dir in local.properties is /home/peter/Android/Sdk/ndk/android-ndk-r15c"
+  },
+  {
+    "level": "INFO",
+    "message": "Not considering ANDROID_NDK_HOME because support was removed after deprecation period."
+  },
+  {
+    "level": "INFO",
+    "message": "sdkFolder is /home/peter/Android/Sdk"
+  },
+  {
+    "level": "ERROR",
+    "message": "NDK from ndk.dir at /home/peter/Android/Sdk/ndk/android-ndk-r15c had version [15.2.4203891] which disagrees with android.ndkVersion [21.1.6352462]"
+  }
+]

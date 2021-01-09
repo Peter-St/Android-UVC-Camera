@@ -93,7 +93,7 @@ public class UVC_Descriptor {
 
 
 
-
+            maxPacketSizeArray = new ArrayList<Integer>();
             ArrayList<byte []> frameData = new ArrayList<>();
             byte[] formatData = null;
             int positionAbsolute = 0;
@@ -183,17 +183,9 @@ public class UVC_Descriptor {
                 }
                 if (descSize == Stand_VS_Interface_Desc_Size && descType == INTERFACE_descriptor_type && videoStreamInterfaceDescriptor)  number_of_Standard_VS_Interface_Descriptor ++;
                 if (descSize == Standard_VS_Isochronous_Video_Data_Endpoint_Descriptor && descType == ENDPOINT_descriptor_type && videoStreamInterfaceDescriptor) {
-
-                    byte a = uvcData.get(pos + 4);
-                    byte b = uvcData.get(pos + 5);
                     int packetSize  = (((uvcData.get(pos + 5) & 0xFF) << 8) | uvcData.get(pos + 4) & 0xFF);
-                    maxPacketSizeArray.add(packetSize);
+                    maxPacketSizeArray.add(returnConvertedValue(packetSize));
                 }
-
-
-
-
-
                 positionAbsolute += descSize;
                 uvcData.position(positionAbsolute);
             } while (uvcData.limit() > positionAbsolute);
@@ -347,6 +339,5 @@ public class UVC_Descriptor {
     public static void log(String msg) {
         Log.i("UVC_Camera", msg);
     }
-
 
 }

@@ -82,7 +82,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     public static byte[] bNumControlUnit;
     public static byte[] bcdUVC;
     public static boolean LIBUSB;
-
+    public static boolean moveToNative;
 
     private static final String TAG = "CallActivity";
     private static final String APPRTC_URL = "https://appr.tc";
@@ -444,6 +444,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         logAndToast("Creating peer connection, delay=" + delta + "ms");
         VideoCapturer videoCapturer = null;
         if (peerConnectionParameters.videoCallEnabled) {
+
             videoCapturer = new UsbCapturer(this, fullscreenRenderer, this);
             if (usbCamera == false) videoCapturer = createVideoCapturer();
             else {
@@ -791,7 +792,11 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         bNumControlUnit = bundle.getByteArray("bNumControlUnit");
         bcdUVC = bundle.getByteArray("bcdUVC");
         bStillCaptureMethod = bundle.getByte("bStillCaptureMethod", (byte)0);
-        LIBUSB = bundle.getBoolean("libUsb" );
+        LIBUSB = bundle.getBoolean("LIBUSB" );
+        moveToNative = bundle.getBoolean("moveToNative" );
+
+        log("LIBUSB = " + LIBUSB);
+        log("moveToNative = " + moveToNative);
     }
 
     public void displayMessage(final String msg) {

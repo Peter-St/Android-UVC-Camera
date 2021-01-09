@@ -15,6 +15,48 @@
       "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/dpfp",
       "runtimeFiles": []
     },
+    "yuv_static-release-armeabi-v7a": {
+      "artifactName": "yuv_static",
+      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darmeabi-v7a NDK_ALL_ABIS\u003darmeabi-v7a NDK_DEBUG\u003d0 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/libyuv_static.a",
+      "abi": "armeabi-v7a",
+      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/libyuv_static.a",
+      "runtimeFiles": []
+    },
+    "dpfp_threaded-release-armeabi-v7a": {
+      "artifactName": "dpfp_threaded",
+      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darmeabi-v7a NDK_ALL_ABIS\u003darmeabi-v7a NDK_DEBUG\u003d0 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/dpfp_threaded",
+      "abi": "armeabi-v7a",
+      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/dpfp_threaded",
+      "runtimeFiles": []
+    },
+    "hotplugtest-release-armeabi-v7a": {
+      "artifactName": "hotplugtest",
+      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darmeabi-v7a NDK_ALL_ABIS\u003darmeabi-v7a NDK_DEBUG\u003d0 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/hotplugtest",
+      "abi": "armeabi-v7a",
+      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/hotplugtest",
+      "runtimeFiles": []
+    },
+    "usb1.0-release-armeabi-v7a": {
+      "artifactName": "usb1.0",
+      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darmeabi-v7a NDK_ALL_ABIS\u003darmeabi-v7a NDK_DEBUG\u003d0 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/libusb1.0.so",
+      "abi": "armeabi-v7a",
+      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/libusb1.0.so",
+      "runtimeFiles": []
+    },
+    "Usb_Support-release-armeabi-v7a": {
+      "artifactName": "Usb_Support",
+      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darmeabi-v7a NDK_ALL_ABIS\u003darmeabi-v7a NDK_DEBUG\u003d0 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/libUsb_Support.so",
+      "abi": "armeabi-v7a",
+      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/libUsb_Support.so",
+      "runtimeFiles": []
+    },
+    "jpeg-release-armeabi-v7a": {
+      "artifactName": "jpeg",
+      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darmeabi-v7a NDK_ALL_ABIS\u003darmeabi-v7a NDK_DEBUG\u003d0 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/libjpeg.so",
+      "abi": "armeabi-v7a",
+      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/libjpeg.so",
+      "runtimeFiles": []
+    },
     "stress-release-armeabi-v7a": {
       "artifactName": "stress",
       "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darmeabi-v7a NDK_ALL_ABIS\u003darmeabi-v7a NDK_DEBUG\u003d0 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/stress",
@@ -43,25 +85,11 @@
       "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/listdevs",
       "runtimeFiles": []
     },
-    "dpfp_threaded-release-armeabi-v7a": {
-      "artifactName": "dpfp_threaded",
-      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darmeabi-v7a NDK_ALL_ABIS\u003darmeabi-v7a NDK_DEBUG\u003d0 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/dpfp_threaded",
-      "abi": "armeabi-v7a",
-      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/dpfp_threaded",
-      "runtimeFiles": []
-    },
     "sam3u_benchmark-release-armeabi-v7a": {
       "artifactName": "sam3u_benchmark",
       "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darmeabi-v7a NDK_ALL_ABIS\u003darmeabi-v7a NDK_DEBUG\u003d0 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/sam3u_benchmark",
       "abi": "armeabi-v7a",
       "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/sam3u_benchmark",
-      "runtimeFiles": []
-    },
-    "hotplugtest-release-armeabi-v7a": {
-      "artifactName": "hotplugtest",
-      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darmeabi-v7a NDK_ALL_ABIS\u003darmeabi-v7a NDK_DEBUG\u003d0 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/hotplugtest",
-      "abi": "armeabi-v7a",
-      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/hotplugtest",
       "runtimeFiles": []
     },
     "jpeg-turbo-release-armeabi-v7a": {
@@ -71,18 +99,11 @@
       "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/libjpeg-turbo.so",
       "runtimeFiles": []
     },
-    "usb1.0-release-armeabi-v7a": {
-      "artifactName": "usb1.0",
-      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darmeabi-v7a NDK_ALL_ABIS\u003darmeabi-v7a NDK_DEBUG\u003d0 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/libusb1.0.so",
+    "yuv-release-armeabi-v7a": {
+      "artifactName": "yuv",
+      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darmeabi-v7a NDK_ALL_ABIS\u003darmeabi-v7a NDK_DEBUG\u003d0 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/libyuv.so",
       "abi": "armeabi-v7a",
-      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/libusb1.0.so",
-      "runtimeFiles": []
-    },
-    "Usb_Support-release-armeabi-v7a": {
-      "artifactName": "Usb_Support",
-      "buildCommand": "/home/peter/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Application.mk APP_ABI\u003darmeabi-v7a NDK_ALL_ABIS\u003darmeabi-v7a NDK_DEBUG\u003d0 APP_PLATFORM\u003dandroid-16 NDK_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/lib BUILD_TYPE\u003drelease /home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/libUsb_Support.so",
-      "abi": "armeabi-v7a",
-      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/libUsb_Support.so",
+      "output": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/libyuv.so",
       "runtimeFiles": []
     }
   }

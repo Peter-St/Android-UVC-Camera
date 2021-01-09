@@ -8,8 +8,8 @@ android {
     defaultConfig {
         applicationId "humer.uvc_camera"
         minSdkVersion 15
-        versionCode 80
-        versionName "1.8.3"
+        versionCode 81
+        versionName "1.8.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -35,7 +35,6 @@ android {
         abortOnError false
     }
     buildToolsVersion '27.0.3'
-    ndkVersion '21.1.6352462'
     configurations.all {
         resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.2'
     }
@@ -91,11 +90,11 @@ android {
         pickFirst 'lib/armeabi-v7a/libusb1.0.so'
         pickFirst 'lib/arm64-v8a/libusb1.0.so'
 
-        pickFirst 'lib/x86_64/libuvc.so'
-        pickFirst 'lib/armeabi/libuvc.so'
-        pickFirst 'lib/x86/libuvc.so'
-        pickFirst 'lib/armeabi-v7a/libuvc.so'
-        pickFirst 'lib/arm64-v8a/libuvc.so'
+        pickFirst 'lib/x86_64/libjpeg-turbo.so'
+        pickFirst 'lib/armeabi/libjpeg-turbo.so'
+        pickFirst 'lib/x86/libjpeg-turbo.so'
+        pickFirst 'lib/armeabi-v7a/libjpeg-turbo.so'
+        pickFirst 'lib/arm64-v8a/libjpeg-turbo.so'
 
         pickFirst 'lib/x86_64/libjpeg.so'
         pickFirst 'lib/armeabi/libjpeg.so'
@@ -108,13 +107,6 @@ android {
         pickFirst 'lib/x86/libyuv.so'
         pickFirst 'lib/armeabi-v7a/libyuv.so'
         pickFirst 'lib/arm64-v8a/libyuv.so'
-
-        pickFirst 'lib/x86_64/libjpeg-turbo.so'
-        pickFirst 'lib/armeabi/libjpeg-turbo.so'
-        pickFirst 'lib/x86/libjpeg-turbo.so'
-        pickFirst 'lib/armeabi-v7a/libjpeg-turbo.so'
-        pickFirst 'lib/arm64-v8a/libjpeg-turbo.so'
-
     }
 }
 

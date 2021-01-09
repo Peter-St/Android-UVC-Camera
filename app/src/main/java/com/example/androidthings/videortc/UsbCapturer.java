@@ -129,6 +129,7 @@ public class UsbCapturer implements VideoCapturer {
 
     // NEW LIBUSB VALUES
     public static boolean LIBUSB;
+    public static boolean moveToNative;
     private static int fd;
     private static int productID;
     private static int vendorID;
@@ -204,6 +205,7 @@ public class UsbCapturer implements VideoCapturer {
         bNumControlUnit = callActivity.bNumControlUnit;
         bStillCaptureMethod = callActivity.bStillCaptureMethod;
         LIBUSB = callActivity.LIBUSB;
+        moveToNative = callActivity.moveToNative;
     }
 
     private void initializeTheStream() {
@@ -216,17 +218,14 @@ public class UsbCapturer implements VideoCapturer {
             callActivity.usbCamera = false;
             displayMessage("No Usb Camera found\nTry to connect to internal camera ...");
             return;
-        }
-        else {
+        } else {
             if(LIBUSB) {
                 try {
                     openCameraDevice(true);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if (camDeviceConnection != null || camStreamingInterface != null) closeCameraDevice();
-
-
+                if (!moveToNative) if (camDeviceConnection != null || camStreamingInterface != null) closeCameraDevice();
                 if (!libusb_is_initialized) {
                     libusb_is_initialized = true;
                 }
@@ -241,7 +240,7 @@ public class UsbCapturer implements VideoCapturer {
                     if(adress == null)  adress = camDevice.getDeviceName();
                     if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
                     if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
-                    int bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
+                    int bcdUVC_int = 0;
                     JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                             camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, 0, bcdUVC_int);
                 } catch (Exception e) {
@@ -249,6 +248,7 @@ public class UsbCapturer implements VideoCapturer {
                 }
                 JNA_I_LibUsb.INSTANCE.probeCommitControl(1, camFormatIndex, camFrameIndex,  camFrameInterval, fd);
                 //JNA_I_LibUsb.INSTANCE.probeCommitControl_cleanup();
+                JniWebRtcJavaMethods();
                 Intent intent = new Intent(callActivity.getApplicationContext(), WebRtcService.class);
                 intent.putExtra(WebRtcService.INIT, "INIT");
                 intent.putExtra(WebRtcService.ENABLE_STREAM, "ENABLE_STREAM");
@@ -256,7 +256,6 @@ public class UsbCapturer implements VideoCapturer {
                 log("service for WebRtc started ... waiting for intent");
 
             } else {
-
                 try {
                     openCam(true);
                 } catch (Exception e) {
@@ -282,14 +281,37 @@ public class UsbCapturer implements VideoCapturer {
     private void findCamm()  {
         camDevice = findCameraDevice();
         if (camDevice == null) {
-            log("Camera = null");
-            return;
-        }
+            camDevice = checkDeviceVideoClass();
+            if (camDevice == null) try {
+                throw new Exception("No USB camera device found.");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            else usbManager.requestPermission(camDevice, mPermissionIntent);
+        } else usbManager.requestPermission(camDevice, mPermissionIntent);
         if (!usbManager.hasPermission(camDevice)) {
             log("Asking for Permissions");
             usbManager.requestPermission(camDevice, mPermissionIntent);
         } else usbManager.requestPermission (camDevice, mPermissionIntent);
+    }
 
+    private UsbDevice checkDeviceVideoClass() {
+        HashMap<String, UsbDevice> deviceList = usbManager.getDeviceList();
+        log("USB devices count = " + deviceList.size());
+        for (UsbDevice usbDevice : deviceList.values()) {
+            log("USB device \"" + usbDevice.getDeviceName() + "\": " + usbDevice);
+            if (usbDevice.getDeviceClass() == 14 && usbDevice.getDeviceSubclass() == 2) {
+                moveToNative = true;
+                return usbDevice;
+            } else if (usbDevice.getDeviceClass() == 239 && usbDevice.getDeviceSubclass() == 2) {
+                moveToNative = true;
+                return usbDevice;
+            }
+            if (checkDeviceHasVideoControlInterface(usbDevice)) {
+                return usbDevice;
+            }
+        }
+        return null;
     }
 
     private UsbDevice findCameraDevice() {
@@ -306,6 +328,10 @@ public class UsbCapturer implements VideoCapturer {
 
     private boolean checkDeviceHasVideoStreamingInterface(UsbDevice usbDevice) {
         return getVideoStreamingInterface(usbDevice) != null;
+    }
+
+    private boolean checkDeviceHasVideoControlInterface(UsbDevice usbDevice) {
+        return getVideoControlInterface(usbDevice) != null;
     }
 
     private UsbInterface getVideoControlInterface(UsbDevice usbDevice) {
@@ -330,6 +356,10 @@ public class UsbCapturer implements VideoCapturer {
     private void openCam(boolean init) throws Exception {
         openCameraDevice(init);
         if (init) {
+            if(moveToNative) {
+                camIsOpen = true;
+                return;
+            }
             initCamera();
             camIsOpen = true;
         }
@@ -337,7 +367,20 @@ public class UsbCapturer implements VideoCapturer {
     }
 
     private void openCameraDevice(boolean init) throws Exception {
-
+        if (moveToNative) {
+            camDeviceConnection = usbManager.openDevice(camDevice);
+            int FD = camDeviceConnection.getFileDescriptor();
+            if(camStreamingEndpointAdress == 0) {
+                camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
+            }
+            int bcdUVC_int = 0;
+            if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
+            camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
+            JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                    camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1, videoformat, 0, bcdUVC_int);
+            JNA_I_LibUsb.INSTANCE.initStreamingParms(FD);
+            return;
+        }
         // (For transfer buffer sizes > 196608 the kernel file drivers/usb/core/devio.c must be patched.)
         camControlInterface = getVideoControlInterface(camDevice);
         camStreamingInterface = getVideoStreamingInterface(camDevice);
@@ -363,8 +406,11 @@ public class UsbCapturer implements VideoCapturer {
         }
     }
 
-    private void closeCameraDevice() {
-        if (camDeviceConnection != null) {
+    public void closeCameraDevice() {
+
+        if (moveToNative) {
+            camDeviceConnection = null;
+        } else if (camDeviceConnection != null) {
             camDeviceConnection.releaseInterface(camControlInterface);
             camDeviceConnection.releaseInterface(camStreamingInterface);
             camDeviceConnection.close();
@@ -823,6 +869,7 @@ public class UsbCapturer implements VideoCapturer {
 
     // JNI Method
     public void retrievedFrameFromLibUsb (byte[] frameData) {
+        log("from java nv21 method");
         // Format should be NV21
         try {
             processReceivedVideoFrameYuv(frameData, Videoformat.NV21);
@@ -831,6 +878,20 @@ public class UsbCapturer implements VideoCapturer {
         }
     }
 
+    private int[] calculateStrides(int width, int format) {
+        int[] strides = null;
+        if (format == ImageFormat.NV21) {
+            strides = new int[] {width, width};
+            return strides;
+        }
+        if (format == ImageFormat.YUY2) {
+            strides = new int[] {width * 2};
+            return strides;
+        }
+        return strides;
+    }
+
+    // compressToJpeg --> Only ImageFormat.NV21 and ImageFormat.YUY2 are supported for now.
     private void processReceivedVideoFrameYuv(byte[] frameData, UsbCapturer.Videoformat videoFromat) throws IOException {
         Long imageTime = System.currentTimeMillis();
         log("YUV Progress");
@@ -840,7 +901,7 @@ public class UsbCapturer implements VideoCapturer {
             }
         } else {
             YuvImage yuvImage ;
-            if (videoFromat == UsbCapturer.Videoformat.YUY2) yuvImage = new YuvImage(frameData, ImageFormat.YUY2, imageWidth, imageHeight, null);
+            if (videoFromat == UsbCapturer.Videoformat.YUY2) yuvImage = new YuvImage(frameData, ImageFormat.YUY2, imageWidth, imageHeight, calculateStrides(imageWidth, ImageFormat.YUY2));
             else if (videoFromat == UsbCapturer.Videoformat.YV12) yuvImage = new YuvImage(frameData, ImageFormat.YV12, imageWidth, imageHeight, null);
             else if (videoFromat == UsbCapturer.Videoformat.YUV_420_888) yuvImage = new YuvImage(frameData, ImageFormat.YUV_420_888, imageWidth, imageHeight, null);
             else if (videoFromat == UsbCapturer.Videoformat.YUV_422_888) yuvImage = new YuvImage(frameData, ImageFormat.YUV_422_888, imageWidth, imageHeight, null);
@@ -976,26 +1037,7 @@ public class UsbCapturer implements VideoCapturer {
         if (callActivity.horizontalFlip || callActivity.verticalFlip || callActivity.rotate != 0) {
             rgbToYuv(rgbValuesFromBitmap(flipImage(bitmap)), imageWidth, imageHeight, yuv);
         } else rgbToYuv(rgbValuesFromBitmap(bitmap), imageWidth, imageHeight, yuv);
-        final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
-        final File file = new File(rootPath, "/" + saveFilePathFolder);
-        if (!file.exists()) {
-            log("creating directory");
-            if (!file.mkdirs()) {
-                Log.e("TravellerLog :: ", "Problem creating Image folder");
-            }
-            file.mkdirs();
-        }
-        log("Path: " + rootPath.toString());
-        String rootdirStr = file.toString();
-        rootdirStr += "/";
-        rootdirStr += value;
-        rootdirStr += ".Yuv_nv21";
-        if (value < 5) {
-            try (FileOutputStream fos = new FileOutputStream(rootdirStr)) {
-                fos.write(yuv);
-                value++;
-            }
-        }
+
         if (exit == false) {
             Long imageTime = System.currentTimeMillis();
             capturerObserver.onByteBufferFrameCaptured(yuv, imageWidth, imageHeight, 0, imageTime);

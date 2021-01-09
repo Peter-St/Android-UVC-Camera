@@ -1069,18 +1069,24 @@ public class SaveToFile  {
         bcdUVC = uvc_desc.bcdUVC;
         log ("bcdUVC = " + bcdUVC[0] + bcdUVC[1]);
         bStillCaptureMethod = uvc_desc.bStillCaptureMethod;
-        for (int a=0; a<maxPacketSizeArray.length; a++) {
-            log ("maxPacketSizeArray[" + a + "] = " + maxPacketSizeArray[a]);
-        }
         UVC_Descriptor.FormatIndex formatIndex;
         int [] arrayFormatFrameIndexes = new int [uvc_descriptor.formatIndex.size()];
         for (int i=0; i<uvc_descriptor.formatIndex.size(); i++) {
             formatIndex = uvc_descriptor.getFormatIndex(i);
             arrayFormatFrameIndexes[i] = formatIndex.frameIndex.size();
         }
-        maxPacketSizeStr = new String [maxPacketSizeArray.length];
-        for (int a =0; a<maxPacketSizeArray.length; a++) {
-            maxPacketSizeStr[a] = Integer.toString(maxPacketSizeArray[a]);
+        if (moveToNative) {
+            maxPacketSizeStr = new String [uvc_descriptor.maxPacketSizeArray.size()];
+            setUpTheUsbDevice.convertedMaxPacketSize = new int[uvc_descriptor.maxPacketSizeArray.size()];
+            for (int a =0; a<uvc_descriptor.maxPacketSizeArray.size(); a++) {
+                setUpTheUsbDevice.convertedMaxPacketSize[a] = uvc_descriptor.maxPacketSizeArray.get(a);
+                maxPacketSizeStr[a] = Integer.toString(uvc_descriptor.maxPacketSizeArray.get(a));
+            }
+        } else {
+            maxPacketSizeStr = new String [maxPacketSizeArray.length];
+            for (int a =0; a<maxPacketSizeArray.length; a++) {
+                maxPacketSizeStr[a] = Integer.toString(maxPacketSizeArray[a]);
+            }
         }
         if (!automatic)  selectMaxPacketSize(automatic);
         else {
@@ -1091,7 +1097,6 @@ public class SaveToFile  {
     private void selectMaxPacketSize(boolean automatic){
         if (!automatic) {
             int[] maxPacketsSizeArray = setUpTheUsbDevice.convertedMaxPacketSize.clone();
-
             CFAlertDialog.Builder builder = new CFAlertDialog.Builder(mContext);
             builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
             builder.setTitle("Select the maximal Packet Size:");
@@ -1358,22 +1363,44 @@ public class SaveToFile  {
                 if (numberFormatIndexes[a] == scamFormatIndex) selectedItem = a;
             }
             final int startvalue = selectedItem;
-            builder.setSingleChoiceItems(textmsg, selectedItem, new DialogInterface.OnClickListener() {
+            builder.setSingleChoiceItems(textmsg, startvalue, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int index) {
                     scamFormatIndex = numberFormatIndexes[index];
                     formatIndex = uvc_descriptor.getFormatIndex(index);
                     svideoformat = formatIndex.videoformat.toString();
+                    log("svideoformat = " + svideoformat);
+
+                    log("index = " + index);
+                    selectFrameIndex(automatic);
+                    dialogInterface.dismiss();
+
+
+
                 }
             });
             builder.addButton("DONE", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.END, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int index) {
+
+                    log("index = " + index);
+
                     scamFormatIndex = numberFormatIndexes[index];
                     formatIndex = uvc_descriptor.getFormatIndex(index);
                     svideoformat = formatIndex.videoformat.toString();
+
+                    log("formatIndex = " + formatIndex.videoformat.toString());
+                    log("svideoformat = " + svideoformat);
+
+                    log("index = " + index);
                     selectFrameIndex(automatic);
                     dialogInterface.dismiss();
+
+
+
+
+
+
                 }
             });
             builder.show();

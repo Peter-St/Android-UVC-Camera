@@ -1,3 +1,6 @@
+humer/UvcCamera/LibUsb/LibUsbManagerService.java
+ humer.UvcCamera.LibUsb.LibUsbManagerService
+ humer.UvcCamera.LibUsb.LibUsbManagerService$MyBinder
 org/appspot/apprtc/util/AsyncHttpURLConnection.java
  org.appspot.apprtc.util.AsyncHttpURLConnection
  org.appspot.apprtc.util.AsyncHttpURLConnection$AsyncHttpEvents
@@ -5,6 +8,8 @@ android/support/v7/app/LocaleChangerAppCompatDelegate.java
  android.support.v7.app.LocaleChangerAppCompatDelegate
 com/franmontiel/localechanger/utils/ActivityRecreationHelper.java
  com.franmontiel.localechanger.utils.ActivityRecreationHelper
+humer/UvcCamera/UVC_Camera_Controller.java
+ humer.UvcCamera.UVC_Camera_Controller
 org/appspot/apprtc/WebSocketChannelClient.java
  org.appspot.apprtc.WebSocketChannelClient
  org.appspot.apprtc.WebSocketChannelClient$1
@@ -21,122 +26,103 @@ humer/UvcCamera/BitmapToVideoEncoder.java
  humer.UvcCamera.BitmapToVideoEncoder$IBitmapToVideoEncoderCallback
 humer/UvcCamera/LockCameraVariables.java
  humer.UvcCamera.LockCameraVariables
-humer/UvcCamera/SaveToFile.java
- humer.UvcCamera.SaveToFile
- humer.UvcCamera.SaveToFile$1
- humer.UvcCamera.SaveToFile$1$1
- humer.UvcCamera.SaveToFile$1$2
- humer.UvcCamera.SaveToFile$10
- humer.UvcCamera.SaveToFile$11
- humer.UvcCamera.SaveToFile$12
- humer.UvcCamera.SaveToFile$13
- humer.UvcCamera.SaveToFile$14
- humer.UvcCamera.SaveToFile$15
- humer.UvcCamera.SaveToFile$16
- humer.UvcCamera.SaveToFile$17
- humer.UvcCamera.SaveToFile$18
- humer.UvcCamera.SaveToFile$19
- humer.UvcCamera.SaveToFile$2
- humer.UvcCamera.SaveToFile$2$1
- humer.UvcCamera.SaveToFile$2$2
- humer.UvcCamera.SaveToFile$20
- humer.UvcCamera.SaveToFile$21
- humer.UvcCamera.SaveToFile$22
- humer.UvcCamera.SaveToFile$23
- humer.UvcCamera.SaveToFile$24
- humer.UvcCamera.SaveToFile$25
- humer.UvcCamera.SaveToFile$26
- humer.UvcCamera.SaveToFile$27
- humer.UvcCamera.SaveToFile$28
- humer.UvcCamera.SaveToFile$29
- humer.UvcCamera.SaveToFile$3
- humer.UvcCamera.SaveToFile$3$1
- humer.UvcCamera.SaveToFile$3$2
- humer.UvcCamera.SaveToFile$30
- humer.UvcCamera.SaveToFile$31
- humer.UvcCamera.SaveToFile$32
- humer.UvcCamera.SaveToFile$33
- humer.UvcCamera.SaveToFile$34
- humer.UvcCamera.SaveToFile$35
- humer.UvcCamera.SaveToFile$36
- humer.UvcCamera.SaveToFile$37
- humer.UvcCamera.SaveToFile$38
- humer.UvcCamera.SaveToFile$4
- humer.UvcCamera.SaveToFile$5
- humer.UvcCamera.SaveToFile$5$1
- humer.UvcCamera.SaveToFile$6
- humer.UvcCamera.SaveToFile$6$1
- humer.UvcCamera.SaveToFile$6$2
- humer.UvcCamera.SaveToFile$7
- humer.UvcCamera.SaveToFile$8
- humer.UvcCamera.SaveToFile$9
- humer.UvcCamera.SaveToFile$OptionForSaveFile
+humer/UvcCamera/SetUpTheUsbDevice.java
+ humer.UvcCamera.SetUpTheUsbDevice
+ humer.UvcCamera.SetUpTheUsbDevice$1
+ humer.UvcCamera.SetUpTheUsbDevice$10
+ humer.UvcCamera.SetUpTheUsbDevice$11
+ humer.UvcCamera.SetUpTheUsbDevice$12
+ humer.UvcCamera.SetUpTheUsbDevice$13
+ humer.UvcCamera.SetUpTheUsbDevice$14
+ humer.UvcCamera.SetUpTheUsbDevice$15
+ humer.UvcCamera.SetUpTheUsbDevice$16
+ humer.UvcCamera.SetUpTheUsbDevice$17
+ humer.UvcCamera.SetUpTheUsbDevice$18
+ humer.UvcCamera.SetUpTheUsbDevice$19
+ humer.UvcCamera.SetUpTheUsbDevice$2
+ humer.UvcCamera.SetUpTheUsbDevice$20
+ humer.UvcCamera.SetUpTheUsbDevice$21
+ humer.UvcCamera.SetUpTheUsbDevice$22
+ humer.UvcCamera.SetUpTheUsbDevice$23
+ humer.UvcCamera.SetUpTheUsbDevice$24
+ humer.UvcCamera.SetUpTheUsbDevice$25
+ humer.UvcCamera.SetUpTheUsbDevice$26
+ humer.UvcCamera.SetUpTheUsbDevice$27
+ humer.UvcCamera.SetUpTheUsbDevice$27$1
+ humer.UvcCamera.SetUpTheUsbDevice$28
+ humer.UvcCamera.SetUpTheUsbDevice$29
+ humer.UvcCamera.SetUpTheUsbDevice$3
+ humer.UvcCamera.SetUpTheUsbDevice$30
+ humer.UvcCamera.SetUpTheUsbDevice$31
+ humer.UvcCamera.SetUpTheUsbDevice$31$1
+ humer.UvcCamera.SetUpTheUsbDevice$32
+ humer.UvcCamera.SetUpTheUsbDevice$33
+ humer.UvcCamera.SetUpTheUsbDevice$33$1
+ humer.UvcCamera.SetUpTheUsbDevice$33$2
+ humer.UvcCamera.SetUpTheUsbDevice$33$3
+ humer.UvcCamera.SetUpTheUsbDevice$34
+ humer.UvcCamera.SetUpTheUsbDevice$35
+ humer.UvcCamera.SetUpTheUsbDevice$36
+ humer.UvcCamera.SetUpTheUsbDevice$37
+ humer.UvcCamera.SetUpTheUsbDevice$38
+ humer.UvcCamera.SetUpTheUsbDevice$4
+ humer.UvcCamera.SetUpTheUsbDevice$5
+ humer.UvcCamera.SetUpTheUsbDevice$6
+ humer.UvcCamera.SetUpTheUsbDevice$7
+ humer.UvcCamera.SetUpTheUsbDevice$8
+ humer.UvcCamera.SetUpTheUsbDevice$9
+ humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead
+ humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead$1
+ humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead$1$1
+ humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead$2
+ humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead1Frame
+ humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead1Frame$1
+ humer.UvcCamera.SetUpTheUsbDevice$Options
 humer/UvcCamera/UsbIso64/usbdevice_fs_util.java
  humer.UvcCamera.UsbIso64.usbdevice_fs_util
 humer/UvcCamera/AutomaticDetection/AutoDetect_Fragment.java
  humer.UvcCamera.AutomaticDetection.AutoDetect_Fragment
 com/example/androidthings/videortc/InitCapturer.java
  com.example.androidthings.videortc.InitCapturer
-humer/UvcCamera/StartIsoStreamActivity.java
- humer.UvcCamera.StartIsoStreamActivity
- humer.UvcCamera.StartIsoStreamActivity$1
- humer.UvcCamera.StartIsoStreamActivity$10
- humer.UvcCamera.StartIsoStreamActivity$11
- humer.UvcCamera.StartIsoStreamActivity$11$1
- humer.UvcCamera.StartIsoStreamActivity$11$2
- humer.UvcCamera.StartIsoStreamActivity$12
- humer.UvcCamera.StartIsoStreamActivity$12$1
- humer.UvcCamera.StartIsoStreamActivity$12$1$1
- humer.UvcCamera.StartIsoStreamActivity$12$1$2
- humer.UvcCamera.StartIsoStreamActivity$12$1$3
- humer.UvcCamera.StartIsoStreamActivity$12$2
- humer.UvcCamera.StartIsoStreamActivity$12$2$1
- humer.UvcCamera.StartIsoStreamActivity$12$2$2
- humer.UvcCamera.StartIsoStreamActivity$12$2$3
- humer.UvcCamera.StartIsoStreamActivity$13
- humer.UvcCamera.StartIsoStreamActivity$13$1
- humer.UvcCamera.StartIsoStreamActivity$13$1$1
- humer.UvcCamera.StartIsoStreamActivity$13$1$2
- humer.UvcCamera.StartIsoStreamActivity$13$2
- humer.UvcCamera.StartIsoStreamActivity$13$2$1
- humer.UvcCamera.StartIsoStreamActivity$13$2$2
- humer.UvcCamera.StartIsoStreamActivity$14
- humer.UvcCamera.StartIsoStreamActivity$15
- humer.UvcCamera.StartIsoStreamActivity$16
- humer.UvcCamera.StartIsoStreamActivity$17
- humer.UvcCamera.StartIsoStreamActivity$18
- humer.UvcCamera.StartIsoStreamActivity$19
- humer.UvcCamera.StartIsoStreamActivity$2
- humer.UvcCamera.StartIsoStreamActivity$3
- humer.UvcCamera.StartIsoStreamActivity$4
- humer.UvcCamera.StartIsoStreamActivity$4$1
- humer.UvcCamera.StartIsoStreamActivity$5
- humer.UvcCamera.StartIsoStreamActivity$5$1
- humer.UvcCamera.StartIsoStreamActivity$5$1$1
- humer.UvcCamera.StartIsoStreamActivity$5$1$2
- humer.UvcCamera.StartIsoStreamActivity$5$1$3
- humer.UvcCamera.StartIsoStreamActivity$5$1$4
- humer.UvcCamera.StartIsoStreamActivity$5$1$5
- humer.UvcCamera.StartIsoStreamActivity$6
- humer.UvcCamera.StartIsoStreamActivity$7
- humer.UvcCamera.StartIsoStreamActivity$8
- humer.UvcCamera.StartIsoStreamActivity$8$1
- humer.UvcCamera.StartIsoStreamActivity$9
- humer.UvcCamera.StartIsoStreamActivity$Frame
- humer.UvcCamera.StartIsoStreamActivity$IsochronousStream
- humer.UvcCamera.StartIsoStreamActivity$IsochronousStreamLibUsb
- humer.UvcCamera.StartIsoStreamActivity$IsochronousStreamLibUsb$1
- humer.UvcCamera.StartIsoStreamActivity$Videoformat
-humer/UvcCamera/LibYuv/LibYuv.java
- humer.UvcCamera.LibYuv.LibYuv
+com/example/androidthings/videortc/CallActivity.java
+ com.example.androidthings.videortc.CallActivity
+ com.example.androidthings.videortc.CallActivity$1
+ com.example.androidthings.videortc.CallActivity$10
+ com.example.androidthings.videortc.CallActivity$11
+ com.example.androidthings.videortc.CallActivity$12
+ com.example.androidthings.videortc.CallActivity$13
+ com.example.androidthings.videortc.CallActivity$14
+ com.example.androidthings.videortc.CallActivity$15
+ com.example.androidthings.videortc.CallActivity$16
+ com.example.androidthings.videortc.CallActivity$17
+ com.example.androidthings.videortc.CallActivity$2
+ com.example.androidthings.videortc.CallActivity$3
+ com.example.androidthings.videortc.CallActivity$4
+ com.example.androidthings.videortc.CallActivity$5
+ com.example.androidthings.videortc.CallActivity$6
+ com.example.androidthings.videortc.CallActivity$6$1
+ com.example.androidthings.videortc.CallActivity$6$1$1
+ com.example.androidthings.videortc.CallActivity$6$1$2
+ com.example.androidthings.videortc.CallActivity$6$1$3
+ com.example.androidthings.videortc.CallActivity$6$1$4
+ com.example.androidthings.videortc.CallActivity$6$1$5
+ com.example.androidthings.videortc.CallActivity$7
+ com.example.androidthings.videortc.CallActivity$8
+ com.example.androidthings.videortc.CallActivity$9
+ com.example.androidthings.videortc.CallActivity$ProxyRenderer
+ com.example.androidthings.videortc.CallActivity$ProxyVideoSink
 humer/UvcCamera/LibUsb/StartIsoStreamService.java
  humer.UvcCamera.LibUsb.StartIsoStreamService
 humer/UvcCamera/UsbIso64/Libc.java
  humer.UvcCamera.UsbIso64.Libc
-org/appspot/apprtc/RoomParametersFetcher.java
- org.appspot.apprtc.RoomParametersFetcher
- org.appspot.apprtc.RoomParametersFetcher$1
- org.appspot.apprtc.RoomParametersFetcher$RoomParametersFetcherEvents
+humer/UvcCamera/AutomaticDetection/LibUsb_AutoDetect.java
+ humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect
+ humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect$1
+ humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect$2
+ humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect$3
+ humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect$4
+ humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect$5
+ humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect$6
 humer/UvcCamera/UsbIso64/USBIso.java
  humer.UvcCamera.UsbIso64.USBIso
  humer.UvcCamera.UsbIso64.USBIso$1
@@ -185,8 +171,8 @@ humer/UvcCamera/UsbIso64/Ioctl.java
  humer.UvcCamera.UsbIso64.Ioctl
 org/appspot/apprtc/util/AppRTCUtils.java
  org.appspot.apprtc.util.AppRTCUtils
-humer/UvcCamera/BuildConfig.java
- humer.UvcCamera.BuildConfig
+com/example/androidthings/videortc/WebRtcService.java
+ com.example.androidthings.videortc.WebRtcService
 org/appspot/apprtc/PeerConnectionClient.java
  org.appspot.apprtc.PeerConnectionClient
  org.appspot.apprtc.PeerConnectionClient$1
@@ -254,9 +240,10 @@ humer/UvcCamera/SetCameraVariables.java
  humer.UvcCamera.SetCameraVariables$1
  humer.UvcCamera.SetCameraVariables$CameraFunction
  humer.UvcCamera.SetCameraVariables$CameraFunctionSetting
-com/example/androidthings/videortc/WebRtc_MainActivity.java
- com.example.androidthings.videortc.WebRtc_MainActivity
- com.example.androidthings.videortc.WebRtc_MainActivity$1
+com/example/androidthings/videortc/UsbCapturer.java
+ com.example.androidthings.videortc.UsbCapturer
+ com.example.androidthings.videortc.UsbCapturer$IsochronousStream
+ com.example.androidthings.videortc.UsbCapturer$Videoformat
 com/sample/timelapse/MJPEGGenerator.java
  com.sample.timelapse.MJPEGGenerator
  com.sample.timelapse.MJPEGGenerator$AVIIndex
@@ -268,6 +255,122 @@ com/sample/timelapse/MJPEGGenerator.java
  com.sample.timelapse.MJPEGGenerator$AVIStreamHeader
  com.sample.timelapse.MJPEGGenerator$AVIStreamList
  com.sample.timelapse.MJPEGGenerator$RIFFHeader
+humer/UvcCamera/BuildConfig.java
+ humer.UvcCamera.BuildConfig
+com/example/androidthings/videortc/WebRtc_MainActivity.java
+ com.example.androidthings.videortc.WebRtc_MainActivity
+ com.example.androidthings.videortc.WebRtc_MainActivity$1
+humer/UvcCamera/SaveToFile.java
+ humer.UvcCamera.SaveToFile
+ humer.UvcCamera.SaveToFile$1
+ humer.UvcCamera.SaveToFile$1$1
+ humer.UvcCamera.SaveToFile$1$2
+ humer.UvcCamera.SaveToFile$10
+ humer.UvcCamera.SaveToFile$11
+ humer.UvcCamera.SaveToFile$12
+ humer.UvcCamera.SaveToFile$13
+ humer.UvcCamera.SaveToFile$14
+ humer.UvcCamera.SaveToFile$15
+ humer.UvcCamera.SaveToFile$16
+ humer.UvcCamera.SaveToFile$17
+ humer.UvcCamera.SaveToFile$18
+ humer.UvcCamera.SaveToFile$19
+ humer.UvcCamera.SaveToFile$2
+ humer.UvcCamera.SaveToFile$2$1
+ humer.UvcCamera.SaveToFile$2$2
+ humer.UvcCamera.SaveToFile$20
+ humer.UvcCamera.SaveToFile$21
+ humer.UvcCamera.SaveToFile$22
+ humer.UvcCamera.SaveToFile$23
+ humer.UvcCamera.SaveToFile$24
+ humer.UvcCamera.SaveToFile$25
+ humer.UvcCamera.SaveToFile$26
+ humer.UvcCamera.SaveToFile$27
+ humer.UvcCamera.SaveToFile$28
+ humer.UvcCamera.SaveToFile$29
+ humer.UvcCamera.SaveToFile$3
+ humer.UvcCamera.SaveToFile$3$1
+ humer.UvcCamera.SaveToFile$3$2
+ humer.UvcCamera.SaveToFile$30
+ humer.UvcCamera.SaveToFile$31
+ humer.UvcCamera.SaveToFile$32
+ humer.UvcCamera.SaveToFile$33
+ humer.UvcCamera.SaveToFile$34
+ humer.UvcCamera.SaveToFile$35
+ humer.UvcCamera.SaveToFile$36
+ humer.UvcCamera.SaveToFile$37
+ humer.UvcCamera.SaveToFile$38
+ humer.UvcCamera.SaveToFile$4
+ humer.UvcCamera.SaveToFile$5
+ humer.UvcCamera.SaveToFile$5$1
+ humer.UvcCamera.SaveToFile$6
+ humer.UvcCamera.SaveToFile$6$1
+ humer.UvcCamera.SaveToFile$6$2
+ humer.UvcCamera.SaveToFile$7
+ humer.UvcCamera.SaveToFile$8
+ humer.UvcCamera.SaveToFile$9
+ humer.UvcCamera.SaveToFile$OptionForSaveFile
+humer/UvcCamera/LibUsb/JNA_I_LibUsb.java
+ humer.UvcCamera.LibUsb.JNA_I_LibUsb
+ humer.UvcCamera.LibUsb.JNA_I_LibUsb$Libusb_Auto_Values
+ humer.UvcCamera.LibUsb.JNA_I_LibUsb$Libusb_Auto_Values$ByValue
+ humer.UvcCamera.LibUsb.JNA_I_LibUsb$autoStreamComplete
+ humer.UvcCamera.LibUsb.JNA_I_LibUsb$eventCallback
+ humer.UvcCamera.LibUsb.JNA_I_LibUsb$logPrint
+org/appspot/apprtc/RoomParametersFetcher.java
+ org.appspot.apprtc.RoomParametersFetcher
+ org.appspot.apprtc.RoomParametersFetcher$1
+ org.appspot.apprtc.RoomParametersFetcher$RoomParametersFetcherEvents
+humer/UvcCamera/StartIsoStreamActivity.java
+ humer.UvcCamera.StartIsoStreamActivity
+ humer.UvcCamera.StartIsoStreamActivity$1
+ humer.UvcCamera.StartIsoStreamActivity$10
+ humer.UvcCamera.StartIsoStreamActivity$11
+ humer.UvcCamera.StartIsoStreamActivity$11$1
+ humer.UvcCamera.StartIsoStreamActivity$11$2
+ humer.UvcCamera.StartIsoStreamActivity$12
+ humer.UvcCamera.StartIsoStreamActivity$12$1
+ humer.UvcCamera.StartIsoStreamActivity$12$1$1
+ humer.UvcCamera.StartIsoStreamActivity$12$1$2
+ humer.UvcCamera.StartIsoStreamActivity$12$1$3
+ humer.UvcCamera.StartIsoStreamActivity$12$2
+ humer.UvcCamera.StartIsoStreamActivity$12$2$1
+ humer.UvcCamera.StartIsoStreamActivity$12$2$2
+ humer.UvcCamera.StartIsoStreamActivity$12$2$3
+ humer.UvcCamera.StartIsoStreamActivity$13
+ humer.UvcCamera.StartIsoStreamActivity$13$1
+ humer.UvcCamera.StartIsoStreamActivity$13$1$1
+ humer.UvcCamera.StartIsoStreamActivity$13$1$2
+ humer.UvcCamera.StartIsoStreamActivity$13$2
+ humer.UvcCamera.StartIsoStreamActivity$13$2$1
+ humer.UvcCamera.StartIsoStreamActivity$13$2$2
+ humer.UvcCamera.StartIsoStreamActivity$14
+ humer.UvcCamera.StartIsoStreamActivity$15
+ humer.UvcCamera.StartIsoStreamActivity$16
+ humer.UvcCamera.StartIsoStreamActivity$17
+ humer.UvcCamera.StartIsoStreamActivity$18
+ humer.UvcCamera.StartIsoStreamActivity$19
+ humer.UvcCamera.StartIsoStreamActivity$2
+ humer.UvcCamera.StartIsoStreamActivity$3
+ humer.UvcCamera.StartIsoStreamActivity$4
+ humer.UvcCamera.StartIsoStreamActivity$4$1
+ humer.UvcCamera.StartIsoStreamActivity$5
+ humer.UvcCamera.StartIsoStreamActivity$5$1
+ humer.UvcCamera.StartIsoStreamActivity$5$1$1
+ humer.UvcCamera.StartIsoStreamActivity$5$1$2
+ humer.UvcCamera.StartIsoStreamActivity$5$1$3
+ humer.UvcCamera.StartIsoStreamActivity$5$1$4
+ humer.UvcCamera.StartIsoStreamActivity$5$1$5
+ humer.UvcCamera.StartIsoStreamActivity$6
+ humer.UvcCamera.StartIsoStreamActivity$7
+ humer.UvcCamera.StartIsoStreamActivity$8
+ humer.UvcCamera.StartIsoStreamActivity$8$1
+ humer.UvcCamera.StartIsoStreamActivity$9
+ humer.UvcCamera.StartIsoStreamActivity$Frame
+ humer.UvcCamera.StartIsoStreamActivity$IsochronousStream
+ humer.UvcCamera.StartIsoStreamActivity$IsochronousStreamLibUsb
+ humer.UvcCamera.StartIsoStreamActivity$IsochronousStreamLibUsb$1
+ humer.UvcCamera.StartIsoStreamActivity$Videoformat
 humer/UvcCamera/Main.java
  humer.UvcCamera.Main
  humer.UvcCamera.Main$1
@@ -276,99 +379,3 @@ humer/UvcCamera/Main.java
  humer.UvcCamera.Main$4
  humer.UvcCamera.Main$5
  humer.UvcCamera.Main$6
-com/example/androidthings/videortc/WebRtcService.java
- com.example.androidthings.videortc.WebRtcService
-humer/UvcCamera/AutomaticDetection/LibUsb_AutoDetect.java
- humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect
- humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect$1
- humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect$2
- humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect$3
- humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect$4
- humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect$5
- humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect$6
-humer/UvcCamera/LibUsb/JNA_I_LibUsb.java
- humer.UvcCamera.LibUsb.JNA_I_LibUsb
- humer.UvcCamera.LibUsb.JNA_I_LibUsb$Libusb_Auto_Values
- humer.UvcCamera.LibUsb.JNA_I_LibUsb$Libusb_Auto_Values$ByValue
- humer.UvcCamera.LibUsb.JNA_I_LibUsb$autoStreamComplete
- humer.UvcCamera.LibUsb.JNA_I_LibUsb$eventCallback
- humer.UvcCamera.LibUsb.JNA_I_LibUsb$logPrint
-humer/UvcCamera/SetUpTheUsbDevice.java
- humer.UvcCamera.SetUpTheUsbDevice
- humer.UvcCamera.SetUpTheUsbDevice$1
- humer.UvcCamera.SetUpTheUsbDevice$10
- humer.UvcCamera.SetUpTheUsbDevice$11
- humer.UvcCamera.SetUpTheUsbDevice$12
- humer.UvcCamera.SetUpTheUsbDevice$13
- humer.UvcCamera.SetUpTheUsbDevice$14
- humer.UvcCamera.SetUpTheUsbDevice$15
- humer.UvcCamera.SetUpTheUsbDevice$16
- humer.UvcCamera.SetUpTheUsbDevice$17
- humer.UvcCamera.SetUpTheUsbDevice$18
- humer.UvcCamera.SetUpTheUsbDevice$19
- humer.UvcCamera.SetUpTheUsbDevice$2
- humer.UvcCamera.SetUpTheUsbDevice$20
- humer.UvcCamera.SetUpTheUsbDevice$21
- humer.UvcCamera.SetUpTheUsbDevice$22
- humer.UvcCamera.SetUpTheUsbDevice$23
- humer.UvcCamera.SetUpTheUsbDevice$24
- humer.UvcCamera.SetUpTheUsbDevice$24$1
- humer.UvcCamera.SetUpTheUsbDevice$25
- humer.UvcCamera.SetUpTheUsbDevice$26
- humer.UvcCamera.SetUpTheUsbDevice$27
- humer.UvcCamera.SetUpTheUsbDevice$27$1
- humer.UvcCamera.SetUpTheUsbDevice$28
- humer.UvcCamera.SetUpTheUsbDevice$29
- humer.UvcCamera.SetUpTheUsbDevice$29$1
- humer.UvcCamera.SetUpTheUsbDevice$29$2
- humer.UvcCamera.SetUpTheUsbDevice$29$3
- humer.UvcCamera.SetUpTheUsbDevice$3
- humer.UvcCamera.SetUpTheUsbDevice$30
- humer.UvcCamera.SetUpTheUsbDevice$31
- humer.UvcCamera.SetUpTheUsbDevice$32
- humer.UvcCamera.SetUpTheUsbDevice$33
- humer.UvcCamera.SetUpTheUsbDevice$34
- humer.UvcCamera.SetUpTheUsbDevice$4
- humer.UvcCamera.SetUpTheUsbDevice$5
- humer.UvcCamera.SetUpTheUsbDevice$6
- humer.UvcCamera.SetUpTheUsbDevice$7
- humer.UvcCamera.SetUpTheUsbDevice$8
- humer.UvcCamera.SetUpTheUsbDevice$9
- humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead
- humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead$1
- humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead$1$1
- humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead$2
- humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead1Frame
- humer.UvcCamera.SetUpTheUsbDevice$IsochronousRead1Frame$1
- humer.UvcCamera.SetUpTheUsbDevice$Options
-com/example/androidthings/videortc/UsbCapturer.java
- com.example.androidthings.videortc.UsbCapturer
- com.example.androidthings.videortc.UsbCapturer$IsochronousStream
- com.example.androidthings.videortc.UsbCapturer$Videoformat
-com/example/androidthings/videortc/CallActivity.java
- com.example.androidthings.videortc.CallActivity
- com.example.androidthings.videortc.CallActivity$1
- com.example.androidthings.videortc.CallActivity$10
- com.example.androidthings.videortc.CallActivity$11
- com.example.androidthings.videortc.CallActivity$12
- com.example.androidthings.videortc.CallActivity$13
- com.example.androidthings.videortc.CallActivity$14
- com.example.androidthings.videortc.CallActivity$15
- com.example.androidthings.videortc.CallActivity$16
- com.example.androidthings.videortc.CallActivity$17
- com.example.androidthings.videortc.CallActivity$2
- com.example.androidthings.videortc.CallActivity$3
- com.example.androidthings.videortc.CallActivity$4
- com.example.androidthings.videortc.CallActivity$5
- com.example.androidthings.videortc.CallActivity$6
- com.example.androidthings.videortc.CallActivity$6$1
- com.example.androidthings.videortc.CallActivity$6$1$1
- com.example.androidthings.videortc.CallActivity$6$1$2
- com.example.androidthings.videortc.CallActivity$6$1$3
- com.example.androidthings.videortc.CallActivity$6$1$4
- com.example.androidthings.videortc.CallActivity$6$1$5
- com.example.androidthings.videortc.CallActivity$7
- com.example.androidthings.videortc.CallActivity$8
- com.example.androidthings.videortc.CallActivity$9
- com.example.androidthings.videortc.CallActivity$ProxyRenderer
- com.example.androidthings.videortc.CallActivity$ProxyVideoSink

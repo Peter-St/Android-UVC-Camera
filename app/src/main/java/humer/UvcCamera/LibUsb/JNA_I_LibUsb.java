@@ -94,12 +94,15 @@ public interface JNA_I_LibUsb extends Library {
     public void lunchTheStream_WebRtc_Service();
 
     // Stream Activity
-    public int fetchTheCamStreamingEndpointAdress (int FD);
     public void setImageCapture();
     public void startVideoCapture();
     public void stopVideoCapture();
     public void setImageCaptureLongClick();
     public void startVideoCaptureLongClick() ;
     public void stopVideoCaptureLongClick() ;
+
+    // move to Native Methods:
+    public int fetchTheCamStreamingEndpointAdress (int FD);
+
 
 }

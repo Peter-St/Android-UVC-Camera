@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="humer.uvc_camera"
-    android:versionCode="80"
-    android:versionName="1.8.3" >
+    android:versionCode="81"
+    android:versionName="1.8.4" >
 
     <uses-sdk
         android:minSdkVersion="15"
@@ -25,6 +25,7 @@
     <uses-feature android:name="android.hardware.usb.host" />
 
     <application
+        android:name="humer.UvcCamera.UVC_Camera_Controller"
         android:allowBackup="true"
         android:debuggable="true"
         android:icon="@mipmap/ic_launcher"
@@ -103,6 +104,8 @@
         <service android:name="humer.UvcCamera.LibUsb.StartIsoStreamService" >
         </service>
         <service android:name="com.example.androidthings.videortc.WebRtcService" >
+        </service>
+        <service android:name="humer.UvcCamera.LibUsb.LibUsbManagerService" >
         </service>
 
         <meta-data

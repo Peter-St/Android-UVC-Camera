@@ -1,0 +1,20 @@
+[
+  {
+    "level": "INFO",
+    "message": "Start JSON generation. Platform version: 21 min SDK version: mips64",
+    "file": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk",
+    "tag": "debug|mips64"
+  },
+  {
+    "level": "INFO",
+    "message": "JSON \u0027/home/peter/Downloads/Webcam/Android-UVC-Camera/app/.cxx/ndkBuild/debug/mips64/android_gradle_build.json\u0027 was up-to-date",
+    "file": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk",
+    "tag": "debug|mips64"
+  },
+  {
+    "level": "INFO",
+    "message": "JSON generation completed without problems",
+    "file": "/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/Android.mk",
+    "tag": "debug|mips64"
+  }
+]
