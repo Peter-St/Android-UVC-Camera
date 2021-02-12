@@ -2398,7 +2398,7 @@ public class SetUpTheUsbDevice extends Activity {
                 JNA_I_LibUsb.INSTANCE.stopStreaming();
             }
         }
-        mService.streamCanBeResumed = false;
+        if(mService != null) mService.streamCanBeResumed = false;
         finish();
     }
 
@@ -2414,7 +2414,7 @@ public class SetUpTheUsbDevice extends Activity {
         else if (camDeviceConnection != null) {
             if (moveToNative) {
                 camDeviceConnection = null;
-                mService.streamCanBeResumed = false;
+                if(mService != null) mService.streamCanBeResumed = false;
                 finish();
             } else {
                 if (camControlInterface!= null) camDeviceConnection.releaseInterface(camControlInterface);
@@ -2422,7 +2422,7 @@ public class SetUpTheUsbDevice extends Activity {
                 camDeviceConnection.close();
             }
         }
-        mService.streamCanBeResumed = false;
+        if(mService != null) mService.streamCanBeResumed = false;
         finish();
     }
 

@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 
+import humer.UvcCamera.UsbIso64.usbdevice_fs;
+
 public class UVC_Descriptor {
 
     //Video Interface Class Code
@@ -73,7 +75,6 @@ public class UVC_Descriptor {
 
     //MaxPacketSize
     public static List<Integer> maxPacketSizeArray = new ArrayList<Integer>();
-
 
     public UVC_Descriptor(ByteBuffer data) {  //convertedMaxPacketSize
         this.uvcData = ByteBuffer.allocate(data.limit());
@@ -233,7 +234,47 @@ public class UVC_Descriptor {
         System.out.println("hex " + hex);
     }
 
+    // FourCC
+    public enum FourCC {
 
+        FOURCC_YUY2( "YUY2"),
+        FOURCC_UYVY( "UYVY"),
+        ;
+
+        private final String fourCC;
+
+        private FourCC(final String plane) {
+            this.fourCC = plane;
+        }
+
+        FourCC() {
+            fourCC = null;
+        }
+
+        /**
+         * toString method.
+         *
+         * @return Value of this Enum as String.
+         */
+        @Override
+        public String toString() {
+            return fourCC;
+        }
+
+        public boolean equalsIgnoreCase(final String value) {
+            return fourCC.equalsIgnoreCase(value);
+        }
+
+        public static FourCC getFourCC(String value) {
+            for(FourCC val: FourCC.values()) {
+                if(val.equalsIgnoreCase(value)) {
+                    return val;
+                }
+            }
+            return null;
+        }
+
+    }
 
 
     public static class FormatIndex {
@@ -246,6 +287,7 @@ public class UVC_Descriptor {
         public enum Videoformat {YUV, MJPEG, YUY2, YV12, YUV_422_888, YUV_420_888}
         public Videoformat videoformat;
         public String guidFormat = new String();
+        public String FourCC_string = new String();
 
 
         public FormatIndex(byte[] format, ArrayList<byte []> frame){
@@ -262,9 +304,50 @@ public class UVC_Descriptor {
             System.out.println("(FormatData) formatIndexNumber = " + formatIndexNumber);
             System.out.println("(FormatData) formatData[2] = " + formatData[2]);
             if (formatData[2] ==  VS_format_uncompressed ) {
-                // Guid Data
+                // FOURCC Data
+                String FOURCC;
                 Formatter formatter = new Formatter();
+                for (int b=0; b<4 ; b++) {
+                    formatter.format("%02x", formatData[(b + 5) & 0xFF]);
+                }
+                FOURCC = formatter.toString();
+                System.out.println("FOURCC = " + FOURCC);
 
+
+                String[] string_FourCC = new String[4];
+
+
+                string_FourCC[0]= (FOURCC.substring(0,2));
+                string_FourCC[1]= (FOURCC.substring(2,4));
+                string_FourCC[2]= (FOURCC.substring(4,6));
+                string_FourCC[3]= (FOURCC.substring(6,8));
+
+                for (String a: string_FourCC) {
+                    // YUY2
+                    if (a.equalsIgnoreCase("59") ) FourCC_string += "Y";
+                    else if (a.equalsIgnoreCase("55") ) FourCC_string += "U";
+                    else if (a .equalsIgnoreCase("56") )FourCC_string += "V";
+                    else if (a.equalsIgnoreCase("32")) FourCC_string += "2";
+                    // I420
+                    else if (a.equalsIgnoreCase("34")) FourCC_string += "4";
+                    else if (a.equalsIgnoreCase("30")) FourCC_string += "0";
+                    else if (a .equalsIgnoreCase("49")) FourCC_string += "I";
+                    // YV12
+                    else if (a .equalsIgnoreCase("31")) FourCC_string += "1";
+                    // XVMC
+                    else if (a .equalsIgnoreCase("58")) FourCC_string += "X";
+                    else if (a.equalsIgnoreCase("4d")) FourCC_string += "M";
+                    else if (a .equalsIgnoreCase("43")) FourCC_string += "C";
+                    // NV12
+                    else if (a .equalsIgnoreCase("4e")) FourCC_string += "N";
+                    // RV16 / RV15
+                    else if (a .equalsIgnoreCase("52")) FourCC_string += "R";
+                    else if (a .equalsIgnoreCase("36")) FourCC_string += "6";
+                    else if (a .equalsIgnoreCase("35")) FourCC_string += "5";
+                }
+                log(FourCC_string + "\n" + FourCC_string + "\n" + FourCC_string + "\n");
+                // Guid Data
+                formatter = new Formatter();
                 for (int b=0; b<16 ; b++) {
                     formatter.format("%02x", formatData[(b + 5) & 0xFF]);
                 }

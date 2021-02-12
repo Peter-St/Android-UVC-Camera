@@ -368,6 +368,9 @@ public class UsbCapturer implements VideoCapturer {
 
     private void openCameraDevice(boolean init) throws Exception {
         if (moveToNative) {
+            if (!usbManager.hasPermission(camDevice)) {
+                usbManager.requestPermission(camDevice, mPermissionIntent);
+            }
             camDeviceConnection = usbManager.openDevice(camDevice);
             int FD = camDeviceConnection.getFileDescriptor();
             if(camStreamingEndpointAdress == 0) {
@@ -375,7 +378,7 @@ public class UsbCapturer implements VideoCapturer {
             }
             int bcdUVC_int = 0;
             if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
-            camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
+            //camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
             JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                     camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1, videoformat, 0, bcdUVC_int);
             JNA_I_LibUsb.INSTANCE.initStreamingParms(FD);
@@ -868,7 +871,7 @@ public class UsbCapturer implements VideoCapturer {
     }
 
     // JNI Method
-    public void retrievedFrameFromLibUsb (byte[] frameData) {
+    public void retrievedFrameFromLibUsbNV21 (byte[] frameData) {
         log("from java nv21 method");
         // Format should be NV21
         try {
@@ -895,6 +898,8 @@ public class UsbCapturer implements VideoCapturer {
     private void processReceivedVideoFrameYuv(byte[] frameData, UsbCapturer.Videoformat videoFromat) throws IOException {
         Long imageTime = System.currentTimeMillis();
         log("YUV Progress");
+        log("videoFromat = " + videoFromat);
+
         if (videoFromat == UsbCapturer.Videoformat.NV21 ) {
             if (exit == false) {
                 capturerObserver.onByteBufferFrameCaptured(frameData, imageWidth, imageHeight, 0, imageTime);
@@ -1044,7 +1049,7 @@ public class UsbCapturer implements VideoCapturer {
         }
     }
 
-    public void processReceivedVideoFrameYuvFromJni(byte[] frameData) {
+    public void usbCapturerProcessReceivedVideoFrameYuvFromJni(byte[] frameData) {
         Videoformat videoFromat;
         if (videoformat.equals("yuv")){
             videoFromat = Videoformat.yuv;
@@ -1057,6 +1062,8 @@ public class UsbCapturer implements VideoCapturer {
         }else if (videoformat.equals("YUV_422_888")){
             videoFromat = Videoformat.YUV_422_888;
         } else videoFromat = Videoformat.mjpeg;
+
+        log("processReceivedVideoFrameYuv");
 
         try {
             processReceivedVideoFrameYuv(frameData, videoFromat);

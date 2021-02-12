@@ -359,7 +359,6 @@ uvc_error_t uvc_ensure_frame_size(uvc_frame_t *frame, size_t need_bytes) {
     }
 }
 
-
 /** @brief Convert a frame from YUYV to RGBX8888
  * @ingroup frame
  * @param ini YUYV frame
@@ -418,185 +417,6 @@ uvc_error_t uvc_yuyv2rgbx(uvc_frame_t *out) {
     return UVC_SUCCESS;
 }
 
-uvc_error_t uvc_yuyv2rgbx_2(uvc_frame_t *in, uvc_frame_t *out) {
-    out->width = in->width;
-    out->height = in->height;
-    out->frame_format = UVC_FRAME_FORMAT_RGBX;
-    if (out->library_owns_data)
-        out->step = in->width * PIXEL_RGBX;
-    out->sequence = in->sequence;
-    out->capture_time = in->capture_time;
-    out->source = in->source;
-
-    uint8_t *pyuv = in->data;
-    const uint8_t *pyuv_end = pyuv + in->data_bytes - PIXEL8_YUYV;
-    uint8_t *prgbx = out->data;
-    const uint8_t *prgbx_end = prgbx + out->data_bytes - PIXEL8_RGBX;
-
-    // YUYV => RGBX8888
-#if USE_STRIDE
-    if (in->step && out->step && (in->step != out->step)) {
-		const int hh = in->height < out->height ? in->height : out->height;
-		const int ww = in->width < out->width ? in->width : out->width;
-		int h, w;
-		for (h = 0; h < hh; h++) {
-			w = 0;
-			pyuv = in->data + in->step * h;
-			prgbx = out->data + out->step * h;
-			for (; (prgbx <= prgbx_end) && (pyuv <= pyuv_end) && (w < ww) ;) {
-				IYUYV2RGBX_8(pyuv, prgbx, 0, 0);
-
-				prgbx += PIXEL8_RGBX;
-				pyuv += PIXEL8_YUYV;
-				w += 8;
-			}
-		}
-	} else {
-		// compressed format? XXX if only one of the frame in / out has step, this may lead to crash...
-		for (; (prgbx <= prgbx_end) && (pyuv <= pyuv_end) ;) {
-			IYUYV2RGBX_8(pyuv, prgbx, 0, 0);
-
-			prgbx += PIXEL8_RGBX;
-			pyuv += PIXEL8_YUYV;
-		}
-	}
-#else
-    for (; (prgbx <= prgbx_end) && (pyuv <= pyuv_end) ;) {
-        IYUYV2RGBX_8(pyuv, prgbx, 0, 0);
-
-        prgbx += PIXEL8_RGBX;
-        pyuv += PIXEL8_YUYV;
-    }
-#endif
-    return UVC_SUCCESS;
-}
-
-uvc_error_t uvc_yuyv2iyuv420SP(uvc_frame_t *out) {
-
-
-    const uint8_t *src = videoFrameData->videoframe;
-    uint8_t *dest =out->data;
-    const int32_t width = imageWidth;
-    const int32_t height = imageHeight;
-    const int32_t src_width = imageWidth*3/2;
-    const int32_t src_height = imageHeight;
-    const int32_t dest_width = out->width = out->step = imageWidth;
-    const int32_t dest_height = out->height = imageHeight;
-
-    const uint32_t hh = src_height < dest_height ? src_height : dest_height;
-    uint8_t *uv = dest + dest_width * dest_height;
-    int h, w;
-    for (h = 0; h < hh - 1; h += 2) {
-        uint8_t *y0 = dest + width * h;
-        uint8_t *y1 = y0 + width;
-        const uint8_t *yuv = src + src_width * h;
-        for (w = 0; w < width; w += 4) {
-            *(y0++) = yuv[0];	// y
-            *(y0++) = yuv[2];	// y'
-            *(y0++) = yuv[4];	// y''
-            *(y0++) = yuv[6];	// y'''
-            *(uv++) = yuv[3];	// v
-            *(uv++) = yuv[1];	// u
-            *(uv++) = yuv[7];	// v
-            *(uv++) = yuv[5];	// u
-            *(y1++) = yuv[src_width+0];	// y on next low
-            *(y1++) = yuv[src_width+2];	// y' on next low
-            *(y1++) = yuv[src_width+4];	// y''  on next low
-            *(y1++) = yuv[src_width+6];	// y'''  on next low
-            yuv += 8;	// (1pixel=2bytes)x4pixels=8bytes
-        }
-    }
-
-    return UVC_SUCCESS;
-}
-
-
-uvc_error_t uvc_yuyv2yuv420SP(uvc_frame_t *out) {
-
-
-    out->frame_format = UVC_FRAME_FORMAT__NV21;
-    out->sequence = 0;
-    gettimeofday(&out->capture_time, NULL);
-    out->source = devh;
-
-
-    const uint8_t *src = videoFrameData->videoframe;
-    uint8_t *dest = out->data;
-    const int32_t width = imageWidth;
-    const int32_t height = imageHeight;
-    const int32_t src_width = imageWidth * 3 / 2;
-    const int32_t src_height = imageHeight;
-    const int32_t dest_width = out->width = out->step = imageWidth;
-    const int32_t dest_height = out->height = imageHeight;
-
-
-    const uint32_t hh = src_height < dest_height ? src_height : dest_height;
-    uint8_t *uv = dest + dest_width * dest_height;
-    int h, w;
-    for (h = 0; h < hh - 1; h += 2) {
-        uint8_t *y0 = dest + width * h;
-        uint8_t *y1 = y0 + width;
-        const uint8_t *yuv = src + src_width * h;
-        for (w = 0; w < width; w += 4) {
-            *(y0++) = yuv[0];	// y
-            *(y0++) = yuv[2];	// y'
-            *(y0++) = yuv[4];	// y''
-            *(y0++) = yuv[6];	// y'''
-            *(uv++) = yuv[1];	// u
-            *(uv++) = yuv[3];	// v
-            *(uv++) = yuv[5];	// u
-            *(uv++) = yuv[7];	// v
-            *(y1++) = yuv[src_width+0];	// y on next low
-            *(y1++) = yuv[src_width+2];	// y' on next low
-            *(y1++) = yuv[src_width+4];	// y''  on next low
-            *(y1++) = yuv[src_width+6];	// y'''  on next low
-            yuv += 8;	// (1pixel=2bytes)x4pixels=8bytes
-        }
-    }
-    return UVC_SUCCESS;
-}
-
-uvc_error_t uvc_yuyv2yuv420SP_2(uvc_frame_t *in, uvc_frame_t *out) {
-
-    const uint8_t *src = in->data;
-    uint8_t *dest = out->data;
-    const int32_t width = in->width;
-    const int32_t height = in->height;
-    const int32_t src_width = in->step;
-    const int32_t src_height = in->height;
-    const int32_t dest_width = out->width = out->step = in->width;
-    const int32_t dest_height = out->height = in->height;
-
-
-
-    const uint32_t hh = src_height < dest_height ? src_height : dest_height;
-    uint8_t *uv = dest + dest_width * dest_height;
-    int h, w;
-    for (h = 0; h < hh - 1; h += 2) {
-        uint8_t *y0 = dest + width * h;
-        uint8_t *y1 = y0 + width;
-        const uint8_t *yuv = src + src_width * h;
-        for (w = 0; w < width; w += 4) {
-            *(y0++) = yuv[0];	// y
-            *(y0++) = yuv[2];	// y'
-            *(y0++) = yuv[4];	// y''
-            *(y0++) = yuv[6];	// y'''
-            *(uv++) = yuv[1];	// u
-            *(uv++) = yuv[3];	// v
-            *(uv++) = yuv[5];	// u
-            *(uv++) = yuv[7];	// v
-            *(y1++) = yuv[src_width+0];	// y on next low
-            *(y1++) = yuv[src_width+2];	// y' on next low
-            *(y1++) = yuv[src_width+4];	// y''  on next low
-            *(y1++) = yuv[src_width+6];	// y'''  on next low
-            yuv += 8;	// (1pixel=2bytes)x4pixels=8bytes
-        }
-    }
-
-    return(UVC_SUCCESS);
-
-}
-
 #define MAX_READLINE 8
 
 #ifndef MAX_READLINE
@@ -606,167 +426,6 @@ uvc_error_t uvc_yuyv2yuv420SP_2(uvc_frame_t *in, uvc_frame_t *out) {
 #undef MAX_READLINE
 #define MAX_READLINE 1
 #endif
-
-/* ISO/IEC 10918-1:1993(E) K.3.3. Default Huffman tables used by MJPEG UVC devices
- which don't specify a Huffman table in the JPEG stream. */
-static const unsigned char dc_lumi_len[] = {
-        0, 0, 1, 5, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0 };
-static const unsigned char dc_lumi_val[] = {
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
-
-static const unsigned char dc_chromi_len[] = {
-        0, 0, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 };
-static const unsigned char dc_chromi_val[] = {
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
-
-static const unsigned char ac_lumi_len[] = {
-        0, 0, 2, 1, 3, 3, 2, 4, 3, 5, 5, 4, 4, 0, 0, 1, 0x7d };
-static const unsigned char ac_lumi_val[] = {
-        0x01, 0x02, 0x03, 0x00, 0x04, 0x11,	0x05, 0x12,
-        0x21, 0x31, 0x41, 0x06, 0x13, 0x51, 0x61, 0x07,
-        0x22, 0x71,	0x14, 0x32, 0x81, 0x91, 0xa1, 0x08,
-        0x23, 0x42, 0xb1, 0xc1, 0x15, 0x52, 0xd1, 0xf0,
-        0x24, 0x33, 0x62, 0x72, 0x82, 0x09, 0x0a, 0x16,
-        0x17, 0x18, 0x19, 0x1a, 0x25, 0x26, 0x27, 0x28,
-        0x29, 0x2a, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
-        0x3a, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49,
-        0x4a, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59,
-        0x5a, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69,
-        0x6a, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79,
-        0x7a, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89,
-        0x8a, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98,
-        0x99, 0x9a, 0xa2, 0xa3, 0xa4, 0xa5, 0xa6, 0xa7,
-        0xa8, 0xa9, 0xaa, 0xb2, 0xb3, 0xb4, 0xb5, 0xb6,
-        0xb7, 0xb8, 0xb9, 0xba, 0xc2, 0xc3, 0xc4, 0xc5,
-        0xc6, 0xc7, 0xc8, 0xc9, 0xca, 0xd2, 0xd3, 0xd4,
-        0xd5, 0xd6, 0xd7, 0xd8, 0xd9, 0xda, 0xe1, 0xe2,
-        0xe3, 0xe4, 0xe5, 0xe6, 0xe7, 0xe8, 0xe9, 0xea,
-        0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8,
-        0xf9, 0xfa
-};
-static const unsigned char ac_chromi_len[] = {
-        0, 0, 2, 1, 2, 4, 4, 3, 4, 7, 5, 4, 4, 0, 1, 2, 0x77 };
-static const unsigned char ac_chromi_val[] = {
-        0x00, 0x01, 0x02, 0x03, 0x11, 0x04, 0x05, 0x21,
-        0x31, 0x06, 0x12, 0x41, 0x51, 0x07, 0x61, 0x71,
-        0x13, 0x22, 0x32, 0x81, 0x08, 0x14, 0x42, 0x91,
-        0xa1, 0xb1, 0xc1, 0x09, 0x23, 0x33, 0x52, 0xf0,
-        0x15, 0x62, 0x72, 0xd1, 0x0a, 0x16, 0x24, 0x34,
-        0xe1, 0x25, 0xf1, 0x17, 0x18, 0x19, 0x1a, 0x26,
-        0x27, 0x28, 0x29, 0x2a, 0x35, 0x36, 0x37, 0x38,
-        0x39, 0x3a, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,
-        0x49, 0x4a, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
-        0x59, 0x5a, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68,
-        0x69, 0x6a, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78,
-        0x79, 0x7a, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87,
-        0x88, 0x89, 0x8a, 0x92, 0x93, 0x94, 0x95, 0x96,
-        0x97, 0x98, 0x99, 0x9a, 0xa2, 0xa3, 0xa4, 0xa5,
-        0xa6, 0xa7, 0xa8, 0xa9, 0xaa, 0xb2, 0xb3, 0xb4,
-        0xb5, 0xb6, 0xb7, 0xb8, 0xb9, 0xba, 0xc2, 0xc3,
-        0xc4, 0xc5, 0xc6, 0xc7, 0xc8, 0xc9, 0xca, 0xd2,
-        0xd3, 0xd4, 0xd5, 0xd6, 0xd7, 0xd8, 0xd9, 0xda,
-        0xe2, 0xe3, 0xe4, 0xe5, 0xe6, 0xe7, 0xe8, 0xe9,
-        0xea, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8,
-        0xf9, 0xfa
-};
-#define YCbCr_YUYV_2(YCbCr, yuyv) \
-	{ \
-		*(yuyv++) = *(YCbCr+0); \
-		*(yuyv++) = (*(YCbCr+1) + *(YCbCr+4)) >> 1; \
-		*(yuyv++) = *(YCbCr+3); \
-		*(yuyv++) = (*(YCbCr+2) + *(YCbCr+5)) >> 1; \
-	}
-
-#define COPY_HUFF_TABLE(dinfo,tbl,name) do { \
-	if (dinfo->tbl == NULL) dinfo->tbl = jpeg_alloc_huff_table((j_common_ptr)dinfo); \
-		memcpy(dinfo->tbl->bits, name##_len, sizeof(name##_len)); \
-		memset(dinfo->tbl->huffval, 0, sizeof(dinfo->tbl->huffval)); \
-		memcpy(dinfo->tbl->huffval, name##_val, sizeof(name##_val)); \
-	} while(0)
-
-static inline void insert_huff_tables(j_decompress_ptr dinfo) {
-    COPY_HUFF_TABLE(dinfo, dc_huff_tbl_ptrs[0], dc_lumi);
-    COPY_HUFF_TABLE(dinfo, dc_huff_tbl_ptrs[1], dc_chromi);
-    COPY_HUFF_TABLE(dinfo, ac_huff_tbl_ptrs[0], ac_lumi);
-    COPY_HUFF_TABLE(dinfo, ac_huff_tbl_ptrs[1], ac_chromi);
-}
-
-uvc_error_t uvc_mjpeg2yuyv(uvc_frame_t *out) {
-
-    out->actual_bytes = 0;	// XXX
-
-    size_t lines_read = 0;
-    int i, j;
-    int num_scanlines;
-    register uint8_t *yuyv, *ycbcr;
-
-    out->width = imageWidth;
-    out->height = imageHeight;
-    out->frame_format = UVC_FRAME_FORMAT_YUYV;
-    out->step = imageWidth * 2;
-    out->sequence = 0;
-    gettimeofday(&out->capture_time, NULL);
-    out->source = devh;
-
-    struct jpeg_decompress_struct dinfo;
-
-    videoFrameData->videoframe;
-
-    jpeg_create_decompress(&dinfo);
-    jpeg_mem_src(&dinfo, videoFrameData->videoframe, videoFrameData->FrameSize/*in->data_bytes*/);	// XXX
-    jpeg_read_header(&dinfo, TRUE);
-
-    if (dinfo.dc_huff_tbl_ptrs[0] == NULL) {
-        /* This frame is missing the Huffman tables: fill in the standard ones */
-        insert_huff_tables(&dinfo);
-    }
-
-    dinfo.out_color_space = JCS_YCbCr;
-    dinfo.dct_method = JDCT_IFAST;
-
-    // start decompressor
-    jpeg_start_decompress(&dinfo);
-
-    // these dinfo.xxx valiables are only valid after jpeg_start_decompress
-    const int row_stride = dinfo.output_width * dinfo.output_components;
-
-    // allocate buffer
-    register JSAMPARRAY buffer = (*dinfo.mem->alloc_sarray)
-            ((j_common_ptr) &dinfo, JPOOL_IMAGE, row_stride, MAX_READLINE);
-
-    // local copy
-    uint8_t *data = out->data;
-    const int out_step = out->step;
-
-    if (LIKELY(dinfo.output_height == out->height)) {
-        for (; dinfo.output_scanline < dinfo.output_height ;) {
-            // convert lines of mjpeg data to YCbCr
-            num_scanlines = jpeg_read_scanlines(&dinfo, buffer, MAX_READLINE);
-            // convert YCbCr to yuyv(YUV422)
-            for (j = 0; j < num_scanlines; j++) {
-                yuyv = data + (lines_read + j) * out_step;
-                ycbcr = buffer[j];
-                for (i = 0; i < row_stride; i += 24) {	// step by YCbCr x 8 pixels = 3 x 8 bytes
-                    YCbCr_YUYV_2(ycbcr + i, yuyv);
-                    YCbCr_YUYV_2(ycbcr + i + 6, yuyv);
-                    YCbCr_YUYV_2(ycbcr + i + 12, yuyv);
-                    YCbCr_YUYV_2(ycbcr + i + 18, yuyv);
-                }
-            }
-            lines_read += num_scanlines;
-        }
-        out->actual_bytes = imageWidth * imageHeight * 2;	// XXX
-    }
-
-    jpeg_finish_decompress(&dinfo);
-    jpeg_destroy_decompress(&dinfo);
-    return lines_read == out->height ? UVC_SUCCESS : UVC_ERROR_OTHER;
-
-    fail:
-    jpeg_destroy_decompress(&dinfo);
-    return lines_read == out->height ? UVC_SUCCESS : UVC_ERROR_OTHER+1;
-}
-
 
 /** @brief Allocate a frame structure
  * @ingroup frame
@@ -801,6 +460,138 @@ uvc_frame_t *uvc_allocate_frame(size_t data_bytes) {
     return frame;
 }
 
+
+
+
+/** @brief Duplicate a frame, preserving color format
+ * @ingroup frame
+ *
+ * @param in Original frame
+ * @param out Duplicate frame
+ */
+uvc_error_t uvc_duplicate_frame(uvc_frame_t *out) {
+
+    out->width = imageWidth;
+    out->height = imageHeight;
+    out->frame_format = UVC_FRAME_FORMAT_YUYV;
+    if (out->library_owns_data)
+        out->step = imageWidth*2;
+    out->sequence = 0;
+    gettimeofday(&out->capture_time, NULL);
+    out->source = devh;
+    out->actual_bytes = total;	// XXX
+
+#if USE_STRIDE	 // XXX
+    if (in->step && out->step) {
+		const int istep = imageWidth*2;
+		const int ostep = out->step;
+		const int hh = imageHeight < out->height ? imageHeight : out->height;
+		const int rowbytes = istep < ostep ? istep : ostep;
+		register void *ip = videoFrameData->videoframe;
+		register void *op = out->data;
+		int h;
+		for (h = 0; h < hh; h += 4) {
+			memcpy(op, ip, rowbytes);
+			ip += istep; op += ostep;
+			memcpy(op, ip, rowbytes);
+			ip += istep; op += ostep;
+			memcpy(op, ip, rowbytes);
+			ip += istep; op += ostep;
+			memcpy(op, ip, rowbytes);
+			ip += istep; op += ostep;
+		}
+	} else {
+		// compressed format? XXX if only one of the frame in / out has step, this may lead to crash...
+		memcpy(out->data, in->data, in->actual_bytes);
+	}
+#else
+    memcpy(out->data, videoFrameData->videoframe, total); // XXX
+#endif
+    return UVC_SUCCESS;
+}
+
+
+uvc_error_t uvc_yuyv2iyuv420SP(uvc_frame_t *in, uvc_frame_t *out) {
+
+
+    if (UNLIKELY(uvc_ensure_frame_size(out, (in->width * in->height * 3) / 2) < 0))
+        return UVC_ERROR_NO_MEM;
+
+    const uint8_t *src = in->data;
+    uint8_t *dest =out->data;
+    const int32_t width = in->width;
+    const int32_t height = in->height;
+    const int32_t src_width = in->step;
+    const int32_t src_height = in->height;
+    const int32_t dest_width = out->width = out->step = in->width;
+    const int32_t dest_height = out->height = in->height;
+
+    const uint32_t hh = src_height < dest_height ? src_height : dest_height;
+    uint8_t *uv = dest + dest_width * dest_height;
+    int h, w;
+    for (h = 0; h < hh - 1; h += 2) {
+        uint8_t *y0 = dest + width * h;
+        uint8_t *y1 = y0 + width;
+        const uint8_t *yuv = src + src_width * h;
+        for (w = 0; w < width; w += 4) {
+            *(y0++) = yuv[0];	// y
+            *(y0++) = yuv[2];	// y'
+            *(y0++) = yuv[4];	// y''
+            *(y0++) = yuv[6];	// y'''
+            *(uv++) = yuv[3];	// v
+            *(uv++) = yuv[1];	// u
+            *(uv++) = yuv[7];	// v
+            *(uv++) = yuv[5];	// u
+            *(y1++) = yuv[src_width+0];	// y on next low
+            *(y1++) = yuv[src_width+2];	// y' on next low
+            *(y1++) = yuv[src_width+4];	// y''  on next low
+            *(y1++) = yuv[src_width+6];	// y'''  on next low
+            yuv += 8;	// (1pixel=2bytes)x4pixels=8bytes
+        }
+    }
+
+    return(UVC_SUCCESS);
+}
+
+uvc_error_t uvc_yuyv2iyuv420SP_2(uvc_frame_t *out) {
+
+    const uint8_t *src = videoFrameData->videoframe;
+    uint8_t *dest =out->data;
+    const int32_t width = imageWidth;
+    const int32_t height = imageHeight;
+    const int32_t src_width = imageWidth*2;
+    const int32_t src_height = imageHeight;
+    const int32_t dest_width = out->width = out->step = imageWidth;
+    const int32_t dest_height = out->height = imageHeight;
+
+    const uint32_t hh = src_height < dest_height ? src_height : dest_height;
+    uint8_t *uv = dest + dest_width * dest_height;
+    int h, w;
+    for (h = 0; h < hh - 1; h += 2) {
+        uint8_t *y0 = dest + width * h;
+        uint8_t *y1 = y0 + width;
+        const uint8_t *yuv = src + src_width * h;
+        for (w = 0; w < width; w += 4) {
+            *(y0++) = yuv[0];	// y
+            *(y0++) = yuv[2];	// y'
+            *(y0++) = yuv[4];	// y''
+            *(y0++) = yuv[6];	// y'''
+            *(uv++) = yuv[3];	// v
+            *(uv++) = yuv[1];	// u
+            *(uv++) = yuv[7];	// v
+            *(uv++) = yuv[5];	// u
+            *(y1++) = yuv[src_width+0];	// y on next low
+            *(y1++) = yuv[src_width+2];	// y' on next low
+            *(y1++) = yuv[src_width+4];	// y''  on next low
+            *(y1++) = yuv[src_width+6];	// y'''  on next low
+            yuv += 8;	// (1pixel=2bytes)x4pixels=8bytes
+        }
+    }
+
+    return(UVC_SUCCESS);
+}
+
+
 /// JNI Values
 JavaVM* javaVm;
 jclass class;
@@ -823,7 +614,7 @@ jmethodID javaServiceReturnToStreamActivity;
 
 
 // WebRtc
-jmethodID javaRetrievedFrameFromLibUsb;
+jmethodID javaRetrievedFrameFromLibUsb21;
 jmethodID javaProcessReceivedMJpegVideoFrameKamera;
 jmethodID javaWEBrtcProcessReceivedVideoFrameYuv;
 
@@ -2582,6 +2373,7 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniSetSurface
         // WINDOW_FORMAT_RGBA_8888
         ANativeWindow_setBuffersGeometry(preview_window, imageWidth, imageHeight, WINDOW_FORMAT_RGBA_8888);
         mCaptureWindow = preview_window;
+        LOGD("mCaptureWindow, JniSetSurfaceView");
     }
     int status = (*env)->GetJavaVM(env, &javaVm);
     if(status != 0) {
@@ -2602,6 +2394,8 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniSetSurface
         // WINDOW_FORMAT_RGBA_8888
         ANativeWindow_setBuffersGeometry(preview_window, imageWidth, imageHeight, WINDOW_FORMAT_RGBA_8888);
         mCaptureWindow = preview_window;
+        LOGD("mCaptureWindow, JniSetSurfaceYuv");
+
     }
     int status = (*env)->GetJavaVM(env, &javaVm);
     if(status != 0) {
@@ -2674,12 +2468,14 @@ void cb_jni_stream_Surface_Service(struct libusb_transfer *the_transfer) {
                     ++totalFrame;
                     if (runningStream == false) stopStreaming();
                     if (strcmp(frameFormat, "MJPEG") == 0) {
+                        //LOGD("MJPEG");
+
+
+
+
 
 
                         //       -->   mjpeg2rgbx
-
-
-
 
 
 
@@ -2696,20 +2492,7 @@ void cb_jni_stream_Surface_Service(struct libusb_transfer *the_transfer) {
                         (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaRetrievedStreamActivityFrameFromLibUsb, array);
                         total = 0;
                     } else if (strcmp(frameFormat, "YUY2") == 0) {
-                        LOGD("YUY2");
-
-
-
-
-
-
-
-
-
-
-
-
-
+                        //LOGD("YUY2");
                         uvc_frame_t *rgb;
                         uvc_error_t ret;
                         // We'll convert the image from YUV/JPEG to BGR, so allocate space
@@ -2718,7 +2501,6 @@ void cb_jni_stream_Surface_Service(struct libusb_transfer *the_transfer) {
                             printf("unable to allocate rgb frame!");
                             return;
                         }
-
                         // Do the BGR conversion
                         ret = uvc_yuyv2rgbx(rgb);
                         if (ret) {
@@ -2726,14 +2508,7 @@ void cb_jni_stream_Surface_Service(struct libusb_transfer *the_transfer) {
                             uvc_free_frame(rgb);
                             return;
                         }
-                        copyToSurface(rgb, &mCaptureWindow);
-
-
-
                         uvc_frame_t *rgb_rot_nFlip = checkRotation(rgb);
-
-                        uvc_free_frame(rgb);
-
                         if (imageCapture) {
                             const int JPEG_QUALITY = 100;
                             const int COLOR_COMPONENTS = 3;
@@ -2799,7 +2574,6 @@ void cb_jni_stream_Surface_Service(struct libusb_transfer *the_transfer) {
                         copyToSurface(rgb_rot_nFlip, &mCaptureWindow);
                         uvc_free_frame(rgb_rot_nFlip);
                         total = 0;
-
                     }
                 } else {
                     LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
@@ -2891,17 +2665,58 @@ void cb_jni_WebRtc_Service(struct libusb_transfer *the_transfer) {
                         (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaProcessReceivedMJpegVideoFrameKamera, array);
                         total = 0;
                     } else {
+
+
+                        LOGD("frameFormat = %s", frameFormat);
+
+
+                        uvc_frame_t *yuyv;
+                        uvc_error_t ret;
+                        // We'll convert the image from YUV/JPEG to BGR, so allocate space
+                        yuyv = uvc_allocate_frame(imageWidth * imageHeight *3/ 2);
+
+                        uvc_duplicate_frame(yuyv);
+
+
+
+                        uvc_frame_t *nv21;
+                        // We'll convert the image from YUV/JPEG to BGR, so allocate space
+                        nv21 = uvc_allocate_frame(imageWidth * imageHeight *3/ 2);
+
+                        uvc_yuyv2iyuv420SP (yuyv, nv21);
+
+
+
+                        JNIEnv * jenv;
+                        int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
+                        jbyteArray array = (*jenv)->NewByteArray(jenv, nv21->data_bytes);
+                        (*jenv)->SetByteArrayRegion(jenv, array, 0, nv21->data_bytes, (jbyte *) nv21->data);
+                        // Service
+
+                        LOGD("CallVoidMethod");
+
+
+                        (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaRetrievedFrameFromLibUsb21, array);
+
+                        uvc_free_frame(nv21);
+
+/*
+
                         JNIEnv * jenv;
                         int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
                         jbyteArray array = (*jenv)->NewByteArray(jenv, total);
                         (*jenv)->SetByteArrayRegion(jenv, array, 0, total, (jbyte *) videoFrameData->videoframe);
                         // Service
+
+                        LOGD("CallVoidMethod");
+
+
                         (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaWEBrtcProcessReceivedVideoFrameYuv, array);
                         /*
                          * uvc_frame_t *nv21;
                         uvc_error_t ret;
 
-                        nv21 = uvc_allocate_frame(imageWidth * imageHeight * 2);
+                        nv21 = uvc_allocate_frame(imageWidth * imageHeight * 3 /2);
                         if (!nv21) {
                             LOGD("unable to allocate rgb frame!");
                             return;
@@ -2952,20 +2767,22 @@ JNIEXPORT void JNICALL Java_com_example_androidthings_videortc_UsbCapturer_JniWe
     class = (*env)->GetObjectClass(env, obj);
     jniHelperClass = (*env)->NewGlobalRef(env, class);
     mainActivityObj = (*env)->NewGlobalRef(env, obj);
-    javaRetrievedFrameFromLibUsb = (*env)->GetMethodID(env, jniHelperClass, "retrievedFrameFromLibUsb", "([B)V");
+    javaRetrievedFrameFromLibUsb21 = (*env)->GetMethodID(env, jniHelperClass, "retrievedFrameFromLibUsbNV21", "([B)V");
     javaProcessReceivedMJpegVideoFrameKamera = (*env)->GetMethodID(env, jniHelperClass, "processReceivedMJpegVideoFrameKamera", "([B)V");
-    javaWEBrtcProcessReceivedVideoFrameYuv = (*env)->GetMethodID(env, jniHelperClass, "processReceivedVideoFrameYuvFromJni", "([B)V");
-    LOGD("ISO Stream complete");
-
+    javaWEBrtcProcessReceivedVideoFrameYuv = (*env)->GetMethodID(env, jniHelperClass, "usbCapturerProcessReceivedVideoFrameYuvFromJni", "([B)V");
+    LOGD("WeBRTC - Native Methods and Values from JNI initialized");
 }
 
 void prepairTheStream_WebRtc_Service() {
+
+    probeCommitControl(bmHint, camFormatIndex, camFrameIndex, camFrameInterval, fd);
+
     int r = libusb_set_interface_alt_setting(devh, camStreamingInterfaceNum,
                                              camStreamingAltSetting); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
     if (r != LIBUSB_SUCCESS) {
         LOGD("libusb_set_interface_alt_setting(devh, 1, 1) failed with error %d\n", r);
     } else {
-        LOGD("Die Alternativeinstellungen wurden erfolgreich gesetzt: %d ; Altsetting = %d\n", r,
+        LOGD("Altsettings sucessfully set:\nAltsetting = %d\n",
              camStreamingAltSetting);
     }
     if (activeUrbs > 16) activeUrbs = 16;
@@ -2973,8 +2790,12 @@ void prepairTheStream_WebRtc_Service() {
 
 void lunchTheStream_WebRtc_Service() {
 
-    cinfo.err = jpeg_std_error(&jerr);
-    jpeg_create_decompress(&cinfo);
+    if (strcmp(frameFormat, "MJPEG") == 0) {
+        //cinfo.err = jpeg_std_error(&jerr);
+        //jpeg_create_decompress(&cinfo);
+    }
+
+
 
 
     if (initialized) {

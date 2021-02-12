@@ -132,14 +132,6 @@ public class SaveToFile  {
     private String name;
     private String fileName;
 
-
-    //////////////////////////   Zoom View          ///////////////
-
-    final static float STEP = 200;
-    float mRatio = 1.0f;
-    int mBaseDist;
-    float mBaseRatio;
-
     // Values for Auto Detection
     public static boolean completed;
     public static boolean highQuality;

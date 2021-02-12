@@ -1306,6 +1306,17 @@ public class StartIsoStreamActivity extends Activity {
     }
 
     private void startWebRTC() {
+        if (camDevice == null) {
+            try {
+                findCam();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (!usbManager.hasPermission(camDevice)) {
+            usbManager.requestPermission(camDevice, mPermissionIntent);
+            return;
+        }
         if (runningStream != null) stopTheCameraStreamClickEvent(null);
         Intent intent = new Intent(this, WebRtc_MainActivity.class);
         Bundle bundle=new Bundle();
@@ -1435,8 +1446,10 @@ public class StartIsoStreamActivity extends Activity {
                     if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
                     if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
                     bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
-                }
-                if (moveToNative) {
+                    JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                            camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(),
+                            videoformat,0, bcdUVC_int);
+                } else {
                     // fetch The camStreamingEndpointAdress
                     camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
                     mService.libusb_wrapped = true;
@@ -1444,9 +1457,7 @@ public class StartIsoStreamActivity extends Activity {
                     JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                             camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1,
                             videoformat,0, bcdUVC_int);
-                } else JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                        camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(),
-                        videoformat,0, bcdUVC_int);
+                }
                 mService.native_values_set = true;
                 /////////////// Service Method
                 log("starting Service");
@@ -2663,32 +2674,7 @@ public class StartIsoStreamActivity extends Activity {
         String hex = formatter.toString();
         System.out.println("hex " + hex);
     }
-/*
-    public void a() {
-        VideoCapturer v;
-        VideoCapturer.CapturerObserver a;
-        a = new VideoCapturer.CapturerObserver() {
-            @Override
-            public void onCapturerStarted(boolean b) {
-            }
-            @Override
-            public void onCapturerStopped() {
-            }
-            @Override
-            public void onByteBufferFrameCaptured(byte[] bytes, int i, int i1, int i2, long l) {
-            }
-            @Override
-            public void onTextureFrameCaptured(int i, int i1, int i2, float[] floats, int i3, long l) {
-            }
-            @Override
-            public void onFrameCaptured(VideoFrame videoFrame) {
-            }
-        };
-        ImageReader i;
-        Executor executor;
-        VideoCapturer capturer;
-    }
-*/
+
     private byte[] convert_Yuy2_to_NV21(byte[] YUY2Source) {
         //byte YUY2Source[imageWidth * imageHeight * 2] = /* source frame */;
         byte[] NV21Dest = new byte[imageWidth * imageHeight * 3/2];

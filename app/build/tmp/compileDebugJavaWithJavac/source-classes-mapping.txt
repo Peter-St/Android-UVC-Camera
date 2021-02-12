@@ -84,33 +84,12 @@ humer/UvcCamera/AutomaticDetection/AutoDetect_Fragment.java
  humer.UvcCamera.AutomaticDetection.AutoDetect_Fragment
 com/example/androidthings/videortc/InitCapturer.java
  com.example.androidthings.videortc.InitCapturer
-com/example/androidthings/videortc/CallActivity.java
- com.example.androidthings.videortc.CallActivity
- com.example.androidthings.videortc.CallActivity$1
- com.example.androidthings.videortc.CallActivity$10
- com.example.androidthings.videortc.CallActivity$11
- com.example.androidthings.videortc.CallActivity$12
- com.example.androidthings.videortc.CallActivity$13
- com.example.androidthings.videortc.CallActivity$14
- com.example.androidthings.videortc.CallActivity$15
- com.example.androidthings.videortc.CallActivity$16
- com.example.androidthings.videortc.CallActivity$17
- com.example.androidthings.videortc.CallActivity$2
- com.example.androidthings.videortc.CallActivity$3
- com.example.androidthings.videortc.CallActivity$4
- com.example.androidthings.videortc.CallActivity$5
- com.example.androidthings.videortc.CallActivity$6
- com.example.androidthings.videortc.CallActivity$6$1
- com.example.androidthings.videortc.CallActivity$6$1$1
- com.example.androidthings.videortc.CallActivity$6$1$2
- com.example.androidthings.videortc.CallActivity$6$1$3
- com.example.androidthings.videortc.CallActivity$6$1$4
- com.example.androidthings.videortc.CallActivity$6$1$5
- com.example.androidthings.videortc.CallActivity$7
- com.example.androidthings.videortc.CallActivity$8
- com.example.androidthings.videortc.CallActivity$9
- com.example.androidthings.videortc.CallActivity$ProxyRenderer
- com.example.androidthings.videortc.CallActivity$ProxyVideoSink
+humer/UvcCamera/UVC_Descriptor/UVC_Descriptor.java
+ humer.UvcCamera.UVC_Descriptor.UVC_Descriptor
+ humer.UvcCamera.UVC_Descriptor.UVC_Descriptor$FormatIndex
+ humer.UvcCamera.UVC_Descriptor.UVC_Descriptor$FormatIndex$FrameIndex
+ humer.UvcCamera.UVC_Descriptor.UVC_Descriptor$FormatIndex$Videoformat
+ humer.UvcCamera.UVC_Descriptor.UVC_Descriptor$FourCC
 humer/UvcCamera/LibUsb/StartIsoStreamService.java
  humer.UvcCamera.LibUsb.StartIsoStreamService
 humer/UvcCamera/UsbIso64/Libc.java
@@ -171,8 +150,10 @@ humer/UvcCamera/UsbIso64/Ioctl.java
  humer.UvcCamera.UsbIso64.Ioctl
 org/appspot/apprtc/util/AppRTCUtils.java
  org.appspot.apprtc.util.AppRTCUtils
-com/example/androidthings/videortc/WebRtcService.java
- com.example.androidthings.videortc.WebRtcService
+org/appspot/apprtc/RoomParametersFetcher.java
+ org.appspot.apprtc.RoomParametersFetcher
+ org.appspot.apprtc.RoomParametersFetcher$1
+ org.appspot.apprtc.RoomParametersFetcher$RoomParametersFetcherEvents
 org/appspot/apprtc/PeerConnectionClient.java
  org.appspot.apprtc.PeerConnectionClient
  org.appspot.apprtc.PeerConnectionClient$1
@@ -228,11 +209,13 @@ noman/zoomtextview/ZoomTextView.java
  noman.zoomtextview.ZoomTextView$1
  noman.zoomtextview.ZoomTextView$GestureListener
  noman.zoomtextview.ZoomTextView$ScaleListener
-humer/UvcCamera/UVC_Descriptor/UVC_Descriptor.java
- humer.UvcCamera.UVC_Descriptor.UVC_Descriptor
- humer.UvcCamera.UVC_Descriptor.UVC_Descriptor$FormatIndex
- humer.UvcCamera.UVC_Descriptor.UVC_Descriptor$FormatIndex$FrameIndex
- humer.UvcCamera.UVC_Descriptor.UVC_Descriptor$FormatIndex$Videoformat
+humer/UvcCamera/LibUsb/JNA_I_LibUsb.java
+ humer.UvcCamera.LibUsb.JNA_I_LibUsb
+ humer.UvcCamera.LibUsb.JNA_I_LibUsb$Libusb_Auto_Values
+ humer.UvcCamera.LibUsb.JNA_I_LibUsb$Libusb_Auto_Values$ByValue
+ humer.UvcCamera.LibUsb.JNA_I_LibUsb$autoStreamComplete
+ humer.UvcCamera.LibUsb.JNA_I_LibUsb$eventCallback
+ humer.UvcCamera.LibUsb.JNA_I_LibUsb$logPrint
 humer/UvcCamera/AutomaticDetection/Jna_AutoDetect_Handler.java
  humer.UvcCamera.AutomaticDetection.Jna_AutoDetect_Handler
 humer/UvcCamera/SetCameraVariables.java
@@ -240,10 +223,8 @@ humer/UvcCamera/SetCameraVariables.java
  humer.UvcCamera.SetCameraVariables$1
  humer.UvcCamera.SetCameraVariables$CameraFunction
  humer.UvcCamera.SetCameraVariables$CameraFunctionSetting
-com/example/androidthings/videortc/UsbCapturer.java
- com.example.androidthings.videortc.UsbCapturer
- com.example.androidthings.videortc.UsbCapturer$IsochronousStream
- com.example.androidthings.videortc.UsbCapturer$Videoformat
+com/example/androidthings/videortc/WebRtcService.java
+ com.example.androidthings.videortc.WebRtcService
 com/sample/timelapse/MJPEGGenerator.java
  com.sample.timelapse.MJPEGGenerator
  com.sample.timelapse.MJPEGGenerator$AVIIndex
@@ -310,17 +291,14 @@ humer/UvcCamera/SaveToFile.java
  humer.UvcCamera.SaveToFile$8
  humer.UvcCamera.SaveToFile$9
  humer.UvcCamera.SaveToFile$OptionForSaveFile
-humer/UvcCamera/LibUsb/JNA_I_LibUsb.java
- humer.UvcCamera.LibUsb.JNA_I_LibUsb
- humer.UvcCamera.LibUsb.JNA_I_LibUsb$Libusb_Auto_Values
- humer.UvcCamera.LibUsb.JNA_I_LibUsb$Libusb_Auto_Values$ByValue
- humer.UvcCamera.LibUsb.JNA_I_LibUsb$autoStreamComplete
- humer.UvcCamera.LibUsb.JNA_I_LibUsb$eventCallback
- humer.UvcCamera.LibUsb.JNA_I_LibUsb$logPrint
-org/appspot/apprtc/RoomParametersFetcher.java
- org.appspot.apprtc.RoomParametersFetcher
- org.appspot.apprtc.RoomParametersFetcher$1
- org.appspot.apprtc.RoomParametersFetcher$RoomParametersFetcherEvents
+humer/UvcCamera/Main.java
+ humer.UvcCamera.Main
+ humer.UvcCamera.Main$1
+ humer.UvcCamera.Main$2
+ humer.UvcCamera.Main$3
+ humer.UvcCamera.Main$4
+ humer.UvcCamera.Main$5
+ humer.UvcCamera.Main$6
 humer/UvcCamera/StartIsoStreamActivity.java
  humer.UvcCamera.StartIsoStreamActivity
  humer.UvcCamera.StartIsoStreamActivity$1
@@ -371,11 +349,34 @@ humer/UvcCamera/StartIsoStreamActivity.java
  humer.UvcCamera.StartIsoStreamActivity$IsochronousStreamLibUsb
  humer.UvcCamera.StartIsoStreamActivity$IsochronousStreamLibUsb$1
  humer.UvcCamera.StartIsoStreamActivity$Videoformat
-humer/UvcCamera/Main.java
- humer.UvcCamera.Main
- humer.UvcCamera.Main$1
- humer.UvcCamera.Main$2
- humer.UvcCamera.Main$3
- humer.UvcCamera.Main$4
- humer.UvcCamera.Main$5
- humer.UvcCamera.Main$6
+com/example/androidthings/videortc/UsbCapturer.java
+ com.example.androidthings.videortc.UsbCapturer
+ com.example.androidthings.videortc.UsbCapturer$IsochronousStream
+ com.example.androidthings.videortc.UsbCapturer$Videoformat
+com/example/androidthings/videortc/CallActivity.java
+ com.example.androidthings.videortc.CallActivity
+ com.example.androidthings.videortc.CallActivity$1
+ com.example.androidthings.videortc.CallActivity$10
+ com.example.androidthings.videortc.CallActivity$11
+ com.example.androidthings.videortc.CallActivity$12
+ com.example.androidthings.videortc.CallActivity$13
+ com.example.androidthings.videortc.CallActivity$14
+ com.example.androidthings.videortc.CallActivity$15
+ com.example.androidthings.videortc.CallActivity$16
+ com.example.androidthings.videortc.CallActivity$17
+ com.example.androidthings.videortc.CallActivity$2
+ com.example.androidthings.videortc.CallActivity$3
+ com.example.androidthings.videortc.CallActivity$4
+ com.example.androidthings.videortc.CallActivity$5
+ com.example.androidthings.videortc.CallActivity$6
+ com.example.androidthings.videortc.CallActivity$6$1
+ com.example.androidthings.videortc.CallActivity$6$1$1
+ com.example.androidthings.videortc.CallActivity$6$1$2
+ com.example.androidthings.videortc.CallActivity$6$1$3
+ com.example.androidthings.videortc.CallActivity$6$1$4
+ com.example.androidthings.videortc.CallActivity$6$1$5
+ com.example.androidthings.videortc.CallActivity$7
+ com.example.androidthings.videortc.CallActivity$8
+ com.example.androidthings.videortc.CallActivity$9
+ com.example.androidthings.videortc.CallActivity$ProxyRenderer
+ com.example.androidthings.videortc.CallActivity$ProxyVideoSink

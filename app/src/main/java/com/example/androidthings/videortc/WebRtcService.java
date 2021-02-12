@@ -18,7 +18,7 @@ public class WebRtcService extends IntentService {
     public static final String NOTIFICATION = "humer.UvcCamera.service.receiver";
 
     //public native void JniGetAnotherFrame();
-    public native void JniPrepairForStreamingfromService();
+    //public native void JniPrepairForStreamingfromService();
     //public native void JniServiceOverSurface();
 
     public WebRtcService() {

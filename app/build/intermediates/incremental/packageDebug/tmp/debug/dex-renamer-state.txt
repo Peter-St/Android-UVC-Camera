@@ -1,4 +1,4 @@
-#Sun Jan 03 08:47:40 CET 2021
+#Sun Jan 10 00:44:15 CET 2021
 base.0=/home/peter/Downloads/Webcam/Android-UVC-Camera/app/build/intermediates/dex/debug/mergeDexDebug/classes.dex
 path.0=classes.dex
 renamed.0=classes.dex
