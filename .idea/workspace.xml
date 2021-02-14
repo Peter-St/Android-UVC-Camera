@@ -10,65 +10,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e1a9d4da-cb2f-4458-9688-8bf0498c2589" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/fileContent/fileContent.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/fileContent/fileContent.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/dpfp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/dpfp_threaded" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/fxload" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/hotplugtest" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libUsb_Support.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libjpeg-turbo.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libjpeg.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libusb1.0.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libyuv.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/listdevs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/sam3u_benchmark" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/stress" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/xusb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/dpfp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/dpfp_threaded" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/fxload" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/hotplugtest" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libUsb_Support.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libjpeg-turbo.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libjpeg.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libusb1.0.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libyuv.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/listdevs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/sam3u_benchmark" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/stress" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/xusb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/dpfp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/dpfp_threaded" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/fxload" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/hotplugtest" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libUsb_Support.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libjpeg-turbo.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libjpeg.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libusb1.0.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libyuv.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/listdevs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/sam3u_benchmark" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/stress" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/xusb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/dpfp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/dpfp_threaded" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/fxload" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/hotplugtest" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libUsb_Support.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libjpeg-turbo.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libjpeg.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libusb1.0.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libyuv.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/listdevs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/sam3u_benchmark" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/stress" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/xusb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -129,7 +73,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="android-custom-view/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/java/com/serenegiant/widget/AspectRatioTextureView.java_SELECTED" value="AspectRatioTextureView" />
     <property name="last_directory_selection" value="$PROJECT_DIR$/app/src/main/java/android/support/v7/app" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../unRootedSample" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../SDK29-Android-UVC-Camera" />
     <property name="multi-representation-preview/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/java/com/serenegiant/widget/AspectRatioTextureView.java_selected" value="Custom views" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.17" />
@@ -277,10 +221,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="742" y="268" width="435" height="495" key="AndroidProcessChooserDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1610214485005" />
-    <state x="737" y="274" width="424" height="478" key="FileChooserDialogImpl" timestamp="1610228096131">
+    <state x="737" y="274" width="424" height="478" key="FileChooserDialogImpl" timestamp="1613329890915">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="737" y="274" width="424" height="478" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1610228096131" />
+    <state x="737" y="274" width="424" height="478" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1613329890915" />
     <state width="1878" height="462" key="GridCell.Tab.0.bottom" timestamp="1610235855740">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

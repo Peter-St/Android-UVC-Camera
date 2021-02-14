@@ -1,3 +1,13 @@
+*.iml
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+
 # Lines starting with `#` are comments.
 
 # Ignore files called 'file.ext'
