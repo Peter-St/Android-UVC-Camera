@@ -16,6 +16,7 @@
 # Ignoring directories
 # Both the directory itself and its contents will be ignored.
 app/build
+app/src/main/obj
 #bin/
 #gen/
 
