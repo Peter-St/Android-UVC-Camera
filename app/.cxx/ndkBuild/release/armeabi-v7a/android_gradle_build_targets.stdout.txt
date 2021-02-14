@@ -2,17 +2,6 @@ Android NDK: WARNING: Unsupported source file extensions in /home/peter/Download
 Android NDK:   libjpeg-turbo-2.0.1/cdjpeg.h    
 Android NDK: WARNING:/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/libyuv/Android.mk:yuv_static: LOCAL_LDLIBS is always ignored for static libraries    
 [armeabi-v7a] Compile arm    : Usb_Support <= libusb_support.c
-[armeabi-v7a] Compile thumb  : usb1.0 <= core.c
-[armeabi-v7a] Compile thumb  : usb1.0 <= descriptor.c
-[armeabi-v7a] Compile thumb  : usb1.0 <= hotplug.c
-[armeabi-v7a] Compile thumb  : usb1.0 <= io.c
-[armeabi-v7a] Compile thumb  : usb1.0 <= sync.c
-[armeabi-v7a] Compile thumb  : usb1.0 <= strerror.c
-[armeabi-v7a] Compile thumb  : usb1.0 <= linux_usbfs.c
-[armeabi-v7a] Compile thumb  : usb1.0 <= events_posix.c
-[armeabi-v7a] Compile thumb  : usb1.0 <= threads_posix.c
-[armeabi-v7a] Compile thumb  : usb1.0 <= linux_netlink.c
-[armeabi-v7a] SharedLibrary  : libusb1.0.so
 [armeabi-v7a] Compile thumb  : jpeg <= jcapimin.c
 [armeabi-v7a] Compile thumb  : jpeg <= jcapistd.c
 [armeabi-v7a] Compile thumb  : jpeg <= jccoefct.c
@@ -60,55 +49,7 @@ Android NDK: WARNING:/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/mai
 [armeabi-v7a] Compile thumb  : jpeg <= jaricom.c
 [armeabi-v7a] Compile thumb  : jpeg <= jmemnobs.c
 [armeabi-v7a] SharedLibrary  : libjpeg.so
-[armeabi-v7a] Compile++ thumb: yuv_static <= compare.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= compare_common.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= compare_gcc.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= compare_mmi.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= compare_msa.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= compare_neon64.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= compare_neon.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= compare_win.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= convert_argb.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= convert.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= convert_from_argb.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= convert_from.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= convert_to_argb.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= convert_to_i420.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= cpu_id.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= planar_functions.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= rotate_any.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= rotate_argb.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= rotate.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= rotate_common.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= rotate_gcc.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= rotate_mmi.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= rotate_msa.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= rotate_neon64.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= rotate_neon.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= rotate_win.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= row_any.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= row_common.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= row_gcc.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= row_mmi.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= row_msa.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= row_neon64.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= row_neon.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= row_win.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= scale_any.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= scale_argb.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= scale_uv.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= scale.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= scale_common.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= scale_gcc.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= scale_mmi.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= scale_msa.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= scale_neon64.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= scale_neon.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= scale_win.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= video_common.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= convert_jpeg.cc
 [armeabi-v7a] Compile++ thumb: yuv_static <= mjpeg_decoder.cc
-[armeabi-v7a] Compile++ thumb: yuv_static <= mjpeg_validate.cc
 [armeabi-v7a] StaticLibrary  : libyuv_static.a
 [armeabi-v7a] SharedLibrary  : libyuv.so
 [armeabi-v7a] Compile thumb  : jpeg-turbo <= jsimd.c
@@ -172,25 +113,15 @@ Android NDK: WARNING:/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/mai
 [armeabi-v7a] Compile thumb  : jpeg-turbo <= jdatasrc-tj.c
 [armeabi-v7a] SharedLibrary  : libjpeg-turbo.so
 [armeabi-v7a] SharedLibrary  : libUsb_Support.so
-[armeabi-v7a] Compile thumb  : dpfp <= dpfp.c
-[armeabi-v7a] Executable     : dpfp
-[armeabi-v7a] Compile thumb  : dpfp_threaded <= dpfp.c
-[armeabi-v7a] Executable     : dpfp_threaded
-[armeabi-v7a] Compile thumb  : fxload <= ezusb.c
-[armeabi-v7a] Compile thumb  : fxload <= fxload.c
-[armeabi-v7a] Executable     : fxload
-[armeabi-v7a] Compile thumb  : hotplugtest <= hotplugtest.c
-[armeabi-v7a] Executable     : hotplugtest
+make: Nothing to be done for 'dpfp'.
+make: Nothing to be done for 'dpfp_threaded'.
+make: Nothing to be done for 'fxload'.
+make: Nothing to be done for 'hotplugtest'.
 make: Nothing to be done for 'jpeg'.
 make: Nothing to be done for 'jpeg-turbo'.
-[armeabi-v7a] Compile thumb  : listdevs <= listdevs.c
-[armeabi-v7a] Executable     : listdevs
-[armeabi-v7a] Compile thumb  : sam3u_benchmark <= sam3u_benchmark.c
-[armeabi-v7a] Executable     : sam3u_benchmark
-[armeabi-v7a] Compile thumb  : stress <= stress.c
-[armeabi-v7a] Compile thumb  : stress <= testlib.c
-[armeabi-v7a] Executable     : stress
+make: Nothing to be done for 'listdevs'.
+make: Nothing to be done for 'sam3u_benchmark'.
+make: Nothing to be done for 'stress'.
 make: Nothing to be done for 'usb1.0'.
-[armeabi-v7a] Compile thumb  : xusb <= xusb.c
-[armeabi-v7a] Executable     : xusb
+make: Nothing to be done for 'xusb'.
 make: Nothing to be done for 'yuv'.
