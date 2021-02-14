@@ -1,6 +1,17 @@
 Android NDK: WARNING: Unsupported source file extensions in /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/android-libjpeg-turbo/jni/vendor/libjpeg-turbo/Android.mk for module jpeg-turbo    
 Android NDK:   libjpeg-turbo-2.0.1/cdjpeg.h    
 [x86] Compile        : Usb_Support <= libusb_support.c
+[x86] Compile        : usb1.0 <= core.c
+[x86] Compile        : usb1.0 <= descriptor.c
+[x86] Compile        : usb1.0 <= hotplug.c
+[x86] Compile        : usb1.0 <= io.c
+[x86] Compile        : usb1.0 <= sync.c
+[x86] Compile        : usb1.0 <= strerror.c
+[x86] Compile        : usb1.0 <= linux_usbfs.c
+[x86] Compile        : usb1.0 <= events_posix.c
+[x86] Compile        : usb1.0 <= threads_posix.c
+[x86] Compile        : usb1.0 <= linux_netlink.c
+[x86] SharedLibrary  : libusb1.0.so
 [x86] Compile        : jpeg <= jcapimin.c
 [x86] Compile        : jpeg <= jcapistd.c
 [x86] Compile        : jpeg <= jccoefct.c
@@ -48,7 +59,55 @@ Android NDK:   libjpeg-turbo-2.0.1/cdjpeg.h
 [x86] Compile        : jpeg <= jaricom.c
 [x86] Compile        : jpeg <= jmemnobs.c
 [x86] SharedLibrary  : libjpeg.so
+[x86] Compile++      : yuv_static <= compare.cc
+[x86] Compile++      : yuv_static <= compare_common.cc
+[x86] Compile++      : yuv_static <= compare_gcc.cc
+[x86] Compile++      : yuv_static <= compare_mmi.cc
+[x86] Compile++      : yuv_static <= compare_msa.cc
+[x86] Compile++      : yuv_static <= compare_neon64.cc
+[x86] Compile++      : yuv_static <= compare_neon.cc
+[x86] Compile++      : yuv_static <= compare_win.cc
+[x86] Compile++      : yuv_static <= convert_argb.cc
+[x86] Compile++      : yuv_static <= convert.cc
+[x86] Compile++      : yuv_static <= convert_from_argb.cc
+[x86] Compile++      : yuv_static <= convert_from.cc
+[x86] Compile++      : yuv_static <= convert_to_argb.cc
+[x86] Compile++      : yuv_static <= convert_to_i420.cc
+[x86] Compile++      : yuv_static <= cpu_id.cc
+[x86] Compile++      : yuv_static <= planar_functions.cc
+[x86] Compile++      : yuv_static <= rotate_any.cc
+[x86] Compile++      : yuv_static <= rotate_argb.cc
+[x86] Compile++      : yuv_static <= rotate.cc
+[x86] Compile++      : yuv_static <= rotate_common.cc
+[x86] Compile++      : yuv_static <= rotate_gcc.cc
+[x86] Compile++      : yuv_static <= rotate_mmi.cc
+[x86] Compile++      : yuv_static <= rotate_msa.cc
+[x86] Compile++      : yuv_static <= rotate_neon64.cc
+[x86] Compile++      : yuv_static <= rotate_neon.cc
+[x86] Compile++      : yuv_static <= rotate_win.cc
+[x86] Compile++      : yuv_static <= row_any.cc
+[x86] Compile++      : yuv_static <= row_common.cc
+[x86] Compile++      : yuv_static <= row_gcc.cc
+[x86] Compile++      : yuv_static <= row_mmi.cc
+[x86] Compile++      : yuv_static <= row_msa.cc
+[x86] Compile++      : yuv_static <= row_neon64.cc
+[x86] Compile++      : yuv_static <= row_neon.cc
+[x86] Compile++      : yuv_static <= row_win.cc
+[x86] Compile++      : yuv_static <= scale_any.cc
+[x86] Compile++      : yuv_static <= scale_argb.cc
+[x86] Compile++      : yuv_static <= scale_uv.cc
+[x86] Compile++      : yuv_static <= scale.cc
+[x86] Compile++      : yuv_static <= scale_common.cc
+[x86] Compile++      : yuv_static <= scale_gcc.cc
+[x86] Compile++      : yuv_static <= scale_mmi.cc
+[x86] Compile++      : yuv_static <= scale_msa.cc
+[x86] Compile++      : yuv_static <= scale_neon64.cc
+[x86] Compile++      : yuv_static <= scale_neon.cc
+[x86] Compile++      : yuv_static <= scale_win.cc
+[x86] Compile++      : yuv_static <= video_common.cc
+[x86] Compile++      : yuv_static <= convert_jpeg.cc
 [x86] Compile++      : yuv_static <= mjpeg_decoder.cc
+[x86] Compile++      : yuv_static <= mjpeg_validate.cc
 [x86] StaticLibrary  : libyuv_static.a
 [x86] SharedLibrary  : libyuv.so
 [x86] Compile        : jpeg-turbo <= jsimd.c
@@ -155,15 +214,25 @@ Android NDK:   libjpeg-turbo-2.0.1/cdjpeg.h
 [x86] Compile        : jpeg-turbo <= jdatasrc-tj.c
 [x86] SharedLibrary  : libjpeg-turbo.so
 [x86] SharedLibrary  : libUsb_Support.so
-make: Nothing to be done for 'dpfp'.
-make: Nothing to be done for 'dpfp_threaded'.
-make: Nothing to be done for 'fxload'.
-make: Nothing to be done for 'hotplugtest'.
+[x86] Compile        : dpfp <= dpfp.c
+[x86] Executable     : dpfp
+[x86] Compile        : dpfp_threaded <= dpfp.c
+[x86] Executable     : dpfp_threaded
+[x86] Compile        : fxload <= ezusb.c
+[x86] Compile        : fxload <= fxload.c
+[x86] Executable     : fxload
+[x86] Compile        : hotplugtest <= hotplugtest.c
+[x86] Executable     : hotplugtest
 make: Nothing to be done for 'jpeg'.
 make: Nothing to be done for 'jpeg-turbo'.
-make: Nothing to be done for 'listdevs'.
-make: Nothing to be done for 'sam3u_benchmark'.
-make: Nothing to be done for 'stress'.
+[x86] Compile        : listdevs <= listdevs.c
+[x86] Executable     : listdevs
+[x86] Compile        : sam3u_benchmark <= sam3u_benchmark.c
+[x86] Executable     : sam3u_benchmark
+[x86] Compile        : stress <= stress.c
+[x86] Compile        : stress <= testlib.c
+[x86] Executable     : stress
 make: Nothing to be done for 'usb1.0'.
-make: Nothing to be done for 'xusb'.
+[x86] Compile        : xusb <= xusb.c
+[x86] Executable     : xusb
 make: Nothing to be done for 'yuv'.

@@ -1,6 +1,17 @@
 Android NDK: WARNING: Unsupported source file extensions in /home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/jni/android-libjpeg-turbo/jni/vendor/libjpeg-turbo/Android.mk for module jpeg-turbo    
 Android NDK:   libjpeg-turbo-2.0.1/cdjpeg.h    
 [arm64-v8a] Compile        : Usb_Support <= libusb_support.c
+[arm64-v8a] Compile        : usb1.0 <= core.c
+[arm64-v8a] Compile        : usb1.0 <= descriptor.c
+[arm64-v8a] Compile        : usb1.0 <= hotplug.c
+[arm64-v8a] Compile        : usb1.0 <= io.c
+[arm64-v8a] Compile        : usb1.0 <= sync.c
+[arm64-v8a] Compile        : usb1.0 <= strerror.c
+[arm64-v8a] Compile        : usb1.0 <= linux_usbfs.c
+[arm64-v8a] Compile        : usb1.0 <= events_posix.c
+[arm64-v8a] Compile        : usb1.0 <= threads_posix.c
+[arm64-v8a] Compile        : usb1.0 <= linux_netlink.c
+[arm64-v8a] SharedLibrary  : libusb1.0.so
 [arm64-v8a] Compile        : jpeg <= jcapimin.c
 [arm64-v8a] Compile        : jpeg <= jcapistd.c
 [arm64-v8a] Compile        : jpeg <= jccoefct.c
@@ -48,7 +59,55 @@ Android NDK:   libjpeg-turbo-2.0.1/cdjpeg.h
 [arm64-v8a] Compile        : jpeg <= jaricom.c
 [arm64-v8a] Compile        : jpeg <= jmemnobs.c
 [arm64-v8a] SharedLibrary  : libjpeg.so
+[arm64-v8a] Compile++      : yuv_static <= compare.cc
+[arm64-v8a] Compile++      : yuv_static <= compare_common.cc
+[arm64-v8a] Compile++      : yuv_static <= compare_gcc.cc
+[arm64-v8a] Compile++      : yuv_static <= compare_mmi.cc
+[arm64-v8a] Compile++      : yuv_static <= compare_msa.cc
+[arm64-v8a] Compile++      : yuv_static <= compare_neon64.cc
+[arm64-v8a] Compile++      : yuv_static <= compare_neon.cc
+[arm64-v8a] Compile++      : yuv_static <= compare_win.cc
+[arm64-v8a] Compile++      : yuv_static <= convert_argb.cc
+[arm64-v8a] Compile++      : yuv_static <= convert.cc
+[arm64-v8a] Compile++      : yuv_static <= convert_from_argb.cc
+[arm64-v8a] Compile++      : yuv_static <= convert_from.cc
+[arm64-v8a] Compile++      : yuv_static <= convert_to_argb.cc
+[arm64-v8a] Compile++      : yuv_static <= convert_to_i420.cc
+[arm64-v8a] Compile++      : yuv_static <= cpu_id.cc
+[arm64-v8a] Compile++      : yuv_static <= planar_functions.cc
+[arm64-v8a] Compile++      : yuv_static <= rotate_any.cc
+[arm64-v8a] Compile++      : yuv_static <= rotate_argb.cc
+[arm64-v8a] Compile++      : yuv_static <= rotate.cc
+[arm64-v8a] Compile++      : yuv_static <= rotate_common.cc
+[arm64-v8a] Compile++      : yuv_static <= rotate_gcc.cc
+[arm64-v8a] Compile++      : yuv_static <= rotate_mmi.cc
+[arm64-v8a] Compile++      : yuv_static <= rotate_msa.cc
+[arm64-v8a] Compile++      : yuv_static <= rotate_neon64.cc
+[arm64-v8a] Compile++      : yuv_static <= rotate_neon.cc
+[arm64-v8a] Compile++      : yuv_static <= rotate_win.cc
+[arm64-v8a] Compile++      : yuv_static <= row_any.cc
+[arm64-v8a] Compile++      : yuv_static <= row_common.cc
+[arm64-v8a] Compile++      : yuv_static <= row_gcc.cc
+[arm64-v8a] Compile++      : yuv_static <= row_mmi.cc
+[arm64-v8a] Compile++      : yuv_static <= row_msa.cc
+[arm64-v8a] Compile++      : yuv_static <= row_neon64.cc
+[arm64-v8a] Compile++      : yuv_static <= row_neon.cc
+[arm64-v8a] Compile++      : yuv_static <= row_win.cc
+[arm64-v8a] Compile++      : yuv_static <= scale_any.cc
+[arm64-v8a] Compile++      : yuv_static <= scale_argb.cc
+[arm64-v8a] Compile++      : yuv_static <= scale_uv.cc
+[arm64-v8a] Compile++      : yuv_static <= scale.cc
+[arm64-v8a] Compile++      : yuv_static <= scale_common.cc
+[arm64-v8a] Compile++      : yuv_static <= scale_gcc.cc
+[arm64-v8a] Compile++      : yuv_static <= scale_mmi.cc
+[arm64-v8a] Compile++      : yuv_static <= scale_msa.cc
+[arm64-v8a] Compile++      : yuv_static <= scale_neon64.cc
+[arm64-v8a] Compile++      : yuv_static <= scale_neon.cc
+[arm64-v8a] Compile++      : yuv_static <= scale_win.cc
+[arm64-v8a] Compile++      : yuv_static <= video_common.cc
+[arm64-v8a] Compile++      : yuv_static <= convert_jpeg.cc
 [arm64-v8a] Compile++      : yuv_static <= mjpeg_decoder.cc
+[arm64-v8a] Compile++      : yuv_static <= mjpeg_validate.cc
 [arm64-v8a] StaticLibrary  : libyuv_static.a
 [arm64-v8a] SharedLibrary  : libyuv.so
 [arm64-v8a] Compile        : jpeg-turbo <= jsimd.c
@@ -112,15 +171,25 @@ Android NDK:   libjpeg-turbo-2.0.1/cdjpeg.h
 [arm64-v8a] Compile        : jpeg-turbo <= jdatasrc-tj.c
 [arm64-v8a] SharedLibrary  : libjpeg-turbo.so
 [arm64-v8a] SharedLibrary  : libUsb_Support.so
-make: Nothing to be done for 'dpfp'.
-make: Nothing to be done for 'dpfp_threaded'.
-make: Nothing to be done for 'fxload'.
-make: Nothing to be done for 'hotplugtest'.
+[arm64-v8a] Compile        : dpfp <= dpfp.c
+[arm64-v8a] Executable     : dpfp
+[arm64-v8a] Compile        : dpfp_threaded <= dpfp.c
+[arm64-v8a] Executable     : dpfp_threaded
+[arm64-v8a] Compile        : fxload <= ezusb.c
+[arm64-v8a] Compile        : fxload <= fxload.c
+[arm64-v8a] Executable     : fxload
+[arm64-v8a] Compile        : hotplugtest <= hotplugtest.c
+[arm64-v8a] Executable     : hotplugtest
 make: Nothing to be done for 'jpeg'.
 make: Nothing to be done for 'jpeg-turbo'.
-make: Nothing to be done for 'listdevs'.
-make: Nothing to be done for 'sam3u_benchmark'.
-make: Nothing to be done for 'stress'.
+[arm64-v8a] Compile        : listdevs <= listdevs.c
+[arm64-v8a] Executable     : listdevs
+[arm64-v8a] Compile        : sam3u_benchmark <= sam3u_benchmark.c
+[arm64-v8a] Executable     : sam3u_benchmark
+[arm64-v8a] Compile        : stress <= stress.c
+[arm64-v8a] Compile        : stress <= testlib.c
+[arm64-v8a] Executable     : stress
 make: Nothing to be done for 'usb1.0'.
-make: Nothing to be done for 'xusb'.
+[arm64-v8a] Compile        : xusb <= xusb.c
+[arm64-v8a] Executable     : xusb
 make: Nothing to be done for 'yuv'.

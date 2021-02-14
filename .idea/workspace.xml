@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AndroidLayouts">
+    <shared>
+      <config />
+    </shared>
+  </component>
+  <component name="AndroidLogFilters">
+    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e1a9d4da-cb2f-4458-9688-8bf0498c2589" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/android/jni/examples.mk" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/android/jni/examples.mk" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[]" />
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand />
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="layoutResourceFile" />
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="GenerateSignedApkSettings">
+    <option name="EXPORT_PRIVATE_KEY" value="false" />
+    <option name="KEY_STORE_PATH" value="$PROJECT_DIR$/../Build_APK_Key/my.keystore" />
+    <option name="KEY_ALIAS" value="app" />
+    <option name="REMEMBER_PASSWORDS" value="true" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1lsjBJXTCOSBqEF1hHEYpZCMvie" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ApkExportedModule" value="SDK27-Android-UVC-Camera.app" />
+    <property name="BundleExportedModule" value="Android-UVC-Camera.app" />
+    <property name="DeviceAndSnapshotComboBoxAction.selectedDevice" value="10.0.0.25:5555" />
+    <property name="DeviceAndSnapshotComboBoxAction.selectionTime" value="2020-12-29T15:10:33.838Z" />
+    <property name="ExportApk.ApkPath" value="$PROJECT_DIR$/app" />
+    <property name="ExportApk.BuildVariants" value="release" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="android-custom-view/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/java/com/serenegiant/widget/AspectRatioTextureView.java_SELECTED" value="AspectRatioTextureView" />
+    <property name="last_directory_selection" value="$PROJECT_DIR$/app/src/main/java/android/support/v7/app" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../unRootedSample" />
+    <property name="multi-representation-preview/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/java/com/serenegiant/widget/AspectRatioTextureView.java_selected" value="Custom views" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.17" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+  </component>
+  <component name="PsdUISettings">
+    <option name="MODULE_TAB" value="Properties" />
+    <option name="LAST_EDITED_BUILD_TYPE" value="customDebugType" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="humer.UvcCamera.LibUsb" />
+      <recent name="humer.uvc_camera" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/LibUsb" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="AndroidJUnit" factoryName="Android JUnit">
+      <option name="TEST_OBJECT" value="class" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
+      <module name="Android-UVC-Camera.app" />
+      <option name="DEPLOY" value="true" />
+      <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
+      <option name="DEPLOY_AS_INSTANT" value="false" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="ALL_USERS" value="false" />
+      <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
+      <option name="MODE" value="default_activity" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
+      <option name="FORCE_STOP_RUNNING_APP" value="true" />
+      <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
+      <option name="DEBUGGER_TYPE" value="Java" />
+      <Auto>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+      </Auto>
+      <Hybrid>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+      </Hybrid>
+      <Java />
+      <Native>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+      </Native>
+      <Profilers>
+        <option name="ADVANCED_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Sample Java Methods" />
+        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
+        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
+      </Profilers>
+      <option name="DEEP_LINK" value="" />
+      <option name="ACTIVITY_CLASS" value="" />
+      <option name="SEARCH_ACTIVITY_IN_GLOBAL_SCOPE" value="false" />
+      <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e1a9d4da-cb2f-4458-9688-8bf0498c2589" name="Default Changelist" comment="" />
+      <created>1608392555752</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1608392555752</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/app/src/main/jni/libjpeg-turbo-android" />
+      <path value="$PROJECT_DIR$/app/src/main/jni/libjpeg-turbo" />
+      <path value="$PROJECT_DIR$/app/src/main/c/jpeg8d" />
+      <path value="$PROJECT_DIR$/app/src/main/c/libusb" />
+      <path value="$PROJECT_DIR$/app/src/main/c/libyuv" />
+      <path value="$PROJECT_DIR$/app/src/main/jni/libjpeg-version-9-android" />
+    </ignored-roots>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="589" y="200" width="732" height="631" key="#Inspections" timestamp="1609013411512">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="589" y="200" width="732" height="631" key="#Inspections/0.0.1920.1040@0.0.1920.1040" timestamp="1609013411512" />
+    <state x="418" y="294" width="1255" height="524" key="#PSD" timestamp="1613153172483">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="418" y="294" width="1255" height="524" key="#PSD/0.0.1920.1040@0.0.1920.1040" timestamp="1613153172483" />
+    <state x="657" y="187" width="596" height="658" key="#app" timestamp="1609552983839">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="657" y="187" width="596" height="658" key="#app/0.0.1920.1040@0.0.1920.1040" timestamp="1609552983839" />
+    <state x="418" y="177" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1609358209129">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="418" y="177" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1609358209129" />
+    <state x="768" y="228" width="374" height="575" key="#com.intellij.ide.util.MemberChooser" timestamp="1609597838702">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="768" y="228" width="374" height="575" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1609597838702" />
+    <state x="693" y="299" width="524" height="436" key="#com.intellij.ide.util.PackageChooserDialog" timestamp="1609023188196">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="693" y="299" width="524" height="436" key="#com.intellij.ide.util.PackageChooserDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1609023188196" />
+    <state x="463" y="446" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog" timestamp="1608392906113">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="463" y="446" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1608392906113" />
+    <state x="730" y="391" width="567" height="258" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes" timestamp="1609023193789">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="730" y="391" width="567" height="258" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes/0.0.1920.1040@0.0.1920.1040" timestamp="1609023193789" />
+    <state x="709" y="403" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.packages" timestamp="1608392909661">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="709" y="403" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.packages/0.0.1920.1040@0.0.1920.1040" timestamp="1608392909661" />
+    <state x="742" y="268" width="435" height="495" key="AndroidProcessChooserDialog" timestamp="1610214485005">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="742" y="268" width="435" height="495" key="AndroidProcessChooserDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1610214485005" />
+    <state x="737" y="274" width="424" height="478" key="FileChooserDialogImpl" timestamp="1610228096131">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="737" y="274" width="424" height="478" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1610228096131" />
+    <state width="1878" height="462" key="GridCell.Tab.0.bottom" timestamp="1610235855740">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1878" height="462" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1610235855740" />
+    <state width="1878" height="462" key="GridCell.Tab.0.center" timestamp="1610235855739">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1878" height="462" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1610235855739" />
+    <state width="1878" height="462" key="GridCell.Tab.0.left" timestamp="1610235855737">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1878" height="462" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1610235855737" />
+    <state width="1878" height="462" key="GridCell.Tab.0.right" timestamp="1610235855739">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1878" height="462" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1610235855739" />
+    <state width="1878" height="462" key="GridCell.Tab.1.bottom" timestamp="1610235855737">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1878" height="462" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1610235855737" />
+    <state width="1878" height="462" key="GridCell.Tab.1.center" timestamp="1610235855736">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1878" height="462" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1610235855736" />
+    <state width="1878" height="462" key="GridCell.Tab.1.left" timestamp="1610235855736">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1878" height="462" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1610235855736" />
+    <state width="1878" height="462" key="GridCell.Tab.1.right" timestamp="1610235855736">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1878" height="462" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1610235855736" />
+    <state x="216" y="147" width="1286" height="730" key="SettingsEditor" timestamp="1613312160075">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="216" y="147" width="1286" height="730" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1613312160075" />
+    <state x="761" y="300" width="387" height="432" key="chooseDestDirectoryDialog" timestamp="1609504654258">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="761" y="300" width="387" height="432" key="chooseDestDirectoryDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1609504654258" />
+    <state x="665" y="434" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1609098622642">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="665" y="434" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1920.1040@0.0.1920.1040" timestamp="1609098622642" />
+    <state x="667" y="268" width="1191" height="502" key="find.popup" timestamp="1608490591483">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="667" y="268" width="1191" height="502" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1608490591483" />
+    <state x="624" y="238" key="run.anything.popup" timestamp="1609614978307">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="624" y="238" key="run.anything.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1609614978307" />
+    <state x="623" y="228" width="672" height="678" key="search.everywhere.popup" timestamp="1608989479169">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="623" y="228" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1608989479169" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/UsbIso64/usbdevice_fs.java</url>
+          <line>94</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
