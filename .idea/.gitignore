@@ -18,6 +18,7 @@
 app/build/
 app/src/main/obj/
 app/release/
+app/.cxx/
 #bin/
 #gen/
 
