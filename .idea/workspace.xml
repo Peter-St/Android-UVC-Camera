@@ -9,22 +9,7 @@
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e1a9d4da-cb2f-4458-9688-8bf0498c2589" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/fileContent/fileContent.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/fileContent/fileContent.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/javaCompile/javaCompile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/.cxx/ndkBuild/release/armeabi-v7a/android_gradle_build_targets.stderr.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/release/armeabi-v7a/android_gradle_build_targets.stderr.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/.cxx/ndkBuild/release/armeabi-v7a/android_gradle_build_targets.stdout.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/release/armeabi-v7a/android_gradle_build_targets.stdout.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libusb1.0.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libusb1.0.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libusb1.0.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libusb1.0.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libusb1.0.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/libusb1.0.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libusb1.0.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/libusb1.0.so" afterDir="false" />
-    </list>
+    <list default="true" id="e1a9d4da-cb2f-4458-9688-8bf0498c2589" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
