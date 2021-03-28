@@ -427,6 +427,154 @@ uvc_error_t uvc_yuyv2rgbx(uvc_frame_t *out) {
 #define MAX_READLINE 1
 #endif
 
+#define IUYVY2RGBX_2(pyuv, prgbx, ax, bx) { \
+		const int d0 = (pyuv)[ax+0]; \
+		const int d2 = (pyuv)[ax+2]; \
+	    const int r = (22987 * (d2/*(pyuv)[ax+2]*/ - 128)) >> 14; \
+	    const int g = (-5636 * (d0/*(pyuv)[ax+0]*/ - 128) - 11698 * (d2/*(pyuv)[ax+2]*/ - 128)) >> 14; \
+	    const int b = (29049 * (d0/*(pyuv)[ax+0]*/ - 128)) >> 14; \
+		const int y1 = (pyuv)[ax+1]; \
+		(prgbx)[bx+0] = sat(y1 + r); \
+		(prgbx)[bx+1] = sat(y1 + g); \
+		(prgbx)[bx+2] = sat(y1 + b); \
+		(prgbx)[bx+3] = 0xff; \
+		const int y3 = (pyuv)[ax+3]; \
+		(prgbx)[bx+4] = sat(y3 + r); \
+		(prgbx)[bx+5] = sat(y3 + g); \
+		(prgbx)[bx+6] = sat(y3 + b); \
+		(prgbx)[bx+7] = 0xff; \
+    }
+#define IUYVY2RGBX_16(pyuv, prgbx, ax, bx) \
+	IUYVY2RGBX_8(pyuv, prgbx, ax, bx) \
+	IUYVY2RGBX_8(pyuv, prgbx, ax + PIXEL8_UYVY, bx + PIXEL8_RGBX)
+#define IUYVY2RGBX_8(pyuv, prgbx, ax, bx) \
+	IUYVY2RGBX_4(pyuv, prgbx, ax, bx) \
+	IUYVY2RGBX_4(pyuv, prgbx, ax + PIXEL4_UYVY, bx + PIXEL4_RGBX)
+#define IUYVY2RGBX_4(pyuv, prgbx, ax, bx) \
+	IUYVY2RGBX_2(pyuv, prgbx, ax, bx) \
+	IUYVY2RGBX_2(pyuv, prgbx, ax + PIXEL2_UYVY, bx + PIXEL2_RGBX)
+
+/** @brief Convert a frame from UYVY to RGBX8888
+ * @ingroup frame
+ * @param ini UYVY frame
+ * @param out RGBX8888 frame
+ */
+uvc_error_t uvc_uyvy2rgbx(unsigned char* data, int data_bytes, int width, int height, uvc_frame_t *out) {
+
+    out->width = width;
+    out->height = height;
+    out->frame_format = UVC_FRAME_FORMAT_RGBX;
+    if (out->library_owns_data)
+        out->step = width * PIXEL_RGBX;
+    out->sequence = 0;
+    gettimeofday(&out->capture_time, NULL);
+    out->source = devh;
+
+    uint8_t *pyuv = data;
+    const uint8_t *pyuv_end = pyuv + data_bytes - PIXEL8_UYVY;
+    uint8_t *prgbx = out->data;
+    const uint8_t *prgbx_end = prgbx + out->data_bytes - PIXEL8_RGBX;
+
+    // UYVY => RGBX8888
+#if USE_STRIDE
+    if ((imageWidth * 3/2) && out->step && ((imageWidth * 3/2) != out->step)) {
+		const int hh = height < out->height ? height : out->height;
+		const int ww = width < out->width ? width : out->width;
+		int h, w;
+		for (h = 0; h < hh; h++) {
+			w = 0;
+			pyuv = data + (imageWidth * 3/2) * h;
+			prgbx = out->data + out->step * h;
+			for (; (prgbx <= prgbx_end) && (pyuv <= pyuv_end) && (w < ww) ;) {
+				IUYVY2RGBX_8(pyuv, prgbx, 0, 0);
+
+				prgbx += PIXEL8_RGBX;
+				pyuv += PIXEL8_UYVY;
+				w += 8;
+			}
+		}
+	} else {
+		// compressed format? XXX if only one of the frame in / out has step, this may lead to crash...
+		for (; (prgbx <= prgbx_end) && (pyuv <= pyuv_end) ;) {
+			IUYVY2RGBX_8(pyuv, prgbx, 0, 0);
+
+			prgbx += PIXEL8_RGBX;
+			pyuv += PIXEL8_UYVY;
+		}
+	}
+#else
+    for (; (prgbx <= prgbx_end) && (pyuv <= pyuv_end) ;) {
+        IUYVY2RGBX_8(pyuv, prgbx, 0, 0);
+
+        prgbx += PIXEL8_RGBX;
+        pyuv += PIXEL8_UYVY;
+    }
+#endif
+    return UVC_SUCCESS;
+}
+
+/** @brief Convert a frame from YUYV to RGBX8888
+ * @ingroup frame
+ * @param ini YUYV frame
+ * @param out RGBX8888 frame
+ */
+uvc_error_t uvc_yuyv2_rgbx(unsigned char* data, int data_bytes, int width, int height, uvc_frame_t *out) {
+
+    out->width = width;
+    out->height = height;
+    out->frame_format = UVC_FRAME_FORMAT_RGBX;
+    if (out->library_owns_data)
+        out->step = width * PIXEL_RGBX;
+    out->sequence = 0;
+    gettimeofday(&out->capture_time, NULL);
+    out->source = devh;
+
+    uint8_t *pyuv = data;
+    const uint8_t *pyuv_end = pyuv + data_bytes - PIXEL8_YUYV;
+    uint8_t *prgbx = out->data;
+    const uint8_t *prgbx_end = prgbx + out->data_bytes - PIXEL8_RGBX;
+
+    // YUYV => RGBX8888
+#if USE_STRIDE
+    if ((imageWidth * 3/2) && out->step && ((imageWidth * 3/2) != out->step)) {
+		const int hh = height < out->height ? height : out->height;
+		const int ww = width < out->width ? width : out->width;
+		int h, w;
+		for (h = 0; h < hh; h++) {
+			w = 0;
+			pyuv = data + (imageWidth * 3/2) * h;
+			prgbx = out->data + out->step * h;
+			for (; (prgbx <= prgbx_end) && (pyuv <= pyuv_end) && (w < ww) ;) {
+				IYUYV2RGBX_8(pyuv, prgbx, 0, 0);
+
+				prgbx += PIXEL8_RGBX;
+				pyuv += PIXEL8_YUYV;
+				w += 8;
+			}
+		}
+	} else {
+		// compressed format? XXX if only one of the frame in / out has step, this may lead to crash...
+		for (; (prgbx <= prgbx_end) && (pyuv <= pyuv_end) ;) {
+			IYUYV2RGBX_8(pyuv, prgbx, 0, 0);
+
+			prgbx += PIXEL8_RGBX;
+			pyuv += PIXEL8_YUYV;
+		}
+	}
+#else
+    for (; (prgbx <= prgbx_end) && (pyuv <= pyuv_end) ;) {
+        IYUYV2RGBX_8(pyuv, prgbx, 0, 0);
+
+        prgbx += PIXEL8_RGBX;
+        pyuv += PIXEL8_YUYV;
+    }
+#endif
+    return UVC_SUCCESS;
+}
+
+
+
+
 /** @brief Allocate a frame structure
  * @ingroup frame
  *
@@ -2825,3 +2973,79 @@ void lunchTheStream_WebRtc_Service() {
         LOGD("ISO Stream Start -- finished");
     }
 }
+
+// Frame Conversation:
+
+unsigned char* convertUYVYtoJPEG (unsigned char* UYVY_frame_array, int* jpgLength, int UYVYframeLength, int width, int height) {
+    uvc_frame_t *rgb;
+    // We'll convert the image from YUV/JPEG to BGR, so allocate space
+    rgb = uvc_allocate_frame(width * height * 4);
+    if (!rgb) {
+        printf("unable to allocate rgb frame!");
+        return NULL;
+    }
+    uvc_error_t ret;
+
+
+    ret = uvc_uyvy2rgbx(UYVY_frame_array, UYVYframeLength, width, height, rgb);
+
+
+    if (ret) {
+        uvc_perror(ret, "uvc_any2bgr");
+        uvc_free_frame(rgb);
+        return NULL;
+    }
+    const int JPEG_QUALITY = 100;
+    const int COLOR_COMPONENTS = 3;
+    int _width = rgb->width;
+    int _height = rgb->height;
+    long unsigned int _jpegSize = 0;
+    unsigned char* _compressedImage = NULL; //!< Memory is allocated by tjCompress2 if _jpegSize == 0
+    tjhandle _jpegCompressor = tjInitCompress();
+    int r = tjCompress2(_jpegCompressor, rgb->data, _width, _width*4, _height, TJPF_RGBA,
+                          &_compressedImage, &_jpegSize, TJSAMP_444, JPEG_QUALITY,
+                          TJFLAG_FASTDCT);
+    if (r == 0) LOGD("tjCompress2 sucessful, ret = %d", ret);
+    else LOGD("tjCompress2 failed !!!!!!, ret = %d", ret);
+    if (r != 0 ) return NULL;
+    LOGD("_jpegSize = %d", _jpegSize);
+    *jpgLength = _jpegSize;
+    tjDestroy(_jpegCompressor);
+    return _compressedImage;
+}
+
+unsigned char* convertYUY2toJPEG (unsigned char* YUY2_frame_array, int* jpgLength, int UYVYframeLength, int width, int height) {
+
+    uvc_frame_t *rgb;
+    // We'll convert the image from YUV/JPEG to BGR, so allocate space
+    rgb = uvc_allocate_frame(width * height * 4);
+    if (!rgb) {
+        printf("unable to allocate rgb frame!");
+        return NULL;
+    }
+    uvc_error_t ret;
+    ret = uvc_yuyv2_rgbx(YUY2_frame_array, UYVYframeLength, width, height, rgb);
+    if (ret) {
+        uvc_perror(ret, "uvc_any2bgr");
+        uvc_free_frame(rgb);
+        return NULL;
+    }
+    const int JPEG_QUALITY = 100;
+    const int COLOR_COMPONENTS = 3;
+    int _width = rgb->width;
+    int _height = rgb->height;
+    long unsigned int _jpegSize = 0;
+    unsigned char* _compressedImage = NULL; //!< Memory is allocated by tjCompress2 if _jpegSize == 0
+    tjhandle _jpegCompressor = tjInitCompress();
+    int r = tjCompress2(_jpegCompressor, rgb->data, _width, _width*4, _height, TJPF_RGBA,
+                        &_compressedImage, &_jpegSize, TJSAMP_444, JPEG_QUALITY,
+                        TJFLAG_FASTDCT);
+    if (r == 0) LOGD("tjCompress2 sucessful, ret = %d", ret);
+    else LOGD("tjCompress2 failed !!!!!!, ret = %d", ret);
+    if (r != 0 ) return NULL;
+    LOGD("_jpegSize = %d", _jpegSize);
+    *jpgLength = _jpegSize;
+    tjDestroy(_jpegCompressor);
+    return _compressedImage;
+}
+

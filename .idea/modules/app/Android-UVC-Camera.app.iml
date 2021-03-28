@@ -63,7 +63,6 @@
     <orderEntry type="library" name="Gradle: com.android.support.constraint:constraint-layout:2.0.4@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:design:26.1.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.crowdfire.cfalertdialog:cfalertdialog:1.1.0@aar" level="project" />
-    <orderEntry type="library" name="Gradle: com.akexorcist:localizationactivity:1.2.2@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.tomer:fadingtextview:2.6@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:appcompat-v7:26.1.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:animated-vector-drawable:26.1.0@aar" level="project" />

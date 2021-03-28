@@ -83,7 +83,9 @@ import java.util.concurrent.Executors;
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.example.androidthings.videortc.WebRtc_MainActivity;
 import com.sample.timelapse.MJPEGGenerator ;
+import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
+import com.sun.jna.ptr.IntByReference;
 
 import humer.UvcCamera.LibUsb.JNA_I_LibUsb;
 import humer.UvcCamera.LibUsb.LibUsbManagerService;
@@ -172,7 +174,7 @@ public class StartIsoStreamActivity extends Activity {
     public StringBuilder stringBuilder;
     private int [] convertedMaxPacketSize;
     private boolean lowerResolution;
-    public static enum Videoformat {YUV, MJPEG, YUY2, YV12, YUV_422_888, YUV_420_888, NV21}
+    public static enum Videoformat {YUV, MJPEG, YUY2, YV12, YUV_422_888, YUV_420_888, NV21, UYVY}
 
     // Buttons & Views
     protected ImageView imageView;
@@ -1926,18 +1928,20 @@ public class StartIsoStreamActivity extends Activity {
     }
 
     private void processReceivedVideoFrameYuv(byte[] frameData, Videoformat videoFromat) throws IOException {
-        YuvImage yuvImage;
+        YuvImage yuvImage = null;
         if (videoformat == null) {
             if (videoformat.equals("YUV")){
                 videoFromat = Videoformat.YUV;
-            }else if (videoformat.equals("YUY2")){
+            } else if (videoformat.equals("YUY2")){
                 videoFromat = Videoformat.YUY2;
-            }else if (videoformat.equals("YUY2")){
+            } else if (videoformat.equals("YUY2")){
                 videoFromat = Videoformat.YV12;
-            }else if (videoformat.equals("YUV_420_888")){
+            } else if (videoformat.equals("YUV_420_888")){
                 videoFromat = Videoformat.YUV_420_888;
-            }else if (videoformat.equals("YUV_422_888")){
+            } else if (videoformat.equals("YUV_422_888")){
                 videoFromat = Videoformat.YUV_422_888;
+            } else if (videoformat.equals("UYVY")){
+                videoFromat = Videoformat.UYVY;
             }
         }
         if (videoFromat == Videoformat.YUY2) yuvImage = new YuvImage(frameData, ImageFormat.YUY2, imageWidth, imageHeight, null);
@@ -1945,11 +1949,62 @@ public class StartIsoStreamActivity extends Activity {
         else if (videoFromat == Videoformat.YUV_420_888) yuvImage = new YuvImage(frameData, ImageFormat.YUV_420_888, imageWidth, imageHeight, null);
         else if (videoFromat == Videoformat.YUV_422_888) yuvImage = new YuvImage(frameData, ImageFormat.YUV_422_888, imageWidth, imageHeight, null);
         else if (videoFromat == Videoformat.NV21) yuvImage = new YuvImage(frameData, ImageFormat.NV21, imageWidth, imageHeight, null);
+        else if (videoFromat == Videoformat.UYVY) {
+
+        }
         else yuvImage = new YuvImage(frameData, ImageFormat.YUY2, imageWidth, imageHeight, null);
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        yuvImage.compressToJpeg(new Rect(0, 0, imageWidth, imageHeight), 100, os);
-        byte[] jpegByteArray = os.toByteArray();
+
+        byte[] jpegByteArray = null;
+
+        if (videoFromat == Videoformat.UYVY) {
+            Pointer ptr = new Memory(frameData.length);
+            ptr.write(0, frameData, 0, frameData.length);
+
+            //Pointer jpegLength = new Memory(4);
+
+            IntByReference jpgLength = new IntByReference();
+            jpgLength.setValue(-1);
+
+            log("calling convertUYVYtoJPEG java");
+            Pointer p = JNA_I_LibUsb.INSTANCE.convertUYVYtoJPEG(ptr, jpgLength, frameData.length, imageWidth, imageHeight);
+
+            int length = 0;
+            if (jpgLength != null) {
+                length = jpgLength.getValue();
+                log ("jpgLength = " + length);
+            } else {
+                log ("jpgLength == null\nSKIP!!!");
+                return;
+            }
+            if (p != null) {
+                log("data received");
+                jpegByteArray = p.getByteArray(0, length);
+            } else log("no Data received == NULL");
+        } else {
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            yuvImage.compressToJpeg(new Rect(0, 0, imageWidth, imageHeight), 100, os);
+            jpegByteArray = os.toByteArray();
+        }
+        if (jpegByteArray == null){
+            log("jpegByteArray == null\nSKIP");
+            return;
+        }
         if (imageCapture) {
+
+            imageCapture = false;
+            date = new Date() ;
+            dateFormat = new SimpleDateFormat("dd.MM.yyyy___HH_mm_ss") ;
+            Context context = getApplicationContext();
+            String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
+            log("fileName = " + fileName);
+            try {
+                final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
+                MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            log ("file saved");
+            /*
             imageCapture = false ;
             date = new Date() ;
             dateFormat = new SimpleDateFormat("dd.MM.yyyy___HH_mm_ss") ;
@@ -1964,8 +2019,26 @@ public class StartIsoStreamActivity extends Activity {
             log("fileName = " + fileName);
             writeBytesToFile(fileName, jpegByteArray);
             log ("file saved");
+             */
         }
         if (saveStillImage) {
+
+            saveStillImage = false;
+            date = new Date() ;
+            dateFormat = new SimpleDateFormat("dd.MM.yyyy___HH_mm_ss") ;
+            Context context = getApplicationContext();
+            String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
+            log("fileName = " + fileName);
+            try {
+                final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
+                MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            log ("file saved");
+
+
+            /*
             date = new Date();
             dateFormat = new SimpleDateFormat("\"dd.MM.yyyy___HH_mm_ss");
             Context context = getApplicationContext();
@@ -1980,6 +2053,7 @@ public class StartIsoStreamActivity extends Activity {
             log("fileName = " + fileName);
             writeBytesToFile(fileName, jpegByteArray);
             saveStillImage = false;
+             */
         }
         if (videorecord) {
             if (System.currentTimeMillis() - currentTime > 200) {
@@ -2521,17 +2595,20 @@ public class StartIsoStreamActivity extends Activity {
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }
-                                    }else if (videoformat.equals("YUV")){
+                                    } else if (videoformat.equals("YUV")){
                                         processReceivedVideoFrameYuv(frameData.toByteArray(), Videoformat.YUV);
-                                    }else if (videoformat.equals("YUY2")){
+                                    } else if (videoformat.equals("YUY2")){
                                         processReceivedVideoFrameYuv(frameData.toByteArray(), Videoformat.YUY2);
-                                    }else if (videoformat.equals("YUY2")){
+                                    } else if (videoformat.equals("YUY2")){
                                         processReceivedVideoFrameYuv(frameData.toByteArray(), Videoformat.YV12);
-                                    }else if (videoformat.equals("YUV_420_888")){
+                                    } else if (videoformat.equals("YUV_420_888")){
                                         processReceivedVideoFrameYuv(frameData.toByteArray(), Videoformat.YUV_420_888);
-                                    }else if (videoformat.equals("YUV_422_888")){
+                                    } else if (videoformat.equals("YUV_422_888")){
                                         processReceivedVideoFrameYuv(frameData.toByteArray(), Videoformat.YUV_422_888);
+                                    }  else if (videoformat.equals("UYVY")) {
+                                        processReceivedVideoFrameYuv(frameData.toByteArray(), Videoformat.UYVY);
                                     }
+
                                     frameData.reset();
                                 }
                             }

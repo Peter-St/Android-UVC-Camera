@@ -105,6 +105,9 @@ extern void stopVideoCapture();
 extern void startVideoCaptureLongClick() ;
 extern void stopVideoCaptureLongClick() ;
 
+//////////  Frame Conversation:
+extern unsigned char* convertUYVYtoJPEG (unsigned char* UYVY_frame_array, int* jpgLength, int UYVYframeLength, int imageWidth, int imageHeight);
+
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamActivitySurface
         (JNIEnv *, jobject, jobject, jint, jint);
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamActivity

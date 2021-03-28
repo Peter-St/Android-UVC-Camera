@@ -22,14 +22,44 @@ This Repository is provided "as is", without warranties of any kind.
 
 package humer.UvcCamera;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import com.akexorcist.localizationactivity.ui.LocalizationActivity;
+import android.util.Log;
 
-public class ReadMeActivity extends LocalizationActivity {
+import com.franmontiel.localechanger.utils.ActivityRecreationHelper;
+
+import java.util.Locale;
+
+public class ReadMeActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Intent intent=getIntent();
+        Bundle bundle=intent.getBundleExtra("bun");
+        String languageToLoad=bundle.getString("locale"); // your language
+
+        log(getBaseContext().getResources().getConfiguration().locale.toString());
+
+
+        log(Locale.getDefault().getLanguage());
+        log(languageToLoad);
+        Locale locale = new Locale(languageToLoad);
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getBaseContext().getResources().updateConfiguration(config,
+                getBaseContext().getResources().getDisplayMetrics());
+        //ActivityRecreationHelper.recreate(this, true);
+
         setContentView(R.layout.layout_readme);
     }
+
+    public void log(String msg) {
+        Log.i("ReadMe", msg);
+    }
+
 }

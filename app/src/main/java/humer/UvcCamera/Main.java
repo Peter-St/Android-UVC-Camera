@@ -338,6 +338,13 @@ public class Main extends AppCompatActivity {
         // TODO Auto-generated method stub
         Intent intent = new Intent(getApplicationContext(),
                 ReadMeActivity.class);
+        Bundle bundle=new Bundle();
+
+        log(getBaseContext().getResources().getConfiguration().locale.getLanguage());
+
+
+        bundle.putString("locale",getBaseContext().getResources().getConfiguration().locale.getLanguage());
+        intent.putExtra("bun",bundle);
         startActivity(intent);
     }
 

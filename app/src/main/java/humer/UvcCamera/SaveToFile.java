@@ -285,6 +285,8 @@ public class SaveToFile  {
                 arrayAdapter.add("YV12");
                 arrayAdapter.add("YUV_422_888");
                 arrayAdapter.add("YUV_420_888");
+                arrayAdapter.add("UYVY");
+
 
                 builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
                     @Override
@@ -300,22 +302,21 @@ public class SaveToFile  {
                         if (input == "YUY2") {
                             valueInput = (TextInputLayout) activity.findViewById(R.id.Video);
                             valueInput.getEditText().setText("YUY2");
-                        }
-                        else if (input == "MJPEG") {
+                        } else if (input == "MJPEG") {
                             valueInput = (TextInputLayout) activity.findViewById(R.id.Video);
                             valueInput.getEditText().setText("MJPEG");
-                        }
-                        else if (input == "YV12") {
+                        } else if (input == "YV12") {
                             valueInput = (TextInputLayout) activity.findViewById(R.id.Video);
                             valueInput.getEditText().setText("YV12");
-                        }
-                        else if (input == "YUV_422_888") {
+                        } else if (input == "YUV_422_888") {
                             valueInput = (TextInputLayout) activity.findViewById(R.id.Video);
                             valueInput.getEditText().setText("YUV_422_888");
-                        }
-                        else if (input == "YUV_420_888") {
+                        } else if (input == "YUV_420_888") {
                             valueInput = (TextInputLayout) activity.findViewById(R.id.Video);
                             valueInput.getEditText().setText("YUV_420_888");
+                        } else if (input == "UYVY") {
+                            valueInput = (TextInputLayout) activity.findViewById(R.id.Video);
+                            valueInput.getEditText().setText("UYVY");
                         }
                         System.out.println("svideoformat = " + svideoformat);
                     }

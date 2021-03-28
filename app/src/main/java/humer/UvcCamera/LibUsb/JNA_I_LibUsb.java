@@ -27,6 +27,7 @@ import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
+import com.sun.jna.ptr.IntByReference;
 
 public interface JNA_I_LibUsb extends Library {
 
@@ -104,5 +105,7 @@ public interface JNA_I_LibUsb extends Library {
     // move to Native Methods:
     public int fetchTheCamStreamingEndpointAdress (int FD);
 
+    // Frame Conversation:
+    public Pointer convertUYVYtoJPEG (Pointer UYVY_frame_array, IntByReference jpgLength, int UYVYframeLength, int imageWidth, int imageHeight);
 
 }

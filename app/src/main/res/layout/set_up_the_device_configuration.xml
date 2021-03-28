@@ -338,6 +338,7 @@
                 app:layout_constraintTop_toBottomOf="@id/Format"
                 app:hintAnimationEnabled="true"
                 android:focusable="false"
+                android:inputType="none"
                 android:hint="MJPEG or YUY2">
             </com.rafakob.floatingedittext.FloatingEditText>
 
@@ -426,6 +427,7 @@
                 app:layout_constraintTop_toBottomOf="@id/ActiveUr"
                 app:hintAnimationEnabled="true"
                 android:hint="Support for LibUsb"
+                android:inputType="none"
                 android:focusable="false"
                 >
             </com.rafakob.floatingedittext.FloatingEditText>

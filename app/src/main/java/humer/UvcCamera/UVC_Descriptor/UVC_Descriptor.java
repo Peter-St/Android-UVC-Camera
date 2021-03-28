@@ -284,7 +284,7 @@ public class UVC_Descriptor {
         public final ArrayList<byte []> frameData;
         public int formatIndexNumber;
         public int numberOfFrameDescriptors;
-        public enum Videoformat {YUV, MJPEG, YUY2, YV12, YUV_422_888, YUV_420_888}
+        public enum Videoformat {YUV, MJPEG, YUY2, YV12, YUV_422_888, YUV_420_888, UYVY}
         public Videoformat videoformat;
         public String guidFormat = new String();
         public String FourCC_string = new String();
@@ -369,6 +369,10 @@ public class UVC_Descriptor {
                 // YUV_422_888
                 else if (guidFormat.equals("5559565900001000800000aa00389b71") ) {videoformat = Videoformat.YUV_422_888;System.out.println("videoformat = Videoformat.YUV_422_888");}
                 else if (guidFormat.equals("5559565900000010800000aa00389b71") ) {videoformat = Videoformat.YUV_422_888;System.out.println("videoformat = Videoformat.YUV_422_888");}
+                // UYVY for Thermal Camera
+                else if (guidFormat.equals("5956595500000010800000aa00389b71") ) {videoformat = Videoformat.UYVY;System.out.println("videoformat = Videoformat.UYVY");}
+
+
                 else guidFormat = "unknown";
             }
             else if (formatData[2] ==  VS_format_mjpeg ) {
