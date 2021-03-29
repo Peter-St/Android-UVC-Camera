@@ -2629,9 +2629,6 @@ void cb_jni_stream_Surface_Service(struct libusb_transfer *the_transfer) {
 
 
 
-
-
-
                         JNIEnv * jenv;
                         int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
                         jbyteArray array = (*jenv)->NewByteArray(jenv, total);
@@ -2639,8 +2636,10 @@ void cb_jni_stream_Surface_Service(struct libusb_transfer *the_transfer) {
                         (*jenv)->SetByteArrayRegion(jenv, array, 0, total, (jbyte *) videoFrameData->videoframe);
                         (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaRetrievedStreamActivityFrameFromLibUsb, array);
                         total = 0;
-                    } else if (strcmp(frameFormat, "YUY2") == 0) {
-                        //LOGD("YUY2");
+                    } else {
+                        //LOGD("YUV ...");
+
+
                         uvc_frame_t *rgb;
                         uvc_error_t ret;
                         // We'll convert the image from YUV/JPEG to BGR, so allocate space
@@ -2649,6 +2648,7 @@ void cb_jni_stream_Surface_Service(struct libusb_transfer *the_transfer) {
                             printf("unable to allocate rgb frame!");
                             return;
                         }
+                        /*
                         // Do the BGR conversion
                         ret = uvc_yuyv2rgbx(rgb);
                         if (ret) {
@@ -2656,8 +2656,15 @@ void cb_jni_stream_Surface_Service(struct libusb_transfer *the_transfer) {
                             uvc_free_frame(rgb);
                             return;
                         }
+                        */
+                        if (strcmp(frameFormat, "YUY2") == 0) {
+                            ret = uvc_yuyv2_rgbx(videoFrameData->videoframe, imageWidth * imageHeight * 3, imageWidth, imageHeight, rgb);
+                        } else if (strcmp(frameFormat, "UYVY") == 0) {
+                            ret = uvc_uyvy2rgbx(videoFrameData->videoframe, imageWidth * imageHeight * 3, imageWidth, imageHeight, rgb);
+                        }
                         uvc_frame_t *rgb_rot_nFlip = checkRotation(rgb);
                         if (imageCapture) {
+                            imageCapture = false;
                             const int JPEG_QUALITY = 100;
                             const int COLOR_COMPONENTS = 3;
                             int _width = rgb_rot_nFlip->width;
@@ -2679,7 +2686,6 @@ void cb_jni_stream_Surface_Service(struct libusb_transfer *the_transfer) {
                             (*jenv)->SetByteArrayRegion(jenv, array, 0, _jpegSize, (jbyte *) _compressedImage);
                             (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaPictureVideoCaptureMJPEG, array);
                             tjDestroy(_jpegCompressor);
-                            imageCapture = false;
                         } else if (imageCapturelongClick) {
                             imageCapturelongClick = false;
                             JNIEnv * jenv;

@@ -25,6 +25,8 @@ import android.app.Activity;
 
 import android.content.ComponentName;
 import android.content.ServiceConnection;
+import android.os.Build;
+import android.os.Environment;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.app.PendingIntent;
@@ -1817,16 +1819,31 @@ public class StartIsoStreamActivity extends Activity {
             imageCapture = false;
             date = new Date() ;
             dateFormat = new SimpleDateFormat("dd.MM.yyyy___HH_mm_ss") ;
-            Context context = getApplicationContext();
-            String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
-            log("fileName = " + fileName);
-            try {
-                final Bitmap bitmap = BitmapFactory.decodeByteArray(jpgData, 0, jpgData.length);
-                MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
+                String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
+                file = new File(rootPath);
+                if (!file.exists()) {
+                    file.mkdirs();
+                }
+                String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getAbsolutePath() ;
+                try {
+                    writeBytesToFile(fileName, jpgData);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                log ("file saved");
+            } else {
+                Context context = getApplicationContext();
+                String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
+                log("fileName = " + fileName);
+                try {
+                    final Bitmap bitmap = BitmapFactory.decodeByteArray(jpgData, 0, jpgData.length);
+                    MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                log ("file saved");
             }
-            log ("file saved");
         } else if (videorecord) {
             if (System.currentTimeMillis() - currentTime > 200) {
                 currentTime = System.currentTimeMillis();
@@ -1856,23 +1873,41 @@ public class StartIsoStreamActivity extends Activity {
     //// JNI METHOD - YUV FRAME EXPECTED
     public void pictureVideoCaptureYUV (byte[] yuvData) {
         if (imageCapture) {
+
+            YuvImage yuvImage = new YuvImage(yuvData, ImageFormat.YUY2, imageWidth, imageHeight, null);
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            yuvImage.compressToJpeg(new Rect(0, 0, imageWidth, imageHeight), 100, os);
+            byte[] jpegByteArray = os.toByteArray();
+
             imageCapture = false;
             date = new Date() ;
             dateFormat = new SimpleDateFormat("dd.MM.yyyy___HH_mm_ss") ;
-            Context context = getApplicationContext();
-            String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
-            log("fileName = " + fileName);
-            try {
-                YuvImage yuvImage = new YuvImage(yuvData, ImageFormat.YUY2, imageWidth, imageHeight, null);
-                ByteArrayOutputStream os = new ByteArrayOutputStream();
-                yuvImage.compressToJpeg(new Rect(0, 0, imageWidth, imageHeight), 100, os);
-                byte[] jpegByteArray = os.toByteArray();
-                final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
-                MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
-            } catch (Exception e) {
-                e.printStackTrace();
+
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
+                String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
+                file = new File(rootPath);
+                if (!file.exists()) {
+                    file.mkdirs();
+                }
+                String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getAbsolutePath() ;
+                try {
+                    writeBytesToFile(fileName, jpegByteArray);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                log ("file saved");
+            } else {
+                Context context = getApplicationContext();
+                String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
+                log("fileName = " + fileName);
+                try {
+                    final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
+                    MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                log ("file saved");
             }
-            log ("file saved");
         } else if (videorecord) {
             if (System.currentTimeMillis() - currentTime > 200) {
                 currentTime = System.currentTimeMillis();
@@ -1990,20 +2025,34 @@ public class StartIsoStreamActivity extends Activity {
             return;
         }
         if (imageCapture) {
-
             imageCapture = false;
             date = new Date() ;
             dateFormat = new SimpleDateFormat("dd.MM.yyyy___HH_mm_ss") ;
-            Context context = getApplicationContext();
-            String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
-            log("fileName = " + fileName);
-            try {
-                final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
-                MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
+                String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
+                file = new File(rootPath);
+                if (!file.exists()) {
+                    file.mkdirs();
+                }
+                String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getAbsolutePath() ;
+                try {
+                    writeBytesToFile(fileName, jpegByteArray);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                log ("file saved");
+            } else {
+                Context context = getApplicationContext();
+                String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
+                log("fileName = " + fileName);
+                try {
+                    final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
+                    MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                log ("file saved");
             }
-            log ("file saved");
             /*
             imageCapture = false ;
             date = new Date() ;
@@ -2026,34 +2075,33 @@ public class StartIsoStreamActivity extends Activity {
             saveStillImage = false;
             date = new Date() ;
             dateFormat = new SimpleDateFormat("dd.MM.yyyy___HH_mm_ss") ;
-            Context context = getApplicationContext();
-            String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
-            log("fileName = " + fileName);
-            try {
-                final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
-                MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
-            } catch (Exception e) {
-                e.printStackTrace();
+
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
+                String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
+                file = new File(rootPath);
+                if (!file.exists()) {
+                    file.mkdirs();
+                }
+                String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getAbsolutePath() ;
+                try {
+                    writeBytesToFile(fileName, jpegByteArray);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                log ("file saved");
+            } else {
+                Context context = getApplicationContext();
+                String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
+                log("fileName = " + fileName);
+                try {
+                    final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
+                    MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                log ("file saved");
             }
-            log ("file saved");
 
-
-            /*
-            date = new Date();
-            dateFormat = new SimpleDateFormat("\"dd.MM.yyyy___HH_mm_ss");
-            Context context = getApplicationContext();
-            String dirname = "Pictures";
-            File directory = context.getFilesDir();
-            File dir = new File(directory, dirname);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-            String fileName = new File(dir,"Still_Image" +  dateFormat.format(date) + ".JPG").getPath() ;
-
-            log("fileName = " + fileName);
-            writeBytesToFile(fileName, jpegByteArray);
-            saveStillImage = false;
-             */
         }
         if (videorecord) {
             if (System.currentTimeMillis() - currentTime > 200) {
@@ -2105,49 +2153,62 @@ public class StartIsoStreamActivity extends Activity {
             imageCapture = false ;
             date = new Date() ;
             dateFormat = new SimpleDateFormat("dd.MM.yyyy___HH_mm_ss") ;
-            Context context = getApplicationContext();
-            String dirname = "Pictures";
-            File directory = context.getFilesDir();
-            File dir = new File(directory, dirname);
-            if (!dir.exists()) {
-                dir.mkdirs();
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
+                String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
+                file = new File(rootPath);
+                if (!file.exists()) {
+                    file.mkdirs();
+                }
+                String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getAbsolutePath() ;
+                try {
+                    writeBytesToFile(fileName, jpegFrameData);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                log ("file saved");
+            } else {
+                Context context = getApplicationContext();
+                String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
+                log("fileName = " + fileName);
+                try {
+                    final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegFrameData, 0, jpegFrameData.length);
+                    MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                log ("file saved");
             }
-            String fileName = new File(dir,  dateFormat.format(date) + ".JPG").getPath() ;
-            log("fileName = " + fileName);
-            /*
-            String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
-            file = new File(rootPath);
-            if (!file.exists()) {
-                file.mkdirs();
-            }
-            String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getAbsolutePath() ;
-            */
-            writeBytesToFile(fileName, jpegFrameData);
-            log ("file saved");
         }
         if (saveStillImage) {
+            saveStillImage = false;
             date = new Date();
             dateFormat = new SimpleDateFormat("\"dd.MM.yyyy___HH_mm_ss") ;
-            Context context = getApplicationContext();
-            String dirname = "Pictures";
-            File directory = context.getFilesDir();
-            File dir = new File(directory, dirname);
-            if (!dir.exists()) {
-                dir.mkdirs();
+
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
+                String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
+                file = new File(rootPath);
+                if (!file.exists()) {
+                    file.mkdirs();
+                }
+                String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getAbsolutePath() ;
+                try {
+                    writeBytesToFile(fileName, jpegFrameData);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                log("Still Image Save Complete");
+            } else {
+                Context context = getApplicationContext();
+                String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
+                log("fileName = " + fileName);
+                try {
+                    final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegFrameData, 0, jpegFrameData.length);
+                    MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                log("Still Image Save Complete");
             }
-            String fileName = new File(dir,  dateFormat.format(date) + ".JPG").getPath() ;
-            log("fileName = " + fileName);
-            /*
-            String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
-            file = new File(rootPath);
-            if (!file.exists()) {
-                file.mkdirs();
-            }
-            String fileName = new File(rootPath + "Still_Image" + dateFormat.format(date) + ".JPG").getPath() ;
-            */
-            writeBytesToFile(fileName, mjpegFrameData);
-            saveStillImage = false;
-            log("Still Image Save Complete");
         }
         if (videorecord) {
             if (System.currentTimeMillis() - currentTime > 200) {
