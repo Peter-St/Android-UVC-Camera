@@ -10,22 +10,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e1a9d4da-cb2f-4458-9688-8bf0498c2589" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/javaCompile/classAnalysis.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/javaCompile/javaCompile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libUsb_Support/libusb_support.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libUsb_Support/libusb_support.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libUsb_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libUsb_Support.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libUsb_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libUsb_Support.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libUsb_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/libUsb_Support.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libUsb_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/libUsb_Support.so" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,6 +49,7 @@
     <option name="KEY_STORE_PATH" value="$PROJECT_DIR$/../Build_APK_Key/my.keystore" />
     <option name="KEY_ALIAS" value="app" />
     <option name="REMEMBER_PASSWORDS" value="true" />
+    <option name="BUILD_TARGET_KEY" value="apk" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -81,6 +67,8 @@
     <property name="DeviceAndSnapshotComboBoxAction.selectionTime" value="2021-03-28T06:23:42.426Z" />
     <property name="ExportApk.ApkPath" value="$PROJECT_DIR$/app" />
     <property name="ExportApk.BuildVariants" value="release" />
+    <property name="ExportApk.SignV1" value="true" />
+    <property name="ExportApk.SignV2" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
@@ -88,10 +76,10 @@
     <property name="last_directory_selection" value="$PROJECT_DIR$/app/src/main/java/android/support/v7/app" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../../Libusb-Fork/UnRooted-Android-UVC-Camera" />
     <property name="multi-representation-preview/home/peter/Downloads/Webcam/Android-UVC-Camera/app/src/main/java/com/serenegiant/widget/AspectRatioTextureView.java_selected" value="Custom views" />
-    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.last.edited" value="Suggestions" />
     <property name="project.structure.proportion" value="0.17" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
   </component>
   <component name="PsdUISettings">
     <option name="MODULE_TAB" value="Properties" />
@@ -170,8 +158,8 @@
       </method>
     </configuration>
   </component>
-  <component name="SvnConfiguration">
-    <configuration />
+  <component name="SvnConfiguration" cleanupOnStartRun="true">
+    <configuration>$USER_HOME$/.subversion</configuration>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -198,10 +186,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="589" y="200" width="732" height="631" key="#Inspections/0.0.1920.1040@0.0.1920.1040" timestamp="1609013411512" />
-    <state x="418" y="294" width="1255" height="524" key="#PSD" timestamp="1613153172483">
+    <state x="418" y="294" width="1255" height="524" key="#PSD" timestamp="1617050993663">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="418" y="294" width="1255" height="524" key="#PSD/0.0.1920.1040@0.0.1920.1040" timestamp="1613153172483" />
+    <state x="418" y="294" width="1255" height="524" key="#PSD/0.0.1920.1040@0.0.1920.1040" timestamp="1617050993663" />
     <state x="657" y="187" width="596" height="658" key="#app" timestamp="1609552983839">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -218,18 +206,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="693" y="299" width="524" height="436" key="#com.intellij.ide.util.PackageChooserDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1609023188196" />
-    <state x="463" y="446" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog" timestamp="1608392906113">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="463" y="446" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1608392906113" />
     <state x="730" y="391" width="567" height="258" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes" timestamp="1609023193789">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="730" y="391" width="567" height="258" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes/0.0.1920.1040@0.0.1920.1040" timestamp="1609023193789" />
-    <state x="709" y="403" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.packages" timestamp="1608392909661">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="709" y="403" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.packages/0.0.1920.1040@0.0.1920.1040" timestamp="1608392909661" />
     <state x="742" y="268" width="435" height="495" key="AndroidProcessChooserDialog" timestamp="1610214485005">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -270,10 +250,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1846" height="479" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1616931371070" />
-    <state x="216" y="147" width="1286" height="730" key="SettingsEditor" timestamp="1613312160075">
+    <state x="216" y="147" width="1286" height="730" key="SettingsEditor" timestamp="1617051019132">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="216" y="147" width="1286" height="730" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1613312160075" />
+    <state x="216" y="147" width="1286" height="730" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1617051019132" />
     <state x="761" y="300" width="387" height="432" key="chooseDestDirectoryDialog" timestamp="1609504654258">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
