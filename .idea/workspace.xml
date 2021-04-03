@@ -17,17 +17,24 @@
       <change beforePath="$PROJECT_DIR$/.gradle/6.5/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/javaCompile/classAnalysis.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/6.5/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/javaCompile/javaCompile.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDevice.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDevice.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libUsb_Support/Android.mk" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libUsb_Support/Android.mk" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/jni/libUsb_Support/libusb_support.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libUsb_Support/libusb_support.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libUsb_Support/libusb_support.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libUsb_Support/libusb_support.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libUsb_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libUsb_Support.so" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libjpeg.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libjpeg.so" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libyuv.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libyuv.so" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libUsb_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libUsb_Support.so" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libjpeg.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libjpeg.so" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libyuv.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libyuv.so" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libUsb_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/libUsb_Support.so" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libjpeg.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/libjpeg.so" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libyuv.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/libyuv.so" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libUsb_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/libUsb_Support.so" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libjpeg.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/libjpeg.so" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libyuv.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/libyuv.so" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,6 +73,7 @@
     <option name="KEY_STORE_PATH" value="$PROJECT_DIR$/../Build_APK_Key/my.keystore" />
     <option name="KEY_ALIAS" value="app" />
     <option name="REMEMBER_PASSWORDS" value="true" />
+    <option name="BUILD_TARGET_KEY" value="apk" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -83,6 +91,8 @@
     <property name="DeviceAndSnapshotComboBoxAction.selectionTime" value="2021-03-28T06:23:42.426Z" />
     <property name="ExportApk.ApkPath" value="$PROJECT_DIR$/app" />
     <property name="ExportApk.BuildVariants" value="release" />
+    <property name="ExportApk.SignV1" value="true" />
+    <property name="ExportApk.SignV2" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
@@ -233,42 +243,42 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="737" y="274" width="424" height="478" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1613499146455" />
-    <state width="1846" height="478" key="GridCell.Tab.0.bottom" timestamp="1617475446674">
+    <state width="1846" height="476" key="GridCell.Tab.0.bottom" timestamp="1617487948264">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1846" height="478" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1617475446674" />
-    <state width="1846" height="478" key="GridCell.Tab.0.center" timestamp="1617475446673">
+    <state width="1846" height="476" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1617487948264" />
+    <state width="1846" height="476" key="GridCell.Tab.0.center" timestamp="1617487948263">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1846" height="478" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1617475446673" />
-    <state width="1846" height="478" key="GridCell.Tab.0.left" timestamp="1617475446673">
+    <state width="1846" height="476" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1617487948263" />
+    <state width="1846" height="476" key="GridCell.Tab.0.left" timestamp="1617487948263">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1846" height="478" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1617475446673" />
-    <state width="1846" height="478" key="GridCell.Tab.0.right" timestamp="1617475446673">
+    <state width="1846" height="476" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1617487948263" />
+    <state width="1846" height="476" key="GridCell.Tab.0.right" timestamp="1617487948263">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1846" height="478" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1617475446673" />
-    <state width="1846" height="478" key="GridCell.Tab.1.bottom" timestamp="1617475446673">
+    <state width="1846" height="476" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1617487948263" />
+    <state width="1846" height="476" key="GridCell.Tab.1.bottom" timestamp="1617487948263">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1846" height="478" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1617475446673" />
-    <state width="1846" height="478" key="GridCell.Tab.1.center" timestamp="1617475446672">
+    <state width="1846" height="476" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1617487948263" />
+    <state width="1846" height="476" key="GridCell.Tab.1.center" timestamp="1617487948262">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1846" height="478" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1617475446672" />
-    <state width="1846" height="478" key="GridCell.Tab.1.left" timestamp="1617475446672">
+    <state width="1846" height="476" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1617487948262" />
+    <state width="1846" height="476" key="GridCell.Tab.1.left" timestamp="1617487948262">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1846" height="478" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1617475446672" />
-    <state width="1846" height="478" key="GridCell.Tab.1.right" timestamp="1617475446672">
+    <state width="1846" height="476" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1617487948262" />
+    <state width="1846" height="476" key="GridCell.Tab.1.right" timestamp="1617487948263">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1846" height="478" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1617475446672" />
-    <state x="216" y="147" width="1286" height="730" key="SettingsEditor" timestamp="1617054798780">
+    <state width="1846" height="476" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1617487948263" />
+    <state x="216" y="147" width="1286" height="730" key="SettingsEditor" timestamp="1617482485732">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="216" y="147" width="1286" height="730" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1617054798780" />
+    <state x="216" y="147" width="1286" height="730" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1617482485732" />
     <state x="761" y="300" width="387" height="432" key="chooseDestDirectoryDialog" timestamp="1609504654258">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

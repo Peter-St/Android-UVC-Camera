@@ -218,7 +218,24 @@ typedef enum {
 	JCS_RGB,		/* red/green/blue */
 	JCS_YCbCr,		/* Y/Cb/Cr (also known as YUV) */
 	JCS_CMYK,		/* C/M/Y/K */
-	JCS_YCCK		/* Y/Cb/Cr/K */
+	JCS_YCCK,		/* Y/Cb/Cr/K */
+    JCS_EXT_RGB,            /* red/green/blue */
+    JCS_EXT_RGBX,           /* red/green/blue/x */
+    JCS_EXT_BGR,            /* blue/green/red */
+    JCS_EXT_BGRX,           /* blue/green/red/x */
+    JCS_EXT_XBGR,           /* x/blue/green/red */
+    JCS_EXT_XRGB,           /* x/red/green/blue */
+    /* When out_color_space it set to JCS_EXT_RGBX, JCS_EXT_BGRX, JCS_EXT_XBGR,
+       or JCS_EXT_XRGB during decompression, the X byte is undefined, and in
+       order to ensure the best performance, libjpeg-turbo can set that byte to
+       whatever value it wishes.  Use the following colorspace constants to
+       ensure that the X byte is set to 0xFF, so that it can be interpreted as an
+       opaque alpha channel. */
+    JCS_EXT_RGBA,           /* red/green/blue/alpha */
+    JCS_EXT_BGRA,           /* blue/green/red/alpha */
+    JCS_EXT_ABGR,           /* alpha/blue/green/red */
+    JCS_EXT_ARGB,           /* alpha/red/green/blue */
+    JCS_RGB565              /* 5-bit red/6-bit green/5-bit blue */
 } J_COLOR_SPACE;
 
 /* DCT/IDCT algorithm options. */

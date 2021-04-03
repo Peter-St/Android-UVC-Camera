@@ -261,10 +261,10 @@ public class StartIsoStreamActivity extends Activity {
     static {
         if (!isLoaded) {
             System.loadLibrary("usb1.0");
-            System.loadLibrary("Usb_Support");
-            System.loadLibrary("jpeg-turbo");
             System.loadLibrary("yuv");
             System.loadLibrary("jpeg");
+            System.loadLibrary("jpeg-turbo");
+            System.loadLibrary("Usb_Support");
             isLoaded = true;
         }
     }
@@ -780,6 +780,7 @@ public class StartIsoStreamActivity extends Activity {
             mUVCCameraView = (SurfaceView) findViewById(R.id.surfaceView);
             mUVCCameraView.setVisibility(View.GONE);
             mUVCCameraView.setVisibility(View.INVISIBLE);
+
         }
         if (LIBUSB) {
 

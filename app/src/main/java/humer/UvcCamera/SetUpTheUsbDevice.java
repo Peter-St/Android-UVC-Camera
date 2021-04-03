@@ -281,8 +281,10 @@ public class SetUpTheUsbDevice extends Activity {
     static {
         if (!isLoaded) {
             System.loadLibrary("usb1.0");
-            System.loadLibrary("Usb_Support");
+            System.loadLibrary("yuv");
+            System.loadLibrary("jpeg");
             System.loadLibrary("jpeg-turbo");
+            System.loadLibrary("Usb_Support");
             isLoaded = true;
         }
     }
