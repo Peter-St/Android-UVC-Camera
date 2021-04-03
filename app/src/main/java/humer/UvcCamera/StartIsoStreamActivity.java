@@ -25,6 +25,7 @@ import android.app.Activity;
 
 import android.content.ComponentName;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
@@ -244,6 +245,8 @@ public class StartIsoStreamActivity extends Activity {
     public native void JniSetSurfaceView(final Surface surface);
     public native void JniSetSurfaceYuv(final Surface surface);
 
+    public native void YUY2pixeltobmp(byte[] uyvy_data, Bitmap bitmap, int im_width, int im_height);
+    public native void UYVYpixeltobmp(byte[] uyvy_data, Bitmap bitmap, int im_width, int im_height);
 
 
 
@@ -1942,6 +1945,101 @@ public class StartIsoStreamActivity extends Activity {
         }
     }
 
+    //// JNI METHOD - RGB FRAME EXPECTED
+    public void pictureVideoCaptureRGB (byte[] colors) {
+        if (imageCapture) {
+
+            imageCapture = false;
+
+            int nrOfPixels = colors.length / 3; // Three bytes per pixel.
+            int pixels[] = new int[nrOfPixels];
+            for(int i = 0; i < nrOfPixels; i++) {
+                int r = (int)(0xFF & colors[3*i]);
+                int g = (int)(0xFF & colors[3*i+1]);
+                int b = (int)(0xFF & colors[3*i+2]);
+                pixels[i] = Color.rgb(r,g,b);
+            }
+            Bitmap bitmap = Bitmap.createBitmap(pixels, imageWidth, imageHeight,Bitmap.Config.ARGB_8888);
+
+            date = new Date() ;
+            dateFormat = new SimpleDateFormat("dd.MM.yyyy___HH_mm_ss") ;
+
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
+                String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
+                file = new File(rootPath);
+                if (!file.exists()) {
+                    file.mkdirs();
+                }
+                String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getAbsolutePath() ;
+                try {
+                    byte[] jpegByteArray;
+                    ByteArrayOutputStream os = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                    jpegByteArray = os.toByteArray();
+                    writeBytesToFile(fileName, jpegByteArray);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                log ("file saved");
+            } else {
+                Context context = getApplicationContext();
+                String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
+                log("fileName = " + fileName);
+                try {
+                    //final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
+                    MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                log ("file saved");
+            }
+        } else if (videorecord) {
+            int nrOfPixels = colors.length / 3; // Three bytes per pixel.
+            int pixels[] = new int[nrOfPixels];
+            for(int i = 0; i < nrOfPixels; i++) {
+                int r = (int)(0xFF & colors[3*i]);
+                int g = (int)(0xFF & colors[3*i+1]);
+                int b = (int)(0xFF & colors[3*i+2]);
+                pixels[i] = Color.rgb(r,g,b);
+            }
+            Bitmap bitmap = Bitmap.createBitmap(pixels, imageWidth, imageHeight,Bitmap.Config.ARGB_8888);
+            if (System.currentTimeMillis() - currentTime > 200) {
+                currentTime = System.currentTimeMillis();
+                lastPicture ++;
+                String dirname = "Video";
+                File dir = new File(getExternalFilesDir(null),dirname);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+                File sub_dir=new File(dir, "rec");
+                if (!sub_dir.exists()) {
+                    sub_dir.mkdirs();
+                }
+                String fileName = new File(sub_dir,lastPicture + ".JPG").getPath() ;
+                byte[] jpegByteArray;
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                jpegByteArray = os.toByteArray();
+                try {
+                    writeBytesToFile(fileName, jpegByteArray);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else if (videorecordApiJellyBean) {
+            int nrOfPixels = colors.length / 3; // Three bytes per pixel.
+            int pixels[] = new int[nrOfPixels];
+            for(int i = 0; i < nrOfPixels; i++) {
+                int r = (int)(0xFF & colors[3*i]);
+                int g = (int)(0xFF & colors[3*i+1]);
+                int b = (int)(0xFF & colors[3*i+2]);
+                pixels[i] = Color.rgb(r,g,b);
+            }
+            Bitmap bitmap = Bitmap.createBitmap(pixels, imageWidth, imageHeight,Bitmap.Config.ARGB_8888);
+            bitmapToVideoEncoder.queueFrame(bitmap);
+        }
+    }
+
     public void processReceivedVideoFrameYuvFromJni(byte[] frameData) {
         Videoformat videoFromat;
         if (videoformat.equals("YUV")){
@@ -1963,7 +2061,6 @@ public class StartIsoStreamActivity extends Activity {
     }
 
     private void processReceivedVideoFrameYuv(byte[] frameData, Videoformat videoFromat) throws IOException {
-        YuvImage yuvImage = null;
         if (videoformat == null) {
             if (videoformat.equals("YUV")){
                 videoFromat = Videoformat.YUV;
@@ -1979,19 +2076,13 @@ public class StartIsoStreamActivity extends Activity {
                 videoFromat = Videoformat.UYVY;
             }
         }
-        if (videoFromat == Videoformat.YUY2) yuvImage = new YuvImage(frameData, ImageFormat.YUY2, imageWidth, imageHeight, null);
-        else if (videoFromat == Videoformat.YV12) yuvImage = new YuvImage(frameData, ImageFormat.YV12, imageWidth, imageHeight, null);
-        else if (videoFromat == Videoformat.YUV_420_888) yuvImage = new YuvImage(frameData, ImageFormat.YUV_420_888, imageWidth, imageHeight, null);
-        else if (videoFromat == Videoformat.YUV_422_888) yuvImage = new YuvImage(frameData, ImageFormat.YUV_422_888, imageWidth, imageHeight, null);
-        else if (videoFromat == Videoformat.NV21) yuvImage = new YuvImage(frameData, ImageFormat.NV21, imageWidth, imageHeight, null);
-        else if (videoFromat == Videoformat.UYVY) {
-
-        }
-        else yuvImage = new YuvImage(frameData, ImageFormat.YUY2, imageWidth, imageHeight, null);
-
-        byte[] jpegByteArray = null;
-
+        Bitmap bitmap = null;
         if (videoFromat == Videoformat.UYVY) {
+            // JNI APPROACH
+            bitmap = Bitmap.createBitmap(imageWidth, imageHeight, Bitmap.Config.ARGB_8888);
+            UYVYpixeltobmp(frameData, bitmap, imageWidth, imageHeight);
+            // JNA APPROACH:
+            /*
             Pointer ptr = new Memory(frameData.length);
             ptr.write(0, frameData, 0, frameData.length);
 
@@ -2015,15 +2106,27 @@ public class StartIsoStreamActivity extends Activity {
                 log("data received");
                 jpegByteArray = p.getByteArray(0, length);
             } else log("no Data received == NULL");
+
+             */
+        } else if (videoFromat == Videoformat.YUY2) {
+            bitmap = Bitmap.createBitmap(imageWidth, imageHeight, Bitmap.Config.ARGB_8888);
+            YUY2pixeltobmp(frameData, bitmap, imageWidth, imageHeight);
         } else {
+            YuvImage yuvImage = null;
+            if (videoFromat == Videoformat.YUY2) yuvImage = new YuvImage(frameData, ImageFormat.YUY2, imageWidth, imageHeight, null);
+            else if (videoFromat == Videoformat.YV12) yuvImage = new YuvImage(frameData, ImageFormat.YV12, imageWidth, imageHeight, null);
+            else if (videoFromat == Videoformat.YUV_420_888) yuvImage = new YuvImage(frameData, ImageFormat.YUV_420_888, imageWidth, imageHeight, null);
+            else if (videoFromat == Videoformat.YUV_422_888) yuvImage = new YuvImage(frameData, ImageFormat.YUV_422_888, imageWidth, imageHeight, null);
+            else if (videoFromat == Videoformat.NV21) yuvImage = new YuvImage(frameData, ImageFormat.NV21, imageWidth, imageHeight, null);
+            else if (videoFromat == Videoformat.UYVY) {          }
+            else yuvImage = new YuvImage(frameData, ImageFormat.YUY2, imageWidth, imageHeight, null);
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             yuvImage.compressToJpeg(new Rect(0, 0, imageWidth, imageHeight), 100, os);
+            byte[] jpegByteArray;
             jpegByteArray = os.toByteArray();
+            bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
         }
-        if (jpegByteArray == null){
-            log("jpegByteArray == null\nSKIP");
-            return;
-        }
+
         if (imageCapture) {
             imageCapture = false;
             date = new Date() ;
@@ -2036,6 +2139,10 @@ public class StartIsoStreamActivity extends Activity {
                 }
                 String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getAbsolutePath() ;
                 try {
+                    byte[] jpegByteArray;
+                    ByteArrayOutputStream os = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                    jpegByteArray = os.toByteArray();
                     writeBytesToFile(fileName, jpegByteArray);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -2046,7 +2153,7 @@ public class StartIsoStreamActivity extends Activity {
                 String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
                 log("fileName = " + fileName);
                 try {
-                    final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
+                    //final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
                     MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -2084,6 +2191,10 @@ public class StartIsoStreamActivity extends Activity {
                 }
                 String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getAbsolutePath() ;
                 try {
+                    byte[] jpegByteArray;
+                    ByteArrayOutputStream os = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                    jpegByteArray = os.toByteArray();
                     writeBytesToFile(fileName, jpegByteArray);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -2094,7 +2205,7 @@ public class StartIsoStreamActivity extends Activity {
                 String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
                 log("fileName = " + fileName);
                 try {
-                    final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
+                    //final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
                     MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -2117,18 +2228,24 @@ public class StartIsoStreamActivity extends Activity {
                     sub_dir.mkdirs();
                 }
                 String fileName = new File(sub_dir,lastPicture + ".JPG").getPath() ;
+                byte[] jpegByteArray;
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                jpegByteArray = os.toByteArray();
                 writeBytesToFile(fileName, jpegByteArray);
             }
         }
         if (exit == false) {
-            final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
+            //final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
+            final Bitmap bmp = bitmap;
+
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     if (horizontalFlip || verticalFlip || rotate != 0) {
-                        imageView.setImageBitmap(flipImage(bitmap));
+                        imageView.setImageBitmap(flipImage(bmp));
                     }
-                    else imageView.setImageBitmap(bitmap);
+                    else imageView.setImageBitmap(bmp);
                 }
             });
             if (videorecordApiJellyBean) {

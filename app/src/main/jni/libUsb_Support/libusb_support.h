@@ -104,10 +104,6 @@ extern void startVideoCapture();
 extern void stopVideoCapture();
 extern void startVideoCaptureLongClick() ;
 extern void stopVideoCaptureLongClick() ;
-
-//////////  Frame Conversation:
-extern unsigned char* convertUYVYtoJPEG (unsigned char* UYVY_frame_array, int* jpgLength, int UYVYframeLength, int imageWidth, int imageHeight);
-
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamActivitySurface
         (JNIEnv *, jobject, jobject, jint, jint);
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamActivity
@@ -117,6 +113,11 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniSetSurface
         (JNIEnv *, jobject, jobject);
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniSetSurfaceYuv
         (JNIEnv *, jobject, jobject);
+
+//////////  Frame Conversation:
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_YUY2pixeltobmp( JNIEnv* env, jobject thiz, jbyteArray data, jobject bitmap, int im_width, int im_height);
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_UYVYpixeltobmp( JNIEnv* env, jobject thiz, jbyteArray data, jobject bitmap, int im_width, int im_height);
+extern unsigned char* convertUYVYtoJPEG (unsigned char* UYVY_frame_array, int* jpgLength, int UYVYframeLength, int imageWidth, int imageHeight);
 
 ///////////////   Stream Service
 JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniServiceOverSurface
@@ -235,6 +236,7 @@ JNIEXPORT void JNICALL Java_com_example_androidthings_videortc_UsbCapturer_JniWe
 
 
 #define nullptr ((void*)0)
+
 
   #endif  // iso_h__
 
