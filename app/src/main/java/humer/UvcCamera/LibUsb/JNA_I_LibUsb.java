@@ -79,7 +79,7 @@ public interface JNA_I_LibUsb extends Library {
 
     public void stopJavaVM();
 
-    public void exit();
+    public void exit_native();
 
     public Pointer probeCommitControl(int bmHint, int camFormatInde,
                                       int camFrameInde, int camFrameInterva, int FD);

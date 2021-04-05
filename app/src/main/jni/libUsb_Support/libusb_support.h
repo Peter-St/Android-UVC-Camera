@@ -68,7 +68,7 @@ extern int set_the_native_Values (int FD, int packetsPerReques, int maxPacketSiz
 extern int initStreamingParms(int FD);
 extern void stopStreaming();
 extern void stopJavaVM();
-extern void exit();
+extern void exit_native();
 extern void closeLibUsb();
 extern int libUsb_open_def_fd(int vid, int pid, const char *serial, int fd, int busnum, int devaddr);
 extern unsigned char * probeCommitControl();
@@ -113,6 +113,9 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniSetSurface
         (JNIEnv *, jobject, jobject);
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniSetSurfaceYuv
         (JNIEnv *, jobject, jobject);
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_PictureVideoSave
+        (JNIEnv* env, jobject thiz, jobject bitmap);
+
 
 //////////  Frame Conversation:
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_YUY2pixeltobmp( JNIEnv* env, jobject thiz, jbyteArray data, jobject bitmap, int im_width, int im_height);

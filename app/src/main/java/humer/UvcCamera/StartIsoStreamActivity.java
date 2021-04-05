@@ -25,7 +25,9 @@ import android.app.Activity;
 
 import android.content.ComponentName;
 import android.content.ServiceConnection;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
@@ -768,25 +770,17 @@ public class StartIsoStreamActivity extends Activity {
         flip = (ImageButton) findViewById(R.id.flipRightButton); flip.setEnabled(false); flip.setBackgroundDrawable(null);
         ToggleButton flip2 = (ToggleButton) findViewById(R.id.flipHorizontalButton); flip2.setEnabled(false); flip2.setBackgroundDrawable(null);
         flip2 = (ToggleButton) findViewById(R.id.flipVerticalButton); flip2.setEnabled(false); flip2.setBackgroundDrawable(null);
-        if (LIBUSB) {
-            //mUVCCameraView = (SurfaceView)findViewById(R.id.surfaceView);
-            //mUVCCameraView.getHolder().addCallback(mSurfaceViewCallback);
-        } else {
-            mUVCCameraView = (SurfaceView)findViewById(R.id.surfaceView);
-        }
-        mUVCCameraView = (SurfaceView)findViewById(R.id.surfaceView);
+
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(StartIsoStreamService.NOTIFICATION));
-        if(!LIBUSB || videoformat.equals("MJPEG")) {
+
+        if (LIBUSB) {
+            mUVCCameraView = (SurfaceView)findViewById(R.id.surfaceView);
+            mPreviewSurface = mUVCCameraView.getHolder().getSurface();
+            mUVCCameraView.getHolder().addCallback(mSurfaceViewCallback);
+        } else {
             mUVCCameraView = (SurfaceView) findViewById(R.id.surfaceView);
             mUVCCameraView.setVisibility(View.GONE);
             mUVCCameraView.setVisibility(View.INVISIBLE);
-
-        }
-        if (LIBUSB) {
-
-           // mPreviewSurface = mUVCCameraView.getHolder().getSurface();
-          //  JniSetSurfaceView(mPreviewSurface);
-           // mService.jniMethodsAndConstantsSet = true;
         }
     }
 
@@ -1470,12 +1464,20 @@ public class StartIsoStreamActivity extends Activity {
                 /////////////// Service Method
                 log("starting Service");
                 if (videoformat.equals("MJPEG")) {
-                    //mPreviewSurface = mUVCCameraView.getHolder().getSurface();
+                    if (!libusb_is_initialized) {
+                        mPreviewSurface = mUVCCameraView.getHolder().getSurface();
+                        JniSetSurfaceView(mPreviewSurface);
+                        mService.jniMethodsAndConstantsSet = true;
+                    }
                     if (!libusb_is_initialized) JniSetSurfaceView(null);
+
+                    /*
+                    //mPreviewSurface = mUVCCameraView.getHolder().getSurface();
                     mService.jniMethodsAndConstantsSet = true;
                     mUVCCameraView = (SurfaceView) findViewById(R.id.surfaceView);
                     mUVCCameraView.setVisibility(View.GONE);
                     mUVCCameraView.setVisibility(View.INVISIBLE);
+                    */
                     Intent intent = new Intent(this, StartIsoStreamService.class);
                     if (!libusb_is_initialized) intent.putExtra(StartIsoStreamService.INIT, "INIT");
                     intent.putExtra(StartIsoStreamService.ACCESS_LIBUSB, "Resume");
@@ -1722,9 +1724,11 @@ public class StartIsoStreamActivity extends Activity {
     }
 
     private void BildaufnahmeButtonClickEvent() {
+
         imageCapture = true;
         if (LIBUSB) JNA_I_LibUsb.INSTANCE.setImageCapture();
         displayMessage("Image saved");
+
     }
 
     //////////////////// Buttons  ///////////////
@@ -1760,7 +1764,6 @@ public class StartIsoStreamActivity extends Activity {
             log("Stopped");
             runningStream = null;
         }
-
     }
 
     private int flipToInt (boolean value) {
@@ -1804,7 +1807,6 @@ public class StartIsoStreamActivity extends Activity {
     }
 
     /// JNI JAVA VM ACCESS METHODS
-
     public void retrievedStreamActivityFrameFromLibUsb (byte[] streamData) {
         if (videoformat.equals("MJPEG") ) {
             try {
@@ -1877,16 +1879,13 @@ public class StartIsoStreamActivity extends Activity {
     //// JNI METHOD - YUV FRAME EXPECTED
     public void pictureVideoCaptureYUV (byte[] yuvData) {
         if (imageCapture) {
-
             YuvImage yuvImage = new YuvImage(yuvData, ImageFormat.YUY2, imageWidth, imageHeight, null);
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             yuvImage.compressToJpeg(new Rect(0, 0, imageWidth, imageHeight), 100, os);
             byte[] jpegByteArray = os.toByteArray();
-
             imageCapture = false;
             date = new Date() ;
             dateFormat = new SimpleDateFormat("dd.MM.yyyy___HH_mm_ss") ;
-
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
                 String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
                 file = new File(rootPath);
@@ -3017,6 +3016,11 @@ public class StartIsoStreamActivity extends Activity {
         @Override
         public void surfaceCreated(final SurfaceHolder holder) {
             log( "surfaceCreated:");
+            Canvas canvas = mUVCCameraView.getHolder().lockCanvas();
+            canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC);
+
+            mUVCCameraView.getHolder().unlockCanvasAndPost(canvas);
+
         }
 
         @Override

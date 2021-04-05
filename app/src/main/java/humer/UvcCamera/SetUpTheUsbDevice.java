@@ -1075,7 +1075,7 @@ public class SetUpTheUsbDevice extends Activity {
     }
 
     public void exitLibUsb () {
-        JNA_I_LibUsb.INSTANCE.exit();
+        JNA_I_LibUsb.INSTANCE.exit_native();
         l1ibusbAutoRunning = false;
     }
 
@@ -2026,7 +2026,7 @@ public class SetUpTheUsbDevice extends Activity {
             if(libusb_is_initialized) {
                 JNA_I_LibUsb.INSTANCE.stopStreaming();
                 JNA_I_LibUsb.INSTANCE.closeLibUsb();
-                JNA_I_LibUsb.INSTANCE.exit();
+                JNA_I_LibUsb.INSTANCE.exit_native();
                 try {
                     findCam();
                     openCam(true);
@@ -2206,7 +2206,7 @@ public class SetUpTheUsbDevice extends Activity {
                 JNA_I_LibUsb.INSTANCE.closeLibUsb();
                 mService.altSettingControl();
                 mService.libusb_InterfacesClaimed = false;
-                JNA_I_LibUsb.INSTANCE.exit();
+                JNA_I_LibUsb.INSTANCE.exit_native();
                 try {
                     findCam();
                     openCam(true);
