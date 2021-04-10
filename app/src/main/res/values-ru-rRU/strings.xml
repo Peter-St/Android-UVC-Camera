@@ -1,0 +1,505 @@
+<resources>
+
+    <string name="app_name">UVC_Camera</string>
+    <string name="packetsPerRequest">Пакеты по запросу</string>
+    <string name="activeUrbs">Активные блоки USB-запросов</string>
+    <string name="camStreamingAltSetting">Альтернативная настройка</string>
+    <string name="maxPacketSize">Максимальный размер пакета</string>
+    <string name="videoformat">Видео формат</string>
+    <string name="camFormatIndex">Индекс формата</string>
+    <string name="camFrameIndex">Индекс кадра</string>
+    <string name="imageWidth">Ширина изображения</string>
+    <string name="imageHeight">Высота изображения</string>
+    <string name="camFrameInterval">Интервал кадр</string>
+    <string name="LIBUSB">LibUsb</string>
+
+    <string name="intro"> <![CDATA[
+(Scroll- и Zoomfield) \n \n
+Здравствуйте, \п \п
+С помощью этого приложения вы можете подключаться к USB-камерам через свои собственные входные значения для создания драйвера камеры. \n \n
+В большинстве случаев вам не нужно настраивать собственный драйвер камеры, потому что другие приложения могут делать это автоматически, но для некоторых устройств Android это может помочь просматривать видео с USB-камер. \n \n
+Подробное описание доступно под кнопкой Read-Me. \n \n
+Ваши текущие значения:
+]]></string>
+
+
+    <string name="readme_0"><![CDATA[
+Поддержка LibUsb:
+ \n
+ LibUsb - это USB-разработка, которая используется для подключения и доступа к USB-устройствам. Эта библиотека была включена в это приложение и может быть включена или выключена, если вы хотите использовать ее или нет. Рекомендуется использовать поддержку LibUsb, потому что эта библиотека имеет лучшую производительность.
+\n \n
+ Основой этого приложения является FileTransfer с вашей камерой USB, а затем обработка изображений для различных форматов кадров этого FileTransfer.
+ \n
+ Чтобы лучше понять Filetransfer, класс видео Usb кратко объяснил:
+ \n
+ Файлы, которые вы получаете с вашей камеры, хранятся в небольших пакетах размером от 100 до 3000 байт. Эти файлы были затем добавлены вместе в один большой кадр. Когда кадр завершен, следующий кадр начинается также с добавления небольших файлов вместе.
+ \n
+ С помощью этого приложения вы можете редактировать или изменять размер этого Filetranfer, чтобы получить быстрее или медленнее. Размеры файловых пакетов размером от 100 до 3000 байт можно увеличить, если ваша камера их поддерживает. И вы можете выбрать, сколько файлов было передано вместе, чтобы замедлить или увеличить скорость USB.
+ \n
+ С разными настройками вы получите разные выходы. Вы можете посмотреть эти выходы в меню настройки или проверить их на экране потока.
+ \n
+ После передачи файла кадры будут преобразованы в JPEG и отображены на экране. Это приложение поддерживает захват изображения и видео.
+\n \n
+     ]]></string>
+
+    <string name="readme_1"><![CDATA[
+Камера потока через USB.
+\n \n
+Необходим кабель OTG или концентратор OTG
+\n
+Работает с устройствами Micro Usb и Usb Type C
+\n
+(Некоторые OTG-кабели не работают -> Я нашел такой, который является OTG-кабелем USB-C с внешним питанием и не работает ...)
+\n
+Поддерживаются все телефоны, планшеты со всеми чипсетами.
+\n
+Начиная с Android 9 Google допустил ошибку, предоставив USB-разрешения для USB-камер, поэтому это приложение может не работать на устройствах Android 9 +.
+\n
+-> https://issuetracker.google.com/issues/145082934
+\n
+\n
+
+Explaination: \n
+
+Прежде чем начать ввод значений камеры, ваше устройство Android должно обнаружить камеру:
+\n
+Таким образом, вы нажимаете кнопку <Установить USB-устройство>, а затем кнопку <Найти камеру>. Приложение спросит вас о предоставлении разрешений.
+\n
+
+    ]]></string>
+
+
+
+
+
+    <string name="readme_2"><![CDATA[
+На изображении выше камера была найдена, и разрешения для камеры предоставляются.
+Если камера не обнаружена, вы не можете использовать это приложение. (кроме функции WebRTC).
+\n
+Затем вы прочитали интерфейсы камеры, чтобы увидеть, поддерживает ли ваша камера UVC.
+Итак, вы нажимаете кнопку: <List Up The Camera>:
+\n
+    ]]></string>
+
+
+
+
+
+    <string name="readme_3"><![CDATA[
+Здесь вы можете увидеть успешное возвращение UVC-совместимой камеры. Первый интерфейс всегда является интерфейсом ControlInterface, а второй - всегда интерфейсом потока.
+\n
+Этот Controlinterface (1st) имеет только 1 конечную точку.
+\n
+StreamInterface может иметь более одной конечной точки (зависит от поддерживаемого разрешения камеры).
+\n
+Здесь конечная точка StreamInterface имеет maxPacketSize 3072 байта (вам понадобится такое значение позже).
+\n
+(Может случиться так, что у вашей камеры есть аудиовыход или выход Sd-Card, если вы видите более 2 интерфейсов для вашего устройства).
+\n
+Если эти две кнопки работают правильно, вы можете начать устанавливать значения UVC:
+\n
+Нажмите кнопку <Set Up With UVC Settings>, чтобы начать настройку камеры.
+\n
+У вас есть две причины: метод <manual> и метод <automatic>. Метод <automatic> пока находится на стадии бета-тестирования, поэтому если эта кнопка не работает, вы в следующий раз выберете метод <manual>!
+\n
+Автоматический метод должен находить рабочие значения камеры самостоятельно, но эти значения могут быть неоптимальными для передачи видео. Чтобы выбрать правильные значения для себя, вы нажимаете кнопку <Manual>.
+\n
+Ручной метод объяснил:
+\n
+Сначала вы выбираете максимальный размер пакета:
+\n
+Ваша камера может поддерживать больше значений для MaxPacketSize, поэтому вы можете протестировать каждое из них, которое работает лучше всего. Если ваш телефон использует набор микросхем Mediathek, вы можете выбрать наименьшее значение, но обычно вы выбираете самое высокое значение!
+\n
+Нажмите <Готово> и перейдите к выбору «Пакеты по запросу»:
+\n
+Выбранные вами значения определяют размер потока. Это означает, что если вы выберете более высокие значения (например, 32 или более), поток будет больше, но это может привести к ошибке на вашем устройстве или камере из-за слишком большого объема данных.
+\n
+Для начала вы выбираете 1 для этого значения. (Это будет определенно меньше, но вы можете поднять это позже) ..
+\n
+Следующая сцена показывает ActiveUrbs (Actice Usb Request Blocks) -> Это также значение, которое представляет размер потока камеры. Один блок из activeUrbs - это в точности maxPacketSize x packagesPerRequest. Вы можете выбрать 1 для начала (вам придется поднять его позже ..)
+\n
+Затем метод установки запросит у вас формат камеры, который поддерживает ваша камера. Если есть только один формат, вы нажимаете <Done>, если их было больше, вы выбираете один (неважно, какой) (в конечном итоге MJpeg, если присутствует) и нажимаете <Done>.
+\n
+Затем вам нужно выбрать разрешение камеры, которое ваша камера поддерживает с помощью формата (возможно, ваша камера поддерживает другие разрешения с другим форматом ...). Выберите что-нибудь ... и нажмите <Готово>
+\n
+Затем вы должны выбрать интервал кадра, который поддерживает ваша камера. Вы можете нажать на значение (может быть, самое низкое на экране, потому что оно лучше для установки).
+\n
+Вы можете сохранить свои записи сейчас:
+\n
+Нажмите <Да, Сохранить>, чтобы сохранить эти значения (вам не нужно снова запускать метод, если вы завершили настройку и нашли некоторые рабочие значения ...
+\n
+Если вы нажмете <ok> на следующем экране -> с камеры будет автоматически выбрано имя для сохранения файла. Вы также можете ввести уникальное имя или ввести значение, которое отображается внизу, чтобы выбрать существующий файл.
+\n
+    ]]></string>
+
+
+
+    <string name="readme_4"><![CDATA[
+На рисунке показан результат успешной настройки:
+\n
+Теперь вы хотите знать, работает ли ваша камера с выбранными вами значениями. Итак, вы начинаете связь с вашей камерой, нажимая кнопку <-Controltransfer-Testrun->, а затем выбираете первую запись <Video Probe-Commit Controls>.
+\n
+Затем приложение начинает инициализировать камеру с выбранными значениями!
+\n
+    ]]></string>
+
+    <string name="readme_5"><![CDATA[
+Если вы выводите то же, что и на картинке выше, вы успешно инициализировали камеру с выбранными значениями.
+\n
+Если вы не получите успешный вывод этой кнопки (Video Probe-Commit Control), вы не сможете использовать приложение с вашим телефоном / камерой.
+\n
+Если этот вывод завершится неудачно, вы можете связаться с разработчиком или попытаться снова запустить метод настройки Uvc вручную.
+\n
+Если вам это удалось, вы можете продолжить считывание кадров камеры (сначала только через текстовое представление, потому что ваши кадры могут быть повреждены или слишком короткими или
+\n
+Чтобы получить некоторые данные с вашей камеры, нажмите кнопку <-Controltransfer-Testrun-> еще раз, затем на <Testrun>, а затем на <One Frame>.
+\n
+Затем вы должны получить первый кадр данных с вашей камеры.
+\n
+    ]]></string>
+
+    <string name="readme_6"><![CDATA[
+Первые данные, которые были получены на картинке выше, были 39950 байт в этом случае.
+\n
+Это означает, что камера связывается с устройством Android и пытается отправить данные кадра. Но данные, полученные выше, намного меньше для изображения кадра с размером выборки 640 x 480. Таким образом, значения «ActiveUrbs» и «PacketsPerRequest» должны быть увеличены, чтобы получить лучший вывод: в моем случае до 16 пакетов и 16 Urbs ,
+\n
+Если вам не удалось получить данные кадра с камеры, повторно запустите метод ручной настройки и измените те же значения. (понизить maxPacketSize, поднять activeUrbs, поднять пакетыPerRequest).
+\n
+Чтобы поднять значения для (packagesPerRequest и activeUrbs), вы можете перезапустить метод настройки <manual> или нажать кнопку <Изменить / Сохранить значения камеры>
+\n
+Там вы должны только изменить значения для этих двух значений (packetPerRequest и activeUrbs).
+\n
+Если вы повторно запустите ручной метод, вы можете сохранить свои значения, нажав «Готово», или ввести новые значения, чтобы изменить их.
+\n
+    ]]></string>
+
+    <string name="readme_7"><![CDATA[
+Здесь вы видите, что кадр теперь становится больше -> 614400 -> это точно размер imageWidth x ImageHight x 2 -> 640 x 480 x 2.
+\n
+Таким образом, в показанном случае правильная настройка была найдена, и теперь настройка камеры завершена!
+\n
+Иногда камеры сжимают кадры, которые они отправляют на устройства, поэтому в некоторых случаях вы должны получать кадры с почти одинаковым размером друг от друга (используйте 2-й метод из меню testrun -> «Кадры на 5 секунд»)
+\n
+Когда все кадры одинаково (или почти), а также все методы, описанные выше, были успешными, вы успешно завершили настройку.
+\n
+Вам наверняка придется потратить больше времени, чтобы выяснить правильные значения, но если вы их нашли, сохраните их, и позже вы сможете легко восстановить их в любое время.
+\n
+Если вы хотите удалить некоторые файлы сохранения, вам придется сделать это вручную с помощью файлового менеджера (но только этот вам больше не нужен)
+\n
+\n
+К кнопке «Рамки за 5 секунд»:
+\n
+Посмотрите на свои кадры: если они все одинаковые и достаточно большие, вы можете приступить к запуску потока камеры с помощью кнопки <Start the camera stream> на главном экране.
+\n
+\n
+В противном случае вы должны отредактировать некоторые значения для вашей камеры: возможно -PacketsPerRequest- или -ActiveUrbs-, или что-то еще.
+\n
+\n
+Нажмите кнопку <Start Transmission> -> <Start the Camera>, чтобы начать передачу.
+\n
+Если все работает, вы можете посмотреть видео с вашей камеры.
+\n
+\n
+
+Описание значений камеры:
+\n
+Alt-настройки:
+\n
+Alt-Setting - это особая настройка камеры, которая определяет, какой интерфейс вашей камеры будет использоваться для изохронной передачи данных.
+\n
+\n
+
+Максимальный-Packet-Size:
+\n
+Каждый Alt-Setting имеет свой максимальный размер пакета. Максимальный размер пакета - это число байтов, которое определяет, сколько байтов содержится в каждом пакете максимального числа передачи iso.
+\n
+\n
+
+Format-индекс:
+\n
+Ваша камера может поддерживать разные форматы индексов. Это может быть MJPEG, или несжатый (YUV) или ...
+\n
+\n
+Videoformat
+\n
+Это вспомогательное значение, которое должно быть установлено на выбранный вами Format-Index. Вы должны ввести YUV, или MJPEG, или ...
+\n
+Frame-Index:
+\n
+Каждый индекс-формат вашей камеры может иметь разные индексы кадров. Это число, которое представляет разрешение камеры (1920x1020 или 640x480)
+\n
+Ширина изображения, высота изображения:
+\n
+Это вспомогательные значения, которые должны быть установлены в выбранном вами Frame-Index. Например: ширина изображения = 640 и высота изображения = 480
+\n
+\n
+Рамка-Interval:
+\n
+
+Интервал кадра - это число, которое определяет, на сколько нано секунд будет отправляться каждый новый кадр с камеры на ваше устройство.
+\n
+Например: 666666 означает, что каждые 0,066 секунд отправляется кадр. 666666 = 15 кадров в секунду.
+\n
+333333 - 30 кадров в секунду
+\n
+\n
+Пакеты-Per-запроса:
+\n
+Это значение, которое определяет, сколько пакетов будет отправлено с вашей камеры на ваше устройство за один цикл передачи.
+\n
+\n
+Активный-Urbs:
+\n
+И это значение определяет, сколько циклов работает параллельно друг другу в потоке данных между камерой и устройством Android.
+\n
+\n
+Эта программа находится на GitHub по следующей ссылке:
+\n
+https://github.com/Peter-St/Android-UVC-Camera/
+    ]]></string>
+
+    <string name="menu_item_lower_resolution">LowerResolution</string>
+
+    <string name="descriptor_read_frames_5_sec">The Camera Stream will be read out for 5 seconds!</string>
+
+
+
+    <string name="menu_item_text">Text</string>
+    <string name="menu_item_email">Email</string>
+
+    <string name="sample_activity_title">%1$s Sample</string>
+    <string name="selected_menu_item">Menu item: %1$s</string>
+
+    <string name="what_is_the_name_of_your_puppy">What is the name of your puppy?</string>
+    <string name="visibility">Visibility</string>
+
+    <string-array name="title_array">
+        <item>Position</item>
+        <item>Style I</item>
+        <item>Style II</item>
+        <item>Click Callback</item>
+        <item>Menu Items</item>
+    </string-array>
+
+    <string-array name="description_array">
+        <item>Set fabGravity in order to position the view in your view group</item>
+        <item>Style up FAB and change the appearance of the menu items as a group</item>
+        <item>Style up FAB and change the appearance of the menu items individually</item>
+        <item>Register a callback to receive the click events of the menu items</item>
+        <item>Update dynamically the title and visibility of your menu items</item>
+    </string-array>
+
+    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, utamur efficiantur no vim, mei iisque appetere electram ex. Cu eam tamquam commune intellegebat, id pri nibh vidisse. Has at dolore legendos, ei erant quaeque mnesarchum mei. Amet mediocritatem est et. Nam eu nisl dolor dolorum, ei omnium honestatis est. Nullam denique mei no, et vim brute scaevola sententiae, vero commune id cum.\n\nQuod rationibus has cu, eu sed dicta clita oblique, pro cu tibique consectetuer. Vix at everti vivendum scriptorem, ne eam utinam iracundia. Sumo affert regione ea sea, an integre utroque nam. Te duo alia dicam, inani reformidans sed no. Mel et tation nullam.\n\nTota periculis mea ut, cum ad meliore urbanitas. No per suas facer liberavisse. Eam ullum tritani instructior ea, at qui omnium noluisse, ei nec modus commune mediocrem. Quot admodum qui ex, ei tempor atomorum eam, et vel impetus alienum. Has eros nullam tritani eu, cum ea laoreet iudicabit dissentiet, ea est assum voluptatibus comprehensam. Sed graece volumus consulatu id, ei sonet urbanitas nam.</string>
+
+    <string name="settings_name" translatable="false">Settings</string>
+    <string name="start_description">Click the button below to initiate a WebRTC video call.</string>
+    <string name="join_description">Go to https://appr.tc/ to join the room just created during the step above, using its random room ID displayed in this app.</string>
+    <string name="disconnect_call">Disconnect Call</string>
+    <string name="favorites">Favorites</string>
+    <string name="no_favorites">No favorites</string>
+    <string name="invalid_url_title">Invalid URL</string>
+    <string name="invalid_url_text">The URL or room name you entered resulted in an invalid URL: %1$s
+    </string>
+    <string name="channel_error_title">Connection error</string>
+    <string name="connecting_to">Connecting to: %1$s</string>
+    <string name="missing_url">FATAL ERROR: Missing URL to connect to.</string>
+    <string name="camera2_texture_only_error">Camera2 only supports capturing to texture. Either disable Camera2 or enable capturing to texture in the options.</string>
+    <string name="ok">OK</string>
+    <string name="switch_camera">Switch front/back camera</string>
+    <string name="capture_format_change_text">Slide to change capture format</string>
+    <string name="muted">Muted</string>
+    <string name="toggle_debug">Toggle debug view</string>
+    <string name="toggle_mic">Toggle microphone on/off</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_loopback">Loopback connection</string>
+    <string name="connect_description">Connect to the room</string>
+    <string name="add_favorite_description">Add favorite</string>
+    <string name="format_description">%1$dx%2$d @ %3$d fps</string>
+
+    <!-- Settings strings. -->
+    <string name="pref_room_key">room_preference</string>
+    <string name="pref_room_list_key">room_list_preference</string>
+
+    <string name="pref_videosettings_key">video_settings_key</string>
+    <string name="pref_videosettings_title">WebRTC video settings.</string>
+
+    <string name="pref_videocall_key">videocall_preference</string>
+    <string name="pref_videocall_title">Video call.</string>
+    <string name="pref_videocall_dlg">Enable video in a call.</string>
+    <string name="pref_videocall_default">true</string>
+
+    <string name="pref_screencapture_key">screencapture_preference</string>
+    <string name="pref_screencapture_title">Use screencapture.</string>
+    <string name="pref_screencapture_default">false</string>
+
+    <string name="pref_camera2_key">camera2_preference</string>
+    <string name="pref_camera2_title">Use Camera2.</string>
+    <string name="pref_camera2_default">true</string>
+    <string name="pref_camera2_not_supported">Not supported on this device.</string>
+
+    <string name="pref_resolution_key">resolution_preference</string>
+    <string name="pref_resolution_title">Video resolution.</string>
+    <string name="pref_resolution_dlg">Enter AppRTC local video resolution.</string>
+    <string name="pref_resolution_default">Default</string>
+
+    <string name="pref_fps_key">fps_preference</string>
+    <string name="pref_fps_title">Camera fps.</string>
+    <string name="pref_fps_dlg">Enter local camera fps.</string>
+    <string name="pref_fps_default">Default</string>
+
+    <string name="pref_capturequalityslider_key">capturequalityslider_preference</string>
+    <string name="pref_capturequalityslider_title">Capture quality slider.</string>
+    <string name="pref_capturequalityslider_dlg">Enable slider for changing capture quality.</string>
+    <string name="pref_capturequalityslider_default">false</string>
+
+    <string name="pref_maxvideobitrate_key">maxvideobitrate_preference</string>
+    <string name="pref_maxvideobitrate_title">Maximum video bitrate setting.</string>
+    <string name="pref_maxvideobitrate_dlg">Maximum video bitrate setting.</string>
+    <string name="pref_maxvideobitrate_default">Default</string>
+
+    <string name="pref_maxvideobitratevalue_key">maxvideobitratevalue_preference</string>
+    <string name="pref_maxvideobitratevalue_title">Video encoder maximum bitrate.</string>
+    <string name="pref_maxvideobitratevalue_dlg">Enter video encoder maximum bitrate in kbps.</string>
+    <string name="pref_maxvideobitratevalue_default">1700</string>
+
+    <string name="pref_videocodec_key">videocodec_preference</string>
+    <string name="pref_videocodec_title">Default video codec.</string>
+    <string name="pref_videocodec_dlg">Select default video codec.</string>
+    <string name="pref_videocodec_default">VP8</string>
+
+    <string name="pref_hwcodec_key">hwcodec_preference</string>
+    <string name="pref_hwcodec_title">Video codec hardware acceleration.</string>
+    <string name="pref_hwcodec_dlg">Use hardware accelerated video codec (if available).</string>
+    <string name="pref_hwcodec_default">true</string>
+
+    <string name="pref_capturetotexture_key">capturetotexture_preference</string>
+    <string name="pref_capturetotexture_title">Video capture to surface texture.</string>
+    <string name="pref_capturetotexture_dlg">Capture video to textures (if available).</string>
+    <string name="pref_capturetotexture_default">true</string>
+
+    <string name="pref_flexfec_key">flexfec_preference</string>
+    <string name="pref_flexfec_title">Codec-agnostic Flexible FEC.</string>
+    <string name="pref_flexfec_dlg">Enable FlexFEC.</string>
+    <string name="pref_flexfec_default">false</string>
+
+    <string name="pref_value_enabled">Enabled</string>
+    <string name="pref_value_disabled">Disabled</string>
+
+    <string name="pref_audiosettings_key">audio_settings_key</string>
+    <string name="pref_audiosettings_title">WebRTC audio settings.</string>
+
+    <string name="pref_startaudiobitrate_key">startaudiobitrate_preference</string>
+    <string name="pref_startaudiobitrate_title">Audio bitrate setting.</string>
+    <string name="pref_startaudiobitrate_dlg">Audio bitrate setting.</string>
+    <string name="pref_startaudiobitrate_default">Default</string>
+
+    <string name="pref_startaudiobitratevalue_key">startaudiobitratevalue_preference</string>
+    <string name="pref_startaudiobitratevalue_title">Audio codec bitrate.</string>
+    <string name="pref_startaudiobitratevalue_dlg">Enter audio codec bitrate in kbps.</string>
+    <string name="pref_startaudiobitratevalue_default">32</string>
+
+    <string name="pref_audiocodec_key">audiocodec_preference</string>
+    <string name="pref_audiocodec_title">Default audio codec.</string>
+    <string name="pref_audiocodec_dlg">Select default audio codec.</string>
+    <string name="pref_audiocodec_default">OPUS</string>
+
+    <string name="pref_noaudioprocessing_key">audioprocessing_preference</string>
+    <string name="pref_noaudioprocessing_title">Disable audio processing.</string>
+    <string name="pref_noaudioprocessing_dlg">Disable audio processing pipeline.</string>
+    <string name="pref_noaudioprocessing_default">false</string>
+
+    <string name="pref_aecdump_key">aecdump_preference</string>
+    <string name="pref_aecdump_title">Create aecdump.</string>
+    <string name="pref_aecdump_dlg">Enable diagnostic audio recordings.</string>
+    <string name="pref_aecdump_default">false</string>
+
+    <string name="pref_opensles_key">opensles_preference</string>
+    <string name="pref_opensles_title">Use OpenSL ES for audio playback.</string>
+    <string name="pref_opensles_dlg">Use OpenSL ES for audio playback.</string>
+    <string name="pref_opensles_default">false</string>
+
+    <string name="pref_disable_built_in_aec_key">disable_built_in_aec_preference</string>
+    <string name="pref_disable_built_in_aec_title">Disable hardware AEC.</string>
+    <string name="pref_disable_built_in_aec_dlg">Disable hardware AEC.</string>
+    <string name="pref_disable_built_in_aec_default">false</string>
+    <string name="pref_built_in_aec_not_available">Hardware AEC is not available</string>
+
+    <string name="pref_disable_built_in_agc_key">disable_built_in_agc_preference</string>
+    <string name="pref_disable_built_in_agc_title">Disable hardware AGC.</string>
+    <string name="pref_disable_built_in_agc_dlg">Disable hardware AGC.</string>
+    <string name="pref_disable_built_in_agc_default">false</string>
+    <string name="pref_built_in_agc_not_available">Hardware AGC is not available</string>
+
+    <string name="pref_disable_built_in_ns_key">disable_built_in_ns_preference</string>
+    <string name="pref_disable_built_in_ns_title">Disable hardware NS.</string>
+    <string name="pref_disable_built_in_ns_dlg">Disable hardware NS.</string>
+    <string name="pref_disable_built_in_ns_default">false</string>
+    <string name="pref_built_in_ns_not_available">Hardware NS is not available</string>
+
+    <string name="pref_enable_level_control_key">enable_level_control_preference</string>
+    <string name="pref_enable_level_control_title">Enable level control.</string>
+    <string name="pref_enable_level_control_default">false</string>
+
+    <string name="pref_disable_webrtc_agc_and_hpf_key">disable_webrtc_agc_and_hpf_preference</string>
+    <string name="pref_disable_webrtc_agc_and_hpf_title">Disable WebRTC AGC and HPF.</string>
+    <string name="pref_disable_webrtc_agc_default">false</string>
+
+    <string name="pref_speakerphone_key">speakerphone_preference</string>
+    <string name="pref_speakerphone_title">Speakerphone.</string>
+    <string name="pref_speakerphone_dlg">Speakerphone.</string>
+    <string name="pref_speakerphone_default">auto</string>
+
+    <string name="pref_datasettings_key">data_settings_key</string>
+    <string name="pref_datasettings_title">WebRTC data channel settings.</string>
+
+    <string name="pref_enable_datachannel_key">enable_datachannel_preference</string>
+    <string name="pref_enable_datachannel_title">Enable datachannel.</string>
+    <string name="pref_enable_datachannel_default" translatable="false">true</string>
+
+    <string name="pref_ordered_key">ordered_preference</string>
+    <string name="pref_ordered_title">Order messages.</string>
+    <string name="pref_ordered_default" translatable="false">true</string>
+
+    <string name="pref_data_protocol_key">Subprotocol</string>
+    <string name="pref_data_protocol_title">Subprotocol.</string>
+    <string name="pref_data_protocol_dlg">Enter subprotocol.</string>
+    <string name="pref_data_protocol_default" translatable="false"></string>
+
+    <string name="pref_negotiated_key">negotiated_preference</string>
+    <string name="pref_negotiated_title">Negotiated.</string>
+    <string name="pref_negotiated_default" translatable="false">false</string>
+
+    <string name="pref_max_retransmit_time_ms_key">max_retransmit_time_ms_preference</string>
+    <string name="pref_max_retransmit_time_ms_title">Max delay to retransmit.</string>
+    <string name="pref_max_retransmit_time_ms_dlg">Enter max delay to retransmit (in ms).</string>
+    <string name="pref_max_retransmit_time_ms_default" translatable="false">-1</string>
+
+    <string name="pref_max_retransmits_key">max_retransmits_preference</string>
+    <string name="pref_max_retransmits_title">Max attempts to retransmit.</string>
+    <string name="pref_max_retransmits_dlg">Enter max attempts to retransmit.</string>
+    <string name="pref_max_retransmits_default" translatable="false">-1</string>
+
+    <string name="pref_data_id_key">data_id_preference</string>
+    <string name="pref_data_id_title">Data id.</string>
+    <string name="pref_data_id_dlg">Enter data channel id.</string>
+    <string name="pref_data_id_default" translatable="false">-1</string>
+
+    <string name="pref_miscsettings_key">misc_settings_key</string>
+    <string name="pref_miscsettings_title">Miscellaneous settings.</string>
+
+    <string name="pref_room_server_url_key">room_server_url_preference</string>
+    <string name="pref_room_server_url_title">Room server URL.</string>
+    <string name="pref_room_server_url_dlg">Enter a room server URL.</string>
+    <string name="pref_room_server_url_default" translatable="false">https://appr.tc</string>
+
+    <string name="pref_displayhud_key">displayhud_preference</string>
+    <string name="pref_displayhud_title">Display call statistics.</string>
+    <string name="pref_displayhud_dlg">Display call statistics.</string>
+    <string name="pref_displayhud_default" translatable="false">false</string>
+
+    <string name="pref_tracing_key">tracing_preference</string>
+    <string name="pref_tracing_title">Debug performance tracing.</string>
+    <string name="pref_tracing_dlg">Debug performance tracing.</string>
+
+    <string name="room_id_caption">ROOM ID:</string>
+</resources>

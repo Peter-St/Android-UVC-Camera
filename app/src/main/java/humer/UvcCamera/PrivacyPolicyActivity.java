@@ -24,14 +24,8 @@ package humer.UvcCamera;
 
 
 import android.app.Activity;
-import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.webkit.WebView;
-
-import com.franmontiel.localechanger.utils.ActivityRecreationHelper;
-
-import java.util.Locale;
 
 public class PrivacyPolicyActivity extends Activity {
     WebView web;

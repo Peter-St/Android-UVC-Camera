@@ -23,25 +23,23 @@ This Repository is provided "as is", without warranties of any kind.
 package humer.UvcCamera;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 
 import android.os.Handler;
-import android.support.annotation.NonNull;
+import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AppCompatDelegate;
-import android.support.v7.app.LocaleChangerAppCompatDelegate;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -50,17 +48,17 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
-import com.franmontiel.localechanger.utils.ActivityRecreationHelper;
+import com.freeapps.hosamazzam.androidchangelanguage.MyContextWrapper;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
+
 
 import noman.zoomtextview.ZoomTextView;
 
 public class Main extends AppCompatActivity {
+
 
     public static int camStreamingAltSetting;
     public static int camFormatIndex;
@@ -108,29 +106,21 @@ public class Main extends AppCompatActivity {
     };
 
     // Language Support
-    private LocaleChangerAppCompatDelegate localeChangerAppCompatDelegate;
-
-    @NonNull
+    private String LANG_CURRENT = "en";
     @Override
-    public AppCompatDelegate getDelegate() {
-        if (localeChangerAppCompatDelegate == null) {
-            localeChangerAppCompatDelegate = new LocaleChangerAppCompatDelegate(super.getDelegate());
-        }
+    protected void attachBaseContext(Context newBase) {
 
-        return localeChangerAppCompatDelegate;
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(newBase);
+        LANG_CURRENT = preferences.getString("Language", "en");
+
+        super.attachBaseContext(MyContextWrapper.wrap(newBase, LANG_CURRENT));
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
+
         ImageButton language = findViewById(R.id.language);
         LinearLayout sv_language_chooser = findViewById(R.id.languageChooser);
         sv_language_chooser.setEnabled(false);
@@ -155,6 +145,9 @@ public class Main extends AppCompatActivity {
         } else if (currentLanguage.getLanguage().equals("zh")) {
             language.setImageResource(R.mipmap.country_china);
         }
+
+
+
         tv = (ZoomTextView) findViewById(R.id.textDarstellung);
         if (camFrameInterval == 0) tv.setText(getResources().getString(R.string.intro) + "\n\n" + getResources().getString(R.string.packetsPerRequest) + " = " + packetsPerRequest + "\n" + getResources().getString(R.string.activeUrbs) + " = " + activeUrbs +
                 "\n" + getResources().getString(R.string.camStreamingAltSetting) + " = " + camStreamingAltSetting + "\n" + getResources().getString(R.string.maxPacketSize) + " = " + maxPacketSize + "\n" + getResources().getString(R.string.videoformat) + " = " + videoformat +
@@ -535,116 +528,153 @@ public class Main extends AppCompatActivity {
     }
 
     // Language Buttons Methods
+
+    public void changeLang(Context context, String lang) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("Language", lang);
+        editor.apply();
+    }
+
     public void onAmericaLanguageSelected(View view) {
+        Locale currentLanguage = getResources().getConfiguration().locale;;
+        if (currentLanguage.getLanguage().equals("en")) {
+            disableLanguageChooser();
+            displayIntro();
+            return;
+            //language.setImageResource(R.mipmap.country_america);
+        }
         String languageToLoad  = "en"; // your language
-        Locale locale = new Locale(languageToLoad);
-        Locale.setDefault(locale);
-        Configuration config = new Configuration();
-        config.locale = locale;
-        getBaseContext().getResources().updateConfiguration(config,
-                getBaseContext().getResources().getDisplayMetrics());
-        ActivityRecreationHelper.recreate(this, true);
+        changeLang(Main.this, languageToLoad);
+        finish();
+        startActivity(new Intent(Main.this, Main.class));
     }
 
     public void onGermanyLanguageSelected(View view) {
+        Locale currentLanguage = getResources().getConfiguration().locale;;
+        if (currentLanguage.getLanguage().equals("de")) {
+            disableLanguageChooser();
+            displayIntro();
+            return;
+            //language.setImageResource(R.mipmap.country_america);
+        }
         String languageToLoad  = "de"; // your language
-        Locale locale = new Locale(languageToLoad);
-        Locale.setDefault(locale);
-        Configuration config = new Configuration();
-        config.locale = locale;
-        getBaseContext().getResources().updateConfiguration(config,
-                getBaseContext().getResources().getDisplayMetrics());
-        //LocaleChanger.setLocale(new Locale("de", "DE"));
-        ActivityRecreationHelper.recreate(this, true);
-        log("German Button Click Event");
+        changeLang(Main.this, languageToLoad);
+        finish();
+        startActivity(new Intent(Main.this, Main.class));
+
     }
 
     public void onItalyLanguageSelected(View view) {
+        Locale currentLanguage = getResources().getConfiguration().locale;;
+        if (currentLanguage.getLanguage().equals("it")) {
+            disableLanguageChooser();
+            displayIntro();
+            return;
+            //language.setImageResource(R.mipmap.country_america);
+        }
         String languageToLoad  = "it"; // your language
-        Locale locale = new Locale(languageToLoad);
-        Locale.setDefault(locale);
-        Configuration config = new Configuration();
-        config.locale = locale;
-        getBaseContext().getResources().updateConfiguration(config,
-                getBaseContext().getResources().getDisplayMetrics());
-        ActivityRecreationHelper.recreate(this, true);
+        changeLang(Main.this, languageToLoad);
+        finish();
+        startActivity(new Intent(Main.this, Main.class));
     }
 
     public void onJapanLanguageSelected(View view) {
+        Locale currentLanguage = getResources().getConfiguration().locale;;
+        if (currentLanguage.getLanguage().equals("ja")) {
+            disableLanguageChooser();
+            displayIntro();
+            return;
+            //language.setImageResource(R.mipmap.country_america);
+        }
         String languageToLoad  = "ja"; // your language
-        Locale locale = new Locale(languageToLoad);
-        Locale.setDefault(locale);
-        Configuration config = new Configuration();
-        config.locale = locale;
-        getBaseContext().getResources().updateConfiguration(config,
-                getBaseContext().getResources().getDisplayMetrics());
-        ActivityRecreationHelper.recreate(this, true);
+        changeLang(Main.this, languageToLoad);
+        finish();
+        startActivity(new Intent(Main.this, Main.class));
     }
 
     public void onKoreaLanguageSelected(View view) {
+        Locale currentLanguage = getResources().getConfiguration().locale;;
+        if (currentLanguage.getLanguage().equals("ko")) {
+            disableLanguageChooser();
+            displayIntro();
+            return;
+            //language.setImageResource(R.mipmap.country_america);
+        }
         String languageToLoad  = "ko"; // your language
-        Locale locale = new Locale(languageToLoad);
-        Locale.setDefault(locale);
-        Configuration config = new Configuration();
-        config.locale = locale;
-        getBaseContext().getResources().updateConfiguration(config,
-                getBaseContext().getResources().getDisplayMetrics());
-        ActivityRecreationHelper.recreate(this, true);
+        changeLang(Main.this, languageToLoad);
+        finish();
+        startActivity(new Intent(Main.this, Main.class));
     }
 
     public void onPortugalLanguageSelected(View view) {
+        Locale currentLanguage = getResources().getConfiguration().locale;;
+        if (currentLanguage.getLanguage().equals("pt")) {
+            disableLanguageChooser();
+            displayIntro();
+            return;
+            //language.setImageResource(R.mipmap.country_america);
+        }
         String languageToLoad  = "pt"; // your language
-        Locale locale = new Locale(languageToLoad);
-        Locale.setDefault(locale);
-        Configuration config = new Configuration();
-        config.locale = locale;
-        getBaseContext().getResources().updateConfiguration(config,
-                getBaseContext().getResources().getDisplayMetrics());
-        ActivityRecreationHelper.recreate(this, true);
+        changeLang(Main.this, languageToLoad);
+        finish();
+        startActivity(new Intent(Main.this, Main.class));
     }
 
     public void onRussiaLanguageSelected(View view) {
+        Locale currentLanguage = getResources().getConfiguration().locale;;
+        if (currentLanguage.getLanguage().equals("ru")) {
+            disableLanguageChooser();
+            displayIntro();
+            return;
+            //language.setImageResource(R.mipmap.country_america);
+        }
         String languageToLoad  = "ru"; // your language
-        Locale locale = new Locale(languageToLoad);
-        Locale.setDefault(locale);
-        Configuration config = new Configuration();
-        config.locale = locale;
-        getBaseContext().getResources().updateConfiguration(config,
-                getBaseContext().getResources().getDisplayMetrics());
-        ActivityRecreationHelper.recreate(this, true);
+        changeLang(Main.this, languageToLoad);
+        finish();
+        startActivity(new Intent(Main.this, Main.class));
     }
 
     public void onThaiLanguageSelected(View view) {
+        Locale currentLanguage = getResources().getConfiguration().locale;;
+        if (currentLanguage.getLanguage().equals("th")) {
+            disableLanguageChooser();
+            displayIntro();
+            return;
+            //language.setImageResource(R.mipmap.country_america);
+        }
         String languageToLoad  = "th"; // your language
-        Locale locale = new Locale(languageToLoad);
-        Locale.setDefault(locale);
-        Configuration config = new Configuration();
-        config.locale = locale;
-        getBaseContext().getResources().updateConfiguration(config,
-                getBaseContext().getResources().getDisplayMetrics());
-        ActivityRecreationHelper.recreate(this, true);
+        changeLang(Main.this, languageToLoad);
+        finish();
+        startActivity(new Intent(Main.this, Main.class));
     }
 
     public void onChinaLanguageSelected(View view) {
+        Locale currentLanguage = getResources().getConfiguration().locale;;
+        if (currentLanguage.getLanguage().equals("zh")) {
+            disableLanguageChooser();
+            displayIntro();
+            return;
+            //language.setImageResource(R.mipmap.country_america);
+        }
         String languageToLoad  = "zh"; // your language
-        Locale locale = new Locale(languageToLoad);
-        Locale.setDefault(locale);
-        Configuration config = new Configuration();
-        config.locale = locale;
-        getBaseContext().getResources().updateConfiguration(config,
-                getBaseContext().getResources().getDisplayMetrics());
-        ActivityRecreationHelper.recreate(this, true);
+        changeLang(Main.this, languageToLoad);
+        finish();
+        startActivity(new Intent(Main.this, Main.class));
     }
 
     public void onDefaultLanguageSelected(View view) {
+        Locale currentLanguage = getResources().getConfiguration().locale;;
+        if (currentLanguage.getLanguage().equals("en")) {
+            disableLanguageChooser();
+            displayIntro();
+            return;
+            //language.setImageResource(R.mipmap.country_america);
+        }
         String languageToLoad  = "en"; // your language
-        Locale locale = new Locale(languageToLoad);
-        Locale.setDefault(locale);
-        Configuration config = new Configuration();
-        config.locale = locale;
-        getBaseContext().getResources().updateConfiguration(config,
-                getBaseContext().getResources().getDisplayMetrics());
-        ActivityRecreationHelper.recreate(this, true);
+        changeLang(Main.this, languageToLoad);
+        finish();
+        startActivity(new Intent(Main.this, Main.class));
     }
 
     // Other Methods
@@ -799,6 +829,7 @@ public class Main extends AppCompatActivity {
                 (10000000 / camFrameInterval) + "\nLibUsb = " + LIBUSB  +  "" +
                 "\n\nYou can edit these Settings by clicking on (Set Up The Camera Device).\nYou can then save the values and later restore them.");
     }
+
 
 
 }

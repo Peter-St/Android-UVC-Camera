@@ -2,54 +2,34 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 apply plugin: 'com.android.application'
 
-
 android {
+    buildToolsVersion '27.0.3'
     compileSdkVersion 27
     defaultConfig {
         applicationId "humer.uvc_camera"
         minSdkVersion 15
-        versionCode 88
-        versionName "1.9.1"
+        versionCode 97
+        versionName "1.9.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        ndk.debugSymbolLevel = 'FULL'
     }
     buildTypes {
         customDebugType {
             debuggable false
         }
-
-        release {
-            minifyEnabled false
-            shrinkResources false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            consumerProguardFiles 'proguard-project.txt'
-        }
-    }
-    compileOptions {
-        sourceCompatibility = '1.8'
-        targetCompatibility = '1.8'
-    }
-    // TODO silences:
-    // [InvalidPackage]: not included in Android: java.awt. Referenced from com.sun.jna.Native.AWT.
-    lintOptions {
-        abortOnError false
-    }
-    buildToolsVersion '27.0.3'
-    configurations.all {
-        resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.2'
-    }
-    configurations.all {
-        resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.2'
-    }
-
-    buildTypes {
         release {
             externalNativeBuild {
                 ndkBuild {
                     arguments "BUILD_TYPE=release"
                 }}
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources false
+
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            consumerProguardFiles 'proguard-project.txt'
+            ndk.debugSymbolLevel = 'FULL'
+
             debuggable false
             jniDebuggable false
         }
@@ -63,6 +43,38 @@ android {
             }
         }
     }
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
+    // TODO silences:
+    // [InvalidPackage]: not included in Android: java.awt. Referenced from com.sun.jna.Native.AWT.
+    lintOptions {
+        abortOnError false
+    }
+
+    applicationVariants.all { variant ->
+        if (variant.getBuildType().isMinifyEnabled()) {
+            variant.assemble.doLast {
+                copy {
+                    from variant.mappingFile
+                    into "${rootDir}/proguardTools"
+                    rename { String fileName ->
+                        "mapping-${variant.name}.txt"
+                    }
+                }
+            }
+        }
+    }
+
+    configurations.all {
+        resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.2'
+    }
+    configurations.all {
+        resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.2'
+    }
+
+
     sourceSets {
         main {
             jniLibs.srcDir 'src/main/libs'
@@ -173,10 +185,6 @@ dependencies {
 
     //fading TextView
     implementation 'com.tomer:fadingtextview:2.6'
-
-    // Local Changer Lib  (Language Support)
-    //implementation 'com.github.franmontiel:LocaleChanger:1.1'
-
 }
 
 

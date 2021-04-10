@@ -28,8 +28,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.franmontiel.localechanger.utils.ActivityRecreationHelper;
-
 import java.util.Locale;
 
 public class ReadMeActivity extends Activity {
@@ -53,7 +51,6 @@ public class ReadMeActivity extends Activity {
         config.locale = locale;
         getBaseContext().getResources().updateConfiguration(config,
                 getBaseContext().getResources().getDisplayMetrics());
-        //ActivityRecreationHelper.recreate(this, true);
 
         setContentView(R.layout.layout_readme);
     }

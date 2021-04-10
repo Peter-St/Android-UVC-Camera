@@ -28,3 +28,15 @@
 -keep class de.tavendo.autobahn.**  { *; }
 -keep class de.tavendo.autobanh.**  { *; }
 -keepclasseswithmembernames class * { native <methods>; }
+
+# Play Console Warning
+-keep class humer.UvcCamera.** { *; }
+-dontusemixedcaseclassnames
+-dontskipnonpubliclibraryclasses
+-verbose
+-keep class com.example.androidthings.videortc.** { *; }
+-keep class com.freeapps.hosamazzam.androidchangelanguage.** { *; }
+-keep class com.sample.timelapse.** { *; }
+-keep class noman.zoomtextview.** { *; }
+
+-printmapping mapping.txt
