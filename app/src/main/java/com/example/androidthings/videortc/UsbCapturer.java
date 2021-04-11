@@ -22,6 +22,7 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
+import android.os.Build;
 import android.os.Environment;
 
 import android.support.annotation.ColorInt;
@@ -241,8 +242,10 @@ public class UsbCapturer implements VideoCapturer {
                     if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
                     if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
                     int bcdUVC_int = 0;
+                    int lowAndroid = 0;
+                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR1) lowAndroid = 1;
                     JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                            camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, 0, bcdUVC_int);
+                            camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, 0, bcdUVC_int, lowAndroid);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -379,8 +382,10 @@ public class UsbCapturer implements VideoCapturer {
             int bcdUVC_int = 0;
             if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
             //camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
+            int lowAndroid = 0;
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR1) lowAndroid = 1;
             JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                    camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1, videoformat, 0, bcdUVC_int);
+                    camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1, videoformat, 0, bcdUVC_int, lowAndroid);
             JNA_I_LibUsb.INSTANCE.initStreamingParms(FD);
             return;
         }

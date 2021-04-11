@@ -102,6 +102,7 @@ import humer.UvcCamera.UsbIso64.USBIso;
 import humer.UvcCamera.UsbIso64.usbdevice_fs_util;
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
+import noman.zoomtextview.ZoomTextView;
 
 import static java.lang.Integer.parseInt;
 
@@ -246,7 +247,8 @@ public class StartIsoStreamActivity extends Activity {
     public native void JniIsoStreamActivity(int a, int b);
     public native void JniSetSurfaceView(final Surface surface);
     public native void JniSetSurfaceYuv(final Surface surface);
-
+       // Bitmap Method
+    public native void frameToBitmap(Bitmap bitmap);
     public native void YUY2pixeltobmp(byte[] uyvy_data, Bitmap bitmap, int im_width, int im_height);
     public native void UYVYpixeltobmp(byte[] uyvy_data, Bitmap bitmap, int im_width, int im_height);
 
@@ -1420,8 +1422,8 @@ public class StartIsoStreamActivity extends Activity {
         else {
             ((Button) findViewById(R.id.startStream)).setEnabled(false);
             stopStreamButton.getBackground().setAlpha(180);  // 25% transparent
+            stopStreamButton.setEnabled(true);
             startStream.getBackground().setAlpha(20);  // 95% transparent
-            ((Button) findViewById(R.id.stopKameraknopf)).setEnabled(true);
             photoButton.setEnabled(true);
             photoButton.setBackgroundResource(R.drawable.bg_button_bildaufnahme);
             videoButton.setEnabled(true);
@@ -1443,6 +1445,10 @@ public class StartIsoStreamActivity extends Activity {
                         e.printStackTrace();
                     }
                 }
+                int lowAndroid = 0;
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                    lowAndroid = 1;
+                }
                 int bcdUVC_int = 0;
                 if (!moveToNative) {
                     if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
@@ -1450,7 +1456,7 @@ public class StartIsoStreamActivity extends Activity {
                     bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
                     JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                             camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(),
-                            videoformat,0, bcdUVC_int);
+                            videoformat,0, bcdUVC_int, lowAndroid);
                 } else {
                     // fetch The camStreamingEndpointAdress
                     camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
@@ -1458,12 +1464,13 @@ public class StartIsoStreamActivity extends Activity {
                     mService.libusb_InterfacesClaimed = true;
                     JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                             camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1,
-                            videoformat,0, bcdUVC_int);
+                            videoformat,0, bcdUVC_int, lowAndroid);
                 }
                 mService.native_values_set = true;
                 /////////////// Service Method
                 log("starting Service");
                 if (videoformat.equals("MJPEG")) {
+                    ////////////////////////////////    MJPEG
                     if (!libusb_is_initialized) {
                         mPreviewSurface = mUVCCameraView.getHolder().getSurface();
                         JniSetSurfaceView(mPreviewSurface);
@@ -1480,7 +1487,7 @@ public class StartIsoStreamActivity extends Activity {
                     */
                     Intent intent = new Intent(this, StartIsoStreamService.class);
                     if (!libusb_is_initialized) intent.putExtra(StartIsoStreamService.INIT, "INIT");
-                    intent.putExtra(StartIsoStreamService.ACCESS_LIBUSB, "Resume");
+                    intent.putExtra(StartIsoStreamService.ACCESS_LIBUSB, "SURFACE");
                     intent.putExtra(StartIsoStreamService.FRAMEFORMAT, "MFPEG");
                     startService(intent);
                     mService.streamHelperServiceStarted = true;
@@ -1493,15 +1500,17 @@ public class StartIsoStreamActivity extends Activity {
                     log("service started (MJPEG) ... waiting for intent");
 
                 } else {
+                    ////////////////////////////////    YUV
+                    // Steam Over SurfaceView
+                    // fastest Method
                     if (!libusb_is_initialized) {
                         mPreviewSurface = mUVCCameraView.getHolder().getSurface();
                         JniSetSurfaceView(mPreviewSurface);
                         mService.jniMethodsAndConstantsSet = true;
                     }
                     Intent intent = new Intent(this, StartIsoStreamService.class);
-                    intent.putExtra(StartIsoStreamService.FRAMEFORMAT, "YUV");
                     if (!libusb_is_initialized) intent.putExtra(StartIsoStreamService.INIT, "INIT");
-                    intent.putExtra(StartIsoStreamService.ACCESS_LIBUSB, "Resume");
+                    intent.putExtra(StartIsoStreamService.ACCESS_LIBUSB, "SURFACE");
                     intent.putExtra(StartIsoStreamService.FRAMEFORMAT, "YUV");
                     startService(intent);
                     mService.streamHelperServiceStarted = true;
@@ -1512,6 +1521,46 @@ public class StartIsoStreamActivity extends Activity {
                     mService.streamPerformed = true;
                     libusb_is_initialized = true;
                     log("service started (YUV) ... waiting for intent");
+
+
+
+                    // FRAME OVER BITMAP and ImageView
+                    // Slower than over SurfaceView
+                    /*
+                    JniSetSurfaceView(null);
+                    mService.jniMethodsAndConstantsSet = true;
+                    mUVCCameraView = (SurfaceView) findViewById(R.id.surfaceView);
+                    mUVCCameraView.setVisibility(View.GONE);
+                    mUVCCameraView.setVisibility(View.INVISIBLE);
+                    JNA_I_LibUsb.INSTANCE.setFrameComplete(new JNA_I_LibUsb.frameComplete(){
+                        public boolean callback(int bitmap) {
+                            log("frame received");
+                            Bitmap bmp = Bitmap.createBitmap(imageWidth, imageHeight, Bitmap.Config.ARGB_8888);
+                            frameToBitmap(bmp);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    imageView.setImageBitmap(bmp);
+                                }
+                            });
+                            return true;
+                        }
+                    });
+                    Intent intent = new Intent(this, StartIsoStreamService.class);
+                    if (!libusb_is_initialized) intent.putExtra(StartIsoStreamService.INIT, "INIT");
+                    intent.putExtra(StartIsoStreamService.ACCESS_LIBUSB, "BITMAP");
+                    intent.putExtra(StartIsoStreamService.FRAMEFORMAT, "YUV");
+                    startService(intent);
+                    mService.streamHelperServiceStarted = true;
+                    mService.libusb_wrapped = true;
+                    mService.libusb_InterfacesClaimed = true;
+                    mService.ctl_to_camera_sent = true;
+                    mService.altSettingStream();
+                    mService.streamPerformed = true;
+                    libusb_is_initialized = true;
+                    log("service started (Bitmap, YUV) ... waiting for intent");
+                    //*/
+
                 }
             } else {
                 try {
@@ -1655,8 +1704,12 @@ public class StartIsoStreamActivity extends Activity {
             int bcdUVC_int = 0;
             if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
             bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
+            int lowAndroid = 0;
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                lowAndroid = 1;
+            }
             JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                    camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1, videoformat, 0, bcdUVC_int);
+                    camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1, videoformat, 0, bcdUVC_int, lowAndroid);
             mService.native_values_set=true;
             JNA_I_LibUsb.INSTANCE.initStreamingParms(FD);
         } else {
@@ -1724,11 +1777,9 @@ public class StartIsoStreamActivity extends Activity {
     }
 
     private void BildaufnahmeButtonClickEvent() {
-
         imageCapture = true;
         if (LIBUSB) JNA_I_LibUsb.INSTANCE.setImageCapture();
         displayMessage("Image saved");
-
     }
 
     //////////////////// Buttons  ///////////////
@@ -1737,7 +1788,7 @@ public class StartIsoStreamActivity extends Activity {
         startStream.getBackground().setAlpha(180);  // 25% transparent
         startStream.setEnabled(true);
         stopStreamButton.getBackground().setAlpha(20);  // 100% transparent
-        ((Button)findViewById(R.id.stopKameraknopf)).setEnabled(false);
+        stopStreamButton.setEnabled(false);
         photoButton.setEnabled(false);
         photoButton.setBackgroundResource(R.drawable.photo_clear);
         videoButton.setEnabled(false);
@@ -3017,8 +3068,7 @@ public class StartIsoStreamActivity extends Activity {
         public void surfaceCreated(final SurfaceHolder holder) {
             log( "surfaceCreated:");
             Canvas canvas = mUVCCameraView.getHolder().lockCanvas();
-            canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC);
-
+            canvas.drawColor(Color.GRAY, PorterDuff.Mode.SRC);
             mUVCCameraView.getHolder().unlockCanvasAndPost(canvas);
 
         }
@@ -3028,30 +3078,11 @@ public class StartIsoStreamActivity extends Activity {
             if ((width == 0) || (height == 0)) return;
             log( "surfaceChanged:");
             mPreviewSurface = holder.getSurface();
-            /*
-            synchronized (mSync) {
-                if (isActive && !isPreview && (mUVCCamera != null)) {
-                    mUVCCamera.setPreviewDisplay(mPreviewSurface);
-                    mUVCCamera.startPreview();
-                    isPreview = true;
-                }
-            }
-
-             */
         }
 
         @Override
         public void surfaceDestroyed(final SurfaceHolder holder) {
            log( "surfaceDestroyed:");
-           /*
-            synchronized (mSync) {
-                if (mUVCCamera != null) {
-                    mUVCCamera.stopPreview();
-                }
-                isPreview = false;
-            }
-
-            */
             mPreviewSurface = null;
         }
     };

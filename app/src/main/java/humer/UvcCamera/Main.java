@@ -109,10 +109,8 @@ public class Main extends AppCompatActivity {
     private String LANG_CURRENT = "en";
     @Override
     protected void attachBaseContext(Context newBase) {
-
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(newBase);
         LANG_CURRENT = preferences.getString("Language", "en");
-
         super.attachBaseContext(MyContextWrapper.wrap(newBase, LANG_CURRENT));
     }
 
@@ -120,7 +118,7 @@ public class Main extends AppCompatActivity {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
-
+        //// Language Settings
         ImageButton language = findViewById(R.id.language);
         LinearLayout sv_language_chooser = findViewById(R.id.languageChooser);
         sv_language_chooser.setEnabled(false);
@@ -145,9 +143,6 @@ public class Main extends AppCompatActivity {
         } else if (currentLanguage.getLanguage().equals("zh")) {
             language.setImageResource(R.mipmap.country_china);
         }
-
-
-
         tv = (ZoomTextView) findViewById(R.id.textDarstellung);
         if (camFrameInterval == 0) tv.setText(getResources().getString(R.string.intro) + "\n\n" + getResources().getString(R.string.packetsPerRequest) + " = " + packetsPerRequest + "\n" + getResources().getString(R.string.activeUrbs) + " = " + activeUrbs +
                 "\n" + getResources().getString(R.string.camStreamingAltSetting) + " = " + camStreamingAltSetting + "\n" + getResources().getString(R.string.maxPacketSize) + " = " + maxPacketSize + "\n" + getResources().getString(R.string.videoformat) + " = " + videoformat +
@@ -226,7 +221,6 @@ public class Main extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ActivitySetUpTheUsbDeviceRequestCode && resultCode == RESULT_OK && data != null) {
             // TODO Extract the data returned from the child Activity.
-
             camStreamingAltSetting = data.getIntExtra("camStreamingAltSetting", 0);
             videoformat = data.getStringExtra("videoformat");
             camFormatIndex = data.getIntExtra("camFormatIndex", 0);
@@ -313,10 +307,8 @@ public class Main extends AppCompatActivity {
         Button button2 = findViewById(R.id.lowerSize);
         button2.setEnabled(true); button2.setAlpha(0.8f);
         tv.lowerSize();
-
         buttonHandler = new Handler();
         buttonHandler.postDelayed(myRunnable, TIME_TO_WAIT);
-
     }
 
 
@@ -332,10 +324,7 @@ public class Main extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(),
                 ReadMeActivity.class);
         Bundle bundle=new Bundle();
-
         log(getBaseContext().getResources().getConfiguration().locale.getLanguage());
-
-
         bundle.putString("locale",getBaseContext().getResources().getConfiguration().locale.getLanguage());
         intent.putExtra("bun",bundle);
         startActivity(intent);
@@ -366,8 +355,6 @@ public class Main extends AppCompatActivity {
                 bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
                 bundle.putBoolean("libUsb", LIBUSB);
                 bundle.putBoolean("moveToNative", moveToNative);
-
-
                 intent.putExtra("bun",bundle);
                 super.onResume();
                 startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
@@ -397,7 +384,6 @@ public class Main extends AppCompatActivity {
             bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
             bundle.putBoolean("libUsb", LIBUSB);
             bundle.putBoolean("moveToNative", moveToNative);
-
             intent.putExtra("bun",bundle);
             super.onResume();
             startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
@@ -425,7 +411,6 @@ public class Main extends AppCompatActivity {
             bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
             bundle.putBoolean("libUsb", LIBUSB);
             bundle.putBoolean("moveToNative", moveToNative);
-
             intent.putExtra("bun",bundle);
             super.onResume();
             startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
@@ -485,7 +470,6 @@ public class Main extends AppCompatActivity {
                 bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
                 bundle.putBoolean("libUsb", LIBUSB);
                 bundle.putBoolean("moveToNative", moveToNative);
-
                 intent.putExtra("bun",bundle);
                 startActivityForResult(intent, ActivityStartIsoStreamRequestCode);
             }
@@ -520,7 +504,6 @@ public class Main extends AppCompatActivity {
                 bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
                 bundle.putBoolean("libUsb", LIBUSB);
                 bundle.putBoolean("moveToNative", moveToNative);
-
                 intent.putExtra("bun",bundle);
                 startActivityForResult(intent, ActivityStartIsoStreamRequestCode);
             }
@@ -562,7 +545,6 @@ public class Main extends AppCompatActivity {
         changeLang(Main.this, languageToLoad);
         finish();
         startActivity(new Intent(Main.this, Main.class));
-
     }
 
     public void onItalyLanguageSelected(View view) {
@@ -691,7 +673,6 @@ public class Main extends AppCompatActivity {
     public void log(String msg) {
         Log.i("UVC_Camera_Main", msg);
     }
-
 
     public void setTextTextView () {
         if (camFrameInterval == 0) tv.setText("Your current Values are:\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +

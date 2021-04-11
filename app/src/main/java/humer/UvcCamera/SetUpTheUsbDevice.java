@@ -261,8 +261,6 @@ public class SetUpTheUsbDevice extends Activity {
     private LibUsbManagerService mService;
     private boolean mBound = false;
 
-
-
     public Handler buttonHandler = null;
     public Runnable myRunnable = new Runnable() {
         @Override
@@ -275,8 +273,6 @@ public class SetUpTheUsbDevice extends Activity {
         }
     };
 
-
-    // JNI METHODS
     private static boolean isLoaded;
     static {
         if (!isLoaded) {
@@ -288,11 +284,6 @@ public class SetUpTheUsbDevice extends Activity {
             isLoaded = true;
         }
     }
-
-    /*
-    public native void JniIsoStreamActivity(final Surface surface, int a, int b);
-    public native void JniProbeCommitControl(int bmHint,int camFormatIndex,int camFrameIndex,int  camFrameInterval);
-     */
 
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -361,9 +352,6 @@ public class SetUpTheUsbDevice extends Activity {
         Bundle data = msg.getExtras();
         log("handleMessage");
         displayMessage("handleMessage called");
-        //valueReceived = data.getString("DATA");
-        //Log.e("recv2", valueReceived);
-
         String message = msg.getExtras().getString("message"); // Contains "Hello World!"
         log("message called");
     }
@@ -2297,10 +2285,14 @@ public class SetUpTheUsbDevice extends Activity {
         int framesReceive = 1;
         if (fiveFrames) framesReceive = 5;
         int bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
+        int lowAndroid = 0;
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            lowAndroid = 1;
+        }
         if (moveToNative) JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1, videoformat, framesReceive, bcdUVC_int);
+                camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1, videoformat, framesReceive, bcdUVC_int, lowAndroid);
         else JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, framesReceive, bcdUVC_int);
+                camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, framesReceive, bcdUVC_int, lowAndroid);
         mService.native_values_set=true;
         libusb_is_initialized = true;
     }
@@ -2366,7 +2358,6 @@ public class SetUpTheUsbDevice extends Activity {
         }
     }
 
-
     private void writeTheValues(){
         Intent resultIntent = new Intent();
         resultIntent.putExtra("camStreamingAltSetting", camStreamingAltSetting);
@@ -2388,8 +2379,6 @@ public class SetUpTheUsbDevice extends Activity {
         resultIntent.putExtra("bStillCaptureMethod", bStillCaptureMethod);
         resultIntent.putExtra("libUsb", libUsb);
         resultIntent.putExtra("moveToNative", moveToNative);
-
-
         setResult(Activity.RESULT_OK, resultIntent);
         if (camDeviceConnection != null) {
             if (camControlInterface != null)           camDeviceConnection.releaseInterface(camControlInterface);

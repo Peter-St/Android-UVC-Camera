@@ -18,6 +18,7 @@ public class StartIsoStreamService extends IntentService {
 
     public native void JniPrepairForStreamingfromService();
     public native void JniServiceOverSurface();
+    public native void JniServiceOverBitmap();
 
     public StartIsoStreamService() {
         super("IsoStream - Service");
@@ -30,8 +31,11 @@ public class StartIsoStreamService extends IntentService {
 
         String init = intent.getStringExtra(INIT);
         if (init != null && init.equals("INIT")) {
+            JniPrepairForStreamingfromService();
+            /*
             if (intent.getStringExtra(FRAMEFORMAT).equals("MFPEG")) JniPrepairForStreamingfromService();
             else JniPrepairForStreamingfromService();
+             */
         }
 
         String fileName = intent.getStringExtra(ACCESS_LIBUSB);
@@ -40,8 +44,16 @@ public class StartIsoStreamService extends IntentService {
             else JniServiceOverSurface();
             result = Activity.RESULT_OK;
             return;
+        } else if (fileName != null && fileName.equals("BITMAP")) {
+            JniServiceOverBitmap();
+            result = Activity.RESULT_OK;
+            return;
         }
-
+        if (fileName != null && fileName.equals("SURFACE")) {
+            JniServiceOverSurface();
+            result = Activity.RESULT_OK;
+            return;
+        }
         if (fileName != null && fileName.equals("Resume")) {
             if (intent.getStringExtra(FRAMEFORMAT).equals("MFPEG"))  JniServiceOverSurface();
             else JniServiceOverSurface();

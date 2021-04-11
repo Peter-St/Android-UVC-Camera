@@ -35,7 +35,7 @@ public interface JNA_I_LibUsb extends Library {
 
     public void set_the_native_Values (int FD, int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
                       int camFrameInde, int camFrameInterva, int imageWidt, int imageHeigh, int camStreamingEndpoint, int camStreamingInterfaceNumber,
-                      String frameFormat, int numberOfAutoFrames, int bcdUVC_int);
+                      String frameFormat, int numberOfAutoFrames, int bcdUVC_int, int lowAndroid);
 
     public int initStreamingParms(int FD);
 
@@ -64,16 +64,11 @@ public interface JNA_I_LibUsb extends Library {
 
     public void closeLibUsb();
 
+    //// SetUpTheUsbDevice Method
     public interface eventCallback extends Callback {
         boolean callback(Pointer videoFrame, int frameSize);
     }
     public void setCallback(eventCallback evnHnd);
-
-
-    public interface logPrint extends Callback {
-        boolean callback(String msg);
-    }
-    public void setLogPrint(logPrint evnHnd);
 
     public void stopStreaming();
 
@@ -108,4 +103,9 @@ public interface JNA_I_LibUsb extends Library {
     // Frame Conversation:
     public Pointer convertUYVYtoJPEG (Pointer UYVY_frame_array, IntByReference jpgLength, int UYVYframeLength, int imageWidth, int imageHeight);
 
+    // Frame Complete Callback Method
+    public interface frameComplete extends Callback {
+        boolean callback(int bitmap);
+    }
+    public void setFrameComplete (frameComplete evnHnd);
 }
