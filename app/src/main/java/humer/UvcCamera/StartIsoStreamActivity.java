@@ -310,9 +310,9 @@ public class StartIsoStreamActivity extends Activity {
     };
 
     // LibUsbService
-    private LibUsbManagerService mService;
-    private boolean mBound = false;
-
+    // private LibUsbManagerService mService;
+    //private boolean mBound = false;
+/*
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className,
@@ -328,16 +328,18 @@ public class StartIsoStreamActivity extends Activity {
             mBound = false;
         }
     };
-
+*/
     @Override
     protected void onStart() {
         super.onStart();
         Log.v("STATE", "onStart() is called");
-        // Bind to BluetoothService
+        /*
+        // Bind to Service
         if (!mBound) {
             Intent intent = new Intent(this, LibUsbManagerService.class);
             bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         }
+         */
     }
 
     @Override
@@ -350,12 +352,13 @@ public class StartIsoStreamActivity extends Activity {
         } catch (Exception e) {
             log("Exception = " + e);
         }
+        /*
         try {
             unbindService(mConnection);
         } catch (Exception e) {
             log("Exception = " + e);
         }
-
+        */
     }
 
     @Override
@@ -1366,7 +1369,7 @@ public class StartIsoStreamActivity extends Activity {
             Intent resultIntent = new Intent();
             if (exit == true) resultIntent.putExtra("closeProgram", true);
             setResult(Activity.RESULT_OK, resultIntent);
-            mService.streamCanBeResumed = false;
+            //mService.streamCanBeResumed = false;
             finish();
         } else {
             if (camIsOpen) {
@@ -1380,11 +1383,11 @@ public class StartIsoStreamActivity extends Activity {
             Intent resultIntent = new Intent();
             if (exit == true) resultIntent.putExtra("closeProgram", true);
             setResult(Activity.RESULT_OK, resultIntent);
-            mService.streamCanBeResumed = false;
+            //mService.streamCanBeResumed = false;
             finish();
         }
     }
-
+/*
     public void showAllServiceStats() {
         log("mService.libusb_wrapped = " + mService.libusb_wrapped + "\n" +
                 "mService.native_values_set = " + mService.native_values_set + "\n\n" +
@@ -1405,7 +1408,7 @@ public class StartIsoStreamActivity extends Activity {
                 "mService.jniMethodsAndConstantsSet = " + mService.jniMethodsAndConstantsSet + "\n" +
                 "");
     }
-
+*/
     // Start the Stream
     public void isoStream(MenuItem Item) {
         if (camDevice == null) {
@@ -1430,7 +1433,7 @@ public class StartIsoStreamActivity extends Activity {
             videoButton.setAlpha(1); // 100% transparent
             stopKamera = false;
             if (LIBUSB) {
-                showAllServiceStats();
+                //showAllServiceStats();
                 if (!libusb_is_initialized) {
                     try {
                         if (camDeviceConnection == null) {
@@ -1460,13 +1463,13 @@ public class StartIsoStreamActivity extends Activity {
                 } else {
                     // fetch The camStreamingEndpointAdress
                     camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
-                    mService.libusb_wrapped = true;
-                    mService.libusb_InterfacesClaimed = true;
+                    //mService.libusb_wrapped = true;
+                    //mService.libusb_InterfacesClaimed = true;
                     JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                             camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1,
                             videoformat,0, bcdUVC_int, lowAndroid);
                 }
-                mService.native_values_set = true;
+                //mService.native_values_set = true;
                 /////////////// Service Method
                 log("starting Service");
                 if (videoformat.equals("MJPEG")) {
@@ -1474,7 +1477,7 @@ public class StartIsoStreamActivity extends Activity {
                     if (!libusb_is_initialized) {
                         mPreviewSurface = mUVCCameraView.getHolder().getSurface();
                         JniSetSurfaceView(mPreviewSurface);
-                        mService.jniMethodsAndConstantsSet = true;
+                        //mService.jniMethodsAndConstantsSet = true;
                     }
                     if (!libusb_is_initialized) JniSetSurfaceView(null);
 
@@ -1490,12 +1493,14 @@ public class StartIsoStreamActivity extends Activity {
                     intent.putExtra(StartIsoStreamService.ACCESS_LIBUSB, "SURFACE");
                     intent.putExtra(StartIsoStreamService.FRAMEFORMAT, "MFPEG");
                     startService(intent);
+                    /*
                     mService.streamHelperServiceStarted = true;
                     mService.libusb_wrapped = true;
                     mService.libusb_InterfacesClaimed = true;
                     mService.ctl_to_camera_sent = true;
                     mService.altSettingStream();
                     mService.streamPerformed = true;
+                    */
                     libusb_is_initialized = true;
                     log("service started (MJPEG) ... waiting for intent");
 
@@ -1506,19 +1511,21 @@ public class StartIsoStreamActivity extends Activity {
                     if (!libusb_is_initialized) {
                         mPreviewSurface = mUVCCameraView.getHolder().getSurface();
                         JniSetSurfaceView(mPreviewSurface);
-                        mService.jniMethodsAndConstantsSet = true;
+                        //mService.jniMethodsAndConstantsSet = true;
                     }
                     Intent intent = new Intent(this, StartIsoStreamService.class);
                     if (!libusb_is_initialized) intent.putExtra(StartIsoStreamService.INIT, "INIT");
                     intent.putExtra(StartIsoStreamService.ACCESS_LIBUSB, "SURFACE");
                     intent.putExtra(StartIsoStreamService.FRAMEFORMAT, "YUV");
                     startService(intent);
+                    /*
                     mService.streamHelperServiceStarted = true;
                     mService.libusb_wrapped = true;
                     mService.libusb_InterfacesClaimed = true;
                     mService.ctl_to_camera_sent = true;
                     mService.altSettingStream();
                     mService.streamPerformed = true;
+                     */
                     libusb_is_initialized = true;
                     log("service started (YUV) ... waiting for intent");
 
@@ -1698,8 +1705,8 @@ public class StartIsoStreamActivity extends Activity {
             int FD = camDeviceConnection.getFileDescriptor();
             if(camStreamingEndpointAdress == 0) {
                 camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
-                mService.libusb_wrapped = true;
-                mService.libusb_InterfacesClaimed = true;
+                //mService.libusb_wrapped = true;
+                //mService.libusb_InterfacesClaimed = true;
             }
             int bcdUVC_int = 0;
             if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
@@ -1710,7 +1717,7 @@ public class StartIsoStreamActivity extends Activity {
             }
             JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                     camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1, videoformat, 0, bcdUVC_int, lowAndroid);
-            mService.native_values_set=true;
+            //mService.native_values_set=true;
             JNA_I_LibUsb.INSTANCE.initStreamingParms(FD);
         } else {
             // (For transfer buffer sizes > 196608 the kernel file drivers/usb/core/devio.c must be patched.)
@@ -1796,8 +1803,8 @@ public class StartIsoStreamActivity extends Activity {
         stopKamera = true;
         if (LIBUSB) {
             JNA_I_LibUsb.INSTANCE.stopStreaming();
-            mService.streamOnPause = true;
-            mService.streamCanBeResumed = true;
+            //mService.streamOnPause = true;
+            //mService.streamCanBeResumed = true;
         } else {
             try {
                 Thread.sleep(100);

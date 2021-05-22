@@ -17,16 +17,14 @@
       <change beforePath="$PROJECT_DIR$/.gradle/6.5/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/javaCompile/classAnalysis.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/6.5/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/javaCompile/javaCompile.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/videortc/UsbCapturer.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/videortc/UsbCapturer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/AutomaticDetection/LibUsb_AutoDetect.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/AutomaticDetection/LibUsb_AutoDetect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/LibUsb/JNA_I_LibUsb.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/LibUsb/JNA_I_LibUsb.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/LibUsb/StartIsoStreamService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/LibUsb/StartIsoStreamService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mapping.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/mapping.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDevice.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDevice.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libUsb_Support/libusb_support.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libUsb_Support/libusb_support.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libUsb_Support/libusb_support.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libUsb_Support/libusb_support.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/UVC_Camera_Controller.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libUsb_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libUsb_Support.so" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libUsb_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libUsb_Support.so" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libUsb_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/libUsb_Support.so" afterDir="false" />
@@ -37,7 +35,7 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[10.0.0.40:5555]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[10.0.0.25:5555]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -204,10 +202,6 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="418" y="294" width="1255" height="524" key="#PSD/0.0.1920.1040@0.0.1920.1040" timestamp="1617050993663" />
-    <state x="657" y="187" width="596" height="658" key="#app" timestamp="1609552983839">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="657" y="187" width="596" height="658" key="#app/0.0.1920.1040@0.0.1920.1040" timestamp="1609552983839" />
     <state x="768" y="228" width="374" height="575" key="#com.intellij.ide.util.MemberChooser" timestamp="1618053608092">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -220,38 +214,38 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="737" y="274" width="424" height="478" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1618056049702" />
-    <state width="1878" height="441" key="GridCell.Tab.0.bottom" timestamp="1618155403399">
+    <state width="1878" height="440" key="GridCell.Tab.0.bottom" timestamp="1621693823077">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1878" height="441" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1618155403399" />
-    <state width="1878" height="441" key="GridCell.Tab.0.center" timestamp="1618155403398">
+    <state width="1878" height="440" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1621693823077" />
+    <state width="1878" height="440" key="GridCell.Tab.0.center" timestamp="1621693823077">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1878" height="441" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1618155403398" />
-    <state width="1878" height="441" key="GridCell.Tab.0.left" timestamp="1618155403398">
+    <state width="1878" height="440" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1621693823077" />
+    <state width="1878" height="440" key="GridCell.Tab.0.left" timestamp="1621693823077">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1878" height="441" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1618155403398" />
-    <state width="1878" height="441" key="GridCell.Tab.0.right" timestamp="1618155403398">
+    <state width="1878" height="440" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1621693823077" />
+    <state width="1878" height="440" key="GridCell.Tab.0.right" timestamp="1621693823077">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1878" height="441" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1618155403398" />
-    <state width="1878" height="441" key="GridCell.Tab.1.bottom" timestamp="1618155403397">
+    <state width="1878" height="440" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1621693823077" />
+    <state width="1878" height="440" key="GridCell.Tab.1.bottom" timestamp="1621693823076">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1878" height="441" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1618155403397" />
-    <state width="1878" height="441" key="GridCell.Tab.1.center" timestamp="1618155403397">
+    <state width="1878" height="440" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1621693823076" />
+    <state width="1878" height="440" key="GridCell.Tab.1.center" timestamp="1621693823076">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1878" height="441" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1618155403397" />
-    <state width="1878" height="441" key="GridCell.Tab.1.left" timestamp="1618155403397">
+    <state width="1878" height="440" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1621693823076" />
+    <state width="1878" height="440" key="GridCell.Tab.1.left" timestamp="1621693823075">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1878" height="441" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1618155403397" />
-    <state width="1878" height="441" key="GridCell.Tab.1.right" timestamp="1618155403397">
+    <state width="1878" height="440" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1621693823075" />
+    <state width="1878" height="440" key="GridCell.Tab.1.right" timestamp="1621693823076">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1878" height="441" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1618155403397" />
+    <state width="1878" height="440" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1621693823076" />
     <state x="216" y="147" width="1286" height="730" key="SettingsEditor" timestamp="1617482485732">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -260,10 +254,6 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="761" y="300" width="387" height="432" key="chooseDestDirectoryDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1618061666958" />
-    <state x="624" y="238" key="run.anything.popup" timestamp="1609614978307">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="624" y="238" key="run.anything.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1609614978307" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

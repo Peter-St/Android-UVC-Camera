@@ -42,6 +42,7 @@ import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.RequiresApi;
@@ -67,6 +68,8 @@ import com.crowdfire.cfalertdialog.views.CFPushButton;
 import com.sun.jna.Pointer;
 import com.tomer.fadingtextview.FadingTextView;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -258,8 +261,8 @@ public class SetUpTheUsbDevice extends Activity {
     private boolean camDeviceIsClosed = false;
 
     // LibUsbService
-    private LibUsbManagerService mService;
-    private boolean mBound = false;
+    //private LibUsbManagerService mService;
+    //private boolean mBound = false;
 
     public Handler buttonHandler = null;
     public Runnable myRunnable = new Runnable() {
@@ -355,7 +358,7 @@ public class SetUpTheUsbDevice extends Activity {
         String message = msg.getExtras().getString("message"); // Contains "Hello World!"
         log("message called");
     }
-
+/*
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className,
@@ -371,16 +374,19 @@ public class SetUpTheUsbDevice extends Activity {
             mBound = false;
         }
     };
+ */
 
     @Override
     protected void onStart() {
         super.onStart();
         Log.v("STATE", "onStart() is called");
-        // Bind to BluetoothService
+        /*
+        // Bind to Service
         if (!mBound) {
             Intent intent = new Intent(this, LibUsbManagerService.class);
             bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         }
+        */
     }
 
     @Override
@@ -393,11 +399,13 @@ public class SetUpTheUsbDevice extends Activity {
         } catch (Exception e) {
             log("Exception = " + e);
         }
+        /*
         try {
             unbindService(mConnection);
         } catch (Exception e) {
             log("Exception = " + e);
         }
+         */
     }
 
     @Override
@@ -1797,12 +1805,12 @@ public class SetUpTheUsbDevice extends Activity {
                 if(adress == null)  adress = camDevice.getDeviceName();
                 if (moveToNative) {
                     if (camStreamingEndpointAdress == 0) {
-                        mService.libusb_wrapped = true;
-                        mService.libusb_InterfacesClaimed = true;
+                        //mService.libusb_wrapped = true;
+                        //mService.libusb_InterfacesClaimed = true;
                         camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
                     }
                 } else if (camStreamingEndpointAdress == 0) camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
-                mService.native_values_set=true;
+                //mService.native_values_set=true;
                 if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
                 int bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
             } catch (Exception e) {
@@ -1821,6 +1829,27 @@ public class SetUpTheUsbDevice extends Activity {
                     stringBuilder.append("Length = " + frameSize + "\n");
                     if (frameSize == (imageWidth*imageHeight*2)) stringBuilder.append("\nThe Frame length matches it's expected size.\nThis are the first 20 bytes of the frame:");
                     stringBuilder.append("\ndata = " + hexDump(videoFrame.getByteArray(0,50), Math.min(32, 50)));
+
+
+
+                    //// Save to File
+                    /*
+                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) {
+                        String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/OutputFile/";
+                        File file = new File(rootPath);
+                        if (!file.exists()) {
+                            file.mkdirs();
+                        }
+                        String fileName = new File(rootPath + "data" + ".bin").getAbsolutePath() ;
+                        try {
+                            writeBytesToFile(fileName, videoFrame.getByteArray(0,frameSize));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        log ("file saved");
+                    }
+                    */
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -1829,21 +1858,24 @@ public class SetUpTheUsbDevice extends Activity {
                             tv.setTextColor(Color.BLACK);
                         }
                     });
+
+
+
                     return true;
                 }
             });
-            mService.jnaCallbackSet = true;
+            //mService.jnaCallbackSet = true;
             JNA_I_LibUsb.INSTANCE.getFramesOverLibUsb( videoFormatToInt(), 0, 1);
-            mService.altSettingControl();
+            //mService.altSettingControl();
             // Reconnected the Camera through setting the Altsetting to CTL
             try {
                 latch.await();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            mService.altSettingStream();
-            mService.streamOnPause = true;
-            mService.streamPerformed = true;
+            //mService.altSettingStream();
+            //mService.streamOnPause = true;
+            //mService.streamPerformed = true;
             JNA_I_LibUsb.INSTANCE.stopStreaming();
         } else {
             if(libusb_is_initialized) {
@@ -1879,6 +1911,17 @@ public class SetUpTheUsbDevice extends Activity {
         }
     }
 
+    private void writeBytesToFile(String fileName, byte[] data) throws IOException {
+        FileOutputStream fileOutputStream = null;
+        try {
+            fileOutputStream = new FileOutputStream(fileName);
+            fileOutputStream.write(data);
+            fileOutputStream.flush();
+        } finally {
+            fileOutputStream.close();
+        }
+    }
+
     private void isoRead5sec() {
         if (!usbManager.hasPermission(camDevice)) {
             int a;
@@ -1911,8 +1954,8 @@ public class SetUpTheUsbDevice extends Activity {
                 if(adress == null)  adress = camDevice.getDeviceName();
                 if (moveToNative) {
                    if(camStreamingEndpointAdress == 0) {
-                        mService.libusb_wrapped = true;
-                        mService.libusb_InterfacesClaimed = true;
+                        //mService.libusb_wrapped = true;
+                        //mService.libusb_InterfacesClaimed = true;
                         camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
                     }
                 } else if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
@@ -1920,12 +1963,12 @@ public class SetUpTheUsbDevice extends Activity {
                 int bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
                 if (moveToNative) {
                     if(camStreamingEndpointAdress == 0) {
-                        mService.libusb_wrapped = true;
-                        mService.libusb_InterfacesClaimed = true;
+                        //mService.libusb_wrapped = true;
+                        //mService.libusb_InterfacesClaimed = true;
                         camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
                     }
                 } else if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
-                mService.native_values_set = true;
+                //mService.native_values_set = true;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1970,7 +2013,7 @@ public class SetUpTheUsbDevice extends Activity {
                                     }
                                 });
                                 JNA_I_LibUsb.INSTANCE.getFramesOverLibUsb(videoFormatToInt(), 0, 5);
-                                mService.altSettingControl();
+                                //mService.altSettingControl();
                                 started = true;
                             }
                             Thread.sleep(900);
@@ -1980,9 +2023,9 @@ public class SetUpTheUsbDevice extends Activity {
                         }
                     }
                     JNA_I_LibUsb.INSTANCE.stopStreaming();
-                    mService.altSettingStream();
-                    mService.streamOnPause = true;
-                    mService.streamPerformed = true;
+                    //mService.altSettingStream();
+                    //mService.streamOnPause = true;
+                    //mService.streamPerformed = true;
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -2083,8 +2126,8 @@ public class SetUpTheUsbDevice extends Activity {
                             if (moveToNative) {
                                 if(camStreamingEndpointAdress == 0) {
                                     camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
-                                    mService.libusb_wrapped = true;
-                                    mService.libusb_InterfacesClaimed = true;
+                                    //mService.libusb_wrapped = true;
+                                    //mService.libusb_InterfacesClaimed = true;
                                 }
                             } else if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
                             if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
@@ -2092,11 +2135,12 @@ public class SetUpTheUsbDevice extends Activity {
                             log("JNA_I_LibUsb.INSTANCE.set_the_native_Values");
                             if (moveToNative) {
                                 if(camStreamingEndpointAdress == 0) {
-                                    mService.libusb_wrapped = true;
-                                    mService.libusb_InterfacesClaimed = true;
+                                    //mService.libusb_wrapped = true;
+                                    //mService.libusb_InterfacesClaimed = true;
                                     camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
                                 }
-                            } else if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();mService.native_values_set = true;
+                            } else if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
+                            //mService.native_values_set = true;
                             libusb_is_initialized = true;
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -2132,13 +2176,13 @@ public class SetUpTheUsbDevice extends Activity {
                     log("2 camDeviceConnection == null 2");
                     Pointer ctlValues = JNA_I_LibUsb.INSTANCE.probeCommitControl(1, camFormatIndex, camFrameIndex,  camFrameInterval, camDeviceConnection.getFileDescriptor());
                     camera_is_initialized_over_libusb = true;
-                    mService.libusb_wrapped = true;
-                    mService.libusb_InterfacesClaimed = true;
-                    mService.altSettingControl();
-                    mService.ctl_to_camera_sent = true;
+                    //mService.libusb_wrapped = true;
+                    //mService.libusb_InterfacesClaimed = true;
+                    //mService.altSettingControl();
+                    //mService.ctl_to_camera_sent = true;
                     if (ctlValues == null) {
                         //JNA_I_LibUsb.INSTANCE.probeCommitControl_cleanup();
-                        mService.ctl_for_camera_sucessful = false;
+                        //mService.ctl_for_camera_sucessful = false;
                         tv.setText("The Control Transfers to the Camera failed!\n\nSolutions: Try to connect the camera without LibUsb\n\n" );
                         return ;
                     }
@@ -2165,9 +2209,9 @@ public class SetUpTheUsbDevice extends Activity {
                     finalStreamingParmsIntArray = getStreamingParmsArray(buf);
                     if (compareStreamingParmsValues()) {
                         camIsOpen = true;
-                        mService.ctl_for_camera_sucessful = true;
+                        //mService.ctl_for_camera_sucessful = true;
                     } else {
-                        mService.ctl_for_camera_sucessful = false;
+                        //mService.ctl_for_camera_sucessful = false;
                         camIsOpen = false;
                     }
                     StringBuilder sb = new StringBuilder();
@@ -2190,10 +2234,10 @@ public class SetUpTheUsbDevice extends Activity {
         } else {
             if(libusb_is_initialized) {
                 JNA_I_LibUsb.INSTANCE.stopStreaming();
-                mService.streamOnPause = true;
+                //mService.streamOnPause = true;
                 JNA_I_LibUsb.INSTANCE.closeLibUsb();
-                mService.altSettingControl();
-                mService.libusb_InterfacesClaimed = false;
+                //mService.altSettingControl();
+                //mService.libusb_InterfacesClaimed = false;
                 JNA_I_LibUsb.INSTANCE.exit_native();
                 try {
                     findCam();
@@ -2264,10 +2308,12 @@ public class SetUpTheUsbDevice extends Activity {
     private int libusb_initCamera() {
         if (!camera_is_initialized_over_libusb) {
             camera_is_initialized_over_libusb = true;
+            /*
             mService.libusb_wrapped = true;
             mService.libusb_InterfacesClaimed = true;
             mService.altSettingControl();
             mService.ctl_to_camera_sent = true;
+             */
             return JNA_I_LibUsb.INSTANCE.initStreamingParms(camDeviceConnection.getFileDescriptor());
         }
         return 0;
@@ -2278,8 +2324,8 @@ public class SetUpTheUsbDevice extends Activity {
         if (moveToNative) {
             if(camStreamingEndpointAdress == 0) {
                 camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
-                mService.libusb_wrapped = true;
-                mService.libusb_InterfacesClaimed = true;
+                //mService.libusb_wrapped = true;
+                //mService.libusb_InterfacesClaimed = true;
             }
         } else if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
         int framesReceive = 1;
@@ -2293,7 +2339,7 @@ public class SetUpTheUsbDevice extends Activity {
                 camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1, videoformat, framesReceive, bcdUVC_int, lowAndroid);
         else JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                 camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, framesReceive, bcdUVC_int, lowAndroid);
-        mService.native_values_set=true;
+        //mService.native_values_set=true;
         libusb_is_initialized = true;
     }
 
@@ -2390,7 +2436,7 @@ public class SetUpTheUsbDevice extends Activity {
                 JNA_I_LibUsb.INSTANCE.stopStreaming();
             }
         }
-        if(mService != null) mService.streamCanBeResumed = false;
+        //if(mService != null) mService.streamCanBeResumed = false;
         finish();
     }
 
@@ -2406,7 +2452,7 @@ public class SetUpTheUsbDevice extends Activity {
         else if (camDeviceConnection != null) {
             if (moveToNative) {
                 camDeviceConnection = null;
-                if(mService != null) mService.streamCanBeResumed = false;
+                //if(mService != null) mService.streamCanBeResumed = false;
                 finish();
             } else {
                 if (camControlInterface!= null) camDeviceConnection.releaseInterface(camControlInterface);
@@ -2414,7 +2460,7 @@ public class SetUpTheUsbDevice extends Activity {
                 camDeviceConnection.close();
             }
         }
-        if(mService != null) mService.streamCanBeResumed = false;
+        //if(mService != null) mService.streamCanBeResumed = false;
         finish();
     }
 
