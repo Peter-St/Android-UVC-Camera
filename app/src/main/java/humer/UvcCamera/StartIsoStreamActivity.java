@@ -23,14 +23,11 @@ package humer.UvcCamera;
 
 import android.app.Activity;
 
-import android.content.ComponentName;
-import android.content.ServiceConnection;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Environment;
-import android.os.IBinder;
 import android.provider.MediaStore;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -88,9 +85,7 @@ import java.util.concurrent.Executors;
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.example.androidthings.videortc.WebRtc_MainActivity;
 import com.sample.timelapse.MJPEGGenerator ;
-import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
-import com.sun.jna.ptr.IntByReference;
 
 import humer.UvcCamera.LibUsb.JNA_I_LibUsb;
 import humer.UvcCamera.LibUsb.LibUsbManagerService;
@@ -102,7 +97,6 @@ import humer.UvcCamera.UsbIso64.USBIso;
 import humer.UvcCamera.UsbIso64.usbdevice_fs_util;
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
-import noman.zoomtextview.ZoomTextView;
 
 import static java.lang.Integer.parseInt;
 
@@ -163,6 +157,7 @@ public class StartIsoStreamActivity extends Activity {
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
     public static byte[] bcdUVC;
+    public static byte[] bcdUSB;
     public static boolean LIBUSB;
     public static boolean moveToNative;
 

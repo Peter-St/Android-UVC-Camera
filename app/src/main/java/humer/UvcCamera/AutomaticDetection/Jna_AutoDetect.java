@@ -59,6 +59,7 @@ public class Jna_AutoDetect extends AppCompatActivity {
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
     public static byte[] bcdUVC;
+    public static byte[] bcdUSB;
     public static byte bStillCaptureMethod;
     public boolean libUsb;
     public static boolean moveToNative;

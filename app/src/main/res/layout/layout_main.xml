@@ -224,4 +224,52 @@
             android:onClick="lowerSize"
             app:layout_constraintEnd_toEndOf="parent" />
 
+    <!--
+
+   <Button
+       android:id="@+id/New"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_marginStart="68dp"
+       android:layout_marginLeft="68dp"
+       android:layout_marginTop="40dp"
+       android:onClick="newFile"
+       android:text="New"
+       app:layout_constraintBottom_toTopOf="@+id/setUpTheCameraButton"
+       app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintTop_toTopOf="parent" />
+
+   <Button
+       android:id="@+id/Open"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:onClick="openFile"
+       android:text="Open"
+       app:layout_constraintEnd_toStartOf="@+id/Save"
+       app:layout_constraintStart_toEndOf="@+id/New"
+       app:layout_constraintTop_toTopOf="@+id/New" />
+
+   <Button
+       android:id="@+id/Save"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:onClick="saveFile"
+       android:text="Save"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintHorizontal_bias="0.706"
+       app:layout_constraintStart_toEndOf="@+id/New"
+       app:layout_constraintTop_toTopOf="@+id/New" />
+
+   <EditText
+       android:id="@+id/fileText"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:ems="10"
+       android:inputType="textPersonName"
+       app:layout_constraintBottom_toTopOf="@+id/viewPrivatePolicyButton"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintTop_toBottomOf="@+id/startTheStream" />
+    -->
+
 </android.support.constraint.ConstraintLayout>

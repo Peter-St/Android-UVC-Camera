@@ -23,6 +23,7 @@ This Repository is provided "as is", without warranties of any kind.
 package humer.UvcCamera;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -30,10 +31,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-
 import android.os.Handler;
+import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -43,6 +45,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -50,10 +53,15 @@ import android.widget.Toast;
 
 import com.freeapps.hosamazzam.androidchangelanguage.MyContextWrapper;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
-
 
 import noman.zoomtextview.ZoomTextView;
 
@@ -76,6 +84,7 @@ public class Main extends AppCompatActivity {
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
     public static byte[] bcdUVC;
+    public static byte[] bcdUSB;
     public static byte bStillCaptureMethod;
     public static boolean LIBUSB;
     public static boolean moveToNative;
@@ -114,10 +123,97 @@ public class Main extends AppCompatActivity {
         super.attachBaseContext(MyContextWrapper.wrap(newBase, LANG_CURRENT));
     }
 
+
+    private static EditText textView;
+
+    private static final int CREATE_REQUEST_CODE = 40;
+    private static final int OPEN_REQUEST_CODE = 41;
+    private static final int SAVE_REQUEST_CODE = 42;
+
+
+    ///// File Save Buttons
+
+    public void saveFile(View view) {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("text/plain");
+
+        startActivityForResult(intent, SAVE_REQUEST_CODE);
+    }
+
+    public void newFile(View view)
+    {
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TITLE, "newfile.txt");
+
+        startActivityForResult(intent, CREATE_REQUEST_CODE);
+    }
+
+    public void openFile(View view)
+    {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("text/plain");
+        startActivityForResult(intent, OPEN_REQUEST_CODE);
+    }
+
+    private String readFileContent(Uri uri) throws IOException {
+
+        InputStream inputStream =
+                getContentResolver().openInputStream(uri);
+        BufferedReader reader =
+                new BufferedReader(new InputStreamReader(
+                        inputStream));
+        StringBuilder stringBuilder = new StringBuilder();
+        String currentline;
+        while ((currentline = reader.readLine()) != null) {
+            stringBuilder.append(currentline + "\n");
+        }
+        inputStream.close();
+        return stringBuilder.toString();
+    }
+
+    private void writeFileContent(Uri uri)
+    {
+        try{
+            ParcelFileDescriptor pfd =
+                    this.getContentResolver().
+                            openFileDescriptor(uri, "w");
+
+            FileOutputStream fileOutputStream =
+                    new FileOutputStream(
+                            pfd.getFileDescriptor());
+
+            String textContent =
+                    textView.getText().toString();
+
+            fileOutputStream.write(textContent.getBytes());
+
+            fileOutputStream.close();
+            pfd.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /////  END File Save Buttons
+
+
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
+
+        //textView = (EditText) findViewById(R.id.fileText);
+
+
         //// Language Settings
         ImageButton language = findViewById(R.id.language);
         LinearLayout sv_language_chooser = findViewById(R.id.languageChooser);
@@ -255,6 +351,38 @@ public class Main extends AppCompatActivity {
         if (requestCode == ActivityStartIsoStreamRequestCode && resultCode == RESULT_OK && data != null) {
             boolean exit = data.getBooleanExtra("closeProgram", false);
             if (exit == true) finish();
+        }
+
+        ///// File Save Buttons
+
+        Uri currentUri = null;
+        if (resultCode == Activity.RESULT_OK)
+        {
+            if (requestCode == CREATE_REQUEST_CODE)
+            {
+                if (data != null) {
+                    textView.setText("");
+                }
+            } else if (requestCode == SAVE_REQUEST_CODE) {
+
+                if (data != null) {
+                    currentUri = data.getData();
+                    writeFileContent(currentUri);
+                }
+            } else if (requestCode == OPEN_REQUEST_CODE) {
+
+                if (data != null) {
+                    currentUri = data.getData();
+
+                    try {
+                        String content =
+                                readFileContent(currentUri);
+                        textView.setText(content);
+                    } catch (IOException e) {
+                        // Handle error here
+                    }
+                }
+            }
         }
     }
 

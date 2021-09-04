@@ -55,6 +55,7 @@ public class LibUsb_AutoDetect extends AppCompatActivity {
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
     public static byte[] bcdUVC;
+    public static byte[] bcdUSB;
     public static byte bStillCaptureMethod;
     public static boolean libUsb = true;
     public static boolean moveToNative;

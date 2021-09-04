@@ -2,9 +2,5 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/jni/android-libjpeg-turbo" vcs="" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/jni/jpeg8d" vcs="" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/jni/libusb" vcs="" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/jni/libyuv" vcs="" />
   </component>
 </project>

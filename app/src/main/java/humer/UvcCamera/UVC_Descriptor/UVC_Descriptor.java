@@ -72,6 +72,7 @@ public class UVC_Descriptor {
 
     // Version of UVC
     public static byte[] bcdUVC;
+    public static byte[] bcdUSB;
 
     //MaxPacketSize
     public static List<Integer> maxPacketSizeArray = new ArrayList<Integer>();
@@ -91,9 +92,6 @@ public class UVC_Descriptor {
             boolean videoStreamInterfaceDescriptor = false;
             int number_of_Standard_VS_Interface_Descriptor = 0;
 
-
-
-
             maxPacketSizeArray = new ArrayList<Integer>();
             ArrayList<byte []> frameData = new ArrayList<>();
             byte[] formatData = null;
@@ -104,6 +102,12 @@ public class UVC_Descriptor {
                 byte descSize = uvcData.get(pos);
                 byte descType = uvcData.get(pos +1);
                 byte descSubType = uvcData.get(pos + 2);
+
+                if (descSize == 0x12 && descType == 0x01) {
+                    bcdUSB = new byte [2];
+                    bcdUSB[1] = uvcData.get(pos + 2);
+                    bcdUSB[0] = uvcData.get(pos + 3);
+                }
 
                 //Get Version of UVC (bcdUVC)
                 if (descType == 0x24 && descSubType == 0x01 && !foundPROCESSING_UNIT && !foundINPUT_HEADER_IN_Endpoint) {

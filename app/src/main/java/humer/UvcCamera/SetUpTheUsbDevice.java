@@ -27,12 +27,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
@@ -40,11 +38,10 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.os.IBinder;
 import android.support.annotation.RequiresApi;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.LocalBroadcastManager;
@@ -68,7 +65,6 @@ import com.crowdfire.cfalertdialog.views.CFPushButton;
 import com.sun.jna.Pointer;
 import com.tomer.fadingtextview.FadingTextView;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -82,7 +78,6 @@ import humer.UvcCamera.AutomaticDetection.Jna_AutoDetect;
 import humer.UvcCamera.AutomaticDetection.Jna_AutoDetect_Handler;
 import humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect;
 import humer.UvcCamera.LibUsb.JNA_I_LibUsb;
-import humer.UvcCamera.LibUsb.LibUsbManagerService;
 import humer.UvcCamera.UVC_Descriptor.UVC_Descriptor;
 import humer.UvcCamera.UsbIso64.USBIso;
 import humer.UvcCamera.UsbIso64.usbdevice_fs_util;
@@ -138,7 +133,7 @@ public class SetUpTheUsbDevice extends Activity {
     private UsbEndpoint camStreamingEndpoint;
     private PendingIntent mPermissionIntent;
 
-    // Camera Values
+    // Camera Valueslib_usb_set_option
     public int camStreamingAltSetting;
     public int camFormatIndex;
     public int camFrameIndex;
@@ -155,6 +150,7 @@ public class SetUpTheUsbDevice extends Activity {
     public byte[] bNumControlTerminal;
     public byte[] bNumControlUnit;
     public static byte[] bcdUVC;
+    public static byte[] bcdUSB;
     public byte bStillCaptureMethod;
     public boolean libUsb;
     public static boolean moveToNative;
@@ -259,6 +255,9 @@ public class SetUpTheUsbDevice extends Activity {
     private volatile boolean libusb_is_initialized;
     private volatile boolean camera_is_initialized_over_libusb;
     private boolean camDeviceIsClosed = false;
+
+    // Log to File
+    private String logString;
 
     // LibUsbService
     //private LibUsbManagerService mService;
@@ -413,6 +412,7 @@ public class SetUpTheUsbDevice extends Activity {
         super.onCreate(savedInstanceState);
         View v = getLayoutInflater().inflate(R.layout.set_up_the_device_layout_main, null);
         setContentView(v);
+        logString = new String();
         // receive LibUsb Status
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
                 new IntentFilter("REQUEST_PROCESSED"));
@@ -603,6 +603,7 @@ public class SetUpTheUsbDevice extends Activity {
     }
 
     public void searchTheCamera (View view) {
+
         if (camDevice == null) {
             try {
                 findCam();
@@ -772,6 +773,9 @@ public class SetUpTheUsbDevice extends Activity {
             } else if (usbDevice.getDeviceClass() == 239 && usbDevice.getDeviceSubclass() == 2) {
                 moveToNative = true;
                 return usbDevice;
+            } else if (usbDevice.getDeviceClass() == 0 && usbDevice.getDeviceSubclass() == 0) {
+                moveToNative = true;
+                return usbDevice;
             }
             if (checkDeviceHasVideoControlInterface(usbDevice)) {
                 return usbDevice;
@@ -926,16 +930,19 @@ public class SetUpTheUsbDevice extends Activity {
             });
             moveToNative = true;
         }
+        // STANDARD METHOD FOR UVC CAMS
         else {
-            convertedMaxPacketSize = new int [(usbDevice.getInterfaceCount()-2)];
+            //MaxPacketSizeArray
+            List<Integer> maxPacketSizeArray = new ArrayList<Integer>();
             log("Interface count: " + usbDevice.getInterfaceCount());
             int interfaces = usbDevice.getInterfaceCount();
             stringBuilder = new StringBuilder();
-            boolean cont =false , stream = false;
+            boolean cont = false , stream = false;
             for (int i = 0; i < interfaces; i++) {
                 UsbInterface usbInterface = usbDevice.getInterface(i);
                 log("[ - Interface: " + usbInterface.getId()  + " class=" + usbInterface.getInterfaceClass() + " subclass=" + usbInterface.getInterfaceSubclass() );
                 // UsbInterface.getAlternateSetting() has been added in Android 5.
+                log("usbInterface.getEndpointCount = " + usbInterface.getEndpointCount());
                 int endpoints = usbInterface.getEndpointCount();
                 StringBuilder logEntry = new StringBuilder("InterfaceID " + usbInterface.getId() +   "\n    [ Interfaceclass = " + usbInterface.getInterfaceClass() + " / InterfaceSubclass = " + usbInterface.getInterfaceSubclass() + " ]");
                 if (!cont) {
@@ -954,11 +961,18 @@ public class SetUpTheUsbDevice extends Activity {
                     StringBuilder logEntry2 = new StringBuilder("        [ Endpoint " + Math.max(0, (i-1))  + " - address " + String.format("0x%02x ", usbEndpoint.getAddress()).toString() + " - maxPacketSize=" + returnConvertedValue(usbEndpoint.getMaxPacketSize()) + " ]");
                     stringBuilder.append(logEntry2.toString());
                     stringBuilder.append("\n");
-                    if (usbInterface.getId() == 1) {
-                        convertedMaxPacketSize[a] = returnConvertedValue(usbEndpoint.getMaxPacketSize());
+                    if (usbInterface.getId() == 1 && usbInterface.getEndpointCount() > 0) {
+                        maxPacketSizeArray.add(returnConvertedValue(usbEndpoint.getMaxPacketSize()));
+                        //convertedMaxPacketSize[a] = returnConvertedValue(usbEndpoint.getMaxPacketSize());
                         a++;
                     }
                 }
+            }
+            //convertedMaxPacketSize = new int [(usbDevice.getInterfaceCount()-2)];
+            log ("Number of MaxPacketSizes = " + maxPacketSizeArray.size());
+            convertedMaxPacketSize = new int [maxPacketSizeArray.size()];
+            for (int c =0; c<maxPacketSizeArray.size(); c++) {
+                convertedMaxPacketSize[c]=  maxPacketSizeArray.get(c);
             }
             stringBuilder.append("\n\n\n\nThe number of the Endpoint represents the value of the Altsetting\nIf the Altsetting is 0 than the Video Control Interface will be used.\nIf the Altsetting is higher, than the Video Stream Interface with its specific Max Packet Size will be used");
             runOnUiThread(new Runnable() {
@@ -1168,6 +1182,9 @@ public class SetUpTheUsbDevice extends Activity {
                     // Set up from UVC manually
                     if (uvc_descriptor.phraseUvcData() == 0) {
                         if (convertedMaxPacketSize == null) listDevice(camDevice);
+                        if (uvc_descriptor.bcdUSB[0] == 3) {
+
+                        }
                         stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize, false);
                     }
                     alertDialog.dismiss();
@@ -2229,6 +2246,7 @@ public class SetUpTheUsbDevice extends Activity {
                     tv.setTextColor(Color.BLACK);
                     //JNA_I_LibUsb.INSTANCE.probeCommitControl_cleanup();
                     log("Control probeCommitControl End");
+
                 }
             });
         } else {
@@ -2341,6 +2359,7 @@ public class SetUpTheUsbDevice extends Activity {
                 camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, framesReceive, bcdUVC_int, lowAndroid);
         //mService.native_values_set=true;
         libusb_is_initialized = true;
+        camDeviceIsClosed = false;
     }
 
     //////////////////////////////////  General Methods    //////////////////////////////////
@@ -2662,5 +2681,6 @@ public class SetUpTheUsbDevice extends Activity {
         }
         return (hits == 0);
     }
+
 
 }

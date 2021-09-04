@@ -81,6 +81,7 @@ public class SaveToFile  {
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
     public static byte[] bcdUVC;
+    public static byte[] bcdUSB;
     public static byte bStillCaptureMethod;
     private static String saveFilePathFolder = "values_for_the_camera";
     private static String autoFilePathFolder = "autoDetection";
@@ -618,6 +619,7 @@ public class SaveToFile  {
             bNumControlTerminal = setUpTheUsbDevice.bNumControlTerminal;
             bNumControlUnit = setUpTheUsbDevice.bNumControlUnit;
             bcdUVC = setUpTheUsbDevice.bcdUVC;
+            bcdUSB = setUpTheUsbDevice.bcdUSB;
             bStillCaptureMethod = setUpTheUsbDevice.bStillCaptureMethod;
             libUsb = setUpTheUsbDevice.libUsb;
             moveToNative = setUpTheUsbDevice.moveToNative;
@@ -639,6 +641,7 @@ public class SaveToFile  {
             bNumControlTerminal = libUsb_autoDetect.bNumControlTerminal;
             bNumControlUnit = libUsb_autoDetect.bNumControlUnit;
             bcdUVC = libUsb_autoDetect.bcdUVC;
+            bcdUSB = libUsb_autoDetect.bcdUSB;
             bStillCaptureMethod = libUsb_autoDetect.bStillCaptureMethod;
             libUsb = libUsb_autoDetect.libUsb;
             moveToNative = libUsb_autoDetect.moveToNative;
@@ -660,6 +663,7 @@ public class SaveToFile  {
             bNumControlTerminal = jna_autoDetect.bNumControlTerminal;
             bNumControlUnit = jna_autoDetect.bNumControlUnit;
             bcdUVC = jna_autoDetect.bcdUVC;
+            bcdUSB = jna_autoDetect.bcdUSB;
             bStillCaptureMethod = jna_autoDetect.bStillCaptureMethod;
             libUsb = jna_autoDetect.libUsb;
             moveToNative = jna_autoDetect.moveToNative;
@@ -686,6 +690,7 @@ public class SaveToFile  {
             uvc_camera.bNumControlUnit = bNumControlUnit;
             uvc_camera.bNumControlTerminal = bNumControlTerminal;
             uvc_camera.bcdUVC = bcdUVC;
+            uvc_camera.bcdUSB = bcdUSB;
             uvc_camera.bStillCaptureMethod = bStillCaptureMethod;
             uvc_camera.LIBUSB = libUsb;
             uvc_camera.moveToNative = moveToNative;
@@ -708,6 +713,7 @@ public class SaveToFile  {
             setUpTheUsbDevice.bNumControlTerminal = bNumControlTerminal;
             setUpTheUsbDevice.bNumControlUnit = bNumControlUnit;
             setUpTheUsbDevice.bcdUVC = bcdUVC;
+            setUpTheUsbDevice.bcdUSB = bcdUSB;
             setUpTheUsbDevice.bStillCaptureMethod = bStillCaptureMethod;
             setUpTheUsbDevice.libUsb = libUsb;
             setUpTheUsbDevice.moveToNative = moveToNative;
@@ -729,6 +735,7 @@ public class SaveToFile  {
             libUsb_autoDetect.bNumControlTerminal = bNumControlTerminal;
             libUsb_autoDetect.bNumControlUnit = bNumControlUnit;
             libUsb_autoDetect.bcdUVC = bcdUVC;
+            libUsb_autoDetect.bcdUSB = bcdUSB;
             libUsb_autoDetect.bStillCaptureMethod = bStillCaptureMethod;
             libUsb_autoDetect.libUsb = libUsb;
             libUsb_autoDetect.moveToNative = moveToNative;
@@ -750,6 +757,7 @@ public class SaveToFile  {
             jna_autoDetect.bNumControlTerminal = bNumControlTerminal;
             jna_autoDetect.bNumControlUnit = bNumControlUnit;
             jna_autoDetect.bcdUVC = bcdUVC;
+            jna_autoDetect.bcdUSB = bcdUSB;
             jna_autoDetect.bStillCaptureMethod = bStillCaptureMethod;
             jna_autoDetect.libUsb = libUsb;
             jna_autoDetect.moveToNative = moveToNative;
@@ -969,6 +977,7 @@ public class SaveToFile  {
             save.writeObject(libUsb);
             save.writeObject(moveToNative);
             save.writeObject(bcdUVC);
+            if (bcdUSB[0] == 3) save.writeObject(bcdUSB);
             save.close(); // This also closes saveFile.
         } catch (Exception e) { log("Error"); e.printStackTrace();}
         returnToMainLayout(String.format("Values edited and saved\nSavefile = %s", savePath));
@@ -1060,7 +1069,20 @@ public class SaveToFile  {
         bNumControlTerminal = uvc_desc.bNumControlTerminal;
         bNumControlUnit = uvc_desc.bNumControlUnit;
         bcdUVC = uvc_desc.bcdUVC;
-        log ("bcdUVC = " + bcdUVC[0] + bcdUVC[1]);
+        bcdUSB = uvc_desc.bcdUSB;
+        log ("bcdUSB = " + bcdUSB[0] + "." + bcdUSB[1]);
+        if (bcdUSB[0] == 2) log ("bcdUVC = " + bcdUVC[0] + bcdUVC[1]);
+        if (bcdUSB[0] == 3) {
+
+
+
+
+
+        }
+
+
+
+
         bStillCaptureMethod = uvc_desc.bStillCaptureMethod;
         UVC_Descriptor.FormatIndex formatIndex;
         int [] arrayFormatFrameIndexes = new int [uvc_descriptor.formatIndex.size()];

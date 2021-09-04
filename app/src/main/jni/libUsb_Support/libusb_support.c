@@ -1383,7 +1383,7 @@ int print_device(libusb_device *dev, int level, libusb_device_handle *handle, st
 int wrap_camera_device(int FD) {
     int ret;
     enum libusb_error rc;
-    rc = libusb_set_option(&ctx, LIBUSB_OPTION_WEAK_AUTHORITY, NULL);
+    rc = libusb_set_option(ctx, LIBUSB_OPTION_WEAK_AUTHORITY, NULL);
     if (rc != LIBUSB_SUCCESS) {
         __android_log_print(ANDROID_LOG_ERROR, TAG,"libusb_init failed: %d\n", ret);
         return -1;
@@ -1394,7 +1394,7 @@ int wrap_camera_device(int FD) {
                             "libusb_init failed: %d\n", ret);
         return -1;
     }
-    ret = libusb_wrap_sys_device(NULL, (intptr_t)FD, &devh);
+    ret = libusb_wrap_sys_device(ctx, (intptr_t)FD, &devh);
     if (ret < 0) {
         __android_log_print(ANDROID_LOG_INFO, TAG,
                             "libusb_wrap_sys_device failed: %d\n", ret);

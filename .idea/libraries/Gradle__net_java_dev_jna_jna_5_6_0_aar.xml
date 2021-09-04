@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="Gradle: net.java.dev.jna:jna:5.6.0@aar">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/87ff61d5b8c2d1ad9746b71423643f71/jna-5.6.0/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/87ff61d5b8c2d1ad9746b71423643f71/jna-5.6.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/87ff61d5b8c2d1ad9746b71423643f71/jna-5.6.0/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/1432ce2fb41009ed741b8c8024b9e0bb/jna-5.6.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/1432ce2fb41009ed741b8c8024b9e0bb/jna-5.6.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/1432ce2fb41009ed741b8c8024b9e0bb/jna-5.6.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna/5.6.0/ed8615d3e0a5f64a8d0acacf481905465019f9ae/jna-5.6.0-javadoc.jar!/" />
