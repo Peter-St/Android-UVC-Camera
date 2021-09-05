@@ -137,18 +137,15 @@ public class Main extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("text/plain");
-
         startActivityForResult(intent, SAVE_REQUEST_CODE);
     }
 
     public void newFile(View view)
     {
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_TITLE, "newfile.txt");
-
         startActivityForResult(intent, CREATE_REQUEST_CODE);
     }
 
@@ -159,6 +156,8 @@ public class Main extends AppCompatActivity {
         intent.setType("text/plain");
         startActivityForResult(intent, OPEN_REQUEST_CODE);
     }
+
+
 
     private String readFileContent(Uri uri) throws IOException {
 
@@ -182,16 +181,12 @@ public class Main extends AppCompatActivity {
             ParcelFileDescriptor pfd =
                     this.getContentResolver().
                             openFileDescriptor(uri, "w");
-
             FileOutputStream fileOutputStream =
                     new FileOutputStream(
                             pfd.getFileDescriptor());
-
             String textContent =
                     textView.getText().toString();
-
             fileOutputStream.write(textContent.getBytes());
-
             fileOutputStream.close();
             pfd.close();
         } catch (FileNotFoundException e) {
@@ -361,7 +356,7 @@ public class Main extends AppCompatActivity {
             if (requestCode == CREATE_REQUEST_CODE)
             {
                 if (data != null) {
-                    textView.setText("");
+                    //textView.setText("");
                 }
             } else if (requestCode == SAVE_REQUEST_CODE) {
 
@@ -377,7 +372,7 @@ public class Main extends AppCompatActivity {
                     try {
                         String content =
                                 readFileContent(currentUri);
-                        textView.setText(content);
+                        //textView.setText(content);
                     } catch (IOException e) {
                         // Handle error here
                     }

@@ -1091,6 +1091,7 @@ public class SetUpTheUsbDevice extends Activity {
 
     private void openCameraDevice(boolean init) throws Exception {
         if (moveToNative) {
+            log("moveToNative true");
             camDeviceConnection = usbManager.openDevice(camDevice);
             if (camDeviceConnection == null) {
                 displayMessage("Failed to open the device - Retry");
@@ -1135,6 +1136,7 @@ public class SetUpTheUsbDevice extends Activity {
             }
         }
         if (!init) {
+            log("getting the raw descriptors");
             byte[] a = camDeviceConnection.getRawDescriptors();
             ByteBuffer uvcData = ByteBuffer.wrap(a);
             uvc_descriptor = new UVC_Descriptor(uvcData);
@@ -1149,6 +1151,7 @@ public class SetUpTheUsbDevice extends Activity {
                 if (libUsb) libUsbActivate.setChecked(true);
                 else libUsbActivate.setChecked(false);
             } else libUsb = true;
+            log("Showing the SetUvcSettings Screen");
             alertDialog = builder.show();
             libUsbActivate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -1160,7 +1163,9 @@ public class SetUpTheUsbDevice extends Activity {
             automatic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    log("Automatic Button Pressed");
                     automaticStart = true;
+                    if (convertedMaxPacketSize == null) listDevice(camDevice);
                     ProgressBar progressBar = findViewById(R.id.progressBar);
                     progressBar.setVisibility(View.VISIBLE);
                     runOnUiThread(new Runnable() {
@@ -1179,12 +1184,14 @@ public class SetUpTheUsbDevice extends Activity {
             manual.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    log("Manual Button Pressed");
                     // Set up from UVC manually
                     if (uvc_descriptor.phraseUvcData() == 0) {
                         if (convertedMaxPacketSize == null) listDevice(camDevice);
                         if (uvc_descriptor.bcdUSB[0] == 3) {
 
                         }
+                        log("running stf.setUvcSettingsMethod");
                         stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize, false);
                     }
                     alertDialog.dismiss();

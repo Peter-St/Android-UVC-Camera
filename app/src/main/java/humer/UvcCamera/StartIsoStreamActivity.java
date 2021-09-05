@@ -164,7 +164,7 @@ public class StartIsoStreamActivity extends Activity {
     // Vales for debuging the camera
     private boolean imageCapture = false;
     private boolean videorecord = false;
-    private boolean videorecordApiJellyBean = false;
+    private boolean videorecordApiJellyBeanNup = false;
     private boolean stopKamera = false;
     private boolean pauseCamera = false;
     private boolean longclickVideoRecord = false;
@@ -523,8 +523,15 @@ public class StartIsoStreamActivity extends Activity {
         videoButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
+                    // Button Checked // Short Click
+                    log("long click return; longclick = " + longclickVideoRecord);
+
+                    // Prevent the double Start with longClick
+                    if (longclickVideoRecord) {
+                        return;
+                    }
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                        videorecordApiJellyBean = true;
+                        videorecordApiJellyBeanNup = true;
                         if (LIBUSB) JNA_I_LibUsb.INSTANCE.startVideoCapture();
 
                         lastVideo++;
@@ -539,39 +546,87 @@ public class StartIsoStreamActivity extends Activity {
                         date = new Date() ;
                         dateFormat = new SimpleDateFormat("dd.MM.yyyy___HH_mm_ss") ;
                         String dirname = "Video";
+
+
+                        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
+                            String videoFolderStr = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Video/";
+                            File videoFolder = new File(videoFolderStr);
+                            if (!videoFolder.exists()) {
+                                videoFolder.mkdirs();
+                            }
+                            log ("bitmapToVideoEncoder.startEncoding");
+                            bitmapToVideoEncoder.startEncoding(imageWidth, imageHeight, new File(videoFolder,"usbVideo" + lastVideo +"-" + dateFormat.format(date) + ".mp4"));
+                        } else {
+                            Context context = getApplicationContext();
+                            File directory = context.getFilesDir();
+                            File videoDir = new File(directory, "video");
+                            if (!videoDir.exists()) {
+                                if (!videoDir.mkdirs()) {
+                                    Log.e("TravellerLog :: ", "Problem creating video folder");
+                                }
+                            }
+                            log ("bitmapToVideoEncoder.startEncoding");
+                            bitmapToVideoEncoder.startEncoding(imageWidth, imageHeight, new File(videoDir,"usbVideo" + lastVideo +"-" + dateFormat.format(date) + ".mp4"));
+                        }
+
                         File sdPath = new File(getExternalFilesDir(null),dirname);
                         if (!sdPath.exists()) {
                             sdPath.mkdirs();
                         }
-                        bitmapToVideoEncoder.startEncoding(imageWidth, imageHeight, new File(sdPath,"usbVideo" + lastVideo +"-" + dateFormat.format(date) + ".mp4"));
                     } else {
+                        // Button Checked // Skip to Long Click
+
                         // The toggle is enabled
                         lastPicture = 0;
                         videorecord = true;
                         if (LIBUSB) JNA_I_LibUsb.INSTANCE.startVideoCapture();
 
                         String dirname = "Video";
-                        File sdPath = new File(getExternalFilesDir(null),dirname);
-                        if (!sdPath.exists()) {
-                            sdPath.mkdirs();
-                        }
-                        File saveDir=new File(sdPath, "rec");
-                        if (!saveDir.exists()) {
-                            saveDir.mkdirs();
-                        }
-                        if (saveDir.isDirectory()) {
-                            String[] children = saveDir.list();
-                            for (int i = 0; i < children.length; i++) {
-                                if (children[i].endsWith(".JPG"))
-                                    new File(saveDir, children[i]).delete();
+
+
+                        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
+                            String videoFolderStr = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Video/";
+                            File videoFolder = new File(videoFolderStr);
+                            if (!videoFolder.exists()) {
+                                videoFolder.mkdirs();
                             }
+                            File recFolder=new File(videoFolder, "rec");
+                            if (!recFolder.exists()) {
+                                recFolder.mkdirs();
+                            }
+                            if (recFolder.isDirectory()) {
+                                String[] children = recFolder.list();
+                                for (int i = 0; i < children.length; i++) {
+                                    if (children[i].endsWith(".JPG"))
+                                        new File(recFolder, children[i]).delete();
+                                }
+                            }
+                            recFolder.delete();
+                            displayMessage("Record started");
+                            startTime = System.currentTimeMillis();
+                            currentTime = System.currentTimeMillis();
+                            log ("file saved");
+                        } else {
+                            Context context = getApplicationContext();
+                            File directory = context.getFilesDir();
+                            File videoDir = new File(directory, "Video");
+                            if (!videoDir.exists()) {
+                                if (!videoDir.mkdirs()) {
+                                    Log.e("TravellerLog :: ", "Problem creating Video folder");
+                                }
+                            }
+                            File recFolder=new File(videoDir, "rec");
+                            if (!recFolder.exists()) {
+                                recFolder.mkdirs();
+                            }
+                            //recFolder.delete();
+                            displayMessage("Record started");
+                            startTime = System.currentTimeMillis();
+                            currentTime = System.currentTimeMillis();
                         }
-                        saveDir.delete();
-                        displayMessage("Record started");
-                        startTime = System.currentTimeMillis();
-                        currentTime = System.currentTimeMillis();
                     }
                 } else {
+                    // Button not checked // Long Click
                     if (longclickVideoRecord) {
                         longclickVideoRecord = false;
                         // The toggle is disabled
@@ -584,11 +639,7 @@ public class StartIsoStreamActivity extends Activity {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        String dirname = "Video";
-                        File sdPath = new File(getExternalFilesDir(null),dirname);
-                        if (!sdPath.exists()) {
-                            sdPath.mkdirs();
-                        }
+
                         long videotime = (System.currentTimeMillis() - startTime) / 1000;
                         log ("long videotime = " + videotime);
                         double a = (double) ( lastPicture / (double) videotime);
@@ -598,44 +649,97 @@ public class StartIsoStreamActivity extends Activity {
                         log ( "lastPicture = " + lastPicture);
                         date = new Date() ;
                         dateFormat = new SimpleDateFormat("dd.MM.yyyy___HH_mm_ss") ;
-                        File fileVideo = new File(sdPath, "usbVideo" + lastVideo + "_" + dateFormat.format(date) + ".avi");
-                        try {
-                            generator = new MJPEGGenerator(fileVideo, imageWidth, imageHeight, fps, lastPicture);
-                            File sub_dir=new File(sdPath, "rec");
-                            if (!sub_dir.exists()) {
-                                sub_dir.mkdirs();
+
+                        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
+
+                            String videoFolderStr = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Video/";
+                            File videoFolder = new File(videoFolderStr);
+                            if (!videoFolder.exists()) {
+                                videoFolder.mkdirs();
                             }
-                            for (int addpic = 1; addpic <= lastPicture; addpic++) {
-                                String curjpg = new File(sub_dir, addpic + ".JPG").getPath();
-                                final Bitmap bitmap = BitmapFactory.decodeFile(curjpg);
-                                generator.addImage(bitmap);
+
+                            File recFolder=new File(videoFolder, "rec");
+                            if (!recFolder.exists()) {
+                                recFolder.mkdirs();
                             }
-                            generator.finishAVI();
-                        } catch (Exception e) {
-                            displayMessage("Error: " + e);
-                            e.printStackTrace();
-                        }
-                        File saveDir=new File(sdPath, "rec");
-                        if (!saveDir.exists()) {
-                            saveDir.mkdirs();
-                        }
-                        if (saveDir.isDirectory()) {
-                            String[] children = saveDir.list();
-                            for (int i = 0; i < children.length; i++) {
-                                if (children[i].endsWith(".JPG"))
-                                    new File(saveDir, children[i]).delete();
+                            File fileVideo = new File(videoFolder, "usbVideo" + lastVideo + "_" + dateFormat.format(date) + ".avi");
+                            try {
+                                generator = new MJPEGGenerator(fileVideo, imageWidth, imageHeight, fps, lastPicture);
+
+                                for (int addpic = 1; addpic <= lastPicture; addpic++) {
+                                    String curjpg = new File(recFolder, addpic + ".JPG").getPath();
+                                    final Bitmap bitmap = BitmapFactory.decodeFile(curjpg);
+                                    generator.addImage(bitmap);
+                                }
+                                generator.finishAVI();
+                            } catch (Exception e) {
+                                displayMessage("Error: " + e);
+                                e.printStackTrace();
                             }
+                            if (recFolder.isDirectory()) {
+                                String[] children = recFolder.list();
+                                for (int i = 0; i < children.length; i++) {
+                                    if (children[i].endsWith(".JPG"))
+                                        new File(recFolder, children[i]).delete();
+                                }
+                            }
+                            recFolder.delete();
+                            displayMessage("Record stopped");
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            pauseCamera = false;
+                            generator = null;
+                        } else {
+                            Context context = getApplicationContext();
+                            File directory = context.getFilesDir();
+                            File videoFolder = new File(directory, "Video");
+                            if (!videoFolder.exists()) {
+                                if (!videoFolder.mkdirs()) {
+                                    Log.e("TravellerLog :: ", "Problem creating Video folder");
+                                }
+                            }
+
+                            File recFolder=new File(videoFolder, "rec");
+                            if (!recFolder.exists()) {
+                                recFolder.mkdirs();
+                            }
+                            File fileVideo = new File(videoFolder, "usbVideo" + lastVideo + "_" + dateFormat.format(date) + ".avi");
+                            try {
+                                generator = new MJPEGGenerator(fileVideo, imageWidth, imageHeight, fps, lastPicture);
+
+                                for (int addpic = 1; addpic <= lastPicture; addpic++) {
+                                    String curjpg = new File(recFolder, addpic + ".JPG").getPath();
+                                    final Bitmap bitmap = BitmapFactory.decodeFile(curjpg);
+                                    generator.addImage(bitmap);
+                                }
+                                generator.finishAVI();
+                            } catch (Exception e) {
+                                displayMessage("Error: " + e);
+                                e.printStackTrace();
+                            }
+                            if (recFolder.isDirectory()) {
+                                String[] children = recFolder.list();
+                                for (int i = 0; i < children.length; i++) {
+                                    if (children[i].endsWith(".JPG"))
+                                        new File(recFolder, children[i]).delete();
+                                }
+                            }
+                            recFolder.delete();
+                            displayMessage("Record stopped");
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            pauseCamera = false;
+                            generator = null;
                         }
-                        saveDir.delete();
-                        displayMessage("Record stopped");
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        pauseCamera = false;
-                        generator = null;
-                    } else {
+                    }
+                    // Button not checked // Short Click
+                    else {
                         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
                             pauseCamera = true;
                             try {
@@ -643,7 +747,7 @@ public class StartIsoStreamActivity extends Activity {
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            videorecordApiJellyBean = false;
+                            videorecordApiJellyBeanNup = false;
                             if (LIBUSB) JNA_I_LibUsb.INSTANCE.stopVideoCapture();
                             bitmapToVideoEncoder.stopEncoding();
                             try {
@@ -666,10 +770,14 @@ public class StartIsoStreamActivity extends Activity {
                             if (LIBUSB) JNA_I_LibUsb.INSTANCE.stopVideoCapture();
                             lastVideo ++;
                             String dirname = "Video";
-                            File sdPath = new File(getExternalFilesDir(null),dirname);
-                            if (!sdPath.exists()) {
-                                sdPath.mkdirs();
+
+                            String videoFolderStr = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Video/";
+                            File videoFolder = new File(videoFolderStr);
+                            if (!videoFolder.exists()) {
+                                videoFolder.mkdirs();
                             }
+
+
                             long videotime = (System.currentTimeMillis() - startTime) / 1000;
                             log ("long videotime = " + videotime);
                             double a = (double) ( lastPicture / (double) videotime);
@@ -679,11 +787,11 @@ public class StartIsoStreamActivity extends Activity {
                             log ( "lastPicture = " + lastPicture);
                             date = new Date() ;
                             dateFormat = new SimpleDateFormat("dd.MM.yyyy___HH_mm_ss") ;
-                            File fileVideo = new File(sdPath,"output-" + lastVideo +"-" + dateFormat.format(date) + ".avi");
+                            File fileVideo = new File(videoFolder,"output-" + lastVideo +"-" + dateFormat.format(date) + ".avi");
                             try {
                                 generator = new MJPEGGenerator(fileVideo, imageWidth, imageHeight, fps, lastPicture);
                                 for (int addpic = 1; addpic <= lastPicture; addpic++) {
-                                    File sub_dir=new File(sdPath, "rec");
+                                    File sub_dir=new File(videoFolder, "rec");
                                     if (!sub_dir.exists()) {
                                         sub_dir.mkdirs();
                                     }
@@ -696,7 +804,7 @@ public class StartIsoStreamActivity extends Activity {
                                 displayMessage("Error: " + e);
                                 e.printStackTrace();
                             }
-                            File saveDir=new File(sdPath, "rec");
+                            File saveDir=new File(videoFolder, "rec");
                             if (!saveDir.exists()) {
                                 saveDir.mkdirs();
                             }
@@ -724,33 +832,67 @@ public class StartIsoStreamActivity extends Activity {
 
                 if (videoButton.isChecked()==(false))
                 {
-                    displayMessage("Long Click - Video starts");
-                    // button is unchecked
-                    videoButton.setChecked(true);
-                    if (LIBUSB) JNA_I_LibUsb.INSTANCE.startVideoCaptureLongClick();
+                    // Needs to stand first to prevent double Start with on Ceck Changed listener
                     longclickVideoRecord = true;
-                    lastPicture = 0;
-                    videorecord = true;
-                    String dirname = "Video";
-                    File sdPath = new File(getExternalFilesDir(null),dirname);
-                    if (!sdPath.exists()) {
-                        sdPath.mkdirs();
-                    }
-                    File saveDir=new File(sdPath, "rec");
-                    if (!saveDir.exists()) {
-                        saveDir.mkdirs();
-                    }
-                    if (saveDir.isDirectory()) {
-                        String[] children = saveDir.list();
-                        for (int i = 0; i < children.length; i++) {
-                            if (children[i].endsWith(".JPG"))
-                                new File(saveDir, children[i]).delete();
+                    // button is unchecked
+                    displayMessage("Long Click - Video starts");
+                    log("Long Click - Video starts");
+                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
+                        String videoFolderStr = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Video/";
+                        File videoFolder = new File(videoFolderStr);
+                        if (!videoFolder.exists()) {
+                            videoFolder.mkdirs();
                         }
+                        videoButton.setChecked(true);
+                        if (LIBUSB) JNA_I_LibUsb.INSTANCE.startVideoCaptureLongClick();
+                        lastPicture = 0;
+                        videorecord = true;
+                        File saveDir=new File(videoFolder, "rec");
+                        if (!saveDir.exists()) {
+                            saveDir.mkdirs();
+                        }
+                        if (saveDir.isDirectory()) {
+                            String[] children = saveDir.list();
+                            for (int i = 0; i < children.length; i++) {
+                                if (children[i].endsWith(".JPG"))
+                                    new File(saveDir, children[i]).delete();
+                            }
+                        }
+                        //saveDir.delete();
+                        displayMessage("Record started");
+                        startTime = System.currentTimeMillis();
+                        currentTime = System.currentTimeMillis();
+                        log("long click method Started!");
+                    } else {
+                        // button is unchecked
+                        videoButton.setChecked(true);
+                        if (LIBUSB) JNA_I_LibUsb.INSTANCE.startVideoCaptureLongClick();
+                        lastPicture = 0;
+                        videorecord = true;
+                        Context context = getApplicationContext();
+                        File directory = context.getFilesDir();
+                        File videoFolder = new File(directory, "Video");
+                        if (!videoFolder.exists()) {
+                            if (!videoFolder.mkdirs()) {
+                                Log.e("TravellerLog :: ", "Problem creating Video folder");
+                            }
+                        }
+                        File saveDir=new File(videoFolder, "rec");
+                        if (!saveDir.exists()) {
+                            saveDir.mkdirs();
+                        }
+                        if (saveDir.isDirectory()) {
+                            String[] children = saveDir.list();
+                            for (int i = 0; i < children.length; i++) {
+                                if (children[i].endsWith(".JPG"))
+                                    new File(saveDir, children[i]).delete();
+                            }
+                        }
+                        //saveDir.delete();
+                        displayMessage("Record started");
+                        startTime = System.currentTimeMillis();
+                        currentTime = System.currentTimeMillis();
                     }
-                    saveDir.delete();
-                    displayMessage("Record started");
-                    startTime = System.currentTimeMillis();
-                    currentTime = System.currentTimeMillis();
                 }
                 return true;
             }});
@@ -770,9 +912,7 @@ public class StartIsoStreamActivity extends Activity {
         flip = (ImageButton) findViewById(R.id.flipRightButton); flip.setEnabled(false); flip.setBackgroundDrawable(null);
         ToggleButton flip2 = (ToggleButton) findViewById(R.id.flipHorizontalButton); flip2.setEnabled(false); flip2.setBackgroundDrawable(null);
         flip2 = (ToggleButton) findViewById(R.id.flipVerticalButton); flip2.setEnabled(false); flip2.setBackgroundDrawable(null);
-
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(StartIsoStreamService.NOTIFICATION));
-
         if (LIBUSB) {
             mUVCCameraView = (SurfaceView)findViewById(R.id.surfaceView);
             mPreviewSurface = mUVCCameraView.getHolder().getSurface();
@@ -1908,22 +2048,45 @@ public class StartIsoStreamActivity extends Activity {
                 currentTime = System.currentTimeMillis();
                 lastPicture ++;
                 String dirname = "Video";
+
+                Context context = getApplicationContext();
+                File directory = context.getFilesDir();
+
+                File videoFolder = new File(directory, "video");
+                if (!videoFolder.exists()) {
+                    if (!videoFolder.mkdirs()) {
+                        Log.e("TravellerLog :: ", "Problem creating Video folder");
+                    }
+                }
+
+                File recFolder = new File(directory, "rec");
+                if (!recFolder.exists()) {
+                    if (!recFolder.mkdirs()) {
+                        Log.e("TravellerLog :: ", "Problem creating rec folder");
+                    }
+                }
+
+                /*
                 File dir = new File(getExternalFilesDir(null),dirname);
                 if (!dir.exists()) {
                     dir.mkdirs();
                 }
+
+
                 File sub_dir=new File(dir, "rec");
                 if (!sub_dir.exists()) {
                     sub_dir.mkdirs();
                 }
-                String fileName = new File(sub_dir,lastPicture + ".JPG").getPath() ;
+                */
+
+                String fileName = new File(recFolder,lastPicture + ".JPG").getPath() ;
                 try {
                     writeBytesToFile(fileName, jpgData);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-        } else if (videorecordApiJellyBean) {
+        } else if (videorecordApiJellyBeanNup) {
             final Bitmap bitmap = BitmapFactory.decodeByteArray(jpgData, 0, jpgData.length);
             bitmapToVideoEncoder.queueFrame(bitmap);
         }
@@ -1969,6 +2132,22 @@ public class StartIsoStreamActivity extends Activity {
                 currentTime = System.currentTimeMillis();
                 lastPicture ++;
                 String dirname = "Video";
+
+                Context context = getApplicationContext();
+                File directory = context.getFilesDir();
+                File videoFolder = new File(directory, "video");
+                if (!videoFolder.exists()) {
+                    if (!videoFolder.mkdirs()) {
+                        Log.e("TravellerLog :: ", "Problem creating Video folder");
+                    }
+                }
+                File recFolder = new File(directory, "rec");
+                if (!recFolder.exists()) {
+                    if (!recFolder.mkdirs()) {
+                        Log.e("TravellerLog :: ", "Problem creating rec folder");
+                    }
+                }
+
                 File dir = new File(getExternalFilesDir(null),dirname);
                 if (!dir.exists()) {
                     dir.mkdirs();
@@ -1977,7 +2156,9 @@ public class StartIsoStreamActivity extends Activity {
                 if (!sub_dir.exists()) {
                     sub_dir.mkdirs();
                 }
-                String fileName = new File(sub_dir,lastPicture + ".JPG").getPath() ;
+
+                String fileName = new File(recFolder,lastPicture + ".JPG").getPath() ;
+
                 YuvImage yuvImage = new YuvImage(yuvData, ImageFormat.YUY2, imageWidth, imageHeight, null);
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
                 yuvImage.compressToJpeg(new Rect(0, 0, imageWidth, imageHeight), 100, os);
@@ -1988,7 +2169,7 @@ public class StartIsoStreamActivity extends Activity {
                     e.printStackTrace();
                 }
             }
-        } else if (videorecordApiJellyBean) {
+        } else if (videorecordApiJellyBeanNup) {
             YuvImage yuvImage = new YuvImage(yuvData, ImageFormat.YUY2, imageWidth, imageHeight, null);
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             yuvImage.compressToJpeg(new Rect(0, 0, imageWidth, imageHeight), 100, os);
@@ -2079,7 +2260,7 @@ public class StartIsoStreamActivity extends Activity {
                     e.printStackTrace();
                 }
             }
-        } else if (videorecordApiJellyBean) {
+        } else if (videorecordApiJellyBeanNup) {
             int nrOfPixels = colors.length / 3; // Three bytes per pixel.
             int pixels[] = new int[nrOfPixels];
             for(int i = 0; i < nrOfPixels; i++) {
@@ -2301,7 +2482,7 @@ public class StartIsoStreamActivity extends Activity {
                     else imageView.setImageBitmap(bmp);
                 }
             });
-            if (videorecordApiJellyBean) {
+            if (videorecordApiJellyBeanNup) {
                 bitmapToVideoEncoder.queueFrame(bitmap);
             }
         }
@@ -2409,7 +2590,7 @@ public class StartIsoStreamActivity extends Activity {
                         imageView.setImageBitmap(bitmap);
                     }
                 });
-                if (videorecordApiJellyBean) {
+                if (videorecordApiJellyBeanNup) {
                     bitmapToVideoEncoder.queueFrame(bitmap);
                 }
             } else {
@@ -2422,7 +2603,7 @@ public class StartIsoStreamActivity extends Activity {
                         } else imageView.setImageBitmap(bitmap);
                     }
                 });
-                if (videorecordApiJellyBean) {
+                if (videorecordApiJellyBeanNup) {
                     bitmapToVideoEncoder.queueFrame(bitmap);
                 }
             }

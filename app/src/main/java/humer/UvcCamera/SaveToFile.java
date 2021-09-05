@@ -505,7 +505,7 @@ public class SaveToFile  {
 
                             String deleteFile = context.getFilesDir().getAbsolutePath();
                             deleteFile  += "/";
-                            deleteFile += saveFilePathFolder ;
+                            deleteFile += saveFilePathFolder;
                             deleteFile += "/";
                             deleteFile += strName;
 

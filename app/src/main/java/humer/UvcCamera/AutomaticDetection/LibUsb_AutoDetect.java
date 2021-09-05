@@ -27,7 +27,9 @@ import android.widget.Toast;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 
@@ -475,7 +477,9 @@ public class LibUsb_AutoDetect extends AppCompatActivity {
             log(stringBuilder.toString());
         }
         else {
-            convertedMaxPacketSize = new int [(usbDevice.getInterfaceCount()-2)];
+            //MaxPacketSizeArray
+            List<Integer> maxPacketSizeArray = new ArrayList<Integer>();
+            //convertedMaxPacketSize = new int [(usbDevice.getInterfaceCount()-2)];
             log("Interface count: " + usbDevice.getInterfaceCount());
             int interfaces = usbDevice.getInterfaceCount();
             stringBuilder = new StringBuilder();
@@ -502,11 +506,16 @@ public class LibUsb_AutoDetect extends AppCompatActivity {
                     StringBuilder logEntry2 = new StringBuilder("        [ Endpoint " + Math.max(0, (i-1))  + " - address " + String.format("0x%02x ", usbEndpoint.getAddress()).toString() + " - maxPacketSize=" + returnConvertedValue(usbEndpoint.getMaxPacketSize()) + " ]");
                     stringBuilder.append(logEntry2.toString());
                     stringBuilder.append("\n");
-                    if (usbInterface.getId() == 1) {
-                        convertedMaxPacketSize[a] = returnConvertedValue(usbEndpoint.getMaxPacketSize());
+                    if (usbInterface.getId() == 1 && usbInterface.getEndpointCount() > 0) {
+                        maxPacketSizeArray.add(returnConvertedValue(usbEndpoint.getMaxPacketSize()));
+                        //convertedMaxPacketSize[a] = returnConvertedValue(usbEndpoint.getMaxPacketSize());
                         a++;
                     }
                 }
+            }
+            convertedMaxPacketSize = new int [maxPacketSizeArray.size()];
+            for (int c =0; c<maxPacketSizeArray.size(); c++) {
+                convertedMaxPacketSize[c]=  maxPacketSizeArray.get(c);
             }
             stringBuilder.append("\n\n\n\nThe number of the Endpoint represents the value of the Altsetting\nIf the Altsetting is 0 than the Video Control Interface will be used.\nIf the Altsetting is higher, than the Video Stream Interface with its specific Max Packet Size will be used");
             log(stringBuilder.toString());
