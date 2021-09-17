@@ -390,6 +390,7 @@ public class UsbCapturer implements VideoCapturer {
             return;
         }
         // (For transfer buffer sizes > 196608 the kernel file drivers/usb/core/devio.c must be patched.)
+
         camControlInterface = getVideoControlInterface(camDevice);
         camStreamingInterface = getVideoStreamingInterface(camDevice);
         if (camStreamingInterface.getEndpointCount() < 1) {

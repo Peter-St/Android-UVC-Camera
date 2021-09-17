@@ -1113,10 +1113,15 @@ public class SetUpTheUsbDevice extends Activity {
         log("camControlInterface = " + camControlInterface + "  //  camStreamingInterface = " + camStreamingInterface);
         if (camStreamingInterface.getEndpointCount() < 1) {
             throw new Exception("Streaming interface has no endpoint.");
+        } else {
+            log("setting Endpoints");
+            camStreamingEndpoint = camStreamingInterface.getEndpoint(0);
         }
-        camStreamingEndpoint = camStreamingInterface.getEndpoint(0);
-        camControlEndpoint = camControlInterface.getEndpoint(0);
+        if (camControlInterface.getEndpointCount()>0) {
+            camControlEndpoint = camControlInterface.getEndpoint(0);
+        }
         bulkMode = camStreamingEndpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK;
+        log("opening the usb device");
         camDeviceConnection = usbManager.openDevice(camDevice);
         if (camDeviceConnection == null) {
             displayMessage("Failed to open the device - Retry");

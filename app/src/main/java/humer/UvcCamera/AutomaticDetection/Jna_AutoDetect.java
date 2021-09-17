@@ -534,7 +534,9 @@ public class Jna_AutoDetect extends AppCompatActivity {
             throw new Exception("Streaming interface has no endpoint.");
         }
         camStreamingEndpoint = camStreamingInterface.getEndpoint(0);
-        camControlEndpoint = camControlInterface.getEndpoint(0);
+        if (camControlInterface.getEndpointCount()>0) {
+            camControlEndpoint = camControlInterface.getEndpoint(0);
+        }
         bulkMode = camStreamingEndpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK;
         camDeviceConnection = usbManager.openDevice(camDevice);
         if (camDeviceConnection == null) {
