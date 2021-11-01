@@ -68,35 +68,36 @@ import noman.zoomtextview.ZoomTextView;
 public class Main extends AppCompatActivity {
 
 
-    public static int camStreamingAltSetting;
-    public static int camFormatIndex;
-    public static int camFrameIndex;
-    public static int camFrameInterval;
-    public static int packetsPerRequest;
-    public static int maxPacketSize;
-    public static int imageWidth;
-    public static int imageHeight;
-    public static int activeUrbs;
-    public static String videoformat;
-    public static String deviceName;
-    public static byte bUnitID;
-    public static byte bTerminalID;
-    public static byte[] bNumControlTerminal;
-    public static byte[] bNumControlUnit;
-    public static byte[] bcdUVC;
-    public static byte[] bcdUSB;
-    public static byte bStillCaptureMethod;
-    public static boolean LIBUSB;
-    public static boolean moveToNative;
+    public static int       camStreamingAltSetting;
+    public static int       camFormatIndex;
+    public static int       camFrameIndex;
+    public static int       camFrameInterval;
+    public static int       packetsPerRequest;
+    public static int       maxPacketSize;
+    public static int       imageWidth;
+    public static int       imageHeight;
+    public static int       activeUrbs;
+    public static String    videoformat;
+    public static String    deviceName;
+    public static byte      bUnitID;
+    public static byte      bTerminalID;
+    public static byte[]    bNumControlTerminal;
+    public static byte[]    bNumControlUnit;
+    public static byte[]    bcdUVC;
+    public static byte[]    bcdUSB;
+    public static byte      bStillCaptureMethod;
+    public static boolean   LIBUSB;
+    public static boolean   moveToNative;
+    public static boolean   bulkMode;
 
-    public Button menu;
-    private ZoomTextView tv;
+    public Button           menu;
+    private ZoomTextView    tv;
 
-    private final int REQUEST_PERMISSION_STORAGE_READ=1;
-    private final int REQUEST_PERMISSION_STORAGE_WRITE=2;
-    private final int REQUEST_PERMISSION_CAMERA=3;
-    private static int ActivitySetUpTheUsbDeviceRequestCode = 1;
-    private static int ActivityStartIsoStreamRequestCode = 2;
+    private final int       REQUEST_PERMISSION_STORAGE_READ=1;
+    private final int       REQUEST_PERMISSION_STORAGE_WRITE=2;
+    private final int       REQUEST_PERMISSION_CAMERA=3;
+    private static int      ActivitySetUpTheUsbDeviceRequestCode = 1;
+    private static int      ActivityStartIsoStreamRequestCode = 2;
 
     final static float STEP = 200;
     float mRatio = 1.0f;
@@ -331,6 +332,7 @@ public class Main extends AppCompatActivity {
             bStillCaptureMethod = data.getByteExtra("bStillCaptureMethod", (byte) 0);
             LIBUSB = data.getBooleanExtra("libUsb", false);
             moveToNative = data.getBooleanExtra("moveToNative", false);
+            bulkMode = data.getBooleanExtra("bulkMode", false);
             if (camFrameInterval == 0)
                 tv.setText("Your current Values are:\n\nPackets Per Request = " + packetsPerRequest + "\nActive Urbs = " + activeUrbs +
                         "\nAltSetting = " + camStreamingAltSetting + "\nMaximal Packet Size = " + maxPacketSize + "\nVideoformat = " + videoformat +
@@ -478,6 +480,7 @@ public class Main extends AppCompatActivity {
                 bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
                 bundle.putBoolean("libUsb", LIBUSB);
                 bundle.putBoolean("moveToNative", moveToNative);
+                bundle.putBoolean("bulkMode", bulkMode);
                 intent.putExtra("bun",bundle);
                 super.onResume();
                 startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
@@ -507,6 +510,7 @@ public class Main extends AppCompatActivity {
             bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
             bundle.putBoolean("libUsb", LIBUSB);
             bundle.putBoolean("moveToNative", moveToNative);
+            bundle.putBoolean("bulkMode", bulkMode);
             intent.putExtra("bun",bundle);
             super.onResume();
             startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
@@ -534,6 +538,7 @@ public class Main extends AppCompatActivity {
             bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
             bundle.putBoolean("libUsb", LIBUSB);
             bundle.putBoolean("moveToNative", moveToNative);
+            bundle.putBoolean("bulkMode", bulkMode);
             intent.putExtra("bun",bundle);
             super.onResume();
             startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
@@ -593,6 +598,7 @@ public class Main extends AppCompatActivity {
                 bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
                 bundle.putBoolean("libUsb", LIBUSB);
                 bundle.putBoolean("moveToNative", moveToNative);
+                bundle.putBoolean("bulkMode", bulkMode);
                 intent.putExtra("bun",bundle);
                 startActivityForResult(intent, ActivityStartIsoStreamRequestCode);
             }
@@ -627,6 +633,7 @@ public class Main extends AppCompatActivity {
                 bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
                 bundle.putBoolean("libUsb", LIBUSB);
                 bundle.putBoolean("moveToNative", moveToNative);
+                bundle.putBoolean("bulkMode", bulkMode);
                 intent.putExtra("bun",bundle);
                 startActivityForResult(intent, ActivityStartIsoStreamRequestCode);
             }

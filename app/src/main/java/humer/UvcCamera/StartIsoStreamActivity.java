@@ -136,30 +136,31 @@ public class StartIsoStreamActivity extends Activity {
     private UsbInterface camControlInterface;
     private UsbInterface camStreamingInterface;
     private UsbEndpoint camStreamingEndpoint;
-    private boolean bulkMode;
     private PendingIntent mPermissionIntent;
 
     // Camera Values
-    public static int camStreamingAltSetting;
-    public static int camFormatIndex;
-    public int camFrameIndex;
-    public static int camFrameInterval;
-    public static int packetsPerRequest;
-    public static int maxPacketSize;
-    public int imageWidth;
-    public int imageHeight;
-    public static int activeUrbs;
-    public static String videoformat;
-    public static boolean camIsOpen;
-    public static byte bUnitID;
-    public static byte bTerminalID;
-    public static byte bStillCaptureMethod;
-    public static byte[] bNumControlTerminal;
-    public static byte[] bNumControlUnit;
-    public static byte[] bcdUVC;
-    public static byte[] bcdUSB;
-    public static boolean LIBUSB;
-    public static boolean moveToNative;
+    public static int       camStreamingAltSetting;
+    public static int       camFormatIndex;
+    public int              camFrameIndex;
+    public static int       camFrameInterval;
+    public static int       packetsPerRequest;
+    public static int       maxPacketSize;
+    public int              imageWidth;
+    public int              imageHeight;
+    public static int       activeUrbs;
+    public static String    videoformat;
+    public static boolean   camIsOpen;
+    public static byte      bUnitID;
+    public static byte      bTerminalID;
+    public static byte      bStillCaptureMethod;
+    public static byte[]    bNumControlTerminal;
+    public static byte[]    bNumControlUnit;
+    public static byte[]    bcdUVC;
+    public static byte[]    bcdUSB;
+    public static boolean   LIBUSB;
+    public static boolean   moveToNative;
+    public static boolean   bulkMode;
+
 
     // Vales for debuging the camera
     private boolean imageCapture = false;
@@ -263,7 +264,7 @@ public class StartIsoStreamActivity extends Activity {
             System.loadLibrary("yuv");
             System.loadLibrary("jpeg");
             System.loadLibrary("jpeg-turbo");
-            System.loadLibrary("Usb_Support");
+            System.loadLibrary("Uvc_Support");
             isLoaded = true;
         }
     }
@@ -492,7 +493,6 @@ public class StartIsoStreamActivity extends Activity {
                 log("Menu closed");
             }
         });
-
         FrameLayout layout = (FrameLayout)findViewById(R.id.switch_view);
         layout.setVisibility(View.GONE);
         photoButton = (ImageButton) findViewById(R.id.Bildaufnahme);
@@ -533,7 +533,6 @@ public class StartIsoStreamActivity extends Activity {
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
                         videorecordApiJellyBeanNup = true;
                         if (LIBUSB) JNA_I_LibUsb.INSTANCE.startVideoCapture();
-
                         lastVideo++;
                         bitmapToVideoEncoder = new BitmapToVideoEncoder(new BitmapToVideoEncoder.IBitmapToVideoEncoderCallback() {
                             @Override
@@ -701,7 +700,6 @@ public class StartIsoStreamActivity extends Activity {
                                     Log.e("TravellerLog :: ", "Problem creating Video folder");
                                 }
                             }
-
                             File recFolder=new File(videoFolder, "rec");
                             if (!recFolder.exists()) {
                                 recFolder.mkdirs();
@@ -1481,6 +1479,7 @@ public class StartIsoStreamActivity extends Activity {
         bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
         bundle.putBoolean("LIBUSB", LIBUSB);
         bundle.putBoolean("moveToNative", moveToNative);
+        bundle.putBoolean("bulkMode", bulkMode);
         intent.putExtra("bun",bundle);
         startActivity(intent);
         StartIsoStreamActivity.this.finish();
@@ -3123,6 +3122,7 @@ public class StartIsoStreamActivity extends Activity {
         bStillCaptureMethod = bundle.getByte("bStillCaptureMethod", (byte)0);
         LIBUSB = bundle.getBoolean("libUsb" );
         moveToNative = bundle.getBoolean("moveToNative" );
+        bulkMode = bundle.getBoolean("bulkMode" );
     }
 
     private int round(double d){

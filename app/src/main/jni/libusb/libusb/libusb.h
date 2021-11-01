@@ -31,8 +31,11 @@
 #define inline __inline
 #endif
 /* ssize_t is also not available */
+#ifndef _SSIZE_T_DEFINED
+#define _SSIZE_T_DEFINED
 #include <basetsd.h>
 typedef SSIZE_T ssize_t;
+#endif /* _SSIZE_T_DEFINED */
 #endif /* _MSC_VER */
 
 #include <limits.h>
@@ -904,7 +907,7 @@ struct libusb_container_id_descriptor {
 
 /** \ingroup libusb_asyncio
  * Setup packet for control transfers. */
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) || defined(__WATCOMC__)
 #pragma pack(push, 1)
 #endif
 struct libusb_control_setup {
@@ -932,7 +935,7 @@ struct libusb_control_setup {
 	/** Number of bytes to transfer */
 	uint16_t wLength;
 } LIBUSB_PACKED;
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) || defined(__WATCOMC__)
 #pragma pack(pop)
 #endif
 
@@ -989,7 +992,7 @@ typedef struct libusb_context libusb_context;
 /** \ingroup libusb_dev
  * Structure representing a USB device detected on the system. This is an
  * opaque type for which you are only ever provided with a pointer, usually
- * originating from libusb_get_device_list().
+ * originating from libusb_get_device_list() or libusb_hotplug_register_callback().
  *
  * Certain operations can be performed on a device, but in order to do any
  * I/O you will have to first obtain a device handle using libusb_open().
@@ -1325,6 +1328,9 @@ enum libusb_log_level {
 
 /** \ingroup libusb_lib
  *  Log callback mode.
+ *
+ *  Since version 1.0.23, \ref LIBUSB_API_VERSION >= 0x01000107
+ *
  * \see libusb_set_log_cb()
  */
 enum libusb_log_cb_mode {
@@ -1341,6 +1347,9 @@ enum libusb_log_cb_mode {
  * is a global log message
  * \param level the log level, see \ref libusb_log_level for a description
  * \param str the log message
+ *
+ * Since version 1.0.23, \ref LIBUSB_API_VERSION >= 0x01000107
+ *
  * \see libusb_set_log_cb()
  */
 typedef void (LIBUSB_CALL *libusb_log_cb)(libusb_context *ctx,
@@ -2092,16 +2101,30 @@ enum libusb_option {
 	 */
 	LIBUSB_OPTION_USE_USBDK = 1,
 
-	/** Set libusb has weak authority. With this option, libusb will skip
-	 * scan devices in libusb_init.
+	/** Do not scan for devices
 	 *
-	 * This option should be set before calling libusb_init(), otherwise
-	 * libusb_init will failed. Normally libusb_wrap_sys_device need set
-	 * this option.
+	 * With this option set, libusb will skip scanning devices in
+	 * libusb_init(). Must be set before calling libusb_init().
 	 *
-	 * Only valid on Linux-based operating system, such as Android.
+	 * Hotplug functionality will also be deactivated.
+	 *
+	 * The option is useful in combination with libusb_wrap_sys_device(),
+	 * which can access a device directly without prior device scanning.
+	 *
+	 * This is typically needed on Android, where access to USB devices
+	 * is limited.
+	 *
+	 * Only valid on Linux.
 	 */
-	LIBUSB_OPTION_WEAK_AUTHORITY = 2
+	LIBUSB_OPTION_NO_DEVICE_DISCOVERY = 2,
+
+	/** Flag that libusb has weak authority.
+	 *
+	 * (Deprecated) alias for LIBUSB_OPTION_NO_DEVICE_DISCOVERY
+	 */
+	LIBUSB_OPTION_WEAK_AUTHORITY = 3,
+
+	LIBUSB_OPTION_MAX = 4
 };
 
 int LIBUSB_CALL libusb_set_option(libusb_context *ctx, enum libusb_option option, ...);

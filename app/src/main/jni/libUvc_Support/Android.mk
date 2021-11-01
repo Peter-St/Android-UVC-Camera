@@ -30,7 +30,7 @@ include $(CLEAR_VARS)
 ISOSTREAM_ROOT_ABS:= $(LOCAL_PATH)/../..
 ISOSTREAM_ROOT_REL:= ../..
 ######################################################################
-# Make shared library libIso_stream.so
+# Make shared library libUvc_Support.so
 ######################################################################
 CFLAGS := -Werror
 
@@ -58,8 +58,8 @@ LOCAL_SHARED_LIBRARIES += libjpeg-turbo
 LOCAL_ARM_MODE := arm
 
 LOCAL_SRC_FILES := \
-		        libusb_support.c\
+		        libuvc_support.c\
 
 LOCAL_LDLIBS    := -llog -ljnigraphics -landroid
-LOCAL_MODULE    := Usb_Support
+LOCAL_MODULE    := Uvc_Support
 include $(BUILD_SHARED_LIBRARY)

@@ -32,12 +32,12 @@ This Repository is provided "as is", without warranties of any kind.
 #include <linux/usbdevice_fs.h>
 #include <signal.h>
 #include <android/log.h>
-#include "libusb_support.h"
+#include "libuvc_support.h"
 #include <sys/wait.h>
 #include <stdbool.h>
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
-#include <libusb.h>
+//#include <libusb.h>
 #include <libyuv/include/libyuv.h>
 
 #include <android-libjpeg-turbo/jni/vendor/libjpeg-turbo/libjpeg-turbo-2.0.1/turbojpeg.h>
@@ -93,8 +93,12 @@ typedef uint8_t control_version_t;
 /** This is the version of control protocol. Used to check compatibility */
 #define CONTROL_VERSION 0x10
 
-libusb_context *ctx;
-libusb_device_handle *devh = NULL;
+
+uvc_context_t *uvcContext;
+uvc_device_handle_t *uvcDeviceHandle;
+
+//libusb_context *ctx;
+//libusb_device_handle *devh = NULL;
 
 AutotransferStruct autoStruct;
 ManualTestFrameStruct manualFrameStruct;
@@ -124,6 +128,7 @@ typedef struct _Frame_Data
     unsigned char videoframe[];
 } FrameData;
 FrameData *videoFrameData;
+FrameData *holdVideoFrameData;
 
 uint8_t streamControl[48];
 uint8_t unpackUsbInt(uint8_t *p, int i);
@@ -272,77 +277,6 @@ unsigned char * convertMjpegFrameToJpeg(unsigned char* frameData, int data_size,
     }
 }
 
-/** Color coding of stream, transport-independent
- * @ingroup streaming
- */
-enum uvc_frame_format {
-    UVC_FRAME_FORMAT_UNKNOWN = 0,
-    /** Any supported format */
-    UVC_FRAME_FORMAT_ANY = 0,
-    UVC_FRAME_FORMAT_UNCOMPRESSED,
-    UVC_FRAME_FORMAT_COMPRESSED,
-    /** YUYV/YUV2/YUV422: YUV encoding with one luminance value per pixel and
-     * one UV (chrominance) pair for every two pixels.
-     */
-    UVC_FRAME_FORMAT_YUYV,
-    UVC_FRAME_FORMAT_UYVY,
-    /** 16-bits RGB */
-    UVC_FRAME_FORMAT_RGB565,	// RGB565
-    /** 24-bit RGB */
-    UVC_FRAME_FORMAT_RGB,		// RGB888
-    UVC_FRAME_FORMAT_BGR,		// BGR888
-    /* 32-bits RGB */
-    UVC_FRAME_FORMAT_RGBX,		// RGBX8888
-    /** Motion-JPEG (or JPEG) encoded images */
-    UVC_FRAME_FORMAT_MJPEG,
-    UVC_FRAME_FORMAT_GRAY8,
-    UVC_FRAME_FORMAT_BY8,
-    /** Number of formats understood */
-    UVC_FRAME_FORMAT_COUNT,
-    // YVU420SemiPlanar
-    UVC_FRAME_FORMAT__NV21 = 5,
-};
-
-
-/** UVC error types, based on libusb errors
- * @ingroup diag
- */
-typedef enum uvc_error {
-    /** Success (no error) */
-    UVC_SUCCESS = 0,
-    /** Input/output error */
-    UVC_ERROR_IO = -1,
-    /** Invalid parameter */
-    UVC_ERROR_INVALID_PARAM = -2,
-    /** Access denied */
-    UVC_ERROR_ACCESS = -3,
-    /** No such device */
-    UVC_ERROR_NO_DEVICE = -4,
-    /** Entity not found */
-    UVC_ERROR_NOT_FOUND = -5,
-    /** Resource busy */
-    UVC_ERROR_BUSY = -6,
-    /** Operation timed out */
-    UVC_ERROR_TIMEOUT = -7,
-    /** Overflow */
-    UVC_ERROR_OVERFLOW = -8,
-    /** Pipe error */
-    UVC_ERROR_PIPE = -9,
-    /** System call interrupted */
-    UVC_ERROR_INTERRUPTED = -10,
-    /** Insufficient memory */
-    UVC_ERROR_NO_MEM = -11,
-    /** Operation not supported */
-    UVC_ERROR_NOT_SUPPORTED = -12,
-    /** Device is not UVC-compliant */
-    UVC_ERROR_INVALID_DEVICE = -50,
-    /** Mode not supported */
-    UVC_ERROR_INVALID_MODE = -51,
-    /** Resource has a callback (can't use polling and async) */
-    UVC_ERROR_CALLBACK_EXISTS = -52,
-    /** Undefined error */
-    UVC_ERROR_OTHER = -99
-} uvc_error_t;
 
 /** @brief Print a message explaining an error in the UVC driver
  * @ingroup diag
@@ -357,50 +291,6 @@ void uvc_perror(uvc_error_t err, const char *msg) {
         LOGD("(%d)\n", err);
     }
 }
-
-/** Handle on an open UVC device.
- *
- * Get one of these from uvc_open(). Once you uvc_close()
- * it, it's no longer valid.
- */
-struct uvc_device_handle;
-typedef struct uvc_device_handle uvc_device_handle_t;
-
-
-/** An image frame received from the UVC device
- * @ingroup streaming
- */
-typedef struct uvc_frame {
-    /** Image data for this frame */
-    void *data;
-    /** Size of image data buffer */
-    size_t data_bytes;
-    /** XXX Size of actual received data to confirm whether the received bytes is same
-     * as expected on user function when some microframes dropped */
-    size_t actual_bytes;
-    /** Width of image in pixels */
-    uint32_t width;
-    /** Height of image in pixels */
-    uint32_t height;
-    /** Pixel data format */
-    enum uvc_frame_format frame_format;
-    /** Number of bytes per horizontal line (undefined for compressed format) */
-    size_t step;
-    /** Frame number (may skip, but is strictly monotonically increasing) */
-    uint32_t sequence;
-    /** Estimate of system time when the device started capturing the image */
-    struct timeval capture_time;
-    /** Handle on the device that produced the image.
-     * @warning You must not call any uvc_* functions during a callback. */
-    uvc_device_handle_t *source;
-    /** Is the data buffer owned by the library?
-     * If 1, the data buffer can be arbitrarily reallocated by frame conversion
-     * functions.
-     * If 0, the data buffer will not be reallocated or freed by the library.
-     * Set this field to zero if you are supplying the buffer.
-     */
-    uint8_t library_owns_data;
-} uvc_frame_t;
 
 /** @brief Free a frame structure
  * @ingroup frame
@@ -444,7 +334,7 @@ uvc_error_t uvc_yuyv2rgbx(uvc_frame_t *out) {
         out->step = imageWidth * PIXEL_RGBX;
     out->sequence = 0;
     gettimeofday(&out->capture_time, NULL);
-    out->source = devh;
+    out->source = uvcDeviceHandle->usb_devh;
     uint8_t *pyuv = videoFrameData->videoframe;
     const uint8_t *pyuv_end = pyuv + (imageWidth*imageHeight*2) - PIXEL8_YUYV;
     uint8_t *prgbx = out->data;
@@ -500,7 +390,7 @@ uvc_error_t uvc_uyvy2rgbx(unsigned char* data, int data_bytes, int width, int he
     out->step = width * PIXEL_RGBX;
     out->sequence = 0;
     gettimeofday(&out->capture_time, NULL);
-    out->source = devh;
+    out->source = uvcDeviceHandle->usb_devh;
     uint8_t *pyuv = data;
     const uint8_t *pyuv_end = pyuv + data_bytes - PIXEL8_UYVY;
     uint8_t *prgbx = out->data;
@@ -554,7 +444,7 @@ uvc_error_t uvc_yuyv2_rgbx(unsigned char* data, int data_bytes, int width, int h
     out->step = width * PIXEL_RGBX;
     out->sequence = 0;
     gettimeofday(&out->capture_time, NULL);
-    out->source = devh;
+    out->source = uvcDeviceHandle->usb_devh;
     uint8_t *pyuv = data;
     const uint8_t *pyuv_end = pyuv + data_bytes - PIXEL8_YUYV;
     uint8_t *prgbx = out->data;
@@ -611,7 +501,7 @@ uvc_error_t uvc_uyvy2rgb(unsigned char* data, int data_bytes, int width, int hei
     out->step = width * PIXEL_RGB;
     out->sequence = 0;
     gettimeofday(&out->capture_time, NULL);
-    out->source = devh;
+    out->source = uvcDeviceHandle->usb_devh;
 
     uint8_t *pyuv = data;
     const uint8_t *pyuv_end = pyuv + data_bytes - PIXEL8_UYVY;
@@ -668,7 +558,7 @@ uvc_error_t uvc_yuyv2rgb(unsigned char* data, int data_bytes, int width, int hei
     out->step = width * PIXEL_RGB;
     out->sequence = 0;
     gettimeofday(&out->capture_time, NULL);
-    out->source = devh;
+    out->source = uvcDeviceHandle->usb_devh;
     uint8_t *pyuv = data;
     const uint8_t *pyuv_end = pyuv + data_bytes - PIXEL8_YUYV;
     uint8_t *prgb = out->data;
@@ -724,7 +614,7 @@ uvc_error_t uvc_rgb2rgbx(unsigned char* data, int data_bytes, int width, int hei
         out->step = width * PIXEL_RGBX;
     out->sequence = 0;
     gettimeofday(&out->capture_time, NULL);
-    out->source = devh;
+    out->source = uvcDeviceHandle->usb_devh;
     uint8_t *prgb = data;
     const uint8_t *prgb_end = prgb + data_bytes - PIXEL8_RGB;
     uint8_t *prgbx = out->data;
@@ -861,7 +751,7 @@ uvc_error_t uvc_duplicate_frame(uvc_frame_t *out) {
         out->step = imageWidth*2;
     out->sequence = 0;
     gettimeofday(&out->capture_time, NULL);
-    out->source = devh;
+    out->source = uvcDeviceHandle->usb_devh;
     out->actual_bytes = total;	// XXX
 
 #if USE_STRIDE	 // XXX
@@ -1088,7 +978,7 @@ uvc_frame_t *flip_horizontal(uvc_frame_t *frame) {
         flip_img->step = imageWidth * PIXEL_RGBX;
     flip_img->sequence = 0;
     flip_img->capture_time = frame->capture_time;
-    flip_img->source = devh;
+    flip_img->source = uvcDeviceHandle->usb_devh;
     int src_stride_argb = frame->width * 4;
     uint* dst_argb = flip_img->data;
     int width = frame->width;
@@ -1119,7 +1009,7 @@ uvc_frame_t *checkRotation(uvc_frame_t *rgbx) {
         rot_img->step = imageWidth * PIXEL_RGBX;
     rot_img->sequence = 0;
     rot_img->capture_time = rgbx->capture_time;
-    rot_img->source = devh;
+    rot_img->source = uvcDeviceHandle->usb_devh;
     int src_stride_argb = imageWidth * 4;
     uint* dst_argb = rot_img->data;
     int src_width = imageWidth;
@@ -1380,45 +1270,59 @@ int print_device(libusb_device *dev, int level, libusb_device_handle *handle, st
         return 0;
 }
 
-int wrap_camera_device(int FD) {
-    int ret;
-    enum libusb_error rc;
-    rc = libusb_set_option(ctx, LIBUSB_OPTION_WEAK_AUTHORITY, NULL);
-    if (rc != LIBUSB_SUCCESS) {
-        __android_log_print(ANDROID_LOG_ERROR, TAG,"libusb_init failed: %d\n", ret);
+int wrap_camera_device(int FD, uvc_context_t **pctx, struct libusb_context *usb_ctx, uvc_device_handle_t **devh) {
+    uvc_error_t ret = UVC_SUCCESS;
+    uvc_context_t *ctx = calloc(1, sizeof(*ctx));
+    uvc_device_handle_t *internal_devh;
+    internal_devh = calloc(1, sizeof(*internal_devh));
+
+
+
+
+    ret = libusb_set_option(ctx->usb_ctx, LIBUSB_OPTION_NO_DEVICE_DISCOVERY, NULL);
+    if (ret != LIBUSB_SUCCESS) {
+        __android_log_print(ANDROID_LOG_ERROR, TAG,"libusb_set_option failed: %d\n", ret);
         return -1;
     }
-    ret = libusb_init(&ctx);
+    ret = libusb_init(&ctx->usb_ctx);
     if (ret < 0) {
         __android_log_print(ANDROID_LOG_INFO, TAG,
                             "libusb_init failed: %d\n", ret);
         return -1;
     }
-    ret = libusb_wrap_sys_device(ctx, (intptr_t)FD, &devh);
+    ctx->own_usb_ctx = 1;
+    ret = libusb_wrap_sys_device(ctx->usb_ctx, (intptr_t)FD, &internal_devh->usb_devh);
     if (ret < 0) {
         __android_log_print(ANDROID_LOG_INFO, TAG,
                             "libusb_wrap_sys_device failed: %d\n", ret);
         return -2;
     }
-    else if (devh == NULL) {
+    else if (internal_devh->usb_devh == NULL) {
         __android_log_print(ANDROID_LOG_INFO, TAG,
                             "libusb_wrap_sys_device returned invalid handle\n");
         return -3;
     }
     cameraDevice_is_wraped = true;
+
+    *devh = internal_devh;
+
+    if (ctx != NULL)
+        *pctx = ctx;
+
+
     return 0;
 }
 
 int libUsb_open_def_fd(int vid, int pid, const char *serial, int FD, int busnum, int devaddr) {
     unsigned char data[64];
     if (!cameraDevice_is_wraped) {
-        if (wrap_camera_device(FD) == 0) LOGD("Successfully wraped The CameraDevice");
+        if (wrap_camera_device(FD, &uvcContext, NULL, &uvcDeviceHandle) == 0) LOGD("Successfully wraped The CameraDevice");
     }
     for (int if_num = 0; if_num < (camStreamingInterfaceNum + 1); if_num++) {
-        if (libusb_kernel_driver_active(devh, if_num)) {
-            libusb_detach_kernel_driver(devh, if_num);
+        if (libusb_kernel_driver_active(uvcDeviceHandle->usb_devh, if_num)) {
+            libusb_detach_kernel_driver(uvcDeviceHandle->usb_devh, if_num);
         }
-        int rc = libusb_claim_interface(devh, if_num);
+        int rc = libusb_claim_interface(uvcDeviceHandle->usb_devh, if_num);
         if (rc < 0) {
             LOGD(stderr, "Error claiming interface: %s\n",
                     libusb_error_name(rc));
@@ -1428,18 +1332,18 @@ int libUsb_open_def_fd(int vid, int pid, const char *serial, int FD, int busnum,
     }
     LOGD("Print Device");
     struct libusb_device_descriptor desc;
-    print_device(libusb_get_device(devh) , 0, devh, desc);
+    print_device(libusb_get_device(uvcDeviceHandle->usb_devh) , 0, uvcDeviceHandle->usb_devh, desc);
 
-    int r = libusb_set_interface_alt_setting(devh, camStreamingInterfaceNum, 0); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
+    int r = libusb_set_interface_alt_setting(uvcDeviceHandle->usb_devh, camStreamingInterfaceNum, 0); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
     if (r != LIBUSB_SUCCESS) {
-        LOGD("libusb_set_interface_alt_setting(devh, 1, 1) failed with error %d\n", r);
+        LOGD("libusb_set_interface_alt_setting(uvcDeviceHandle->usb_devh, 1, 1) failed with error %d\n", r);
     } else {
         LOGD("Altsettings sucessfuly set! %d ; Altsetting = 0\n", r);
     }
     __android_log_print(ANDROID_LOG_INFO, TAG,
                         "libusb_control_transfer start\n");
-    initStreamingParms(devh);
-    __android_log_print(ANDROID_LOG_INFO, TAG, "devh: %p\n", devh);
+    initStreamingParms(uvcDeviceHandle->usb_devh);
+    __android_log_print(ANDROID_LOG_INFO, TAG, "uvcDeviceHandle->usb_devh: %p\n", uvcDeviceHandle->usb_devh);
     LOGD("Exit");
     return 0;
 }
@@ -1471,13 +1375,39 @@ int set_the_native_Values (int FD, int packetsPerReques, int maxPacketSiz, int a
     productID = productID;
     busnum = busnum;
     devaddr = devaddr;
-    videoFrameData = malloc(sizeof *videoFrameData + sizeof(char[imageWidt*imageHeigh*2]));
-    videoFrameData->FrameSize = imageWidt * imageHeigh;
-    videoFrameData->FrameBufferSize = videoFrameData->FrameSize * 2;
+    if (strcmp(frameFormat, "MJPEG") == 0) {
+        videoFrameData = malloc(sizeof *videoFrameData + sizeof(char[imageWidt*imageHeigh*2]));
+        videoFrameData->FrameSize = imageWidt * imageHeigh;
+        videoFrameData->FrameBufferSize = videoFrameData->FrameSize * 3;
+/*
+        holdVideoFrameData = malloc(sizeof *videoFrameData + sizeof(char[imageWidt*imageHeigh*2]));
+        holdVideoFrameData->FrameSize = imageWidt * imageHeigh;
+        holdVideoFrameData->FrameBufferSize = videoFrameData->FrameSize * 3;
+       */
+    } else if (strcmp(frameFormat, "YUY2") == 0 ||   strcmp(frameFormat, "UYVY")   ) {
+        videoFrameData = malloc(sizeof *videoFrameData + sizeof(char[imageWidt*imageHeigh*2]));
+        videoFrameData->FrameSize = imageWidt * imageHeigh;
+        videoFrameData->FrameBufferSize = videoFrameData->FrameSize * 2;
+    } else if (strcmp(frameFormat, "NV21") == 0) {
+        videoFrameData = malloc(sizeof *videoFrameData + sizeof(char[imageWidt*imageHeigh*2]));
+        videoFrameData->FrameSize = imageWidt * imageHeigh;
+        videoFrameData->FrameBufferSize = videoFrameData->FrameSize * 3 / 2;
+    } else {
+        videoFrameData = malloc(sizeof *videoFrameData + sizeof(char[imageWidt*imageHeigh*2]));
+        videoFrameData->FrameSize = imageWidt * imageHeigh;
+        videoFrameData->FrameBufferSize = videoFrameData->FrameSize * 2;
+    }
     bcdUVC = bcdUVC_int;
     LOGD("bcdUVC = %d", bcdUVC);
     if (lowAndroid == 1) low_Android = true;
     initialized = true;
+
+    /*
+    LOGD("trying to initialize pthread ...");
+    pthread_mutex_init(&strmh->cb_mutex, NULL);
+    pthread_cond_init(&strmh->cb_cond, NULL);
+    LOGD("inizialisation complete");
+*/
     result ++;
     return result;
 }
@@ -1523,14 +1453,14 @@ int initStreamingParms(int FD) {
         enum libusb_error rc;
         unsigned char data[64];
         if (!cameraDevice_is_wraped) {
-            if (wrap_camera_device(FD) == 0) LOGD("Successfully wraped The CameraDevice");
+            if (wrap_camera_device(FD, &uvcContext, NULL, &uvcDeviceHandle) == 0) LOGD("Successfully wraped The CameraDevice");
         }
     }
     for (int if_num = 0; if_num < (camStreamingInterfaceNum + 1); if_num++) {
-        if (libusb_kernel_driver_active(devh, if_num)) {
-            libusb_detach_kernel_driver(devh, if_num);
+        if (libusb_kernel_driver_active(uvcDeviceHandle->usb_devh, if_num)) {
+            libusb_detach_kernel_driver(uvcDeviceHandle->usb_devh, if_num);
         }
-        int rc = libusb_claim_interface(devh, if_num);
+        int rc = libusb_claim_interface(uvcDeviceHandle->usb_devh, if_num);
         if (rc < 0) {
             fprintf(stderr, "Error claiming interface: %s\n",
                     libusb_error_name(rc));
@@ -1539,17 +1469,17 @@ int initStreamingParms(int FD) {
         }
     }
     struct libusb_device_descriptor desc;
-    print_device(libusb_get_device(devh) , 0, devh, desc);
-    int r = libusb_set_interface_alt_setting(devh, camStreamingInterfaceNum, 0); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
+    print_device(libusb_get_device(uvcDeviceHandle->usb_devh) , 0, uvcDeviceHandle->usb_devh, desc);
+    int r = libusb_set_interface_alt_setting(uvcDeviceHandle->usb_devh, camStreamingInterfaceNum, 0); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
     if (r != LIBUSB_SUCCESS) {
-        LOGD("libusb_set_interface_alt_setting(devh, 1, 1) failed with error %d\n", r);
+        LOGD("libusb_set_interface_alt_setting(uvcDeviceHandle->usb_devh, 1, 1) failed with error %d\n", r);
         return -4;
     } else {
         LOGD("Die Alternativeinstellungen wurden erfolgreich gesetzt: %d ; Altsetting = 0\n", r);
     }
     __android_log_print(ANDROID_LOG_INFO, TAG,
                         "libusb_control_transfer start\n");
-    initStreamingParms_controltransfer(devh, false);
+    initStreamingParms_controltransfer(uvcDeviceHandle->usb_devh, false);
     camIsOpen = compareStreamingParmsValues();
     if (camIsOpen) return 0;
     else return -4;
@@ -1560,15 +1490,15 @@ int fetchTheCamStreamingEndpointAdress (int FD) {
         int ret;
         enum libusb_error rc;
         if (!cameraDevice_is_wraped) {
-            if (wrap_camera_device(FD) == 0) LOGD("Successfully wraped The CameraDevice");
+            if (wrap_camera_device(FD, &uvcContext, NULL, &uvcDeviceHandle) == 0) LOGD("Successfully wraped The CameraDevice");
         }
         camIsOpen = true;
     }
     for (int if_num = 0; if_num < (2); if_num++) {
-        if (libusb_kernel_driver_active(devh, if_num)) {
-            libusb_detach_kernel_driver(devh, if_num);
+        if (libusb_kernel_driver_active(uvcDeviceHandle->usb_devh, if_num)) {
+            libusb_detach_kernel_driver(uvcDeviceHandle->usb_devh, if_num);
         }
-        int rc = libusb_claim_interface(devh, if_num);
+        int rc = libusb_claim_interface(uvcDeviceHandle->usb_devh, if_num);
         if (rc < 0) {
             fprintf(stderr, "Error claiming interface: %s\n",
                     libusb_error_name(rc));
@@ -1577,7 +1507,7 @@ int fetchTheCamStreamingEndpointAdress (int FD) {
         }
     }
     struct libusb_device_descriptor desc;
-    print_device(libusb_get_device(devh) , 0, devh, desc);
+    print_device(libusb_get_device(uvcDeviceHandle->usb_devh) , 0, uvcDeviceHandle->usb_devh, desc);
     return streamEndPointAdressOverNative;
 }
 
@@ -1599,15 +1529,15 @@ unsigned char * probeCommitControl(int bmHin, int camFormatInde, int camFrameInd
         int ret;
         enum libusb_error rc;
         if (!cameraDevice_is_wraped) {
-            if (wrap_camera_device(FD) == 0) LOGD("Successfully wraped The CameraDevice");
+            if (wrap_camera_device(FD, &uvcContext, NULL, &uvcDeviceHandle) == 0) LOGD("Successfully wraped The CameraDevice");
         }
         camIsOpen = true;
     }
     for (int if_num = 0; if_num < (camStreamingInterfaceNum + 1); if_num++) {
-        if (libusb_kernel_driver_active(devh, if_num)) {
-            libusb_detach_kernel_driver(devh, if_num);
+        if (libusb_kernel_driver_active(uvcDeviceHandle->usb_devh, if_num)) {
+            libusb_detach_kernel_driver(uvcDeviceHandle->usb_devh, if_num);
         }
-        int rc = libusb_claim_interface(devh, if_num);
+        int rc = libusb_claim_interface(uvcDeviceHandle->usb_devh, if_num);
         if (rc < 0) {
             fprintf(stderr, "Error claiming interface: %s\n",
                     libusb_error_name(rc));
@@ -1616,10 +1546,10 @@ unsigned char * probeCommitControl(int bmHin, int camFormatInde, int camFrameInd
         }
     }
     struct libusb_device_descriptor desc;
-    print_device(libusb_get_device(devh) , 0, devh, desc);
-    int r = libusb_set_interface_alt_setting(devh, camStreamingInterfaceNum, 0); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
+    print_device(libusb_get_device(uvcDeviceHandle->usb_devh) , 0, uvcDeviceHandle->usb_devh, desc);
+    int r = libusb_set_interface_alt_setting(uvcDeviceHandle->usb_devh, camStreamingInterfaceNum, 0); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
     if (r != LIBUSB_SUCCESS) {
-        LOGD("libusb_set_interface_alt_setting(devh, 1, 1) failed with error %d\n", r);
+        LOGD("libusb_set_interface_alt_setting(uvcDeviceHandle->usb_devh, 1, 1) failed with error %d\n", r);
         return NULL;
     } else {
         LOGD("Die Alternativeinstellungen wurden erfolgreich gesetzt: %d ; Altsetting = 0\n", r);
@@ -1628,14 +1558,54 @@ unsigned char * probeCommitControl(int bmHin, int camFormatInde, int camFrameInd
     __android_log_print(ANDROID_LOG_INFO, TAG,
                         "libusb_control_transfer start\n");
 
-    initStreamingParms_controltransfer(devh, true);
+    initStreamingParms_controltransfer(uvcDeviceHandle->usb_devh, true);
     camIsOpen = compareStreamingParmsValues();
     if (camIsOpen) return ctl_transfer_Data;
     else return ctl_transfer_Data;
 }
 
+void eof_isoc_transfer_completion_handler_automaticdetection(uvc_stream_handle_t *strmh) {
+    /*
+    pthread_mutex_lock(&strmh->cb_mutex);
+    {
+        //tmp_buf = strmh->holdbuf;
+        strmh->hold_bfh_err = strmh->bfh_err;	// XXX
+        strmh->hold_bytes = total;
+        //strmh->holdbuf = strmh->outbuf;
+        //strmh->outbuf = tmp_buf;
+        strmh->hold_last_scr = strmh->last_scr;
+        strmh->hold_pts = strmh->pts;
+        strmh->hold_seq = strmh->seq;
+        pthread_cond_broadcast(&strmh->cb_cond);
+    }
+    pthread_mutex_unlock(&strmh->cb_mutex);
+*/
+    autoStruct.sframeLenArray[autoStruct.frameCnt] = autoStruct.frameLen;
+    LOGD("Frame received");
+    ueberschreitungDerUebertragungslaenge = 0;
+    if (frameUeberspringen == 0) {
+        ++totalFrame;
+        if (total < videoFrameData->FrameBufferSize) {
+            LOGD(stderr, "insufficient frame data.\n");
+        }
+        LOGD("Länge des Frames = %d\n", total);
+        autoStruct.frameCnt ++;
+        if (numberOfAutoFrames == totalFrame) {
+            LOGD("calling autoStreamfinished");
+            runningStream = false;
+            autoStreamfinished();
+        }
+        autoStruct.frameLen = 0;
+    } else {
+        LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
+        frameUeberspringen = 0;
+    }
+    total = 0;
+}
+
 void isoc_transfer_completion_handler_automaticdetection(struct libusb_transfer *the_transfer) {
     //LOGD("Iso Transfer Callback Function");
+    uvc_stream_handle_t *strmh = the_transfer->user_data;
     unsigned char *p;
     int packetLen;
     int i;
@@ -1663,6 +1633,15 @@ void isoc_transfer_completion_handler_automaticdetection(struct libusb_transfer 
                 frameUeberspringen = 1;
                 continue;
             }
+            /* The frame ID bit was flipped, but we have image data sitting
+        around from prior transfers. This means the camera didn't send
+        an EOF for the last transfer of the previous frame or some frames losted. */
+            if ((strmh->fid != (p[1] & UVC_STREAM_FID) )  && total ) {
+                LOGD("UVC_STREAM_FID");
+                LOGD("Wert fid = %d, Wert strmh = %d", (p[1] & UVC_STREAM_FID), strmh->fid);
+                eof_isoc_transfer_completion_handler_automaticdetection(strmh);
+            }
+            strmh->fid = p[1] & UVC_STREAM_FID;
             packetLen -= p[0];
             if (packetLen + total > videoFrameData->FrameBufferSize) {
                 if (ueberschreitungDerUebertragungslaenge == 1) {
@@ -1675,29 +1654,8 @@ void isoc_transfer_completion_handler_automaticdetection(struct libusb_transfer 
             memcpy(videoFrameData->videoframe + total, p + p[0], packetLen);
             total += packetLen;
             autoStruct.frameLen += packetLen;
-            if (p[1] & UVC_STREAM_EOF) {
-                autoStruct.sframeLenArray[autoStruct.frameCnt] = autoStruct.frameLen;
-                LOGD("Frame received");
-                ueberschreitungDerUebertragungslaenge = 0;
-                if (frameUeberspringen == 0) {
-                    ++totalFrame;
-                    if (total < videoFrameData->FrameBufferSize) {
-                        LOGD(stderr, "insufficient frame data.\n");
-                    }
-                    LOGD("Länge des Frames = %d\n", total);
-                    autoStruct.frameCnt ++;
-                    if (numberOfAutoFrames == totalFrame) {
-                        LOGD("calling autoStreamfinished");
-                        runningStream = false;
-                        autoStreamfinished();
-                    }
-                    total = 0;
-                    autoStruct.frameLen = 0;
-                } else {
-                    LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
-                    total = 0;
-                    frameUeberspringen = 0;
-                }
+            if ((p[1] & UVC_STREAM_EOF) && total != 0) {
+                eof_isoc_transfer_completion_handler_automaticdetection(strmh);
             }
         }
     }
@@ -1708,10 +1666,23 @@ void isoc_transfer_completion_handler_automaticdetection(struct libusb_transfer 
 
 void startAutoDetection () {
     if (camIsOpen) {
+        uvc_stream_handle_t *strmh = NULL;
+        strmh = calloc(1, sizeof(*strmh));
+        if (UNLIKELY(!strmh)) {
+            int ret = UVC_ERROR_NO_MEM;
+            //goto fail;
+        }
+        strmh->running = 1;
+        strmh->seq = 0;
+        strmh->fid = 0;
+        strmh->pts = 0;
+        strmh->last_scr = 0;
+        strmh->bfh_err = 0;	// XXX
+
         totalFrame = 0;
-        int r = libusb_set_interface_alt_setting(devh, camStreamingInterfaceNum, camStreamingAltSetting); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
+        int r = libusb_set_interface_alt_setting(uvcDeviceHandle->usb_devh, camStreamingInterfaceNum, camStreamingAltSetting); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
         if (r != LIBUSB_SUCCESS) {
-            LOGD("libusb_set_interface_alt_setting(devh, 1, 1) failed with error %d\n", r);
+            LOGD("libusb_set_interface_alt_setting(uvcDeviceHandle->usb_devh, 1, 1) failed with error %d\n", r);
         } else {
             LOGD("Die Alternativeinstellungen wurden erfolgreich gesetzt: %d ; Altsetting = %d\n", r, camStreamingAltSetting);
         }
@@ -1733,9 +1704,9 @@ void startAutoDetection () {
             uint8_t *data = malloc(maxPacketSize * packetsPerRequest);
 
             libusb_fill_iso_transfer(
-                    xfers[i], devh, camStreamingEndpoint,
+                    xfers[i], uvcDeviceHandle->usb_devh, camStreamingEndpoint,
                     data, maxPacketSize*packetsPerRequest, packetsPerRequest,
-                    isoc_transfer_completion_handler_automaticdetection, NULL, 0);
+                    isoc_transfer_completion_handler_automaticdetection, (void*) strmh, 0);
             libusb_set_iso_packet_lengths(xfers[i], maxPacketSize);
             for (int j = 0; j < packetsPerRequest; j++) {
                 xfers[i]->iso_packet_desc[j].status = -1;
@@ -1752,15 +1723,17 @@ void startAutoDetection () {
             if (runningStream == false) {
                 break;
             }
-            libusb_handle_events(ctx);
+            libusb_handle_events(uvcContext->usb_ctx);
         }
     }
 }
 
 void closeLibUsb() {
-    libusb_set_interface_alt_setting(devh,1,0);
-    libusb_release_interface(devh, 0);
-    libusb_release_interface(devh, 1);
+    //pthread_cond_destroy(&strmh->cb_cond);
+    //pthread_mutex_destroy(&strmh->cb_mutex);
+    libusb_set_interface_alt_setting(uvcDeviceHandle->usb_devh,1,0);
+    libusb_release_interface(uvcDeviceHandle->usb_devh, 0);
+    libusb_release_interface(uvcDeviceHandle->usb_devh, 1);
     //libusb_close(devh);
     //libusb_exit(ctx);
     //close(fd);
@@ -1781,7 +1754,63 @@ void stopStreaming() {
     runningStream = false;
 }
 
+void eof_isoc_transfer_completion_handler_five_sec(uvc_stream_handle_t *strmh) {
+    pthread_mutex_lock(&strmh->cb_mutex);
+    {
+        /* swap the buffers */
+        //tmp_buf = strmh->holdbuf;
+        strmh->hold_bfh_err = strmh->bfh_err;	// XXX
+        strmh->hold_bytes = total;
+        //strmh->holdbuf = strmh->outbuf;
+        //strmh->outbuf = tmp_buf;
+        strmh->hold_last_scr = strmh->last_scr;
+        strmh->hold_pts = strmh->pts;
+        strmh->hold_seq = strmh->seq;
+        pthread_cond_broadcast(&strmh->cb_cond);
+    }
+    pthread_mutex_unlock(&strmh->cb_mutex);
+
+//manualFrameStruct.sframeLenArray[manualFrameStruct.frameCnt] = manualFrameStruct.frameLen;
+    LOGD("Frame received_5_frame");
+    ueberschreitungDerUebertragungslaenge = 0;
+    if (frameUeberspringen == 0) {
+        ++totalFrame;
+        if (strmh->hold_bytes < videoFrameData->FrameBufferSize) {
+            LOGD(stderr, "insufficient frame data.\n");
+        }
+        LOGD("Länge des Frames = %d\n", strmh->hold_bytes);
+        //manualFrameStruct.frameCnt ++;
+        LOGD("calling sendReceivedDataToJava");
+        //runningStream = false;
+        sendReceivedDataToJava(videoFrameData, strmh->hold_bytes);
+        //manualFrameStruct.frameLen = 0;
+    } else {
+        LOGD("Länge des Frames (Übersprungener Frame) = %d\n", strmh->hold_bytes);
+        frameUeberspringen = 0;
+    }
+    clock_t now = clock();
+    float seconds = (float)(now - startTime) / CLOCKS_PER_SEC;
+    LOGD("%.f seconds since the Stream is running.\n", seconds);
+
+    if(seconds >= 5) {
+        LOGD ("5 sec");
+        runningStream = false;
+    }
+    else if(seconds >= 4) LOGD ("4 sec");
+    else if(seconds >= 3) LOGD ("3 sec");
+    else if(seconds >= 2) LOGD ("2 sec");
+    else if(seconds >= 1) LOGD ("1 sec");
+    else LOGD ("0 sec");
+
+    strmh->seq++;
+    total = 0;
+    strmh->last_scr = 0;
+    strmh->pts = 0;
+    strmh->bfh_err = 0;	// XXX
+}
+
 void isoc_transfer_completion_handler_five_sec(struct libusb_transfer *the_transfer) {
+    uvc_stream_handle_t *strmh = the_transfer->user_data;
     //LOGD("Iso Transfer Callback Function");
     unsigned char *p;
     int packetLen;
@@ -1802,6 +1831,15 @@ void isoc_transfer_completion_handler_five_sec(struct libusb_transfer *the_trans
             if (packetLen < 2) {
                 continue;
             }
+            /* The frame ID bit was flipped, but we have image data sitting
+        around from prior transfers. This means the camera didn't send
+        an EOF for the last transfer of the previous frame or some frames losted. */
+            if ((strmh->fid != (p[1] & UVC_STREAM_FID) )  && total ) {
+                LOGD("UVC_STREAM_FID");
+                LOGD("Wert fid = %d, Wert strmh = %d", (p[1] & UVC_STREAM_FID), strmh->fid);
+                eof_isoc_transfer_completion_handler_five_sec(strmh);
+            }
+            strmh->fid = p[1] & UVC_STREAM_FID;
             // error packet
             if (p[1] & UVC_STREAM_ERR) // bmHeaderInfoh
             {
@@ -1822,41 +1860,9 @@ void isoc_transfer_completion_handler_five_sec(struct libusb_transfer *the_trans
             memcpy(videoFrameData->videoframe + total, p + p[0], packetLen);
             total += packetLen;
             //manualFrameStruct.frameLen += packetLen;
-            if (p[1] & UVC_STREAM_EOF) {
-                //manualFrameStruct.sframeLenArray[manualFrameStruct.frameCnt] = manualFrameStruct.frameLen;
-                LOGD("Frame received_5_frame");
-                ueberschreitungDerUebertragungslaenge = 0;
-                if (frameUeberspringen == 0) {
-                    ++totalFrame;
-                    if (total < videoFrameData->FrameBufferSize) {
-                        LOGD(stderr, "insufficient frame data.\n");
-                    }
-                    LOGD("Länge des Frames = %d\n", total);
-                    //manualFrameStruct.frameCnt ++;
-                    LOGD("calling sendReceivedDataToJava");
-                    //runningStream = false;
-                    sendReceivedDataToJava(videoFrameData, total);
-                    total = 0;
-                    //manualFrameStruct.frameLen = 0;
-                } else {
-                    LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
-                    total = 0;
-                    frameUeberspringen = 0;
-                }
-                clock_t now = clock();
-                float seconds = (float)(now - startTime) / CLOCKS_PER_SEC;
-                LOGD("%.f seconds since the Stream is running.\n", seconds);
-
-                if(seconds >= 5) {
-                    LOGD ("5 sec");
-                    runningStream = false;
-                }
-                else if(seconds >= 4) LOGD ("4 sec");
-                else if(seconds >= 3) LOGD ("3 sec");
-                else if(seconds >= 2) LOGD ("2 sec");
-                else if(seconds >= 1) LOGD ("1 sec");
-                else LOGD ("0 sec");
-
+            if ((p[1] & UVC_STREAM_EOF) && total != 0) {
+                LOGD("UVC_STREAM_EOF");
+                eof_isoc_transfer_completion_handler_five_sec(strmh);
             }
         }
     }
@@ -1865,8 +1871,50 @@ void isoc_transfer_completion_handler_five_sec(struct libusb_transfer *the_trans
         }
 }
 
+void eof_isoc_transfer_completion_handler_one_frame(uvc_stream_handle_t *strmh){
+    pthread_mutex_lock(&strmh->cb_mutex);
+    {
+        /* swap the buffers */
+        //tmp_buf = strmh->holdbuf;
+        strmh->hold_bfh_err = strmh->bfh_err;	// XXX
+        strmh->hold_bytes = total;
+        //strmh->holdbuf = strmh->outbuf;
+        //strmh->outbuf = tmp_buf;
+        strmh->hold_last_scr = strmh->last_scr;
+        strmh->hold_pts = strmh->pts;
+        strmh->hold_seq = strmh->seq;
+        pthread_cond_broadcast(&strmh->cb_cond);
+    }
+    pthread_mutex_unlock(&strmh->cb_mutex);
+    manualFrameStruct.sframeLenArray[manualFrameStruct.frameCnt] = manualFrameStruct.frameLen;
+    LOGD("Frame received_one_Frame");
+    ueberschreitungDerUebertragungslaenge = 0;
+    if (frameUeberspringen == 0) {
+        ++totalFrame;
+        if (strmh->hold_bytes < videoFrameData->FrameBufferSize) {
+            LOGD(stderr, "insufficient frame data.\n");
+        }
+        LOGD("Länge des Frames = %d\n", strmh->hold_bytes);
+        manualFrameStruct.frameCnt ++;
+        LOGD("calling sendReceivedDataToJava");
+        runningStream = false;
+        sendReceivedDataToJava(videoFrameData, strmh->hold_bytes);
+        manualFrameStruct.frameLen = 0;
+    } else {
+        LOGD("Länge des Frames (Übersprungener Frame) = %d\n", strmh->hold_bytes);
+        frameUeberspringen = 0;
+    }
+    strmh->seq++;
+    total = 0;
+    strmh->last_scr = 0;
+    strmh->pts = 0;
+    strmh->bfh_err = 0;	// XXX
+}
+
 void isoc_transfer_completion_handler_one_frame(struct libusb_transfer *the_transfer) {
     //LOGD("Iso Transfer Callback Function");
+    uvc_stream_handle_t *strmh = the_transfer->user_data;
+
     unsigned char *p;
     int packetLen;
     int i;
@@ -1894,6 +1942,16 @@ void isoc_transfer_completion_handler_one_frame(struct libusb_transfer *the_tran
                 frameUeberspringen = 1;
                 continue;
             }
+            /* The frame ID bit was flipped, but we have image data sitting
+        around from prior transfers. This means the camera didn't send
+        an EOF for the last transfer of the previous frame or some frames losted. */
+
+            if ((strmh->fid != (p[1] & UVC_STREAM_FID) )  && total ) {
+                LOGD("UVC_STREAM_FID");
+                LOGD("Wert fid = %d, Wert strmh = %d", (p[1] & UVC_STREAM_FID), strmh->fid);
+                eof_isoc_transfer_completion_handler_one_frame(strmh);
+            }
+            strmh->fid = p[1] & UVC_STREAM_FID;
             packetLen -= p[0];
             if (packetLen + total > videoFrameData->FrameBufferSize) {
                 if (ueberschreitungDerUebertragungslaenge == 1) {
@@ -1906,30 +1964,9 @@ void isoc_transfer_completion_handler_one_frame(struct libusb_transfer *the_tran
             memcpy(videoFrameData->videoframe + total, p + p[0], packetLen);
             total += packetLen;
             manualFrameStruct.frameLen += packetLen;
-            if (p[1] & UVC_STREAM_EOF) {
-                manualFrameStruct.sframeLenArray[manualFrameStruct.frameCnt] = manualFrameStruct.frameLen;
-                LOGD("Frame received_one_Frame");
-                ueberschreitungDerUebertragungslaenge = 0;
-                if (frameUeberspringen == 0) {
-                    ++totalFrame;
-                    if (total < videoFrameData->FrameBufferSize) {
-                        LOGD(stderr, "insufficient frame data.\n");
-                    }
-                    LOGD("Länge des Frames = %d\n", total);
-                    manualFrameStruct.frameCnt ++;
-                    LOGD("calling sendReceivedDataToJava");
-                    runningStream = false;
-                    sendReceivedDataToJava(videoFrameData, total);
-
-
-
-                    total = 0;
-                    manualFrameStruct.frameLen = 0;
-                } else {
-                    LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
-                    total = 0;
-                    frameUeberspringen = 0;
-                }
+            if ((p[1] & UVC_STREAM_EOF) && total != 0) {
+                LOGD("UVC_STREAM_EOF");
+                eof_isoc_transfer_completion_handler_one_frame(strmh);
             }
         }
     }
@@ -1953,9 +1990,46 @@ void clearManualFrameStruct() {
     manualFrameStruct.packet12Cnt = 0;
 }
 
+/** @internal
+ * @brief Swap the working buffer with the presented buffer and notify consumers
+ */
+void eof_isoc_transfer_completion_handler_stream(uvc_stream_handle_t *strmh) {
+    LOGD("IsoStream over JNA --> Frame received");
+/*
+    pthread_mutex_lock(&strmh->cb_mutex);
+    {
+        //tmp_buf = strmh->holdbuf;
+        strmh->hold_bfh_err = strmh->bfh_err;	// XXX
+        strmh->hold_bytes = total;
+        //strmh->holdbuf = strmh->outbuf;
+        //strmh->outbuf = tmp_buf;
+        strmh->hold_last_scr = strmh->last_scr;
+        strmh->hold_pts = strmh->pts;
+        strmh->hold_seq = strmh->seq;
+        pthread_cond_broadcast(&strmh->cb_cond);
+    }
+    pthread_mutex_unlock(&strmh->cb_mutex);
+*/
+    ueberschreitungDerUebertragungslaenge = 0;
+    if (frameUeberspringen == 0) {
+        ++totalFrame;
+        if (total < videoFrameData->FrameBufferSize) {
+            LOGD(stderr, "insufficient frame data.\n");
+        }
+        //LOGD("Länge des Frames = %d\n", strmh->hold_bytes);
+        //LOGD("calling sendReceivedDataToJava");
+        jnaSendFrameToJava(videoFrameData, total);
+        runningStream = false;
+    } else {
+        LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
+        frameUeberspringen = 0;
+    }
+    total = 0;
+}
 
 void isoc_transfer_completion_handler_stream(struct libusb_transfer *the_transfer) {
     //LOGD("Iso Transfer Callback Function");
+    uvc_stream_handle_t *strmh = the_transfer->user_data;
     unsigned char *p;
     int packetLen;
     int i;
@@ -1973,6 +2047,17 @@ void isoc_transfer_completion_handler_stream(struct libusb_transfer *the_transfe
                 frameUeberspringen = 1;
                 continue;
             }
+            /* The frame ID bit was flipped, but we have image data sitting
+           around from prior transfers. This means the camera didn't send
+           an EOF for the last transfer of the previous frame or some frames losted. */
+            if ((strmh->fid != (p[1] & UVC_STREAM_FID) )  && total ) {
+                LOGD("UVC_STREAM_FID");
+                LOGD("Wert fid = %d, Wert strmh = %d", (p[1] & UVC_STREAM_FID), strmh->fid);
+                eof_isoc_transfer_completion_handler_stream(strmh);
+            }
+            strmh->fid = p[1] & UVC_STREAM_FID;
+
+
             packetLen -= p[0];
             if (packetLen + total > videoFrameData->FrameBufferSize) {
                 if (ueberschreitungDerUebertragungslaenge == 1) {
@@ -1984,24 +2069,8 @@ void isoc_transfer_completion_handler_stream(struct libusb_transfer *the_transfe
             }
             memcpy(videoFrameData->videoframe + total, p + p[0], packetLen);
             total += packetLen;
-            if (p[1] & UVC_STREAM_EOF) {
-                LOGD("IsoStream over JNA --> Frame received");
-                ueberschreitungDerUebertragungslaenge = 0;
-                if (frameUeberspringen == 0) {
-                    ++totalFrame;
-                    if (total < videoFrameData->FrameBufferSize) {
-                        LOGD(stderr, "insufficient frame data.\n");
-                    }
-                    //LOGD("Länge des Frames = %d\n", total);
-                    //LOGD("calling sendReceivedDataToJava");
-                    jnaSendFrameToJava(videoFrameData, total);
-                    total = 0;
-                    runningStream = false;
-                } else {
-                    LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
-                    total = 0;
-                    frameUeberspringen = 0;
-                }
+            if ((p[1] & UVC_STREAM_EOF) && total != 0) {
+                eof_isoc_transfer_completion_handler_stream(strmh);
             }
         }
     }
@@ -2011,16 +2080,37 @@ void isoc_transfer_completion_handler_stream(struct libusb_transfer *the_transfe
 }
 
 void getFramesOverLibUsb( int yuvFrameIsZero, int stream, int whichTestrun) {
+    // Trying Stream Handle
+    uvc_stream_handle_t *strmh = NULL;
+    strmh = calloc(1, sizeof(*strmh));
+    if (UNLIKELY(!strmh)) {
+        int ret = UVC_ERROR_NO_MEM;
+        //goto fail;
+    }
+    strmh->running = 1;
+    strmh->seq = 0;
+    strmh->fid = 0;
+    strmh->pts = 0;
+    strmh->last_scr = 0;
+    strmh->bfh_err = 0;	// XXX
+
+    /*
+    LOGD("trying to initialize pthread ...");
+    pthread_mutex_init(&strmh->cb_mutex, NULL);
+    pthread_cond_init(&strmh->cb_cond, NULL);
+    LOGD("inizialisation complete");
+     */
+
     clearManualFrameStruct();
     int requestMode = 0;
     probeCommitControl(bmHint, camFormatIndex, camFrameIndex, camFrameInterval, fd);
     //probeCommitControl_cleanup();
     LOGD("ISO Stream");
     runningStream = true;
-    int r = libusb_set_interface_alt_setting(devh, camStreamingInterfaceNum,
+    int r = libusb_set_interface_alt_setting(uvcDeviceHandle->usb_devh, camStreamingInterfaceNum,
                                              camStreamingAltSetting); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
     if (r != LIBUSB_SUCCESS) {
-        LOGD("libusb_set_interface_alt_setting(devh, 1, 1) failed with error %d\n", r);
+        LOGD("libusb_set_interface_alt_setting(uvcDeviceHandle->usb_devh, 1, 1) failed with error %d\n", r);
     } else {
         LOGD("Die Alternativeinstellungen wurden erfolgreich gesetzt: %d ; Altsetting = %d\n", r,
              camStreamingAltSetting);
@@ -2032,7 +2122,7 @@ void getFramesOverLibUsb( int yuvFrameIsZero, int stream, int whichTestrun) {
             xfers[i] = libusb_alloc_transfer(packetsPerRequest);
             uint8_t *data = malloc(maxPacketSize * packetsPerRequest);
             libusb_fill_iso_transfer(
-                    xfers[i], devh, camStreamingEndpoint,
+                    xfers[i], uvcDeviceHandle->usb_devh, camStreamingEndpoint,
                     data, maxPacketSize * packetsPerRequest, packetsPerRequest,
                     isoc_transfer_completion_handler_stream, NULL, 5000);
             libusb_set_iso_packet_lengths(xfers[i], maxPacketSize);
@@ -2043,9 +2133,9 @@ void getFramesOverLibUsb( int yuvFrameIsZero, int stream, int whichTestrun) {
             xfers[i] = libusb_alloc_transfer(packetsPerRequest);
             uint8_t *data = malloc(maxPacketSize * packetsPerRequest);
             libusb_fill_iso_transfer(
-                    xfers[i], devh, camStreamingEndpoint,
+                    xfers[i], uvcDeviceHandle->usb_devh, camStreamingEndpoint,
                     data, maxPacketSize * packetsPerRequest, packetsPerRequest,
-                    isoc_transfer_completion_handler_one_frame, NULL, 5000);
+                    isoc_transfer_completion_handler_one_frame, (void*) strmh, 5000);
             libusb_set_iso_packet_lengths(xfers[i], maxPacketSize);
         }
     } else if (whichTestrun == 5){
@@ -2054,9 +2144,9 @@ void getFramesOverLibUsb( int yuvFrameIsZero, int stream, int whichTestrun) {
             xfers[i] = libusb_alloc_transfer(packetsPerRequest);
             uint8_t *data = malloc(maxPacketSize * packetsPerRequest);
             libusb_fill_iso_transfer(
-                    xfers[i], devh, camStreamingEndpoint,
+                    xfers[i], uvcDeviceHandle->usb_devh, camStreamingEndpoint,
                     data, maxPacketSize * packetsPerRequest, packetsPerRequest,
-                    isoc_transfer_completion_handler_five_sec, NULL, 5000);
+                    isoc_transfer_completion_handler_five_sec, (void*) strmh, 5000);
             libusb_set_iso_packet_lengths(xfers[i], maxPacketSize);
         }
     }
@@ -2073,7 +2163,7 @@ void getFramesOverLibUsb( int yuvFrameIsZero, int stream, int whichTestrun) {
             LOGD("stopped because runningStream == false !!  --> libusb_event_handling STOPPED");
             break;
         }
-        libusb_handle_events(ctx);
+        libusb_handle_events(uvcContext->usb_ctx);
     }
 }
 
@@ -2138,8 +2228,50 @@ int copyToSurface(uvc_frame_t *frame, ANativeWindow **window) {
 
 ///////////////////// ACTIVITY FUNCTIONS
 
+void eof_cb_jni_stream_ImageView(uvc_stream_handle_t *strmh) {
+
+    /*
+    pthread_mutex_lock(&strmh->cb_mutex);
+    {
+        //tmp_buf = strmh->holdbuf;
+        strmh->hold_bfh_err = strmh->bfh_err;	// XXX
+        strmh->hold_bytes = total;
+        //strmh->holdbuf = strmh->outbuf;
+        //strmh->outbuf = tmp_buf;
+        strmh->hold_last_scr = strmh->last_scr;
+        strmh->hold_pts = strmh->pts;
+        strmh->hold_seq = strmh->seq;
+        pthread_cond_broadcast(&strmh->cb_cond);
+    }
+    pthread_mutex_unlock(&strmh->cb_mutex);
+    */
+
+    LOGD("JniIsoStream --> Frame received");
+    ueberschreitungDerUebertragungslaenge = 0;
+    if (frameUeberspringen == 0) {
+        ++totalFrame;
+        if (runningStream == false) stopStreaming();
+
+        JNIEnv * jenv;
+        int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
+        jbyteArray array = (*jenv)->NewByteArray(jenv, videoFrameData->FrameBufferSize);
+        // Main Activity
+        (*jenv)->SetByteArrayRegion(jenv, array, 0, videoFrameData->FrameBufferSize, (jbyte *) videoFrameData->videoframe);
+        (*jenv)->CallVoidMethod(jenv, mainActivityObj, javainitializeStreamArray, array);
+        runningStream = false;
+
+
+    } else {
+        LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
+        frameUeberspringen = 0;
+    }
+
+    total = 0;
+}
+
 void cb_jni_stream_ImageView(struct libusb_transfer *the_transfer) {
     //LOGD("Iso Transfer Callback Function");
+    uvc_stream_handle_t *strmh = the_transfer->user_data;
     unsigned char *p;
     int packetLen;
     int i;
@@ -2157,6 +2289,16 @@ void cb_jni_stream_ImageView(struct libusb_transfer *the_transfer) {
                 frameUeberspringen = 1;
                 continue;
             }
+            /* The frame ID bit was flipped, but we have image data sitting
+         around from prior transfers. This means the camera didn't send
+         an EOF for the last transfer of the previous frame or some frames losted. */
+            if ((strmh->fid != (p[1] & UVC_STREAM_FID) )  && total ) {
+                LOGD("UVC_STREAM_FID");
+                LOGD("Wert fid = %d, Wert strmh = %d", (p[1] & UVC_STREAM_FID), strmh->fid);
+                eof_cb_jni_stream_ImageView(strmh);
+            }
+            strmh->fid = p[1] & UVC_STREAM_FID;
+
             packetLen -= p[0];
             if (packetLen + total > videoFrameData->FrameBufferSize) {
                 if (ueberschreitungDerUebertragungslaenge == 1) {
@@ -2167,28 +2309,8 @@ void cb_jni_stream_ImageView(struct libusb_transfer *the_transfer) {
             }
             memcpy(videoFrameData->videoframe + total, p + p[0], packetLen);
             total += packetLen;
-            if (p[1] & UVC_STREAM_EOF) {
-                LOGD("JniIsoStream --> Frame received");
-                ueberschreitungDerUebertragungslaenge = 0;
-                if (frameUeberspringen == 0) {
-                    ++totalFrame;
-                    if (runningStream == false) stopStreaming();
-
-                    JNIEnv * jenv;
-                    int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
-                    jbyteArray array = (*jenv)->NewByteArray(jenv, videoFrameData->FrameBufferSize);
-                    // Main Activity
-                    (*jenv)->SetByteArrayRegion(jenv, array, 0, videoFrameData->FrameBufferSize, (jbyte *) videoFrameData->videoframe);
-                    (*jenv)->CallVoidMethod(jenv, mainActivityObj, javainitializeStreamArray, array);
-                    total = 0;
-                    runningStream = false;
-
-
-                } else {
-                    LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
-                    total = 0;
-                    frameUeberspringen = 0;
-                }
+            if ((p[1] & UVC_STREAM_EOF) && total != 0) {
+                eof_cb_jni_stream_ImageView(strmh);
             }
         }
     }
@@ -2201,6 +2323,18 @@ void cb_jni_stream_ImageView(struct libusb_transfer *the_transfer) {
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamActivity
         (JNIEnv *env, jobject obj, jint stream, jint frameIndex) {
     if (initialized) {
+        uvc_stream_handle_t *strmh = NULL;
+        strmh = calloc(1, sizeof(*strmh));
+        if (UNLIKELY(!strmh)) {
+            int ret = UVC_ERROR_NO_MEM;
+            //goto fail;
+        }
+        strmh->running = 1;
+        strmh->seq = 0;
+        strmh->fid = 0;
+        strmh->pts = 0;
+        strmh->last_scr = 0;
+        strmh->bfh_err = 0;	// XXX
         probeCommitControl(bmHint, camFormatIndex, camFrameIndex, camFrameInterval, fd);
         //probeCommitControl_cleanup();
         LOGD("ISO Stream");
@@ -2213,10 +2347,10 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamA
         mainActivityObj = (*env)->NewGlobalRef(env, obj);
         javainitializeStreamArray = (*env)->GetMethodID(env, jniHelperClass, "initializeStreamArray", "([B)V");
         runningStream = true;
-        int r = libusb_set_interface_alt_setting(devh, camStreamingInterfaceNum,
+        int r = libusb_set_interface_alt_setting(uvcDeviceHandle->usb_devh, camStreamingInterfaceNum,
                                                  camStreamingAltSetting); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
         if (r != LIBUSB_SUCCESS) {
-            LOGD("libusb_set_interface_alt_setting(devh, 1, 1) failed with error %d\n", r);
+            LOGD("libusb_set_interface_alt_setting(uvcDeviceHandle->usb_devh, 1, 1) failed with error %d\n", r);
         } else {
             LOGD("Die Alternativeinstellungen wurden erfolgreich gesetzt: %d ; Altsetting = %d\n", r,
                  camStreamingAltSetting);
@@ -2227,9 +2361,9 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamA
             xfers[i] = libusb_alloc_transfer(packetsPerRequest);
             uint8_t *data = malloc(maxPacketSize * packetsPerRequest);
             libusb_fill_iso_transfer(
-                    xfers[i], devh, camStreamingEndpoint,
+                    xfers[i], uvcDeviceHandle->usb_devh, camStreamingEndpoint,
                     data, maxPacketSize * packetsPerRequest, packetsPerRequest,
-                    cb_jni_stream_ImageView, NULL, 5000);
+                    cb_jni_stream_ImageView, (void*) strmh, 5000);
             libusb_set_iso_packet_lengths(xfers[i], maxPacketSize);
         }
         runningStream = true;
@@ -2244,7 +2378,7 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamA
                 LOGD("stopped because runningStream == false !!  --> libusb_event_handling STOPPED");
                 break;
             }
-            libusb_handle_events(ctx);
+            libusb_handle_events(uvcContext->usb_ctx);
         }
         LOGD("ISO Stream Start -- finished");
     }
@@ -2253,14 +2387,26 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamA
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniGetAnotherFrame
         (JNIEnv *env, jobject obj, jint stream, jint frameIndex) {
     if (initialized) {
+        uvc_stream_handle_t *strmh = NULL;
+        strmh = calloc(1, sizeof(*strmh));
+        if (UNLIKELY(!strmh)) {
+            int ret = UVC_ERROR_NO_MEM;
+            //goto fail;
+        }
+        strmh->running = 1;
+        strmh->seq = 0;
+        strmh->fid = 0;
+        strmh->pts = 0;
+        strmh->last_scr = 0;
+        strmh->bfh_err = 0;	// XXX
         struct libusb_transfer *xfers[activeUrbs];
         for (i = 0; i < activeUrbs; i++) {
             xfers[i] = libusb_alloc_transfer(packetsPerRequest);
             uint8_t *data = malloc(maxPacketSize * packetsPerRequest);
             libusb_fill_iso_transfer(
-                    xfers[i], devh, camStreamingEndpoint,
+                    xfers[i], uvcDeviceHandle->usb_devh, camStreamingEndpoint,
                     data, maxPacketSize * packetsPerRequest, packetsPerRequest,
-                    cb_jni_stream_ImageView, NULL, 5000);
+                    cb_jni_stream_ImageView, (void*) strmh, 5000);
             libusb_set_iso_packet_lengths(xfers[i], maxPacketSize);
         }
         runningStream = true;
@@ -2275,13 +2421,59 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniGetAnother
                 LOGD("stopped because runningStream == false !!  --> libusb_event_handling STOPPED");
                 break;
             }
-            libusb_handle_events(ctx);
+            libusb_handle_events(uvcContext->usb_ctx);
         }
         LOGD("ISO Stream Start -- finished");
     }
 }
 
+void eof_cb_jni_stream_Surface_Activity(uvc_stream_handle_t *strmh) {
+    /*
+    pthread_mutex_lock(&strmh->cb_mutex);
+    {
+        //tmp_buf = strmh->holdbuf;
+        strmh->hold_bfh_err = strmh->bfh_err;	// XXX
+        strmh->hold_bytes = total;
+        //strmh->holdbuf = strmh->outbuf;
+        //strmh->outbuf = tmp_buf;
+        strmh->hold_last_scr = strmh->last_scr;
+        strmh->hold_pts = strmh->pts;
+        strmh->hold_seq = strmh->seq;
+        pthread_cond_broadcast(&strmh->cb_cond);
+    }
+    pthread_mutex_unlock(&strmh->cb_mutex);
+*/
+    LOGD("Frame received_Surface_Act");
+    ueberschreitungDerUebertragungslaenge = 0;
+    if (frameUeberspringen == 0) {
+        ++totalFrame;
+        if (runningStream == false) stopStreaming();
+        uvc_frame_t *rgb;
+        uvc_error_t ret;
+        // We'll convert the image from YUV/JPEG to BGR, so allocate space
+        rgb = uvc_allocate_frame(imageWidth * imageHeight * 4);
+        if (!rgb) {
+            printf("unable to allocate rgb frame!");
+            return;
+        }
+        // Do the BGR conversion
+        ret = uvc_yuyv2rgbx(rgb);
+        if (ret) {
+            uvc_perror(ret, "uvc_any2bgr");
+            uvc_free_frame(rgb);
+            return;
+        }
+        copyToSurface(rgb, &mCaptureWindow);
+        uvc_free_frame(rgb);
+    } else {
+        LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
+        frameUeberspringen = 0;
+    }
+    total = 0;
+}
+
 void cb_jni_stream_Surface_Activity(struct libusb_transfer *the_transfer) {
+    uvc_stream_handle_t *strmh = the_transfer->user_data;
     if (runningStream == false) stopStreaming();
     //LOGD("Iso Transfer Callback Function");
     unsigned char *p;
@@ -2301,6 +2493,19 @@ void cb_jni_stream_Surface_Activity(struct libusb_transfer *the_transfer) {
                 frameUeberspringen = 1;
                 continue;
             }
+
+            /* The frame ID bit was flipped, but we have image data sitting
+        around from prior transfers. This means the camera didn't send
+        an EOF for the last transfer of the previous frame or some frames losted. */
+            if ((strmh->fid != (p[1] & UVC_STREAM_FID) )  && total ) {
+                LOGD("UVC_STREAM_FID");
+                LOGD("Wert fid = %d, Wert strmh = %d", (p[1] & UVC_STREAM_FID), strmh->fid);
+                eof_cb_jni_stream_Surface_Activity(strmh);
+            }
+            strmh->fid = p[1] & UVC_STREAM_FID;
+
+
+
             packetLen -= p[0];
             if (packetLen + total > videoFrameData->FrameBufferSize) {
                 if (ueberschreitungDerUebertragungslaenge == 1) {
@@ -2311,35 +2516,8 @@ void cb_jni_stream_Surface_Activity(struct libusb_transfer *the_transfer) {
             }
             memcpy(videoFrameData->videoframe + total, p + p[0], packetLen);
             total += packetLen;
-            if (p[1] & UVC_STREAM_EOF) {
-                LOGD("Frame received_Surface_Act");
-                ueberschreitungDerUebertragungslaenge = 0;
-                if (frameUeberspringen == 0) {
-                    ++totalFrame;
-                    if (runningStream == false) stopStreaming();
-                    total = 0;
-                    uvc_frame_t *rgb;
-                    uvc_error_t ret;
-                    // We'll convert the image from YUV/JPEG to BGR, so allocate space
-                    rgb = uvc_allocate_frame(imageWidth * imageHeight * 4);
-                    if (!rgb) {
-                        printf("unable to allocate rgb frame!");
-                        return;
-                    }
-                    // Do the BGR conversion
-                    ret = uvc_yuyv2rgbx(rgb);
-                    if (ret) {
-                        uvc_perror(ret, "uvc_any2bgr");
-                        uvc_free_frame(rgb);
-                        return;
-                    }
-                    copyToSurface(rgb, &mCaptureWindow);
-                    uvc_free_frame(rgb);
-                } else {
-                    LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
-                    total = 0;
-                    frameUeberspringen = 0;
-                }
+            if ((p[1] & UVC_STREAM_EOF) && total != 0) {
+                eof_cb_jni_stream_Surface_Activity(strmh);
             }
         }
     }
@@ -2357,6 +2535,18 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamA
     mCaptureWindow = preview_window;
     probeCommitControl(bmHint, camFormatIndex, camFrameIndex, camFrameInterval, fd);
     if (initialized) {
+        uvc_stream_handle_t *strmh = NULL;
+        strmh = calloc(1, sizeof(*strmh));
+        if (UNLIKELY(!strmh)) {
+            int ret = UVC_ERROR_NO_MEM;
+            //goto fail;
+        }
+        strmh->running = 1;
+        strmh->seq = 0;
+        strmh->fid = 0;
+        strmh->pts = 0;
+        strmh->last_scr = 0;
+        strmh->bfh_err = 0;	// XXX
         int status = (*env)->GetJavaVM(env, &javaVm);
         if(status != 0) {
             LOGE("failed to attach javaVm");
@@ -2364,10 +2554,10 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamA
         class = (*env)->GetObjectClass(env, obj);
         jniHelperClass = (*env)->NewGlobalRef(env, class);
         mainActivityObj = (*env)->NewGlobalRef(env, obj);
-        int r = libusb_set_interface_alt_setting(devh, camStreamingInterfaceNum,
+        int r = libusb_set_interface_alt_setting(uvcDeviceHandle->usb_devh, camStreamingInterfaceNum,
                                                  camStreamingAltSetting); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
         if (r != LIBUSB_SUCCESS) {
-            LOGD("libusb_set_interface_alt_setting(devh, 1, 1) failed with error %d\n", r);
+            LOGD("libusb_set_interface_alt_setting(uvcDeviceHandle->usb_devh, 1, 1) failed with error %d\n", r);
         } else {
             LOGD("Die Alternativeinstellungen wurden erfolgreich gesetzt: %d ; Altsetting = %d\n", r,
                  camStreamingAltSetting);
@@ -2378,9 +2568,9 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamA
             xfers[i] = libusb_alloc_transfer(packetsPerRequest);
             uint8_t *data = malloc(maxPacketSize * packetsPerRequest);
             libusb_fill_iso_transfer(
-                    xfers[i], devh, camStreamingEndpoint,
+                    xfers[i], uvcDeviceHandle->usb_devh, camStreamingEndpoint,
                     data, maxPacketSize * packetsPerRequest, packetsPerRequest,
-                    cb_jni_stream_Surface_Activity, NULL, 5000);
+                    cb_jni_stream_Surface_Activity, (void*) strmh, 5000);
             libusb_set_iso_packet_lengths(xfers[i], maxPacketSize);
         }
         for (i = 0; i < activeUrbs; i++) {
@@ -2394,7 +2584,7 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamA
                 LOGD("stopped because runningStream == false !!  --> libusb_event_handling STOPPED");
                 break;
             }
-            libusb_handle_events(ctx);
+            libusb_handle_events(uvcContext->usb_ctx);
         }
         LOGD("ISO Stream Start -- finished");
     }
@@ -2453,10 +2643,10 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniPrep
     if (initialized) {
         probeCommitControl(bmHint, camFormatIndex, camFrameIndex, camFrameInterval, fd);
         runningStream = true;
-        int r = libusb_set_interface_alt_setting(devh, camStreamingInterfaceNum,
+        int r = libusb_set_interface_alt_setting(uvcDeviceHandle->usb_devh, camStreamingInterfaceNum,
                                                  camStreamingAltSetting); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
         if (r != LIBUSB_SUCCESS) {
-            LOGD("libusb_set_interface_alt_setting(devh, 1, 1) failed with error %d\n", r);
+            LOGD("libusb_set_interface_alt_setting(uvcDeviceHandle->usb_devh, 1, 1) failed with error %d\n", r);
         } else {
             LOGD("Die Alternativeinstellungen wurden erfolgreich gesetzt: %d ; Altsetting = %d\n", r,
                  camStreamingAltSetting);
@@ -2465,7 +2655,236 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniPrep
     }
 }
 
+void eof_cb_jni_stream_Surface_Service(uvc_stream_handle_t *strmh) {
+/*
+    pthread_mutex_lock(&strmh->cb_mutex);
+    {
+        //tmp_buf = strmh->holdbuf;
+        strmh->hold_bfh_err = strmh->bfh_err;	// XXX
+        strmh->hold_bytes = total;
+        //strmh->holdbuf = strmh->outbuf;
+        //strmh->outbuf = tmp_buf;
+        strmh->hold_last_scr = strmh->last_scr;
+        strmh->hold_pts = strmh->pts;
+        strmh->hold_seq = strmh->seq;
+        pthread_cond_broadcast(&strmh->cb_cond);
+    }
+    pthread_mutex_unlock(&strmh->cb_mutex);
+*/
+    ueberschreitungDerUebertragungslaenge = 0;
+    if (frameUeberspringen == 0) {
+        ++totalFrame;
+        if (runningStream == false) stopStreaming();
+        if (strcmp(frameFormat, "MJPEG") == 0) {
+            ///////////////////   MJPEG     /////////////////////////
+            if (!low_Android) {
+                unsigned char *jpg_buffer;
+                int jpeglength = total;
+                int* jpglength_ptr = &jpeglength;
+                jpg_buffer = convertMjpegFrameToJpeg(videoFrameData->videoframe, total, jpglength_ptr);
+                //LOGD("jpg length jpglength_ptr = %d", *jpglength_ptr);
+                unsigned long jpg_size = *jpglength_ptr;
+                struct jpeg_decompress_struct cinfo;
+                struct jpeg_error_mgr jerr;
+                unsigned long rgb_size;
+                unsigned char *rgb_buffer;
+                int row_stride, width, height, pixel_size;
+                cinfo.err = jpeg_std_error(&jerr);
+                jpeg_create_decompress(&cinfo);
+                jpeg_mem_src(&cinfo, jpg_buffer, jpg_size);
+                int rc = jpeg_read_header(&cinfo, TRUE);
+                if (rc != 1) {
+                    LOGD("File does not seem to be a normal JPEG");
+                    exit(EXIT_FAILURE);
+                }
+                jpeg_start_decompress(&cinfo);
+                width = cinfo.output_width;
+                height = cinfo.output_height;
+                pixel_size = cinfo.output_components;
+                //LOGD( "Proc: Image is %d by %d with %d components",width, height, pixel_size);
+                rgb_size = width * height * pixel_size;
+                rgb_buffer = (unsigned char*) malloc(rgb_size);
+                row_stride = width * pixel_size;
+                while (cinfo.output_scanline < cinfo.output_height) {
+                    unsigned char *buffer_array[1];
+                    buffer_array[0] = rgb_buffer + \
+						   (cinfo.output_scanline) * row_stride;
+                    jpeg_read_scanlines(&cinfo, buffer_array, 1);
+                }
+                jpeg_finish_decompress(&cinfo);
+                jpeg_destroy_decompress(&cinfo);
+                uvc_frame_t *rgbx;
+                uvc_error_t ret;
+                rgbx = uvc_allocate_frame(imageWidth * imageHeight * 4);
+                if (!rgbx) {
+                    LOGD("unable to allocate rgb frame!");
+                    return;
+                }
+                uvc_rgb2rgbx(rgb_buffer, rgb_size, width, height, rgbx);
+                uvc_frame_t *rgb_rot_nFlip = checkRotation(rgbx);
+                copyToSurface(rgb_rot_nFlip, &mCaptureWindow);
+                if (imageCapture) {
+                    imageCapture = false;
+                    LOGD("IMAGE CAPT 1");
+                    JNIEnv * jenv;
+                    int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
+                    jbyteArray array = (*jenv)->NewByteArray(jenv, jpg_size);
+                    // Main Activity
+                    (*jenv)->SetByteArrayRegion(jenv, array, 0, jpg_size, (jbyte *) jpg_buffer);
+                    LOGD("javaPictureVideoCaptureMJPEG");
+                    (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaPictureVideoCaptureMJPEG, array);
+                    LOGD("complete");
+                } else if (imageCapturelongClick) {
+                    imageCapturelongClick = false;
+                    JNIEnv * jenv;
+                    int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
+                    jbyteArray array = (*jenv)->NewByteArray(jenv, jpg_size);
+                    // Main Activity
+                    (*jenv)->SetByteArrayRegion(jenv, array, 0, jpg_size, (jbyte *) jpg_buffer);
+                    (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaPictureVideoCaptureMJPEG, array);
+                }
+                if (videoCapture) {
+                    JNIEnv * jenv;
+                    int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
+                    jbyteArray array = (*jenv)->NewByteArray(jenv, jpg_size);
+                    // Main Activity
+                    (*jenv)->SetByteArrayRegion(jenv, array, 0, jpg_size, (jbyte *) jpg_buffer);
+                    (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaPictureVideoCaptureMJPEG, array);
+                } else if (videoCaptureLongClick) {
+                    JNIEnv * jenv;
+                    int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
+                    jbyteArray array = (*jenv)->NewByteArray(jenv, jpg_size);
+                    // Main Activity
+                    (*jenv)->SetByteArrayRegion(jenv, array, 0, jpg_size, (jbyte *) jpg_buffer);
+                    (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaPictureVideoCaptureMJPEG, array);
+                }
+                free(rgb_buffer);
+                uvc_free_frame(rgb_rot_nFlip);
+            } else {
+                //////      Image Processing For Low Level Android
+                uvc_error_t ret;
+                // We'll convert the image from YUV/JPEG to BGR, so allocate space
+                //rgbx = uvc_allocate_frame(imageWidth * imageHeight * 4);
+                unsigned char *rgb_buffer;
+                int rgblength = total;
+                int* rgblength_ptr = &rgblength;
+                rgb_buffer = uvc_mjpeg2rgb(rgblength_ptr);
+                uvc_frame_t *rgbx;
+                rgbx = uvc_allocate_frame(imageWidth * imageHeight * 4);
+                if (!rgbx) {
+                    LOGD("unable to allocate rgb frame!");
+                    return;
+                }
+                uvc_rgb2rgbx(rgb_buffer, rgblength, imageWidth, imageHeight, rgbx);
+                copyToSurface(rgbx, &mCaptureWindow);
+                free(rgb_buffer);
+                uvc_free_frame(rgbx);
+            }
+        } else {   ///////////////////   YUV     /////////////////////////
+            //LOGD("YUV ...");
+            if (!low_Android) {
+                uvc_frame_t *rgbx;
+                uvc_error_t ret;
+                // We'll convert the image from YUV/JPEG to BGR, so allocate space
+                rgbx = uvc_allocate_frame(imageWidth * imageHeight * 4);
+                if (!rgbx) {
+                    LOGD("unable to allocate rgb frame!");
+                    return;
+                }
+                if (strcmp(frameFormat, "YUY2") == 0) {
+                    ret = uvc_yuyv2_rgbx(videoFrameData->videoframe, total, imageWidth, imageHeight, rgbx);
+                } else if (strcmp(frameFormat, "UYVY") == 0) {
+                    ret = uvc_uyvy2rgbx(videoFrameData->videoframe, total, imageWidth, imageHeight, rgbx);
+                }
+                uvc_frame_t *rgb_rot_nFlip = checkRotation(rgbx);
+                if (imageCapture) {
+                    imageCapture = false;
+                    uvc_frame_t *rgb;
+                    uvc_error_t ret;
+                    // We'll convert the image from YUV/JPEG to BGR, so allocate space
+                    rgb = uvc_allocate_frame(imageWidth * imageHeight * 3);
+                    if (!rgb) {
+                        LOGD("unable to allocate rgb frame!");
+                        return;
+                    }
+                    if (strcmp(frameFormat, "YUY2") == 0) {
+                        ret = uvc_yuyv2rgb(videoFrameData->videoframe, total, imageWidth, imageHeight, rgb);
+                    } else if (strcmp(frameFormat, "UYVY") == 0) {
+                        ret = uvc_uyvy2rgb(videoFrameData->videoframe, total, imageWidth, imageHeight, rgb);
+                    }
+                    JNIEnv * jenv;
+                    int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
+                    jbyteArray array = (*jenv)->NewByteArray(jenv, imageWidth * imageHeight * 3);
+                    // Main Activity
+                    (*jenv)->SetByteArrayRegion(jenv, array, 0, imageWidth * imageHeight * 3, (jbyte *) rgb->data);
+                    (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaPictureVideoCaptureRGB, array);
+                } else if (imageCapturelongClick) {
+                    imageCapturelongClick = false;
+                    JNIEnv * jenv;
+                    int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
+                    jbyteArray array = (*jenv)->NewByteArray(jenv, total);
+                    // Main Activity
+                    (*jenv)->SetByteArrayRegion(jenv, array, 0, total, (jbyte *) videoFrameData->videoframe);
+                    (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaPictureVideoCaptureYUV, array);
+                }
+                if (videoCapture) {
+                    uvc_frame_t *rgb;
+                    uvc_error_t ret;
+                    // We'll convert the image from YUV/JPEG to BGR, so allocate space
+                    rgb = uvc_allocate_frame(imageWidth * imageHeight * 3);
+                    if (!rgb) {
+                        printf("unable to allocate rgb frame!");
+                        return;
+                    }
+                    if (strcmp(frameFormat, "YUY2") == 0) {
+                        ret = uvc_yuyv2rgb(videoFrameData->videoframe, total, imageWidth, imageHeight, rgb);
+                    } else if (strcmp(frameFormat, "UYVY") == 0) {
+                        ret = uvc_uyvy2rgb(videoFrameData->videoframe, total, imageWidth, imageHeight, rgb);
+                    }
+                    JNIEnv * jenv;
+                    int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
+                    jbyteArray array = (*jenv)->NewByteArray(jenv, imageWidth * imageHeight * 3);
+                    // Main Activity
+                    (*jenv)->SetByteArrayRegion(jenv, array, 0, imageWidth * imageHeight * 3, (jbyte *) rgb->data);
+                    (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaPictureVideoCaptureRGB, array);
+                } else if (videoCaptureLongClick) {
+                    JNIEnv * jenv;
+                    int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
+                    jbyteArray array = (*jenv)->NewByteArray(jenv, total);
+                    // Main Activity
+                    (*jenv)->SetByteArrayRegion(jenv, array, 0, total, (jbyte *) videoFrameData->videoframe);
+                    (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaPictureVideoCaptureYUV, array);
+                }
+                copyToSurface(rgb_rot_nFlip, &mCaptureWindow);
+                uvc_free_frame(rgb_rot_nFlip);
+            } else {
+                //////      Image Processing For Low Level Android
+                uvc_frame_t *rgbx;
+                uvc_error_t ret;
+                // We'll convert the image from YUV/JPEG to BGR, so allocate space
+                rgbx = uvc_allocate_frame(imageWidth * imageHeight * 4);
+                if (!rgbx) {
+                    LOGD("unable to allocate rgb frame!");
+                    return;
+                }
+                if (strcmp(frameFormat, "YUY2") == 0) {
+                    ret = uvc_yuyv2_rgbx(videoFrameData->videoframe, total, imageWidth, imageHeight, rgbx);
+                } else if (strcmp(frameFormat, "UYVY") == 0) {
+                    ret = uvc_uyvy2rgbx(videoFrameData->videoframe, total, imageWidth, imageHeight, rgbx);
+                }
+                copyToSurface(rgbx, &mCaptureWindow);
+                uvc_free_frame(rgbx);
+            }
+        }
+    } else {
+        LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
+        frameUeberspringen = 0;
+    }
+    total = 0;
+}
+
 void cb_jni_stream_Surface_Service(struct libusb_transfer *the_transfer) {
+    uvc_stream_handle_t *strmh = the_transfer->user_data;
     if (runningStream == false) stopStreaming();
     //LOGD("Iso Transfer Callback Function");
     unsigned char *p;
@@ -2488,6 +2907,16 @@ void cb_jni_stream_Surface_Service(struct libusb_transfer *the_transfer) {
                 frameUeberspringen = 1;
                 continue;
             }
+            /* The frame ID bit was flipped, but we have image data sitting
+       around from prior transfers. This means the camera didn't send
+       an EOF for the last transfer of the previous frame or some frames losted. */
+            if ((strmh->fid != (p[1] & UVC_STREAM_FID) )  && total ) {
+                LOGD("UVC_STREAM_FID");
+                LOGD("Wert fid = %d, Wert strmh = %d", (p[1] & UVC_STREAM_FID), strmh->fid);
+                eof_cb_jni_stream_Surface_Service(strmh);
+            }
+            strmh->fid = p[1] & UVC_STREAM_FID;
+
             packetLen -= p[0];
             if (packetLen + total > videoFrameData->FrameBufferSize) {
                 if (ueberschreitungDerUebertragungslaenge == 1) {
@@ -2498,221 +2927,8 @@ void cb_jni_stream_Surface_Service(struct libusb_transfer *the_transfer) {
             }
             memcpy(videoFrameData->videoframe + total, p + p[0], packetLen);
             total += packetLen;
-            if (p[1] & UVC_STREAM_EOF) {
-                ueberschreitungDerUebertragungslaenge = 0;
-                if (frameUeberspringen == 0) {
-                    ++totalFrame;
-                    if (runningStream == false) stopStreaming();
-                    if (strcmp(frameFormat, "MJPEG") == 0) {
-                        ///////////////////   MJPEG     /////////////////////////
-                        if (!low_Android) {
-                            unsigned char *jpg_buffer;
-                            int jpeglength = total;
-                            int* jpglength_ptr = &jpeglength;
-                            jpg_buffer = convertMjpegFrameToJpeg(videoFrameData->videoframe, total, jpglength_ptr);
-                            //LOGD("jpg length jpglength_ptr = %d", *jpglength_ptr);
-                            unsigned long jpg_size = *jpglength_ptr;
-                            struct jpeg_decompress_struct cinfo;
-                            struct jpeg_error_mgr jerr;
-                            unsigned long rgb_size;
-                            unsigned char *rgb_buffer;
-                            int row_stride, width, height, pixel_size;
-                            cinfo.err = jpeg_std_error(&jerr);
-                            jpeg_create_decompress(&cinfo);
-                            jpeg_mem_src(&cinfo, jpg_buffer, jpg_size);
-                            int rc = jpeg_read_header(&cinfo, TRUE);
-                            if (rc != 1) {
-                                LOGD("File does not seem to be a normal JPEG");
-                                exit(EXIT_FAILURE);
-                            }
-                            jpeg_start_decompress(&cinfo);
-                            width = cinfo.output_width;
-                            height = cinfo.output_height;
-                            pixel_size = cinfo.output_components;
-                            //LOGD( "Proc: Image is %d by %d with %d components",width, height, pixel_size);
-                            rgb_size = width * height * pixel_size;
-                            rgb_buffer = (unsigned char*) malloc(rgb_size);
-                            row_stride = width * pixel_size;
-                            while (cinfo.output_scanline < cinfo.output_height) {
-                                unsigned char *buffer_array[1];
-                                buffer_array[0] = rgb_buffer + \
-						   (cinfo.output_scanline) * row_stride;
-                                jpeg_read_scanlines(&cinfo, buffer_array, 1);
-                            }
-                            jpeg_finish_decompress(&cinfo);
-                            jpeg_destroy_decompress(&cinfo);
-                            uvc_frame_t *rgbx;
-                            uvc_error_t ret;
-                            rgbx = uvc_allocate_frame(imageWidth * imageHeight * 4);
-                            if (!rgbx) {
-                                LOGD("unable to allocate rgb frame!");
-                                return;
-                            }
-                            uvc_rgb2rgbx(rgb_buffer, rgb_size, width, height, rgbx);
-                            uvc_frame_t *rgb_rot_nFlip = checkRotation(rgbx);
-                            copyToSurface(rgb_rot_nFlip, &mCaptureWindow);
-                            if (imageCapture) {
-                                imageCapture = false;
-                                LOGD("IMAGE CAPT 1");
-                                JNIEnv * jenv;
-                                int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
-                                jbyteArray array = (*jenv)->NewByteArray(jenv, jpg_size);
-                                // Main Activity
-                                (*jenv)->SetByteArrayRegion(jenv, array, 0, jpg_size, (jbyte *) jpg_buffer);
-                                LOGD("javaPictureVideoCaptureMJPEG");
-                                (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaPictureVideoCaptureMJPEG, array);
-                                LOGD("complete");
-                            } else if (imageCapturelongClick) {
-                                imageCapturelongClick = false;
-                                JNIEnv * jenv;
-                                int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
-                                jbyteArray array = (*jenv)->NewByteArray(jenv, jpg_size);
-                                // Main Activity
-                                (*jenv)->SetByteArrayRegion(jenv, array, 0, jpg_size, (jbyte *) jpg_buffer);
-                                (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaPictureVideoCaptureMJPEG, array);
-                            }
-                            if (videoCapture) {
-                                JNIEnv * jenv;
-                                int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
-                                jbyteArray array = (*jenv)->NewByteArray(jenv, jpg_size);
-                                // Main Activity
-                                (*jenv)->SetByteArrayRegion(jenv, array, 0, jpg_size, (jbyte *) jpg_buffer);
-                                (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaPictureVideoCaptureMJPEG, array);
-                            } else if (videoCaptureLongClick) {
-                                JNIEnv * jenv;
-                                int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
-                                jbyteArray array = (*jenv)->NewByteArray(jenv, jpg_size);
-                                // Main Activity
-                                (*jenv)->SetByteArrayRegion(jenv, array, 0, jpg_size, (jbyte *) jpg_buffer);
-                                (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaPictureVideoCaptureMJPEG, array);
-                            }
-                            free(rgb_buffer);
-                            uvc_free_frame(rgb_rot_nFlip);
-                            total = 0;
-                        } else {
-                            //////      Image Processing For Low Level Android
-                            uvc_error_t ret;
-                            // We'll convert the image from YUV/JPEG to BGR, so allocate space
-                            //rgbx = uvc_allocate_frame(imageWidth * imageHeight * 4);
-                            unsigned char *rgb_buffer;
-                            int rgblength = total;
-                            int* rgblength_ptr = &rgblength;
-                            rgb_buffer = uvc_mjpeg2rgb(rgblength_ptr);
-                            uvc_frame_t *rgbx;
-                            rgbx = uvc_allocate_frame(imageWidth * imageHeight * 4);
-                            if (!rgbx) {
-                                LOGD("unable to allocate rgb frame!");
-                                return;
-                            }
-                            uvc_rgb2rgbx(rgb_buffer, rgblength, imageWidth, imageHeight, rgbx);
-                            copyToSurface(rgbx, &mCaptureWindow);
-                            free(rgb_buffer);
-                            uvc_free_frame(rgbx);
-                            total = 0;
-                        }
-                    } else {   ///////////////////   YUV     /////////////////////////
-                        //LOGD("YUV ...");
-                        if (!low_Android) {
-                            uvc_frame_t *rgbx;
-                            uvc_error_t ret;
-                            // We'll convert the image from YUV/JPEG to BGR, so allocate space
-                            rgbx = uvc_allocate_frame(imageWidth * imageHeight * 4);
-                            if (!rgbx) {
-                                LOGD("unable to allocate rgb frame!");
-                                return;
-                            }
-                            if (strcmp(frameFormat, "YUY2") == 0) {
-                                ret = uvc_yuyv2_rgbx(videoFrameData->videoframe, total, imageWidth, imageHeight, rgbx);
-                            } else if (strcmp(frameFormat, "UYVY") == 0) {
-                                ret = uvc_uyvy2rgbx(videoFrameData->videoframe, total, imageWidth, imageHeight, rgbx);
-                            }
-                            uvc_frame_t *rgb_rot_nFlip = checkRotation(rgbx);
-                            if (imageCapture) {
-                                imageCapture = false;
-                                uvc_frame_t *rgb;
-                                uvc_error_t ret;
-                                // We'll convert the image from YUV/JPEG to BGR, so allocate space
-                                rgb = uvc_allocate_frame(imageWidth * imageHeight * 3);
-                                if (!rgb) {
-                                    LOGD("unable to allocate rgb frame!");
-                                    return;
-                                }
-                                if (strcmp(frameFormat, "YUY2") == 0) {
-                                    ret = uvc_yuyv2rgb(videoFrameData->videoframe, total, imageWidth, imageHeight, rgb);
-                                } else if (strcmp(frameFormat, "UYVY") == 0) {
-                                    ret = uvc_uyvy2rgb(videoFrameData->videoframe, total, imageWidth, imageHeight, rgb);
-                                }
-                                JNIEnv * jenv;
-                                int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
-                                jbyteArray array = (*jenv)->NewByteArray(jenv, imageWidth * imageHeight * 3);
-                                // Main Activity
-                                (*jenv)->SetByteArrayRegion(jenv, array, 0, imageWidth * imageHeight * 3, (jbyte *) rgb->data);
-                                (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaPictureVideoCaptureRGB, array);
-                            } else if (imageCapturelongClick) {
-                                imageCapturelongClick = false;
-                                JNIEnv * jenv;
-                                int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
-                                jbyteArray array = (*jenv)->NewByteArray(jenv, total);
-                                // Main Activity
-                                (*jenv)->SetByteArrayRegion(jenv, array, 0, total, (jbyte *) videoFrameData->videoframe);
-                                (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaPictureVideoCaptureYUV, array);
-                            }
-                            if (videoCapture) {
-                                uvc_frame_t *rgb;
-                                uvc_error_t ret;
-                                // We'll convert the image from YUV/JPEG to BGR, so allocate space
-                                rgb = uvc_allocate_frame(imageWidth * imageHeight * 3);
-                                if (!rgb) {
-                                    printf("unable to allocate rgb frame!");
-                                    return;
-                                }
-                                if (strcmp(frameFormat, "YUY2") == 0) {
-                                    ret = uvc_yuyv2rgb(videoFrameData->videoframe, total, imageWidth, imageHeight, rgb);
-                                } else if (strcmp(frameFormat, "UYVY") == 0) {
-                                    ret = uvc_uyvy2rgb(videoFrameData->videoframe, total, imageWidth, imageHeight, rgb);
-                                }
-                                JNIEnv * jenv;
-                                int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
-                                jbyteArray array = (*jenv)->NewByteArray(jenv, imageWidth * imageHeight * 3);
-                                // Main Activity
-                                (*jenv)->SetByteArrayRegion(jenv, array, 0, imageWidth * imageHeight * 3, (jbyte *) rgb->data);
-                                (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaPictureVideoCaptureRGB, array);
-                            } else if (videoCaptureLongClick) {
-                                JNIEnv * jenv;
-                                int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
-                                jbyteArray array = (*jenv)->NewByteArray(jenv, total);
-                                // Main Activity
-                                (*jenv)->SetByteArrayRegion(jenv, array, 0, total, (jbyte *) videoFrameData->videoframe);
-                                (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaPictureVideoCaptureYUV, array);
-                            }
-                            copyToSurface(rgb_rot_nFlip, &mCaptureWindow);
-                            uvc_free_frame(rgb_rot_nFlip);
-                            total = 0;
-                        } else {
-                            //////      Image Processing For Low Level Android
-                            uvc_frame_t *rgbx;
-                            uvc_error_t ret;
-                            // We'll convert the image from YUV/JPEG to BGR, so allocate space
-                            rgbx = uvc_allocate_frame(imageWidth * imageHeight * 4);
-                            if (!rgbx) {
-                                LOGD("unable to allocate rgb frame!");
-                                return;
-                            }
-                            if (strcmp(frameFormat, "YUY2") == 0) {
-                                ret = uvc_yuyv2_rgbx(videoFrameData->videoframe, total, imageWidth, imageHeight, rgbx);
-                            } else if (strcmp(frameFormat, "UYVY") == 0) {
-                                ret = uvc_uyvy2rgbx(videoFrameData->videoframe, total, imageWidth, imageHeight, rgbx);
-                            }
-                            copyToSurface(rgbx, &mCaptureWindow);
-                            uvc_free_frame(rgbx);
-                            total = 0;
-                        }
-                    }
-                } else {
-                    LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
-                    total = 0;
-                    frameUeberspringen = 0;
-                }
+            if ((p[1] & UVC_STREAM_EOF) && total != 0) {
+                eof_cb_jni_stream_Surface_Service(strmh);
             }
         }
     }
@@ -2721,7 +2937,56 @@ void cb_jni_stream_Surface_Service(struct libusb_transfer *the_transfer) {
         }
 }
 
+void eof_cb_jni_stream_Bitmap_Service(uvc_stream_handle_t *strmh) {
+    /*
+    pthread_mutex_lock(&strmh->cb_mutex);
+    {
+        //tmp_buf = strmh->holdbuf;
+        strmh->hold_bfh_err = strmh->bfh_err;	// XXX
+        strmh->hold_bytes = total;
+        //strmh->holdbuf = strmh->outbuf;
+        //strmh->outbuf = tmp_buf;
+        strmh->hold_last_scr = strmh->last_scr;
+        strmh->hold_pts = strmh->pts;
+        strmh->hold_seq = strmh->seq;
+        pthread_cond_broadcast(&strmh->cb_cond);
+    }
+    pthread_mutex_unlock(&strmh->cb_mutex);
+*/
+    ueberschreitungDerUebertragungslaenge = 0;
+    if (frameUeberspringen == 0) {
+        ++totalFrame;
+        if (runningStream == false) stopStreaming();
+        if (strcmp(frameFormat, "MJPEG") == 0) {
+            ///////////////////   MJPEG     /////////////////////////
+            // LOGD("MJPEG");
+            LOGD("calling sendFrameComplete");
+            //runningStream = false;
+            sendFrameComplete(total);
+            if (imageCapture) {
+                imageCapture = false;
+                LOGD("complete");
+            } else if (imageCapturelongClick) {
+                imageCapturelongClick = false;
+            }
+        } else {   ///////////////////   YUV     /////////////////////////
+            sendFrameComplete(total);
+            if (imageCapture) {
+                imageCapture = false;
+                LOGD("complete");
+            } else if (imageCapturelongClick) {
+                imageCapturelongClick = false;
+            }
+        }
+    } else {
+        LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
+        frameUeberspringen = 0;
+    }
+    total = 0;
+}
+
 void cb_jni_stream_Bitmap_Service(struct libusb_transfer *the_transfer) {
+    uvc_stream_handle_t *strmh = the_transfer->user_data;
     if (runningStream == false) stopStreaming();
     //LOGD("Iso Transfer Callback Function");
     unsigned char *p;
@@ -2744,6 +3009,13 @@ void cb_jni_stream_Bitmap_Service(struct libusb_transfer *the_transfer) {
                 frameUeberspringen = 1;
                 continue;
             }
+            /* The frame ID bit was flipped, but we have image data sitting
+       around from prior transfers. This means the camera didn't send
+       an EOF for the last transfer of the previous frame or some frames losted. */
+            if ((total != p[1] & UVC_STREAM_FID )  && total ) {
+                eof_cb_jni_stream_Bitmap_Service(strmh);
+            }
+            total = p[1] & UVC_STREAM_FID;
             packetLen -= p[0];
             if (packetLen + total > videoFrameData->FrameBufferSize) {
                 if (ueberschreitungDerUebertragungslaenge == 1) {
@@ -2754,40 +3026,10 @@ void cb_jni_stream_Bitmap_Service(struct libusb_transfer *the_transfer) {
             }
             memcpy(videoFrameData->videoframe + total, p + p[0], packetLen);
             total += packetLen;
-            if (p[1] & UVC_STREAM_EOF) {
-                ueberschreitungDerUebertragungslaenge = 0;
-                if (frameUeberspringen == 0) {
-                    ++totalFrame;
-                    if (runningStream == false) stopStreaming();
-                    if (strcmp(frameFormat, "MJPEG") == 0) {
-                        ///////////////////   MJPEG     /////////////////////////
-                        // LOGD("MJPEG");
-                        LOGD("calling sendFrameComplete");
-                        //runningStream = false;
-                        sendFrameComplete(total);
-                        if (imageCapture) {
-                            imageCapture = false;
-                            LOGD("complete");
-                        } else if (imageCapturelongClick) {
-                            imageCapturelongClick = false;
-                        }
-                        total = 0;
-                    } else {   ///////////////////   YUV     /////////////////////////
-                        sendFrameComplete(total);
-                        if (imageCapture) {
-                            imageCapture = false;
-                            LOGD("complete");
-                        } else if (imageCapturelongClick) {
-                            imageCapturelongClick = false;
-                        }
-                        total = 0;
-                    }
-                } else {
-                    LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
-                    total = 0;
-                    frameUeberspringen = 0;
-                }
+            if ((p[1] & UVC_STREAM_EOF) && total != 0) {
+                eof_cb_jni_stream_Bitmap_Service(strmh);
             }
+
         }
     }
     if (runningStream) if (libusb_submit_transfer(the_transfer) != 0) {
@@ -2798,15 +3040,26 @@ void cb_jni_stream_Bitmap_Service(struct libusb_transfer *the_transfer) {
 JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniServiceOverSurface
         (JNIEnv *env, jobject obj) {
     if (initialized) {
-
+        uvc_stream_handle_t *strmh = NULL;
+        strmh = calloc(1, sizeof(*strmh));
+        if (UNLIKELY(!strmh)) {
+            int ret = UVC_ERROR_NO_MEM;
+            //goto fail;
+        }
+        strmh->running = 1;
+        strmh->seq = 0;
+        strmh->fid = 0;
+        strmh->pts = 0;
+        strmh->last_scr = 0;
+        strmh->bfh_err = 0;	// XXX
         struct libusb_transfer *xfers[activeUrbs];
         for (i = 0; i < activeUrbs; i++) {
             xfers[i] = libusb_alloc_transfer(packetsPerRequest);
             uint8_t *data = malloc(maxPacketSize * packetsPerRequest);
             libusb_fill_iso_transfer(
-                    xfers[i], devh, camStreamingEndpoint,
+                    xfers[i], uvcDeviceHandle->usb_devh, camStreamingEndpoint,
                     data, maxPacketSize * packetsPerRequest, packetsPerRequest,
-                    cb_jni_stream_Surface_Service, NULL, 5000);
+                    cb_jni_stream_Surface_Service, (void*) strmh, 5000);
             libusb_set_iso_packet_lengths(xfers[i], maxPacketSize);
         }
         runningStream = true;
@@ -2820,7 +3073,7 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniServ
                 LOGD("stopped because runningStream == false !!  --> libusb_event_handling STOPPED");
                 break;
             }
-            libusb_handle_events(ctx);
+            libusb_handle_events(uvcContext->usb_ctx);
         }
         LOGD("ISO Stream Start -- finished");
     }
@@ -2829,14 +3082,26 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniServ
 JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniServiceOverBitmap
         (JNIEnv *env, jobject obj) {
     if (initialized) {
+        uvc_stream_handle_t *strmh = NULL;
+        strmh = calloc(1, sizeof(*strmh));
+        if (UNLIKELY(!strmh)) {
+            int ret = UVC_ERROR_NO_MEM;
+            //goto fail;
+        }
+        strmh->running = 1;
+        strmh->seq = 0;
+        strmh->fid = 0;
+        strmh->pts = 0;
+        strmh->last_scr = 0;
+        strmh->bfh_err = 0;	// XXX
         struct libusb_transfer *xfers[activeUrbs];
         for (i = 0; i < activeUrbs; i++) {
             xfers[i] = libusb_alloc_transfer(packetsPerRequest);
             uint8_t *data = malloc(maxPacketSize * packetsPerRequest);
             libusb_fill_iso_transfer(
-                    xfers[i], devh, camStreamingEndpoint,
+                    xfers[i], uvcDeviceHandle->usb_devh, camStreamingEndpoint,
                     data, maxPacketSize * packetsPerRequest, packetsPerRequest,
-                    cb_jni_stream_Bitmap_Service, NULL, 5000);
+                    cb_jni_stream_Bitmap_Service, (void*) strmh, 5000);
             libusb_set_iso_packet_lengths(xfers[i], maxPacketSize);
         }
         runningStream = true;
@@ -2850,7 +3115,7 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniServ
                 LOGD("stopped because runningStream == false !!  --> libusb_event_handling STOPPED");
                 break;
             }
-            libusb_handle_events(ctx);
+            libusb_handle_events(uvcContext->usb_ctx);
         }
         LOGD("ISO Stream Start -- finished");
     }
@@ -2858,7 +3123,63 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniServ
 
 //////////////////////// Webrtc WebRtc webrtc
 
+void eof_cb_jni_WebRtc_Service(uvc_stream_handle_t *strmh) {
+    /*
+    pthread_mutex_lock(&strmh->cb_mutex);
+    {
+        //tmp_buf = strmh->holdbuf;
+        strmh->hold_bfh_err = strmh->bfh_err;	// XXX
+        strmh->hold_bytes = total;
+        //strmh->holdbuf = strmh->outbuf;
+        //strmh->outbuf = tmp_buf;
+        strmh->hold_last_scr = strmh->last_scr;
+        strmh->hold_pts = strmh->pts;
+        strmh->hold_seq = strmh->seq;
+        pthread_cond_broadcast(&strmh->cb_cond);
+    }
+    pthread_mutex_unlock(&strmh->cb_mutex);
+*/
+    ueberschreitungDerUebertragungslaenge = 0;
+    if (frameUeberspringen == 0) {
+        ++totalFrame;
+        if (runningStream == false) stopStreaming();
+        if (strcmp(frameFormat, "MJPEG") == 0) {
+
+            JNIEnv * jenv;
+            int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
+            jbyteArray array = (*jenv)->NewByteArray(jenv, total);
+            (*jenv)->SetByteArrayRegion(jenv, array, 0, total, (jbyte *) videoFrameData->videoframe);
+            // Service
+            (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaProcessReceivedMJpegVideoFrameKamera, array);
+        } else {
+            LOGD("frameFormat = %s", frameFormat);
+            uvc_frame_t *yuyv;
+            uvc_error_t ret;
+            // We'll convert the image from YUV/JPEG to BGR, so allocate space
+            yuyv = uvc_allocate_frame(imageWidth * imageHeight *3/ 2);
+            uvc_duplicate_frame(yuyv);
+            uvc_frame_t *nv21;
+            // We'll convert the image from YUV/JPEG to BGR, so allocate space
+            nv21 = uvc_allocate_frame(imageWidth * imageHeight * 3 / 2);
+            uvc_yuyv2iyuv420SP (yuyv, nv21);
+            JNIEnv * jenv;
+            int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
+            jbyteArray array = (*jenv)->NewByteArray(jenv, nv21->data_bytes);
+            (*jenv)->SetByteArrayRegion(jenv, array, 0, nv21->data_bytes, (jbyte *) nv21->data);
+            // Service
+            LOGD("CallVoidMethod");
+            (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaRetrievedFrameFromLibUsb21, array);
+            uvc_free_frame(nv21);
+        }
+    } else {
+        LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
+        frameUeberspringen = 0;
+    }
+    total = 0;
+}
+
 void cb_jni_WebRtc_Service(struct libusb_transfer *the_transfer) {
+    uvc_stream_handle_t *strmh = the_transfer->user_data;
     //LOGD("Iso Transfer Callback Function");
     unsigned char *p;
     int packetLen;
@@ -2877,6 +3198,17 @@ void cb_jni_WebRtc_Service(struct libusb_transfer *the_transfer) {
                 frameUeberspringen = 1;
                 continue;
             }
+            /* The frame ID bit was flipped, but we have image data sitting
+        around from prior transfers. This means the camera didn't send
+        an EOF for the last transfer of the previous frame or some frames losted. */
+            if ((strmh->fid != (p[1] & UVC_STREAM_FID) )  && total ) {
+
+                LOGD("UVC_STREAM_FID");
+                LOGD("Wert fid = %d, Wert strmh = %d", (p[1] & UVC_STREAM_FID), strmh->fid);
+                eof_cb_jni_WebRtc_Service(strmh);
+            }
+            strmh->fid = p[1] & UVC_STREAM_FID;
+
             packetLen -= p[0];
             if (packetLen + total > videoFrameData->FrameBufferSize) {
                 if (ueberschreitungDerUebertragungslaenge == 1) {
@@ -2887,46 +3219,8 @@ void cb_jni_WebRtc_Service(struct libusb_transfer *the_transfer) {
             }
             memcpy(videoFrameData->videoframe + total, p + p[0], packetLen);
             total += packetLen;
-            if (p[1] & UVC_STREAM_EOF) {
-                ueberschreitungDerUebertragungslaenge = 0;
-                if (frameUeberspringen == 0) {
-                    ++totalFrame;
-                    if (runningStream == false) stopStreaming();
-                    if (strcmp(frameFormat, "MJPEG") == 0) {
-
-                        JNIEnv * jenv;
-                        int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
-                        jbyteArray array = (*jenv)->NewByteArray(jenv, total);
-                        (*jenv)->SetByteArrayRegion(jenv, array, 0, total, (jbyte *) videoFrameData->videoframe);
-                        // Service
-                        (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaProcessReceivedMJpegVideoFrameKamera, array);
-                        total = 0;
-                    } else {
-                        LOGD("frameFormat = %s", frameFormat);
-                        uvc_frame_t *yuyv;
-                        uvc_error_t ret;
-                        // We'll convert the image from YUV/JPEG to BGR, so allocate space
-                        yuyv = uvc_allocate_frame(imageWidth * imageHeight *3/ 2);
-                        uvc_duplicate_frame(yuyv);
-                        uvc_frame_t *nv21;
-                        // We'll convert the image from YUV/JPEG to BGR, so allocate space
-                        nv21 = uvc_allocate_frame(imageWidth * imageHeight *3/ 2);
-                        uvc_yuyv2iyuv420SP (yuyv, nv21);
-                        JNIEnv * jenv;
-                        int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
-                        jbyteArray array = (*jenv)->NewByteArray(jenv, nv21->data_bytes);
-                        (*jenv)->SetByteArrayRegion(jenv, array, 0, nv21->data_bytes, (jbyte *) nv21->data);
-                        // Service
-                        LOGD("CallVoidMethod");
-                        (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaRetrievedFrameFromLibUsb21, array);
-                        uvc_free_frame(nv21);
-                    }
-                    total = 0;
-                } else {
-                    LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
-                    total = 0;
-                    frameUeberspringen = 0;
-                }
+            if ((p[1] & UVC_STREAM_EOF) && total != 0) {
+                eof_cb_jni_WebRtc_Service(strmh);
             }
         }
     }
@@ -2954,10 +3248,10 @@ void prepairTheStream_WebRtc_Service() {
 
     probeCommitControl(bmHint, camFormatIndex, camFrameIndex, camFrameInterval, fd);
 
-    int r = libusb_set_interface_alt_setting(devh, camStreamingInterfaceNum,
+    int r = libusb_set_interface_alt_setting(uvcDeviceHandle->usb_devh, camStreamingInterfaceNum,
                                              camStreamingAltSetting); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
     if (r != LIBUSB_SUCCESS) {
-        LOGD("libusb_set_interface_alt_setting(devh, 1, 1) failed with error %d\n", r);
+        LOGD("libusb_set_interface_alt_setting(uvcDeviceHandle->usb_devh, 1, 1) failed with error %d\n", r);
     } else {
         LOGD("Altsettings sucessfully set:\nAltsetting = %d\n",
              camStreamingAltSetting);
@@ -2972,7 +3266,7 @@ void lunchTheStream_WebRtc_Service() {
             xfers[i] = libusb_alloc_transfer(packetsPerRequest);
             uint8_t *data = malloc(maxPacketSize * packetsPerRequest);
             libusb_fill_iso_transfer(
-                    xfers[i], devh, camStreamingEndpoint,
+                    xfers[i], uvcDeviceHandle->usb_devh, camStreamingEndpoint,
                     data, maxPacketSize * packetsPerRequest, packetsPerRequest,
                     cb_jni_WebRtc_Service, NULL, 5000);
             libusb_set_iso_packet_lengths(xfers[i], maxPacketSize);
@@ -2988,7 +3282,7 @@ void lunchTheStream_WebRtc_Service() {
                 LOGD("stopped because runningStream == false !!  --> libusb_event_handling STOPPED");
                 break;
             }
-            libusb_handle_events(ctx);
+            libusb_handle_events(uvcContext->usb_ctx);
         }
         LOGD("ISO Stream Start -- finished");
     }
@@ -3154,6 +3448,7 @@ Java_humer_UvcCamera_StartIsoStreamActivity_YUY2pixeltobmp( JNIEnv* env, jobject
 }
 
 // Bitmap Method
+
 void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_frameToBitmap( JNIEnv* env, jobject thiz, jobject bitmap) {
 
     uvc_frame_t *rgbx;
@@ -3206,3 +3501,41 @@ void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_frameToBitmap( JNIEnv* 
     memcpy(pixels, rgbx->data, width*height*4);
     AndroidBitmap_unlockPixels(env, bitmap);
 }
+
+/** @internal
+ * @brief Event handler thread
+ * There's one of these per UVC context.
+ * @todo We shouldn't run this if we don't own the USB context
+ */
+void *_uvc_handle_events(void *arg) {
+    uvc_context_t *ctx = (uvc_context_t *) arg;
+
+#if defined(__ANDROID__)
+    // try to increase thread priority
+	int prio = getpriority(PRIO_PROCESS, 0);
+	nice(-18);
+	if (UNLIKELY(getpriority(PRIO_PROCESS, 0) >= prio)) {
+		LOGD("could not change thread priority");
+	}
+#endif
+    for (; !ctx->kill_handler_thread ;)
+        libusb_handle_events(ctx->usb_ctx);
+    return NULL;
+}
+
+
+/**
+ * @internal
+ * @brief Spawns a handler thread for the context
+ * @ingroup init
+ *
+ * This should be called at the end of a successful uvc_open if no devices
+ * are already open (and being handled).
+ */
+void uvc_start_handler_thread(uvc_context_t *ctx) {
+    if (ctx->own_usb_ctx) {
+        pthread_create(&ctx->handler_thread, NULL, _uvc_handle_events, (void*) ctx);
+    }
+}
+
+

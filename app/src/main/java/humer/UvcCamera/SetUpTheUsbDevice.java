@@ -38,6 +38,7 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
+import android.hardware.usb.UsbRequest;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -65,6 +66,7 @@ import com.crowdfire.cfalertdialog.views.CFPushButton;
 import com.sun.jna.Pointer;
 import com.tomer.fadingtextview.FadingTextView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -124,55 +126,56 @@ public class SetUpTheUsbDevice extends Activity {
     private static final int VS_STILL_IMAGE_TRIGGER_CONTROL = 0x05;
 
     // Android USB Classes
-    private UsbManager usbManager;
-    private UsbDevice camDevice = null;
+    private UsbManager          usbManager;
+    private UsbDevice           camDevice = null;
     private UsbDeviceConnection camDeviceConnection;
-    private UsbInterface camControlInterface;
-    private UsbInterface camStreamingInterface;
-    private UsbEndpoint camControlEndpoint;
-    private UsbEndpoint camStreamingEndpoint;
-    private PendingIntent mPermissionIntent;
+    private UsbInterface        camControlInterface;
+    private UsbInterface        camStreamingInterface;
+    private UsbEndpoint         camControlEndpoint;
+    private UsbEndpoint         camStreamingEndpoint;
+    private PendingIntent       mPermissionIntent;
 
     // Camera Valueslib_usb_set_option
-    public int camStreamingAltSetting;
-    public int camFormatIndex;
-    public int camFrameIndex;
-    public int camFrameInterval;
-    public int packetsPerRequest;
-    public int maxPacketSize;
-    public int imageWidth;
-    public int imageHeight;
-    public int activeUrbs;
-    public String videoformat;
-    public String deviceName;
-    public byte bUnitID;
-    public byte bTerminalID;
-    public byte[] bNumControlTerminal;
-    public byte[] bNumControlUnit;
-    public static byte[] bcdUVC;
-    public static byte[] bcdUSB;
-    public byte bStillCaptureMethod;
-    public boolean libUsb;
-    public static boolean moveToNative;
-    public boolean transferSucessful;
+    public int              camStreamingAltSetting;
+    public int              camFormatIndex;
+    public int              camFrameIndex;
+    public int              camFrameInterval;
+    public int              packetsPerRequest;
+    public int              maxPacketSize;
+    public int              imageWidth;
+    public int              imageHeight;
+    public int              activeUrbs;
+    public String           videoformat;
+    public String           deviceName;
+    public byte             bUnitID;
+    public byte             bTerminalID;
+    public byte[]           bNumControlTerminal;
+    public byte[]           bNumControlUnit;
+    public static byte[]    bcdUVC;
+    public static byte[]    bcdUSB;
+    public byte             bStillCaptureMethod;
+    public boolean          libUsb;
+    public static boolean   moveToNative;
+    public boolean          transferSucessful;
+    public boolean          bulkMode;
+
 
 
     // Vales for debuging the camera
-    private String controlltransfer;
-    private String initStreamingParmsResult;
-    private String initStreamingParms;
-    private int[] initStreamingParmsIntArray;
-    private String probedStreamingParms;
-    private int[] probedStreamingParmsIntArray;
-    private String finalStreamingParms_first;
-    private int[] finalStreamingParmsIntArray_first;
-    private String finalStreamingParms;
-    private int[] finalStreamingParmsIntArray;
-    private String controlErrorlog;
-    public StringBuilder stringBuilder;
-    public int [] convertedMaxPacketSize;
-    public static boolean camIsOpen;
-    private boolean bulkMode;
+    private String          controlltransfer;
+    private String          initStreamingParmsResult;
+    private String          initStreamingParms;
+    private int[]           initStreamingParmsIntArray;
+    private String          probedStreamingParms;
+    private int[]           probedStreamingParmsIntArray;
+    private String          finalStreamingParms_first;
+    private int[]           finalStreamingParmsIntArray_first;
+    private String          finalStreamingParms;
+    private int[]           finalStreamingParmsIntArray;
+    private String          controlErrorlog;
+    public StringBuilder    stringBuilder;
+    public int []           convertedMaxPacketSize;
+    public static boolean   camIsOpen;
 
     private enum Options { searchTheCamera, testrun, listdevice, showTestRunMenu, setUpWithUvcSettings };
 
@@ -282,7 +285,7 @@ public class SetUpTheUsbDevice extends Activity {
             System.loadLibrary("yuv");
             System.loadLibrary("jpeg");
             System.loadLibrary("jpeg-turbo");
-            System.loadLibrary("Usb_Support");
+            System.loadLibrary("Uvc_Support");
             isLoaded = true;
         }
     }
@@ -522,6 +525,7 @@ public class SetUpTheUsbDevice extends Activity {
     //////////////////////// BUTTONS Buttons ///////////////////////////////////////
 
     public void raiseSize(View view){
+        log("raiseSize pressed;\n");
         final int TIME_TO_WAIT = 2500;
         Button button = findViewById(R.id.raiseSize_setUp);
         if (button.isEnabled()) {
@@ -540,6 +544,7 @@ public class SetUpTheUsbDevice extends Activity {
     }
 
     public void lowerSize(View view){
+        log("lowerSize pressed;\n");
         final int TIME_TO_WAIT = 2500;
         Button button = findViewById(R.id.raiseSize_setUp);
         if (button.isEnabled()) {
@@ -558,6 +563,7 @@ public class SetUpTheUsbDevice extends Activity {
     }
 
     public void showTestRunMenu(View v) {
+        log("showTestRunMenu pressed;\n");
         if (camDevice == null) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -577,33 +583,83 @@ public class SetUpTheUsbDevice extends Activity {
         } else {
             Context wrapper = new ContextThemeWrapper(this, R.style.YOURSTYLE);
             PopupMenu popup = new PopupMenu(wrapper, v);
-            // This activity implements OnMenuItemClickListener
-            popup.inflate(R.menu.set_up_the_device_testrun_menubutton);
-            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    switch (item.getItemId()) {
-                        case R.id.videoProbeCommit:
-                            videoProbeCommitTransfer();
-                            return true;
-                        case R.id.testrun5sec:
-                            isoRead5sec();
-                            return true;
-                        case R.id.testrun1frame:
-                            isoRead1Frame();
-                            return true;
-                        default:
-                            break;
+
+
+
+            if (!bulkMode) {
+                // This activity implements OnMenuItemClickListener
+                popup.inflate(R.menu.set_up_the_device_testrun_menubutton);
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.videoProbeCommit:
+                                videoProbeCommitTransfer();
+                                return true;
+                            case R.id.testrun5sec:
+                                isoRead5sec();
+                                return true;
+                            case R.id.testrun1frame:
+                                isoRead1Frame();
+                                return true;
+                            default:
+                                break;
+                        }
+                        return false;
                     }
-                    return false;
-                }
-            });
+                });
+            } else {
+                // This activity implements OnMenuItemClickListener
+                popup.inflate(R.menu.set_up_dev_bulk_menu);
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.videoProbeCommit:
+                                videoProbeCommitTransfer();
+                                return true;
+                            case R.id.buld_read_1:
+                                try {
+                                    testBulkRead1();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                return true;
+                            case R.id.buld_read_2:
+                                try {
+                                    testBulkRead2();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                return true;
+                            case R.id.buld_read_3:
+                                try {
+                                    testBulkRead3();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                return true;
+                            case R.id.buld_read_4:
+                                try {
+                                    testBulkRead4();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                return true;
+                            default:
+                                break;
+                        }
+                        return false;
+                    }
+                });
+            }
+
             popup.show();
         }
     }
 
     public void searchTheCamera (View view) {
-
+        log("searchTheCamera pressed;\n");
         if (camDevice == null) {
             try {
                 findCam();
@@ -678,6 +734,7 @@ public class SetUpTheUsbDevice extends Activity {
     }
 
     public void listDeviceButtonClickEvent(View view) {
+        log("listDeviceButton pressed;\n");
         if (camDevice == null) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -693,6 +750,10 @@ public class SetUpTheUsbDevice extends Activity {
     }
 
     public void setUpWithUvcSettings(View view) {
+
+        if (bulkMode) libUsb = false;
+
+        log("setUpWithUvcSettings pressed;\n");
         if (camDevice == null) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -730,6 +791,7 @@ public class SetUpTheUsbDevice extends Activity {
     }
 
     public void editCameraSettings (View view) {
+        log("editCameraSettings pressed;\n");
         if(buttonHandler != null) {
             buttonHandler.removeCallbacks(myRunnable);
             buttonHandler = null;
@@ -738,12 +800,14 @@ public class SetUpTheUsbDevice extends Activity {
     }
 
     public void returnToConfigScreen(View view) {
+        log("returnToConfigScreen pressed;\n");
         writeTheValues();
     }
 
     ///////////////////////////////////   Camera spezific methods   ////////////////////////////////////////////
 
     private void findCam() throws Exception {
+        log("findCam ..... ;\n");
         camDevice = findCameraDevice();
         if (camDevice == null) {
             camDevice = checkDeviceVideoClass();
@@ -1090,6 +1154,7 @@ public class SetUpTheUsbDevice extends Activity {
     }
 
     private void openCameraDevice(boolean init) throws Exception {
+        log("open Camera Device Method ;\n");
         if (moveToNative) {
             log("moveToNative true");
             camDeviceConnection = usbManager.openDevice(camDevice);
@@ -1121,6 +1186,7 @@ public class SetUpTheUsbDevice extends Activity {
             camControlEndpoint = camControlInterface.getEndpoint(0);
         }
         bulkMode = camStreamingEndpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK;
+        if (bulkMode) log("\n bulkMode detected !! \n");
         log("opening the usb device");
         camDeviceConnection = usbManager.openDevice(camDevice);
         if (camDeviceConnection == null) {
@@ -1140,6 +1206,7 @@ public class SetUpTheUsbDevice extends Activity {
                 throw new Exception("Unable to claim camera streaming interface.");
             }
         }
+        //if (bulkMode) return;
         if (!init) {
             log("getting the raw descriptors");
             byte[] a = camDeviceConnection.getRawDescriptors();
@@ -1155,7 +1222,10 @@ public class SetUpTheUsbDevice extends Activity {
             if (!(camFormatIndex == 0 || camFrameIndex == 0 ||camFrameInterval == 0 ||packetsPerRequest == 0 ||maxPacketSize == 0 ||imageWidth == 0 || activeUrbs == 0 )) {
                 if (libUsb) libUsbActivate.setChecked(true);
                 else libUsbActivate.setChecked(false);
-            } else libUsb = true;
+            } else {
+                if (bulkMode) libUsb = false;
+                else libUsb = true;
+            }
             log("Showing the SetUvcSettings Screen");
             alertDialog = builder.show();
             libUsbActivate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -1168,6 +1238,10 @@ public class SetUpTheUsbDevice extends Activity {
             automatic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if (!bulkMode) {
+                        displayMessage("Please select the manual Method");
+                        return;
+                    }
                     log("Automatic Button Pressed");
                     automaticStart = true;
                     if (convertedMaxPacketSize == null) listDevice(camDevice);
@@ -1181,7 +1255,6 @@ public class SetUpTheUsbDevice extends Activity {
                             tv.setTextColor(Color.BLACK);
                         }
                     });
-
                     alertDialog.dismiss();
                 }
             });
@@ -1858,9 +1931,6 @@ public class SetUpTheUsbDevice extends Activity {
                     stringBuilder.append("Length = " + frameSize + "\n");
                     if (frameSize == (imageWidth*imageHeight*2)) stringBuilder.append("\nThe Frame length matches it's expected size.\nThis are the first 20 bytes of the frame:");
                     stringBuilder.append("\ndata = " + hexDump(videoFrame.getByteArray(0,50), Math.min(32, 50)));
-
-
-
                     //// Save to File
                     /*
                     if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) {
@@ -1878,7 +1948,6 @@ public class SetUpTheUsbDevice extends Activity {
                         log ("file saved");
                     }
                     */
-
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -1887,9 +1956,6 @@ public class SetUpTheUsbDevice extends Activity {
                             tv.setTextColor(Color.BLACK);
                         }
                     });
-
-
-
                     return true;
                 }
             });
@@ -2693,6 +2759,190 @@ public class SetUpTheUsbDevice extends Activity {
         }
         return (hits == 0);
     }
+
+    private void testBulkRead1() throws Exception {
+        log("\nTestBulkRead 1\n");
+        ArrayList<String> logArray = new ArrayList<String>(512);
+        // log("maxPacketSize=" + camStreamingEndpoint.getMaxPacketSize());
+        // UsbRequest usbRequest = new UsbRequest();
+        // usbRequest.initialize(camDeviceConnection, camStreamingEndpoint);
+        //
+        // final int maxBulkTransferSize = 16384;          // hard-coded limit in devio.c
+        enableStreaming(true);
+        // log("enable streaming passed");
+        // log("Stream error code: " + getVideoStreamErrorCode());
+        // byte[] buf = new byte[maxBulkTransferSize];
+        // byte[] buf = new byte[camStreamingEndpoint.getMaxPacketSize()];
+        byte[] buf = new byte[maxPacketSize];
+        for (int i = 0; i < 1000; i++) {
+            int len = camDeviceConnection.bulkTransfer(camStreamingEndpoint, buf, buf.length, 100);
+            StringBuilder logEntry = new StringBuilder();
+            logEntry.append("len=" + len + ((len <= 0) ? "" : " " + hexDump(buf, Math.min(32, len))));
+            logArray.add(logEntry.toString()); }
+        // log("Stream error code: " + getVideoStreamErrorCode());
+        enableStreaming(false);
+        for (String s : logArray) {
+            log(s); }
+        stringBuilder = new StringBuilder();
+        stringBuilder.append("Here are the Bulk Requests:\n\n");
+        for (String s : logArray) {
+            stringBuilder.append("\n\n");
+            stringBuilder.append(s);
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tv = (ZoomTextView) findViewById(R.id.textDarstellung);
+                tv.setText(stringBuilder.toString() );
+                tv.setTextColor(Color.BLACK);
+            }
+        });
+    }
+
+    private void testBulkRead2() throws Exception {
+        log("\nTestBulkRead 2\n");
+        enableStreaming(true);
+        UsbRequest usbRequest = new UsbRequest();
+        if (!usbRequest.initialize(camDeviceConnection, camStreamingEndpoint)) {
+            // usbhost.c usb_request_new() checks that endpoint type is bulk or int.
+            throw new Exception("UsbRequest.initialize() failed."); }
+        // ByteBuffer buf = ByteBuffer.allocate(0x4000);
+        // ByteBuffer buf = ByteBuffer.allocate(0x1000);
+        ByteBuffer buf = ByteBuffer.allocate(maxPacketSize);
+        if (!usbRequest.queue(buf, buf.capacity())) {
+            throw new Exception("UsbRequest.queue() failed."); }
+        UsbRequest req2 = camDeviceConnection.requestWait();
+        if (req2 == null) {
+            throw new Exception("UsbDeviceConnection.requestWait() failed."); }
+        if (req2 != usbRequest) {
+            throw new Exception("UsbDeviceConnection.requestWait() returned different request."); }
+        log("buf.position=" + buf.position() + " limit=" + buf.limit() + " Data=" + hexDump(buf.array(), 32));
+        usbRequest.close();
+        enableStreaming(false);
+
+        stringBuilder = new StringBuilder();
+        stringBuilder.append("\"buf.position=\" + buf.position() + \" limit=\" + buf.limit() + \" Data=\" + hexDump(buf.array(), 32)");
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tv = (ZoomTextView) findViewById(R.id.textDarstellung);
+                tv.setText(stringBuilder.toString() );
+                tv.setTextColor(Color.BLACK);
+            }
+        });
+    }
+
+    private void testBulkRead3() throws Exception {
+        log("\nTestBulkRead 3\n");
+        enableStreaming(true);
+        ArrayList<String> logArray = new ArrayList<String>(512);
+        UsbRequest usbRequests[] = new UsbRequest[activeUrbs];
+        for (int i = 0; i < activeUrbs; i++) {
+            UsbRequest usbRequest = new UsbRequest();
+            usbRequests[i] = usbRequest;
+            if (!usbRequest.initialize(camDeviceConnection, camStreamingEndpoint)) {
+                throw new Exception("UsbRequest.initialize() failed."); }
+            ByteBuffer buf = ByteBuffer.allocate(maxPacketSize);
+            usbRequest.setClientData(buf);
+            if (!usbRequest.queue(buf, buf.capacity())) {
+                throw new Exception("UsbRequest.queue() failed."); }}
+        for (int i = 0; i < 200; i++) {
+            UsbRequest usbRequest = camDeviceConnection.requestWait();
+            if (usbRequest == null) {
+                throw new Exception("UsbDeviceConnection.requestWait() failed."); }
+            ByteBuffer buf = (ByteBuffer)usbRequest.getClientData();
+            StringBuilder logEntry = new StringBuilder();
+            logEntry.append("buf.position=" + buf.position() + " limit=" + buf.limit() + " Data=" + hexDump(buf.array(), 32));
+            // log("buf.position=" + buf.position() + " limit=" + buf.limit() + " Data=" + hexDump(buf.array(), 32));
+            logArray.add(logEntry.toString());
+            buf.clear();
+            if (!usbRequest.queue(buf, buf.capacity())) {
+                throw new Exception("UsbRequest.queue() failed."); }}
+        for (int i = 0; i < activeUrbs; i++) {
+            usbRequests[i].cancel();
+            usbRequests[i].close(); }
+        enableStreaming(false);
+        for (String s : logArray) {
+            log(s); }
+
+        stringBuilder = new StringBuilder();
+        stringBuilder.append("Here are your Requests:\n\n");
+        for (String s : logArray) {
+            stringBuilder.append("\n\n");
+            stringBuilder.append(s);
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tv = (ZoomTextView) findViewById(R.id.textDarstellung);
+                tv.setText(stringBuilder.toString() );
+                tv.setTextColor(Color.BLACK);
+            }
+        });
+    }
+
+    private void testBulkRead4() throws Exception {
+        ArrayList<String> logArray = new ArrayList<String>(512);
+        enableStreaming(true);
+        ByteArrayOutputStream frameData = new ByteArrayOutputStream(0x20000);
+        byte[] buf = new byte[maxPacketSize];
+        boolean scanningForStart = true;
+        int packetCount = 0;
+        while (true) {
+            int len = camDeviceConnection.bulkTransfer(camStreamingEndpoint, buf, buf.length, 250);
+            StringBuilder logEntry = new StringBuilder();
+            logEntry.append("len=" + len + ((len <= 0) ? "" : " data=" + hexDump(buf, Math.min(32, len))));
+            logArray.add(logEntry.toString());
+            boolean validPacket = len > 12 && buf[0] == 12 && buf[1] != 0 && buf[2] == 0 && buf[3] == 0 && buf[4] == 0 && buf[5] == 0;   // the 0 bytes are tested to skip garbage at the start of the transmission
+            boolean lastPacketInFrame = validPacket && (buf[1] & 2) != 0;
+            if (scanningForStart) {
+                scanningForStart = !lastPacketInFrame; }
+//     else if (len == -1) {
+//       /* ignore ??? */ }
+            else {
+                if (!validPacket) {
+                    for (String s : logArray) {log(s); }
+                    throw new Exception("Invalid packet within frame."); }
+                frameData.write(buf, 12, len - 12);
+                if (lastPacketInFrame) {
+                    break; }}
+            if (++packetCount >= 2000) {
+                for (String s : logArray) {log(s); }
+                throw new Exception("No video frame received after " + packetCount + " packets."); }}
+        enableStreaming(false);
+
+        for (String s : logArray) {
+            log(s); }
+
+        stringBuilder = new StringBuilder();
+        stringBuilder.append("Here is the structure of the Frame:\n\n");
+        stringBuilder.append("Framelength =   " + frameData.toByteArray().length);
+
+
+        for (String s : logArray) {
+            stringBuilder.append("\n\n");
+            stringBuilder.append(s);
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tv = (ZoomTextView) findViewById(R.id.textDarstellung);
+                tv.setText(stringBuilder.toString() );
+                tv.setTextColor(Color.BLACK);
+            }
+        });
+
+
+
+
+        // processReceivedMJpegVideoFrame(frameData.toByteArray());
+
+
+
+
+
+        // saveReceivedVideoFrame(frameData.toByteArray());
+        log("OK, packetCount=" + packetCount); }
 
 
 }

@@ -27,7 +27,6 @@ android {
             shrinkResources false
 
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            consumerProguardFiles 'proguard-project.txt'
             ndk.debugSymbolLevel = 'FULL'
 
             debuggable false
@@ -90,11 +89,11 @@ android {
 
     publishNonDefault true
     packagingOptions {
-        pickFirst 'lib/x86_64/libUsb_Support.so'
-        pickFirst 'lib/armeabi/libUsb_Support.so'
-        pickFirst 'lib/x86/libUsb_Support.so'
-        pickFirst 'lib/armeabi-v7a/libUsb_Support.so'
-        pickFirst 'lib/arm64-v8a/libUsb_Support.so'
+        pickFirst 'lib/x86_64/libUvc_Support.so'
+        pickFirst 'lib/armeabi/libUvc_Support.so'
+        pickFirst 'lib/x86/libUvc_Support.so'
+        pickFirst 'lib/armeabi-v7a/libUvc_Support.so'
+        pickFirst 'lib/arm64-v8a/libUvc_Support.so'
 
         pickFirst 'lib/x86_64/libusb1.0.so'
         pickFirst 'lib/armeabi/libusb1.0.so'

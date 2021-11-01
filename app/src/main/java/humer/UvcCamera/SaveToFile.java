@@ -65,31 +65,33 @@ import humer.UvcCamera.UVC_Descriptor.UVC_Descriptor;
 
 public class SaveToFile  {
 
-    public static int sALT_SETTING;
-    public static int smaxPacketSize ;
-    public static int scamFormatIndex ;   // MJPEG // YUV // bFormatIndex: 1 = uncompressed
-    public static String svideoformat;
-    public static int scamFrameIndex ; // bFrameIndex: 1 = 640 x 360;       2 = 176 x 144;     3 =    320 x 240;      4 = 352 x 288;     5 = 640 x 480;
-    public static int simageWidth;
-    public static int simageHeight;
-    public static int scamFrameInterval ; // 333333 YUV = 30 fps // 666666 YUV = 15 fps
-    public static int spacketsPerRequest ;
-    public static int sactiveUrbs ;
-    public static String sdeviceName;
-    public static byte bUnitID;
-    public static byte bTerminalID;
-    public static byte[] bNumControlTerminal;
-    public static byte[] bNumControlUnit;
-    public static byte[] bcdUVC;
-    public static byte[] bcdUSB;
-    public static byte bStillCaptureMethod;
-    private static String saveFilePathFolder = "values_for_the_camera";
-    private static String autoFilePathFolder = "autoDetection";
+    public static int       sALT_SETTING;
+    public static int       smaxPacketSize ;
+    public static int       scamFormatIndex ;   // MJPEG // YUV // bFormatIndex: 1 = uncompressed
+    public static String    svideoformat;
+    public static int       scamFrameIndex ; // bFrameIndex: 1 = 640 x 360;       2 = 176 x 144;     3 =    320 x 240;      4 = 352 x 288;     5 = 640 x 480;
+    public static int       simageWidth;
+    public static int       simageHeight;
+    public static int       scamFrameInterval ; // 333333 YUV = 30 fps // 666666 YUV = 15 fps
+    public static int       spacketsPerRequest ;
+    public static int       sactiveUrbs ;
+    public static String    sdeviceName;
+    public static byte      bUnitID;
+    public static byte      bTerminalID;
+    public static byte[]    bNumControlTerminal;
+    public static byte[]    bNumControlUnit;
+    public static byte[]    bcdUVC;
+    public static byte[]    bcdUSB;
+    public static byte      bStillCaptureMethod;
+    private static String   saveFilePathFolder = "values_for_the_camera";
+    private static String   autoFilePathFolder = "autoDetection";
     private TextInputLayout valueInput;
     private TextInputLayout valueInput_libUsb;
-    private boolean init = false;
-    private static boolean libUsb;
-    public static boolean moveToNative;
+    private boolean         init = false;
+    private static boolean  libUsb;
+    public static boolean   moveToNative;
+    public static boolean  bulkMode;
+
 
 
     private LibUsb_AutoDetect libUsb_autoDetect;
@@ -623,6 +625,7 @@ public class SaveToFile  {
             bStillCaptureMethod = setUpTheUsbDevice.bStillCaptureMethod;
             libUsb = setUpTheUsbDevice.libUsb;
             moveToNative = setUpTheUsbDevice.moveToNative;
+            bulkMode = setUpTheUsbDevice.bulkMode;
 
         } else if (libUsb_autoDetect != null) {
             sALT_SETTING = libUsb_autoDetect.camStreamingAltSetting;
@@ -645,6 +648,7 @@ public class SaveToFile  {
             bStillCaptureMethod = libUsb_autoDetect.bStillCaptureMethod;
             libUsb = libUsb_autoDetect.libUsb;
             moveToNative = libUsb_autoDetect.moveToNative;
+            bulkMode = setUpTheUsbDevice.bulkMode;
 
         } else if (jna_autoDetect != null) {
             sALT_SETTING = jna_autoDetect.camStreamingAltSetting;
@@ -667,9 +671,8 @@ public class SaveToFile  {
             bStillCaptureMethod = jna_autoDetect.bStillCaptureMethod;
             libUsb = jna_autoDetect.libUsb;
             moveToNative = jna_autoDetect.moveToNative;
-
+            bulkMode = setUpTheUsbDevice.bulkMode;
         }
-
     }
 
     public void writeTheValues(){
@@ -694,7 +697,7 @@ public class SaveToFile  {
             uvc_camera.bStillCaptureMethod = bStillCaptureMethod;
             uvc_camera.LIBUSB = libUsb;
             uvc_camera.moveToNative = moveToNative;
-
+            uvc_camera.bulkMode = bulkMode;
 
         } else if (setUpTheUsbDevice != null) {
             setUpTheUsbDevice.camStreamingAltSetting = sALT_SETTING;
@@ -717,6 +720,8 @@ public class SaveToFile  {
             setUpTheUsbDevice.bStillCaptureMethod = bStillCaptureMethod;
             setUpTheUsbDevice.libUsb = libUsb;
             setUpTheUsbDevice.moveToNative = moveToNative;
+            setUpTheUsbDevice.bulkMode = bulkMode;
+
 
         } else if (libUsb_autoDetect != null) {
             libUsb_autoDetect.camStreamingAltSetting = sALT_SETTING;
@@ -739,6 +744,8 @@ public class SaveToFile  {
             libUsb_autoDetect.bStillCaptureMethod = bStillCaptureMethod;
             libUsb_autoDetect.libUsb = libUsb;
             libUsb_autoDetect.moveToNative = moveToNative;
+            libUsb_autoDetect.bulkMode = bulkMode;
+
 
         } else if (jna_autoDetect != null) {
             jna_autoDetect.camStreamingAltSetting = sALT_SETTING;
@@ -761,6 +768,7 @@ public class SaveToFile  {
             jna_autoDetect.bStillCaptureMethod = bStillCaptureMethod;
             jna_autoDetect.libUsb = libUsb;
             jna_autoDetect.moveToNative = moveToNative;
+            jna_autoDetect.bulkMode = bulkMode;
 
         }
     }
@@ -977,6 +985,7 @@ public class SaveToFile  {
             save.writeObject(libUsb);
             save.writeObject(moveToNative);
             save.writeObject(bcdUVC);
+            save.writeObject(bulkMode);
             if (bcdUSB[0] == 3) save.writeObject(bcdUSB);
             save.close(); // This also closes saveFile.
         } catch (Exception e) { log("Error"); e.printStackTrace();}
@@ -1010,6 +1019,7 @@ public class SaveToFile  {
             libUsb = (Boolean) save.readObject();
             moveToNative = (Boolean) save.readObject();
             bcdUVC  = (byte[]) save.readObject();
+            bulkMode = (Boolean) save.readObject();
             save.close();
         }
         catch(Exception exc){
@@ -1073,16 +1083,7 @@ public class SaveToFile  {
         log ("bcdUSB = " + bcdUSB[0] + "." + bcdUSB[1]);
         if (bcdUSB[0] == 2) log ("bcdUVC = " + bcdUVC[0] + bcdUVC[1]);
         if (bcdUSB[0] == 3) {
-
-
-
-
-
         }
-
-
-
-
         bStillCaptureMethod = uvc_desc.bStillCaptureMethod;
         UVC_Descriptor.FormatIndex formatIndex;
         int [] arrayFormatFrameIndexes = new int [uvc_descriptor.formatIndex.size()];
@@ -1385,37 +1386,23 @@ public class SaveToFile  {
                     formatIndex = uvc_descriptor.getFormatIndex(index);
                     svideoformat = formatIndex.videoformat.toString();
                     log("svideoformat = " + svideoformat);
-
                     log("index = " + index);
                     selectFrameIndex(automatic);
                     dialogInterface.dismiss();
-
-
-
                 }
             });
             builder.addButton("DONE", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.END, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int index) {
-
                     log("index = " + index);
-
                     scamFormatIndex = numberFormatIndexes[index];
                     formatIndex = uvc_descriptor.getFormatIndex(index);
                     svideoformat = formatIndex.videoformat.toString();
-
                     log("formatIndex = " + formatIndex.videoformat.toString());
                     log("svideoformat = " + svideoformat);
-
                     log("index = " + index);
                     selectFrameIndex(automatic);
                     dialogInterface.dismiss();
-
-
-
-
-
-
                 }
             });
             builder.show();

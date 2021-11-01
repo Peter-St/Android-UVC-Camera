@@ -102,6 +102,7 @@ public class UsbCapturer implements VideoCapturer {
     public static byte[] bNumControlTerminal;
     public static byte[] bNumControlUnit;
 
+
     // Android USB Classes
     private UsbManager usbManager;
     private UsbDevice camDevice = null;
@@ -109,7 +110,6 @@ public class UsbCapturer implements VideoCapturer {
     private UsbInterface camControlInterface;
     private UsbInterface camStreamingInterface;
     private UsbEndpoint camStreamingEndpoint;
-    private boolean bulkMode;
     private PendingIntent mPermissionIntent;
     private String controlltransfer;
 
@@ -129,18 +129,20 @@ public class UsbCapturer implements VideoCapturer {
 
 
     // NEW LIBUSB VALUES
-    public static boolean LIBUSB;
-    public static boolean moveToNative;
-    private static int fd;
-    private static int productID;
-    private static int vendorID;
-    private static String adress;
-    private static int camStreamingEndpointAdress;
-    private static String mUsbFs;
-    private static int busnum;
-    private static int devaddr;
-    private volatile boolean libusb_is_initialized;
-    private static final String DEFAULT_USBFS = "/dev/bus/usb";
+    public static boolean           LIBUSB;
+    public static boolean           moveToNative;
+    private static int              fd;
+    private static int              productID;
+    private static int              vendorID;
+    private static String           adress;
+    private static int              camStreamingEndpointAdress;
+    private static String           mUsbFs;
+    private static int              busnum;
+    private static int              devaddr;
+    private volatile boolean        libusb_is_initialized;
+    private static final String     DEFAULT_USBFS = "/dev/bus/usb";
+    public static boolean           bulkMode;
+
 
     private static boolean isLoaded;
     static {
@@ -207,6 +209,7 @@ public class UsbCapturer implements VideoCapturer {
         bStillCaptureMethod = callActivity.bStillCaptureMethod;
         LIBUSB = callActivity.LIBUSB;
         moveToNative = callActivity.moveToNative;
+        bulkMode = callActivity.bulkMode;
     }
 
     private void initializeTheStream() {
@@ -397,7 +400,7 @@ public class UsbCapturer implements VideoCapturer {
             throw new Exception("Streaming interface has no endpoint.");
         }
         camStreamingEndpoint = camStreamingInterface.getEndpoint(0);
-        bulkMode = camStreamingEndpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK;
+        //bulkMode = camStreamingEndpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK;
         camDeviceConnection = usbManager.openDevice(camDevice);
         if (camDeviceConnection == null) {
             log("Failed to open the device");

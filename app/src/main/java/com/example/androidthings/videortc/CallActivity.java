@@ -65,24 +65,26 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         PeerConnectionClient.PeerConnectionEvents {
 
     // Camera Values
-    public static int camStreamingAltSetting;
-    public static int camFormatIndex;
-    public int camFrameIndex;
-    public static int camFrameInterval;
-    public static int packetsPerRequest;
-    public static int maxPacketSize;
-    public int imageWidth;
-    public int imageHeight;
-    public static int activeUrbs;
-    public static String videoformat;
-    public static byte bUnitID;
-    public static byte bTerminalID;
-    public static byte bStillCaptureMethod;
-    public static byte[] bNumControlTerminal;
-    public static byte[] bNumControlUnit;
-    public static byte[] bcdUVC;
-    public static boolean LIBUSB;
-    public static boolean moveToNative;
+    public static int       camStreamingAltSetting;
+    public static int       camFormatIndex;
+    public int              camFrameIndex;
+    public static int       camFrameInterval;
+    public static int       packetsPerRequest;
+    public static int       maxPacketSize;
+    public int              imageWidth;
+    public int              imageHeight;
+    public static int       activeUrbs;
+    public static String    videoformat;
+    public static byte      bUnitID;
+    public static byte      bTerminalID;
+    public static byte      bStillCaptureMethod;
+    public static byte[]    bNumControlTerminal;
+    public static byte[]    bNumControlUnit;
+    public static byte[]    bcdUVC;
+    public static boolean   LIBUSB;
+    public static boolean   moveToNative;
+    public static boolean   bulkMode;
+
 
     private static final String TAG = "CallActivity";
     private static final String APPRTC_URL = "https://appr.tc";
@@ -794,6 +796,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         bStillCaptureMethod = bundle.getByte("bStillCaptureMethod", (byte)0);
         LIBUSB = bundle.getBoolean("LIBUSB" );
         moveToNative = bundle.getBoolean("moveToNative" );
+        bulkMode = bundle.getBoolean("bulkMode" );
 
         log("LIBUSB = " + LIBUSB);
         log("moveToNative = " + moveToNative);

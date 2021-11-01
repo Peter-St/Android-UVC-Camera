@@ -44,26 +44,27 @@ import humer.UvcCamera.UsbIso64.usbdevice_fs_util;
 public class Jna_AutoDetect extends AppCompatActivity {
 
     // Camera Values
-    public static int camStreamingAltSetting;
-    public static int camFormatIndex;
-    public static int camFrameIndex;
-    public static int camFrameInterval;
-    public static int packetsPerRequest;
-    public static int maxPacketSize;
-    public static int imageWidth;
-    public static int imageHeight;
-    public static int activeUrbs;
-    public static String videoformat;
-    public static String deviceName;
-    public static byte bUnitID;
-    public static byte bTerminalID;
-    public static byte[] bNumControlTerminal;
-    public static byte[] bNumControlUnit;
-    public static byte[] bcdUVC;
-    public static byte[] bcdUSB;
-    public static byte bStillCaptureMethod;
-    public boolean libUsb;
-    public static boolean moveToNative;
+    public static int       camStreamingAltSetting;
+    public static int       camFormatIndex;
+    public static int       camFrameIndex;
+    public static int       camFrameInterval;
+    public static int       packetsPerRequest;
+    public static int       maxPacketSize;
+    public static int       imageWidth;
+    public static int       imageHeight;
+    public static int       activeUrbs;
+    public static String    videoformat;
+    public static String    deviceName;
+    public static byte      bUnitID;
+    public static byte      bTerminalID;
+    public static byte[]    bNumControlTerminal;
+    public static byte[]    bNumControlUnit;
+    public static byte[]    bcdUVC;
+    public static byte[]    bcdUSB;
+    public static byte      bStillCaptureMethod;
+    public static boolean   libUsb = true;
+    public static boolean   moveToNative;
+    public static boolean   bulkMode;
 
 
     private volatile boolean running = false;
@@ -137,7 +138,6 @@ public class Jna_AutoDetect extends AppCompatActivity {
     public StringBuilder stringBuilder;
     public int [] convertedMaxPacketSize;
     public static boolean camIsOpen;
-    private boolean bulkMode;
 
     private SaveToFile stf;
 

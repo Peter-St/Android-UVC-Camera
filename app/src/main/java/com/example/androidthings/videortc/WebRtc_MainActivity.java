@@ -54,10 +54,12 @@ public class WebRtc_MainActivity extends Activity {
     public static byte bUnitID;
     public static byte bTerminalID;
     public static byte bStillCaptureMethod;
-    public static byte[] bNumControlTerminal;
-    public static byte[] bNumControlUnit;
-    public static boolean LIBUSB;
-    public static boolean moveToNative;
+    public static byte[]    bNumControlTerminal;
+    public static byte[]    bNumControlUnit;
+    public static boolean   LIBUSB;
+    public static boolean   moveToNative;
+    public static boolean   bulkMode;
+
 
 
     private static final String TAG = WebRtc_MainActivity.class.getSimpleName();
@@ -250,6 +252,7 @@ public class WebRtc_MainActivity extends Activity {
                 bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
                 bundle.putBoolean("LIBUSB", LIBUSB);
                 bundle.putBoolean("moveToNative", moveToNative);
+                bundle.putBoolean("bulkMode", bulkMode);
                 myIntent.putExtra("bun",bundle);
                 startActivity(myIntent);
             }
@@ -294,5 +297,6 @@ public class WebRtc_MainActivity extends Activity {
         bStillCaptureMethod = bundle.getByte("bStillCaptureMethod", (byte)0);
         LIBUSB = bundle.getBoolean("LIBUSB" );
         moveToNative = bundle.getBoolean("moveToNative" );
+        bulkMode = bundle.getBoolean("bulkMode" );
     }
 }

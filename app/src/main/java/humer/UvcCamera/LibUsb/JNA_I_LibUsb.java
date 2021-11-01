@@ -31,7 +31,7 @@ import com.sun.jna.ptr.IntByReference;
 
 public interface JNA_I_LibUsb extends Library {
 
-    public static final JNA_I_LibUsb INSTANCE = Native.load("Usb_Support", JNA_I_LibUsb.class);
+    public static final JNA_I_LibUsb INSTANCE = Native.load("Uvc_Support", JNA_I_LibUsb.class);
 
     public void set_the_native_Values (int FD, int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
                       int camFrameInde, int camFrameInterva, int imageWidt, int imageHeigh, int camStreamingEndpoint, int camStreamingInterfaceNumber,
