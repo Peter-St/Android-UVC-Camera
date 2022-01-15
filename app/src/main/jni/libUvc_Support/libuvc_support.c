@@ -348,7 +348,8 @@ uvc_error_t uvc_ensure_frame_size(uvc_frame_t *frame, size_t need_bytes) {
  * @param ini YUYV frame
  * @param out RGBX8888 frame
  */
-uvc_error_t uvc_yuyv2rgbx(uvc_frame_t *out) {
+
+uvc_error_t uvc_yuyv2rgbx_new(uvc_frame_t *out) {
     out->width = imageWidth;
     out->height = imageHeight;
     out->frame_format = UVC_FRAME_FORMAT_RGBX;
@@ -404,7 +405,8 @@ uvc_error_t uvc_yuyv2rgbx(uvc_frame_t *out) {
  * @param ini UYVY frame
  * @param out RGBX8888 frame
  */
-uvc_error_t uvc_uyvy2rgbx(unsigned char* data, int data_bytes, int width, int height, uvc_frame_t *out) {
+
+uvc_error_t uvc_uyvy2rgbx_new(unsigned char* data, int data_bytes, int width, int height, uvc_frame_t *out) {
     out->width = width;
     out->height = height;
     out->frame_format = UVC_FRAME_FORMAT_RGBX;
@@ -513,7 +515,8 @@ uvc_error_t uvc_yuyv2_rgbx(unsigned char* data, int data_bytes, int width, int h
  * @param ini UYVY frame
  * @param out RGB888 frame
  */
-uvc_error_t uvc_uyvy2rgb(unsigned char* data, int data_bytes, int width, int height, uvc_frame_t *out) {
+
+uvc_error_t uvc_uyvy2rgb_new(unsigned char* data, int data_bytes, int width, int height, uvc_frame_t *out) {
     out->width = width;
     out->height = height;
     out->frame_format = UVC_FRAME_FORMAT_RGB;
@@ -569,7 +572,8 @@ uvc_error_t uvc_uyvy2rgb(unsigned char* data, int data_bytes, int width, int hei
  * @param in YUYV frame
  * @param out RGB888 frame
  */
-uvc_error_t uvc_yuyv2rgb(unsigned char* data, int data_bytes, int width, int height, uvc_frame_t *out) {
+
+uvc_error_t uvc_yuyv2rgb_new(unsigned char* data, int data_bytes, int width, int height, uvc_frame_t *out) {
     out->width = width;
     out->height = height;
     out->frame_format = UVC_FRAME_FORMAT_RGB;
@@ -623,7 +627,8 @@ uvc_error_t uvc_yuyv2rgb(unsigned char* data, int data_bytes, int width, int hei
  * @param ini RGB888 frame
  * @param out RGBX8888 frame
  */
-uvc_error_t uvc_rgb2rgbx(unsigned char* data, int data_bytes, int width, int height, uvc_frame_t *out) {
+
+uvc_error_t uvc_rgb2rgbx_new(unsigned char* data, int data_bytes, int width, int height, uvc_frame_t *out) {
     out->width = width;
     out->height = height;
     out->frame_format = UVC_FRAME_FORMAT_RGBX;
@@ -677,7 +682,8 @@ uvc_error_t uvc_rgb2rgbx(unsigned char* data, int data_bytes, int width, int hei
  * @ingroup frame
  * @param out RGB888 frame
  */
-unsigned char* uvc_mjpeg2rgb(int* rgblength_ptr) {
+
+unsigned char* uvc_mjpeg2rgb_new(int* rgblength_ptr) {
 
     unsigned char *jpg_buffer;
     int jpeglength = total;
@@ -759,7 +765,8 @@ uvc_frame_t *uvc_allocate_frame(size_t data_bytes) {
  * @param in Original frame
  * @param out Duplicate frame
  */
-uvc_error_t uvc_duplicate_frame(uvc_frame_t *out) {
+
+uvc_error_t uvc_duplicate_frame_new(uvc_frame_t *out) {
 
     out->width = imageWidth;
     out->height = imageHeight;
@@ -2461,7 +2468,7 @@ void eof_cb_jni_stream_Surface_Activity(uvc_stream_handle_t *strmh) {
             return;
         }
         // Do the BGR conversion
-        ret = uvc_yuyv2rgbx(rgb);
+        ret = uvc_yuyv2rgbx_new(rgb);
         if (ret) {
             uvc_perror(ret, "uvc_any2bgr");
             uvc_free_frame(rgb);
@@ -2870,7 +2877,7 @@ void eof_cb_jni_stream_Surface(uvc_stream_handle_t *strmh) {
                     LOGD("unable to allocate rgb frame!");
                     return;
                 }
-                uvc_rgb2rgbx(rgb_buffer, rgb_size, width, height, rgbx);
+                uvc_rgb2rgbx_new(rgb_buffer, rgb_size, width, height, rgbx);
                 uvc_frame_t *rgb_rot_nFlip = checkRotation(rgbx);
                 copyToSurface(rgb_rot_nFlip, &mCaptureWindow);
                 if (imageCapture) {
@@ -2918,14 +2925,14 @@ void eof_cb_jni_stream_Surface(uvc_stream_handle_t *strmh) {
                 unsigned char *rgb_buffer;
                 int rgblength = total;
                 int* rgblength_ptr = &rgblength;
-                rgb_buffer = uvc_mjpeg2rgb(rgblength_ptr);
+                rgb_buffer = uvc_mjpeg2rgb_new(rgblength_ptr);
                 uvc_frame_t *rgbx;
                 rgbx = uvc_allocate_frame(imageWidth * imageHeight * 4);
                 if (!rgbx) {
                     LOGD("unable to allocate rgb frame!");
                     return;
                 }
-                uvc_rgb2rgbx(rgb_buffer, rgblength, imageWidth, imageHeight, rgbx);
+                uvc_rgb2rgbx_new(rgb_buffer, rgblength, imageWidth, imageHeight, rgbx);
                 copyToSurface(rgbx, &mCaptureWindow);
                 free(rgb_buffer);
                 uvc_free_frame(rgbx);
@@ -2944,7 +2951,7 @@ void eof_cb_jni_stream_Surface(uvc_stream_handle_t *strmh) {
                 if (strcmp(frameFormat, "YUY2") == 0) {
                     ret = uvc_yuyv2_rgbx(videoFrameData[whichVideoFrameDate]->videoframe, total, imageWidth, imageHeight, rgbx);
                 } else if (strcmp(frameFormat, "UYVY") == 0) {
-                    ret = uvc_uyvy2rgbx(videoFrameData[whichVideoFrameDate]->videoframe, total, imageWidth, imageHeight, rgbx);
+                    ret = uvc_uyvy2rgbx_new(videoFrameData[whichVideoFrameDate]->videoframe, total, imageWidth, imageHeight, rgbx);
                 }
                 uvc_frame_t *rgb_rot_nFlip = checkRotation(rgbx);
                 if (imageCapture) {
@@ -2958,9 +2965,9 @@ void eof_cb_jni_stream_Surface(uvc_stream_handle_t *strmh) {
                         return;
                     }
                     if (strcmp(frameFormat, "YUY2") == 0) {
-                        ret = uvc_yuyv2rgb(videoFrameData[whichVideoFrameDate]->videoframe, total, imageWidth, imageHeight, rgb);
+                        ret = uvc_yuyv2rgb_new(videoFrameData[whichVideoFrameDate]->videoframe, total, imageWidth, imageHeight, rgb);
                     } else if (strcmp(frameFormat, "UYVY") == 0) {
-                        ret = uvc_uyvy2rgb(videoFrameData[whichVideoFrameDate]->videoframe, total, imageWidth, imageHeight, rgb);
+                        ret = uvc_uyvy2rgb_new(videoFrameData[whichVideoFrameDate]->videoframe, total, imageWidth, imageHeight, rgb);
                     }
                     JNIEnv * jenv;
                     int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
@@ -2987,9 +2994,9 @@ void eof_cb_jni_stream_Surface(uvc_stream_handle_t *strmh) {
                         return;
                     }
                     if (strcmp(frameFormat, "YUY2") == 0) {
-                        ret = uvc_yuyv2rgb(videoFrameData[whichVideoFrameDate]->videoframe, total, imageWidth, imageHeight, rgb);
+                        ret = uvc_yuyv2rgb_new(videoFrameData[whichVideoFrameDate]->videoframe, total, imageWidth, imageHeight, rgb);
                     } else if (strcmp(frameFormat, "UYVY") == 0) {
-                        ret = uvc_uyvy2rgb(videoFrameData[whichVideoFrameDate]->videoframe, total, imageWidth, imageHeight, rgb);
+                        ret = uvc_uyvy2rgb_new(videoFrameData[whichVideoFrameDate]->videoframe, total, imageWidth, imageHeight, rgb);
                     }
                     JNIEnv * jenv;
                     int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
@@ -3020,7 +3027,7 @@ void eof_cb_jni_stream_Surface(uvc_stream_handle_t *strmh) {
                 if (strcmp(frameFormat, "YUY2") == 0) {
                     ret = uvc_yuyv2_rgbx(videoFrameData[whichVideoFrameDate]->videoframe, total, imageWidth, imageHeight, rgbx);
                 } else if (strcmp(frameFormat, "UYVY") == 0) {
-                    ret = uvc_uyvy2rgbx(videoFrameData[whichVideoFrameDate]->videoframe, total, imageWidth, imageHeight, rgbx);
+                    ret = uvc_uyvy2rgbx_new(videoFrameData[whichVideoFrameDate]->videoframe, total, imageWidth, imageHeight, rgbx);
                 }
                 copyToSurface(rgbx, &mCaptureWindow);
                 uvc_free_frame(rgbx);
@@ -3130,19 +3137,19 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniStreamOver
         stopTheStream = 0;
         whichVideoFrameDate = 0;
 
-        uint8_t LIBUVC_XFER_BUF_SIZE;
+        uint8_t LIBUVC_XFER_BUF_SIZE_NEW;
         if (strcmp(frameFormat, "MJPEG") == 0) {
-            LIBUVC_XFER_BUF_SIZE = imageWidth * imageHeight * 3;
+            LIBUVC_XFER_BUF_SIZE_NEW = imageWidth * imageHeight * 3;
         } else if (strcmp(frameFormat, "YUY2") == 0 ||   strcmp(frameFormat, "UYVY")   ) {
-            LIBUVC_XFER_BUF_SIZE = imageWidth * imageHeight * 2;
+            LIBUVC_XFER_BUF_SIZE_NEW = imageWidth * imageHeight * 2;
         } else if (strcmp(frameFormat, "NV21") == 0) {
-            LIBUVC_XFER_BUF_SIZE = imageWidth * imageHeight *  3 / 2;
+            LIBUVC_XFER_BUF_SIZE_NEW = imageWidth * imageHeight *  3 / 2;
         } else {
-            LIBUVC_XFER_BUF_SIZE = imageWidth * imageHeight * 2;
+            LIBUVC_XFER_BUF_SIZE_NEW = imageWidth * imageHeight * 2;
         }
        // strmh->outbuf = malloc(LIBUVC_XFER_BUF_SIZE);
        // strmh->holdbuf = malloc(LIBUVC_XFER_BUF_SIZE);
-        strmh->size_buf = LIBUVC_XFER_BUF_SIZE;
+        strmh->size_buf = LIBUVC_XFER_BUF_SIZE_NEW;
 
 
 
@@ -3234,7 +3241,7 @@ void eof_cb_jni_WebRtc_Service(uvc_stream_handle_t *strmh) {
             uvc_error_t ret;
             // We'll convert the image from YUV/JPEG to BGR, so allocate space
             yuyv = uvc_allocate_frame(imageWidth * imageHeight *3/ 2);
-            uvc_duplicate_frame(yuyv);
+            uvc_duplicate_frame_new(yuyv);
             uvc_frame_t *nv21;
             // We'll convert the image from YUV/JPEG to BGR, so allocate space
             nv21 = uvc_allocate_frame(imageWidth * imageHeight * 3 / 2);
@@ -3387,7 +3394,7 @@ unsigned char* convertUYVYtoJPEG (unsigned char* UYVY_frame_array, int* jpgLengt
         return NULL;
     }
     uvc_error_t ret;
-    ret = uvc_uyvy2rgbx(UYVY_frame_array, UYVYframeLength, width, height, rgb);
+    ret = uvc_uyvy2rgbx_new(UYVY_frame_array, UYVYframeLength, width, height, rgb);
     if (ret) {
         uvc_perror(ret, "uvc_any2bgr");
         uvc_free_frame(rgb);
@@ -3465,7 +3472,7 @@ Java_humer_UvcCamera_StartIsoStreamActivity_UYVYpixeltobmp( JNIEnv* env, jobject
     }
     uvc_error_t ret;
     int UYVYframeLength = num_bytes;
-    ret = uvc_uyvy2rgbx(UYVY_frame_array, UYVYframeLength, im_width, im_height, rgbx);
+    ret = uvc_uyvy2rgbx_new(UYVY_frame_array, UYVYframeLength, im_width, im_height, rgbx);
     AndroidBitmapInfo  info;
     void*              pixels;
     int i;
@@ -3552,16 +3559,16 @@ void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_frameToBitmap( JNIEnv* 
     if (strcmp(frameFormat, "YUY2") == 0) {
         ret = uvc_yuyv2_rgbx(videoFrameData[whichVideoFrameDate]->videoframe, total, imageWidth, imageHeight, rgbx);
     } else if (strcmp(frameFormat, "UYVY") == 0) {
-        ret = uvc_uyvy2rgbx(videoFrameData[whichVideoFrameDate]->videoframe, total, imageWidth, imageHeight, rgbx);
+        ret = uvc_uyvy2rgbx_new(videoFrameData[whichVideoFrameDate]->videoframe, total, imageWidth, imageHeight, rgbx);
     } else if (strcmp(frameFormat, "MJPEG") == 0) {
         uvc_frame_t *rgb;
         unsigned char *rgb_buffer;
         int rgblength = total;
         int* rgblength_ptr = &rgblength;
-        ret = uvc_mjpeg2rgb(rgblength_ptr);
+        ret = uvc_mjpeg2rgb_new(rgblength_ptr);
 
 
-        uvc_rgb2rgbx(rgb->data, rgb->data_bytes, rgb->width, rgb->height, rgbx);
+        uvc_rgb2rgbx_new(rgb->data, rgb->data_bytes, rgb->width, rgb->height, rgbx);
         uvc_free_frame(rgb);
     }
 

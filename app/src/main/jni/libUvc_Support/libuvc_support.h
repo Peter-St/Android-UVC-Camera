@@ -46,6 +46,8 @@ This Repository is provided "as is", without warranties of any kind.
 #include <libyuv/include/libyuv.h>
 #include "utlist.h"
 #include <assert.h>		// XXX add assert for debugging
+#include "libuvc/include/libuvc/libuvc.h"
+#include "libuvc/include/libuvc/libuvc_internal.h"
 
 
 //////////////// Auto Detect Methods ////////////////////
@@ -223,78 +225,6 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniPrep
 #define  VS_STILL_COMMIT_CONTROL       0x04
 #define  VS_STREAM_ERROR_CODE_CONTROL  0x06
 #define  VS_STILL_IMAGE_TRIGGER_CONTROL  0x05
-
-
-/** UVC error types, based on libusb errors
- * @ingroup diag
- */
-typedef enum uvc_error {
-    /** Success (no error) */
-    UVC_SUCCESS = 0,
-    /** Input/output error */
-    UVC_ERROR_IO = -1,
-    /** Invalid parameter */
-    UVC_ERROR_INVALID_PARAM = -2,
-    /** Access denied */
-    UVC_ERROR_ACCESS = -3,
-    /** No such device */
-    UVC_ERROR_NO_DEVICE = -4,
-    /** Entity not found */
-    UVC_ERROR_NOT_FOUND = -5,
-    /** Resource busy */
-    UVC_ERROR_BUSY = -6,
-    /** Operation timed out */
-    UVC_ERROR_TIMEOUT = -7,
-    /** Overflow */
-    UVC_ERROR_OVERFLOW = -8,
-    /** Pipe error */
-    UVC_ERROR_PIPE = -9,
-    /** System call interrupted */
-    UVC_ERROR_INTERRUPTED = -10,
-    /** Insufficient memory */
-    UVC_ERROR_NO_MEM = -11,
-    /** Operation not supported */
-    UVC_ERROR_NOT_SUPPORTED = -12,
-    /** Device is not UVC-compliant */
-    UVC_ERROR_INVALID_DEVICE = -50,
-    /** Mode not supported */
-    UVC_ERROR_INVALID_MODE = -51,
-    /** Resource has a callback (can't use polling and async) */
-    UVC_ERROR_CALLBACK_EXISTS = -52,
-    /** Undefined error */
-    UVC_ERROR_OTHER = -99
-} uvc_error_t;
-
-/** Color coding of stream, transport-independent
- * @ingroup streaming
- */
-enum uvc_frame_format {
-    UVC_FRAME_FORMAT_UNKNOWN = 0,
-    /** Any supported format */
-    UVC_FRAME_FORMAT_ANY = 0,
-    UVC_FRAME_FORMAT_UNCOMPRESSED,
-    UVC_FRAME_FORMAT_COMPRESSED,
-    /** YUYV/YUV2/YUV422: YUV encoding with one luminance value per pixel and
-     * one UV (chrominance) pair for every two pixels.
-     */
-    UVC_FRAME_FORMAT_YUYV,
-    UVC_FRAME_FORMAT_UYVY,
-    /** 16-bits RGB */
-    UVC_FRAME_FORMAT_RGB565,	// RGB565
-    /** 24-bit RGB */
-    UVC_FRAME_FORMAT_RGB,		// RGB888
-    UVC_FRAME_FORMAT_BGR,		// BGR888
-    /* 32-bits RGB */
-    UVC_FRAME_FORMAT_RGBX,		// RGBX8888
-    /** Motion-JPEG (or JPEG) encoded images */
-    UVC_FRAME_FORMAT_MJPEG,
-    UVC_FRAME_FORMAT_GRAY8,
-    UVC_FRAME_FORMAT_BY8,
-    /** Number of formats understood */
-    UVC_FRAME_FORMAT_COUNT,
-    // YVU420SemiPlanar
-    UVC_FRAME_FORMAT__NV21 = 5,
-};
 
 #define PIXEL_RGB565		2
 #define PIXEL_UYVY			2
@@ -537,127 +467,6 @@ static const unsigned char mjpgHuffmanTable[] = {
 	IYUYV2RGB_2(pyuv, prgb, ax, bx) \
 	IYUYV2RGB_2(pyuv, prgb, ax + PIXEL2_YUYV, bx + PIXEL2_RGB)
 
-
-/** An image frame received from the UVC device
- * @ingroup streaming
- */
-typedef struct uvc_frame {
-    /** Image data for this frame */
-    void *data;
-    /** Size of image data buffer */
-    size_t data_bytes;
-    /** XXX Size of actual received data to confirm whether the received bytes is same
-     * as expected on user function when some microframes dropped */
-    size_t actual_bytes;
-    /** Width of image in pixels */
-    uint32_t width;
-    /** Height of image in pixels */
-    uint32_t height;
-    /** Pixel data format */
-    enum uvc_frame_format frame_format;
-    /** Number of bytes per horizontal line (undefined for compressed format) */
-    size_t step;
-    /** Frame number (may skip, but is strictly monotonically increasing) */
-    uint32_t sequence;
-    /** Estimate of system time when the device started capturing the image */
-    struct timeval capture_time;
-    /** Handle on the device that produced the image.
-     * @warning You must not call any uvc_* functions during a callback. */
-    //uvc_device_handle_t *source;
-    /** Is the data buffer owned by the library?
-     * If 1, the data buffer can be arbitrarily reallocated by frame conversion
-     * functions.
-     * If 0, the data buffer will not be reallocated or freed by the library.
-     * Set this field to zero if you are supplying the buffer.
-     */
-    uint8_t library_owns_data;
-} uvc_frame_t;
-
-struct uvc_stream_handle {
-	struct uvc_device_handle *devh;
-	//struct uvc_stream_handle *prev, *next;
-	//struct uvc_streaming_interface *stream_if;
-
-	/** if true, stream is running (streaming video to host) */
-	uint8_t running;
-	/** Current control block */
-	//struct uvc_stream_ctrl cur_ctrl;
-
-	/* listeners may only access hold*, and only when holding a
-     * lock on cb_mutex (probably signaled with cb_cond) */
-	uint8_t bfh_err, hold_bfh_err;	// XXX added to keep UVC_STREAM_ERR
-	uint8_t fid;
-	uint32_t seq, hold_seq;
-	uint32_t pts, hold_pts;
-	uint32_t last_scr, hold_last_scr;
-	size_t got_bytes, hold_bytes;
-	size_t size_buf;	// XXX add for boundary check
-	uint8_t *outbuf, *holdbuf;
-	pthread_mutex_t cb_mutex;
-	pthread_cond_t cb_cond;
-	pthread_t cb_thread;
-	uint32_t last_polled_seq;
-	//uvc_frame_callback_t *user_cb;
-	void *user_ptr;
-	//struct libusb_transfer *transfers[LIBUVC_NUM_TRANSFER_BUFS];
-	//uint8_t *transfer_bufs[LIBUVC_NUM_TRANSFER_BUFS];
-	struct uvc_frame frame;
-	enum uvc_frame_format frame_format;
-};
-typedef struct uvc_stream_handle uvc_stream_handle_t;
-
-
-/** Handle on an open UVC device
- *
- * @todo move most of this into a uvc_device struct?
- */
-struct uvc_device_handle {
-	struct uvc_device *dev;
-	struct uvc_device_handle *prev, *next;
-	/** Underlying USB device handle */
-	libusb_device_handle *usb_devh;
-	//struct uvc_device_info *info;
-	//struct libusb_transfer *status_xfer;
-	pthread_mutex_t status_mutex;	// XXX saki
-	uint8_t status_buf[32];
-	/** Function to call when we receive status updates from the camera */
-	//uvc_status_callback_t *status_cb;
-	void *status_user_ptr;
-	/* Function to call when we receive button events from the camera */
-	//uvc_button_callback_t *button_cb;
-	void *button_user_ptr;
-
-	uvc_stream_handle_t *streams;
-	/** Whether the camera is an iSight that sends one header per frame */
-	uint8_t is_isight;
-	uint8_t reset_on_release_if;	// XXX whether interface alt setting needs to reset to 0.
-};
-typedef struct uvc_device_handle uvc_device_handle_t;
-
-/** Context within which we communicate with devices */
-struct uvc_context {
-	/** Underlying context for USB communication */
-	struct libusb_context *usb_ctx;
-	/** True if libuvc initialized the underlying USB context */
-	uint8_t own_usb_ctx;
-	/** List of open devices in this context */
-	uvc_device_handle_t *open_devices;
-	pthread_t handler_thread;
-	uint8_t kill_handler_thread;
-};
-typedef struct uvc_context uvc_context_t;
-
-
-
-
-
-
-struct uvc_device {
-    struct uvc_context *ctx;
-    int ref;
-    libusb_device *usb_dev;
-};
-typedef struct uvc_device uvc_device_t;
 
 /** Converts an unaligned four-byte little-endian integer into an int32 */
 #define DW_TO_INT(p) ((p)[0] | ((p)[1] << 8) | ((p)[2] << 16) | ((p)[3] << 24))

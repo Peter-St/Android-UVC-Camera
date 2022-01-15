@@ -286,6 +286,8 @@ public class SetUpTheUsbDevice extends Activity {
             System.loadLibrary("jpeg");
             System.loadLibrary("jpeg-turbo");
             System.loadLibrary("Uvc_Support");
+            System.loadLibrary("uvc");
+
             isLoaded = true;
         }
     }
