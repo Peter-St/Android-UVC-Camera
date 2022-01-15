@@ -13,299 +13,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="719e864b-07d8-4e68-9be1-a80bb76647d2" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/menu/set_up_dev_bulk_menu.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/cache.properties" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/cache.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_constraint_constraint_layout_2_0_4_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_constraint_constraint_layout_2_0_4_aar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_crowdfire_cfalertdialog_cfalertdialog_1_1_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_crowdfire_cfalertdialog_cfalertdialog_1_1_0_aar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_rafakob_floatingedittext_1_0_5_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_rafakob_floatingedittext_1_0_5_aar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_tomer_fadingtextview_2_6_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_tomer_fadingtextview_2_6_aar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__io_github_yavski_fab_speed_dial_1_0_7_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__io_github_yavski_fab_speed_dial_1_0_7_aar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__io_reactivex_rxjava2_rxandroid_2_0_2_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__io_reactivex_rxjava2_rxandroid_2_0_2_aar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__net_java_dev_jna_jna_5_6_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__net_java_dev_jna_jna_5_6_0_aar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_webrtc_google_webrtc_1_0_22672_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_webrtc_google_webrtc_1_0_22672_aar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/app/Android-UVC-Camera.app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/Android-UVC-Camera.app.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mapping.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/mapping.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/videortc/CallActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/videortc/CallActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/videortc/UsbCapturer.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/videortc/UsbCapturer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/videortc/WebRtc_MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/videortc/WebRtc_MainActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/AutomaticDetection/Jna_AutoDetect.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/AutomaticDetection/Jna_AutoDetect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/AutomaticDetection/LibUsb_AutoDetect.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/AutomaticDetection/LibUsb_AutoDetect.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/LibUsb/JNA_I_LibUsb.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/LibUsb/JNA_I_LibUsb.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SaveToFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SaveToFile.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDevice.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDevice.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/Android.mk" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/Android.mk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libUsb_Support/Android.mk" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libUvc_Support/Android.mk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libUsb_Support/libusb_support.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libUvc_Support/libuvc_support.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libUsb_Support/libusb_support.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libUvc_Support/libuvc_support.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/.gitattributes" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/.gitattributes" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/.private/README.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/.private/README.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/.private/post-rewrite.sh" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/.private/post-rewrite.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/.private/pre-commit.sh" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/.private/pre-commit.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/.private/wbs.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/.private/wbs.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/.travis.yml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/.travis.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/AUTHORS" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/AUTHORS" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/COPYING" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/COPYING" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/ChangeLog" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/ChangeLog" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/INSTALL_WIN.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/INSTALL_WIN.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/Makefile.am" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/Makefile.am" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/NEWS" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/NEWS" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/PORTING" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/PORTING" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/README" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/README" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/README.git" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/README.git" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/TODO" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/TODO" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/Xcode/common.xcconfig" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/Xcode/common.xcconfig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/Xcode/config.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/Xcode/config.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/Xcode/debug.xcconfig" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/Xcode/debug.xcconfig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/Xcode/libusb.xcconfig" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/Xcode/libusb.xcconfig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/Xcode/libusb.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/Xcode/libusb.xcodeproj/project.pbxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/Xcode/libusb_debug.xcconfig" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/Xcode/libusb_debug.xcconfig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/Xcode/libusb_release.xcconfig" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/Xcode/libusb_release.xcconfig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/Xcode/release.xcconfig" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/Xcode/release.xcconfig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/android/README" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/android/README" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/android/config.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/android/config.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/android/jni/Android.mk" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/android/jni/Android.mk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/android/jni/Application.mk" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/android/jni/Application.mk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/android/jni/examples.mk" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/android/jni/examples.mk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/android/jni/libusb.mk" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/android/jni/libusb.mk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/android/jni/tests.mk" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/android/jni/tests.mk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/appveyor.yml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/appveyor.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/autogen.sh" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/autogen.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/bootstrap.sh" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/bootstrap.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/configure.ac" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/configure.ac" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/doc/Makefile.in" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/doc/Makefile.in" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/doc/doxygen.cfg.in" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/doc/doxygen.cfg.in" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/doc/libusb.png" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/doc/libusb.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/examples/Makefile.am" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/examples/Makefile.am" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/examples/dpfp.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/examples/dpfp.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/examples/ezusb.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/examples/ezusb.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/examples/ezusb.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/examples/ezusb.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/examples/fxload.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/examples/fxload.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/examples/hotplugtest.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/examples/hotplugtest.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/examples/listdevs.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/examples/listdevs.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/examples/sam3u_benchmark.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/examples/sam3u_benchmark.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/examples/testlibusb.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/examples/testlibusb.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/examples/xusb.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/examples/xusb.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb-1.0.pc.in" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb-1.0.pc.in" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/Makefile.am" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/Makefile.am" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/Makefile.am.extra" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/Makefile.am.extra" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/core.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/core.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/descriptor.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/descriptor.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/hotplug.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/hotplug.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/hotplug.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/io.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/io.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/libusb-1.0.def" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/libusb-1.0.def" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/libusb-1.0.rc" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/libusb-1.0.rc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/libusb.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/libusb.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/libusbi.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/libusbi.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/darwin_usb.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/darwin_usb.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/darwin_usb.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/darwin_usb.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/events_posix.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/events_posix.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/events_posix.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/events_posix.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/events_windows.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/events_windows.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/events_windows.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/events_windows.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/haiku_pollfs.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/haiku_pollfs.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/haiku_usb.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/haiku_usb.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/haiku_usb_backend.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/haiku_usb_backend.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/haiku_usb_raw.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/haiku_usb_raw.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/haiku_usb_raw.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/haiku_usb_raw.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/linux_netlink.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/linux_netlink.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/linux_udev.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/linux_udev.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/linux_usbfs.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/linux_usbfs.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/linux_usbfs.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/linux_usbfs.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/netbsd_usb.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/netbsd_usb.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/null_usb.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/null_usb.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/openbsd_usb.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/openbsd_usb.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/sunos_usb.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/sunos_usb.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/sunos_usb.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/sunos_usb.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/threads_posix.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/threads_posix.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/threads_posix.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/threads_posix.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/threads_windows.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/threads_windows.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/threads_windows.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/threads_windows.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/windows_common.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/windows_common.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/windows_common.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/windows_common.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/windows_usbdk.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/windows_usbdk.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/windows_usbdk.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/windows_usbdk.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/windows_winusb.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/windows_winusb.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/windows_winusb.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/os/windows_winusb.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/strerror.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/strerror.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/sync.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/sync.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/version.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/version.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/version_nano.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/libusb/version_nano.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/.gitattributes" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/.gitattributes" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/config.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/config.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_2013.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_2013.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_2013.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_2013.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_2015.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_2015.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_2015.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_2015.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_2017.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_2017.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_2017.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_2017.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_2019.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_2019.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_2019.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_2019.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_threaded_2013.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_threaded_2013.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_threaded_2013.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_threaded_2013.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_threaded_2015.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_threaded_2015.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_threaded_2015.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_threaded_2015.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_threaded_2017.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_threaded_2017.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_threaded_2017.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_threaded_2017.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_threaded_2019.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_threaded_2019.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_threaded_2019.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/dpfp_threaded_2019.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/fxload_2013.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/fxload_2013.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/fxload_2013.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/fxload_2013.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/fxload_2015.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/fxload_2015.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/fxload_2015.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/fxload_2015.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/fxload_2017.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/fxload_2017.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/fxload_2017.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/fxload_2017.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/fxload_2019.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/fxload_2019.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/fxload_2019.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/fxload_2019.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/getopt/getopt.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/getopt/getopt.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/getopt/getopt.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/getopt/getopt.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/getopt/getopt1.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/getopt/getopt1.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/getopt_2013.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/getopt_2013.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/getopt_2013.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/getopt_2013.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/getopt_2015.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/getopt_2015.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/getopt_2015.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/getopt_2015.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/getopt_2017.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/getopt_2017.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/getopt_2017.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/getopt_2017.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/getopt_2019.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/getopt_2019.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/getopt_2019.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/getopt_2019.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/hotplugtest_2013.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/hotplugtest_2013.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/hotplugtest_2013.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/hotplugtest_2013.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/hotplugtest_2015.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/hotplugtest_2015.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/hotplugtest_2015.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/hotplugtest_2015.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/hotplugtest_2017.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/hotplugtest_2017.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/hotplugtest_2017.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/hotplugtest_2017.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/hotplugtest_2019.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/hotplugtest_2019.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/hotplugtest_2019.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/hotplugtest_2019.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_2013.sln" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_2013.sln" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_2015.sln" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_2015.sln" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_2017.sln" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_2017.sln" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_2019.sln" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_2019.sln" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_dll_2013.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_dll_2013.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_dll_2013.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_dll_2013.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_dll_2015.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_dll_2015.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_dll_2015.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_dll_2015.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_dll_2017.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_dll_2017.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_dll_2017.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_dll_2017.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_dll_2019.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_dll_2019.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_dll_2019.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_dll_2019.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_static_2013.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_static_2013.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_static_2013.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_static_2013.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_static_2015.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_static_2015.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_static_2015.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_static_2015.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_static_2017.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_static_2017.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_static_2017.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_static_2017.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_static_2019.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_static_2019.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_static_2019.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/libusb_static_2019.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/listdevs_2013.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/listdevs_2013.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/listdevs_2013.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/listdevs_2013.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/listdevs_2015.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/listdevs_2015.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/listdevs_2015.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/listdevs_2015.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/listdevs_2017.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/listdevs_2017.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/listdevs_2017.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/listdevs_2017.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/listdevs_2019.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/listdevs_2019.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/listdevs_2019.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/listdevs_2019.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/sam3u_benchmark_2013.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/sam3u_benchmark_2013.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/sam3u_benchmark_2013.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/sam3u_benchmark_2013.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/sam3u_benchmark_2015.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/sam3u_benchmark_2015.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/sam3u_benchmark_2015.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/sam3u_benchmark_2015.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/sam3u_benchmark_2017.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/sam3u_benchmark_2017.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/sam3u_benchmark_2017.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/sam3u_benchmark_2017.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/sam3u_benchmark_2019.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/sam3u_benchmark_2019.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/sam3u_benchmark_2019.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/sam3u_benchmark_2019.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/stress_2013.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/stress_2013.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/stress_2013.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/stress_2013.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/stress_2015.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/stress_2015.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/stress_2015.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/stress_2015.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/stress_2017.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/stress_2017.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/stress_2017.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/stress_2017.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/stress_2019.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/stress_2019.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/stress_2019.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/stress_2019.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/testlibusb_2013.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/testlibusb_2013.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/testlibusb_2013.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/testlibusb_2013.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/testlibusb_2015.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/testlibusb_2015.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/testlibusb_2015.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/testlibusb_2015.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/testlibusb_2017.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/testlibusb_2017.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/testlibusb_2017.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/testlibusb_2017.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/testlibusb_2019.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/testlibusb_2019.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/testlibusb_2019.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/testlibusb_2019.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/xusb_2013.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/xusb_2013.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/xusb_2013.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/xusb_2013.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/xusb_2015.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/xusb_2015.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/xusb_2015.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/xusb_2015.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/xusb_2017.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/xusb_2017.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/xusb_2017.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/xusb_2017.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/xusb_2019.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/xusb_2019.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/xusb_2019.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/msvc/xusb_2019.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/tests/Makefile.am" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/tests/Makefile.am" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/tests/libusb_testlib.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/tests/libusb_testlib.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/tests/stress.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/tests/stress.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libusb/tests/testlib.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libusb/tests/testlib.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/dpfp" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/dpfp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/dpfp_threaded" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/dpfp_threaded" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libUvc_Support/libuvc_support.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libUvc_Support/libuvc_support.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libUvc_Support/libuvc_support.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libUvc_Support/libuvc_support.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/fxload" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/fxload" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/hotplugtest" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/hotplugtest" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libUsb_Support.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libjpeg-turbo.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libjpeg-turbo.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libjpeg.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libjpeg.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libusb1.0.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libusb1.0.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libyuv.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libyuv.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/listdevs" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/listdevs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/sam3u_benchmark" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/sam3u_benchmark" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/stress" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/stress" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/xusb" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/xusb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/dpfp" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/dpfp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/dpfp_threaded" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/dpfp_threaded" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libUvc_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libUvc_Support.so" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/fxload" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/fxload" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/hotplugtest" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/hotplugtest" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libUsb_Support.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libjpeg-turbo.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libjpeg-turbo.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libjpeg.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libjpeg.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libusb1.0.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libusb1.0.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libyuv.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libyuv.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/listdevs" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/listdevs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/sam3u_benchmark" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/sam3u_benchmark" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/stress" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/stress" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/xusb" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/xusb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/dpfp" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/dpfp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/dpfp_threaded" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/dpfp_threaded" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libUvc_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libUvc_Support.so" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/fxload" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/fxload" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/hotplugtest" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/hotplugtest" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libUsb_Support.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libjpeg-turbo.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/libjpeg-turbo.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libjpeg.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/libjpeg.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libusb1.0.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/libusb1.0.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libyuv.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/libyuv.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/listdevs" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/listdevs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/sam3u_benchmark" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/sam3u_benchmark" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/stress" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/stress" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/xusb" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/xusb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/dpfp" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/dpfp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/dpfp_threaded" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/dpfp_threaded" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libUvc_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/libUvc_Support.so" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/fxload" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/fxload" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/hotplugtest" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/hotplugtest" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libUsb_Support.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libjpeg-turbo.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/libjpeg-turbo.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libjpeg.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/libjpeg.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libusb1.0.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/libusb1.0.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libyuv.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/libyuv.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/listdevs" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/listdevs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/sam3u_benchmark" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/sam3u_benchmark" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/stress" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/stress" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/xusb" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/xusb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/proguardTools/mapping-release.txt" beforeDir="false" afterPath="$PROJECT_DIR$/proguardTools/mapping-release.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libUvc_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/libUvc_Support.so" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -315,7 +40,7 @@
   <component name="ClangdSettings">
     <option name="clangTidyViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[192.168.40.96:5555]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -349,7 +74,8 @@
     <property name="ExportApk.BuildVariants" value="release" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Build_APK_Key/my.keystore" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../unRootedSample" />
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors" />
   </component>
   <component name="RunManager">

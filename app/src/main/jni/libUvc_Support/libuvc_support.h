@@ -25,6 +25,28 @@ This Repository is provided "as is", without warranties of any kind.
 #include </home/peter/Android/Sdk/ndk/21.1.6352462/sysroot/usr/include/android/native_window.h>
 #include </home/peter/Android/Sdk/ndk/21.1.6352462/sysroot/usr/include/jni.h>
 #include <libusb.h>
+#include <pthread.h>
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <math.h>
+#include <sys/ioctl.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <linux/usbdevice_fs.h>
+#include <signal.h>
+#include <android/log.h>
+#include <sys/wait.h>
+#include <stdbool.h>
+#include <android/native_window.h>
+#include <android/native_window_jni.h>
+#include <libyuv/include/libyuv.h>
+#include "utlist.h"
+#include <assert.h>		// XXX add assert for debugging
+
 
 //////////////// Auto Detect Methods ////////////////////
 struct AutotransferStruct; /* Forward declaration */
@@ -70,7 +92,7 @@ extern int set_the_native_Values (int FD, int packetsPerReques, int maxPacketSiz
 extern int initStreamingParms(int FD);
 extern void stopStreaming();
 extern void stopJavaVM();
-extern void exit_native();
+extern void native_uvc_unref_device();
 extern void closeLibUsb();
 extern int libUsb_open_def_fd(int vid, int pid, const char *serial, int fd, int busnum, int devaddr);
 extern unsigned char * probeCommitControl();
@@ -125,15 +147,15 @@ extern unsigned char* convertUYVYtoJPEG (unsigned char* UYVY_frame_array, int* j
         // get Bitmap
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_frameToBitmap( JNIEnv* env, jobject thiz, jobject bitmap);
 
-///////////////   Stream Service
-JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniServiceOverSurface
-        (JNIEnv *, jobject);
-JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniServiceOverBitmap
-        (JNIEnv *env, jobject obj);
-JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniGetAnotherFrame
-        (JNIEnv *, jobject);
-JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniPrepairForStreamingfromService
-        (JNIEnv *, jobject);
+
+
+
+///////////////   Stream over JNI and native Surface View
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniPrepairStreamOverSurface
+		(JNIEnv *, jobject);
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniStreamOverSurface
+		(JNIEnv *, jobject);
+
 
 ////////    SetUpTheDevice
 JNIEXPORT void JNICALL Java_humer_UvcCamera_SetUpTheUsbDevice_JniIsoStreamActivity
@@ -147,6 +169,21 @@ JNIEXPORT void JNICALL Java_com_example_androidthings_videortc_UsbCapturer_JniWe
 
 ////// YUV Methods
 
+
+
+
+
+/*
+///////////////   Stream Service
+JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniServiceOverSurface
+		(JNIEnv *, jobject);
+JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniServiceOverBitmap
+		(JNIEnv *env, jobject obj);
+JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniGetAnotherFrame
+		(JNIEnv *, jobject);
+JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniPrepairForStreamingfromService
+		(JNIEnv *, jobject);
+*/
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////   CONSTANTS         /////////////////////////////////////////////////////////////////////////
@@ -501,8 +538,43 @@ static const unsigned char mjpgHuffmanTable[] = {
 	IYUYV2RGB_2(pyuv, prgb, ax + PIXEL2_YUYV, bx + PIXEL2_RGB)
 
 
+/** An image frame received from the UVC device
+ * @ingroup streaming
+ */
+typedef struct uvc_frame {
+    /** Image data for this frame */
+    void *data;
+    /** Size of image data buffer */
+    size_t data_bytes;
+    /** XXX Size of actual received data to confirm whether the received bytes is same
+     * as expected on user function when some microframes dropped */
+    size_t actual_bytes;
+    /** Width of image in pixels */
+    uint32_t width;
+    /** Height of image in pixels */
+    uint32_t height;
+    /** Pixel data format */
+    enum uvc_frame_format frame_format;
+    /** Number of bytes per horizontal line (undefined for compressed format) */
+    size_t step;
+    /** Frame number (may skip, but is strictly monotonically increasing) */
+    uint32_t sequence;
+    /** Estimate of system time when the device started capturing the image */
+    struct timeval capture_time;
+    /** Handle on the device that produced the image.
+     * @warning You must not call any uvc_* functions during a callback. */
+    //uvc_device_handle_t *source;
+    /** Is the data buffer owned by the library?
+     * If 1, the data buffer can be arbitrarily reallocated by frame conversion
+     * functions.
+     * If 0, the data buffer will not be reallocated or freed by the library.
+     * Set this field to zero if you are supplying the buffer.
+     */
+    uint8_t library_owns_data;
+} uvc_frame_t;
+
 struct uvc_stream_handle {
-	//struct uvc_device_handle *devh;
+	struct uvc_device_handle *devh;
 	//struct uvc_stream_handle *prev, *next;
 	//struct uvc_streaming_interface *stream_if;
 
@@ -529,10 +601,38 @@ struct uvc_stream_handle {
 	void *user_ptr;
 	//struct libusb_transfer *transfers[LIBUVC_NUM_TRANSFER_BUFS];
 	//uint8_t *transfer_bufs[LIBUVC_NUM_TRANSFER_BUFS];
-	//struct uvc_frame frame;
+	struct uvc_frame frame;
 	enum uvc_frame_format frame_format;
 };
 typedef struct uvc_stream_handle uvc_stream_handle_t;
+
+
+/** Handle on an open UVC device
+ *
+ * @todo move most of this into a uvc_device struct?
+ */
+struct uvc_device_handle {
+	struct uvc_device *dev;
+	struct uvc_device_handle *prev, *next;
+	/** Underlying USB device handle */
+	libusb_device_handle *usb_devh;
+	//struct uvc_device_info *info;
+	//struct libusb_transfer *status_xfer;
+	pthread_mutex_t status_mutex;	// XXX saki
+	uint8_t status_buf[32];
+	/** Function to call when we receive status updates from the camera */
+	//uvc_status_callback_t *status_cb;
+	void *status_user_ptr;
+	/* Function to call when we receive button events from the camera */
+	//uvc_button_callback_t *button_cb;
+	void *button_user_ptr;
+
+	uvc_stream_handle_t *streams;
+	/** Whether the camera is an iSight that sends one header per frame */
+	uint8_t is_isight;
+	uint8_t reset_on_release_if;	// XXX whether interface alt setting needs to reset to 0.
+};
+typedef struct uvc_device_handle uvc_device_handle_t;
 
 /** Context within which we communicate with devices */
 struct uvc_context {
@@ -541,75 +641,15 @@ struct uvc_context {
 	/** True if libuvc initialized the underlying USB context */
 	uint8_t own_usb_ctx;
 	/** List of open devices in this context */
-	//uvc_device_handle_t *open_devices;
+	uvc_device_handle_t *open_devices;
 	pthread_t handler_thread;
 	uint8_t kill_handler_thread;
 };
 typedef struct uvc_context uvc_context_t;
 
 
-/** Handle on an open UVC device
- *
- * @todo move most of this into a uvc_device struct?
- */
-struct uvc_device_handle {
-    struct uvc_device *dev;
-    struct uvc_device_handle *prev, *next;
-    /** Underlying USB device handle */
-    libusb_device_handle *usb_devh;
-    //struct uvc_device_info *info;
-    //struct libusb_transfer *status_xfer;
-    pthread_mutex_t status_mutex;	// XXX saki
-    uint8_t status_buf[32];
-    /** Function to call when we receive status updates from the camera */
-    //uvc_status_callback_t *status_cb;
-    void *status_user_ptr;
-    /* Function to call when we receive button events from the camera */
-    //uvc_button_callback_t *button_cb;
-    void *button_user_ptr;
-
-    uvc_stream_handle_t *streams;
-    /** Whether the camera is an iSight that sends one header per frame */
-    uint8_t is_isight;
-    uint8_t reset_on_release_if;	// XXX whether interface alt setting needs to reset to 0.
-};
-typedef struct uvc_device_handle uvc_device_handle_t;
 
 
-/** An image frame received from the UVC device
- * @ingroup streaming
- */
-typedef struct uvc_frame {
-    /** Image data for this frame */
-    void *data;
-    /** Size of image data buffer */
-    size_t data_bytes;
-    /** XXX Size of actual received data to confirm whether the received bytes is same
-     * as expected on user function when some microframes dropped */
-    size_t actual_bytes;
-    /** Width of image in pixels */
-    uint32_t width;
-    /** Height of image in pixels */
-    uint32_t height;
-    /** Pixel data format */
-    enum uvc_frame_format frame_format;
-    /** Number of bytes per horizontal line (undefined for compressed format) */
-    size_t step;
-    /** Frame number (may skip, but is strictly monotonically increasing) */
-    uint32_t sequence;
-    /** Estimate of system time when the device started capturing the image */
-    struct timeval capture_time;
-    /** Handle on the device that produced the image.
-     * @warning You must not call any uvc_* functions during a callback. */
-    uvc_device_handle_t *source;
-    /** Is the data buffer owned by the library?
-     * If 1, the data buffer can be arbitrarily reallocated by frame conversion
-     * functions.
-     * If 0, the data buffer will not be reallocated or freed by the library.
-     * Set this field to zero if you are supplying the buffer.
-     */
-    uint8_t library_owns_data;
-} uvc_frame_t;
 
 
 struct uvc_device {
@@ -619,7 +659,11 @@ struct uvc_device {
 };
 typedef struct uvc_device uvc_device_t;
 
+/** Converts an unaligned four-byte little-endian integer into an int32 */
+#define DW_TO_INT(p) ((p)[0] | ((p)[1] << 8) | ((p)[2] << 16) | ((p)[3] << 24))
 
   #endif  // iso_h__
+
+
 
 

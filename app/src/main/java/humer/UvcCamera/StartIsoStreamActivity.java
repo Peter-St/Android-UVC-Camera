@@ -248,7 +248,8 @@ public class StartIsoStreamActivity extends Activity {
     public native void YUY2pixeltobmp(byte[] uyvy_data, Bitmap bitmap, int im_width, int im_height);
     public native void UYVYpixeltobmp(byte[] uyvy_data, Bitmap bitmap, int im_width, int im_height);
 
-
+    public native void JniPrepairStreamOverSurface();
+    public native void JniStreamOverSurface();
 
 
     //public native void JniProbeCommitControl(int bmHint,int camFormatIndex,int camFrameIndex,int  camFrameInterval);
@@ -289,6 +290,7 @@ public class StartIsoStreamActivity extends Activity {
         }
     };
 
+    /*
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -329,13 +331,7 @@ public class StartIsoStreamActivity extends Activity {
     protected void onStart() {
         super.onStart();
         Log.v("STATE", "onStart() is called");
-        /*
-        // Bind to Service
-        if (!mBound) {
-            Intent intent = new Intent(this, LibUsbManagerService.class);
-            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        }
-         */
+
     }
 
     @Override
@@ -344,10 +340,10 @@ public class StartIsoStreamActivity extends Activity {
 
         try {
             unregisterReceiver(mUsbReceiver);
-            unregisterReceiver(receiver);
         } catch (Exception e) {
             log("Exception = " + e);
         }
+
         /*
         try {
             unbindService(mConnection);
@@ -910,7 +906,7 @@ public class StartIsoStreamActivity extends Activity {
         flip = (ImageButton) findViewById(R.id.flipRightButton); flip.setEnabled(false); flip.setBackgroundDrawable(null);
         ToggleButton flip2 = (ToggleButton) findViewById(R.id.flipHorizontalButton); flip2.setEnabled(false); flip2.setBackgroundDrawable(null);
         flip2 = (ToggleButton) findViewById(R.id.flipVerticalButton); flip2.setEnabled(false); flip2.setBackgroundDrawable(null);
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(StartIsoStreamService.NOTIFICATION));
+        //LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(StartIsoStreamService.NOTIFICATION));
         if (LIBUSB) {
             mUVCCameraView = (SurfaceView)findViewById(R.id.surfaceView);
             mPreviewSurface = mUVCCameraView.getHolder().getSurface();
@@ -920,14 +916,15 @@ public class StartIsoStreamActivity extends Activity {
             mUVCCameraView.setVisibility(View.GONE);
             mUVCCameraView.setVisibility(View.INVISIBLE);
         }
+        //JNA_I_LibUsb.INSTANCE.native_uvc_unref_device();
     }
-
+/*
     public void restartIntent() {
         Intent intent = new Intent(this, StartIsoStreamService.class);
         intent.putExtra(StartIsoStreamService.ACCESS_LIBUSB, "Resume");
         startService(intent);
     }
-
+*/
     public void selectUnitTerminal(View v) {
         PopupMenu popup = new PopupMenu(this, v);
         popup.inflate(R.menu.iso_stream_select_terminal_unit);
@@ -988,7 +985,6 @@ public class StartIsoStreamActivity extends Activity {
                             }
                         });
                         builder.show();
-
                         showAdjustValuesUnitMenu(findViewById(R.id.settingsButton));
                         return true;
                     case R.id.frameinterval:
@@ -1605,7 +1601,10 @@ public class StartIsoStreamActivity extends Activity {
                 }
                 //mService.native_values_set = true;
                 /////////////// Service Method
-                log("starting Service");
+                log("prepair for streaming ..");
+
+                log("Compare Video Format");
+
                 if (videoformat.equals("MJPEG")) {
                     ////////////////////////////////    MJPEG
                     if (!libusb_is_initialized) {
@@ -1614,27 +1613,8 @@ public class StartIsoStreamActivity extends Activity {
                         //mService.jniMethodsAndConstantsSet = true;
                     }
                     if (!libusb_is_initialized) JniSetSurfaceView(null);
-
-                    /*
-                    //mPreviewSurface = mUVCCameraView.getHolder().getSurface();
-                    mService.jniMethodsAndConstantsSet = true;
-                    mUVCCameraView = (SurfaceView) findViewById(R.id.surfaceView);
-                    mUVCCameraView.setVisibility(View.GONE);
-                    mUVCCameraView.setVisibility(View.INVISIBLE);
-                    */
-                    Intent intent = new Intent(this, StartIsoStreamService.class);
-                    if (!libusb_is_initialized) intent.putExtra(StartIsoStreamService.INIT, "INIT");
-                    intent.putExtra(StartIsoStreamService.ACCESS_LIBUSB, "SURFACE");
-                    intent.putExtra(StartIsoStreamService.FRAMEFORMAT, "MFPEG");
-                    startService(intent);
-                    /*
-                    mService.streamHelperServiceStarted = true;
-                    mService.libusb_wrapped = true;
-                    mService.libusb_InterfacesClaimed = true;
-                    mService.ctl_to_camera_sent = true;
-                    mService.altSettingStream();
-                    mService.streamPerformed = true;
-                    */
+                    JniPrepairStreamOverSurface();
+                    JniStreamOverSurface();
                     libusb_is_initialized = true;
                     log("service started (MJPEG) ... waiting for intent");
 
@@ -1644,64 +1624,16 @@ public class StartIsoStreamActivity extends Activity {
                     // fastest Method
                     if (!libusb_is_initialized) {
                         mPreviewSurface = mUVCCameraView.getHolder().getSurface();
+                        log("JniSetSurfaceView");
                         JniSetSurfaceView(mPreviewSurface);
                         //mService.jniMethodsAndConstantsSet = true;
                     }
-                    Intent intent = new Intent(this, StartIsoStreamService.class);
-                    if (!libusb_is_initialized) intent.putExtra(StartIsoStreamService.INIT, "INIT");
-                    intent.putExtra(StartIsoStreamService.ACCESS_LIBUSB, "SURFACE");
-                    intent.putExtra(StartIsoStreamService.FRAMEFORMAT, "YUV");
-                    startService(intent);
-                    /*
-                    mService.streamHelperServiceStarted = true;
-                    mService.libusb_wrapped = true;
-                    mService.libusb_InterfacesClaimed = true;
-                    mService.ctl_to_camera_sent = true;
-                    mService.altSettingStream();
-                    mService.streamPerformed = true;
-                     */
+                    log("prepair for streaming ..");
+                    JniPrepairStreamOverSurface();
+                    log("Start the stream ..");
+                    JniStreamOverSurface();
                     libusb_is_initialized = true;
                     log("service started (YUV) ... waiting for intent");
-
-
-
-                    // FRAME OVER BITMAP and ImageView
-                    // Slower than over SurfaceView
-                    /*
-                    JniSetSurfaceView(null);
-                    mService.jniMethodsAndConstantsSet = true;
-                    mUVCCameraView = (SurfaceView) findViewById(R.id.surfaceView);
-                    mUVCCameraView.setVisibility(View.GONE);
-                    mUVCCameraView.setVisibility(View.INVISIBLE);
-                    JNA_I_LibUsb.INSTANCE.setFrameComplete(new JNA_I_LibUsb.frameComplete(){
-                        public boolean callback(int bitmap) {
-                            log("frame received");
-                            Bitmap bmp = Bitmap.createBitmap(imageWidth, imageHeight, Bitmap.Config.ARGB_8888);
-                            frameToBitmap(bmp);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    imageView.setImageBitmap(bmp);
-                                }
-                            });
-                            return true;
-                        }
-                    });
-                    Intent intent = new Intent(this, StartIsoStreamService.class);
-                    if (!libusb_is_initialized) intent.putExtra(StartIsoStreamService.INIT, "INIT");
-                    intent.putExtra(StartIsoStreamService.ACCESS_LIBUSB, "BITMAP");
-                    intent.putExtra(StartIsoStreamService.FRAMEFORMAT, "YUV");
-                    startService(intent);
-                    mService.streamHelperServiceStarted = true;
-                    mService.libusb_wrapped = true;
-                    mService.libusb_InterfacesClaimed = true;
-                    mService.ctl_to_camera_sent = true;
-                    mService.altSettingStream();
-                    mService.streamPerformed = true;
-                    libusb_is_initialized = true;
-                    log("service started (Bitmap, YUV) ... waiting for intent");
-                    //*/
-
                 }
             } else {
                 try {
@@ -3314,4 +3246,24 @@ public void lowerResolutionClickButtonEvent () {
         });
 
     }
+ */
+
+/*
+// Start the Stream over the service to update the surface view
+
+
+                    Intent intent = new Intent(this, StartIsoStreamService.class);
+                    if (!libusb_is_initialized) intent.putExtra(StartIsoStreamService.INIT, "INIT");
+                    intent.putExtra(StartIsoStreamService.ACCESS_LIBUSB, "SURFACE");
+                    intent.putExtra(StartIsoStreamService.FRAMEFORMAT, "MFPEG");
+                    startService(intent);
+
+                    mService.streamHelperServiceStarted = true;
+                    mService.libusb_wrapped = true;
+                    mService.libusb_InterfacesClaimed = true;
+                    mService.ctl_to_camera_sent = true;
+                    mService.altSettingStream();
+                    mService.streamPerformed = true;
+
+
  */
