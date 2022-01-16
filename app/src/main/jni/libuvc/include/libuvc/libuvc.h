@@ -539,7 +539,7 @@ uvc_error_t uvc_query_stream_ctrl(uvc_device_handle_t *devh,
                                   uvc_stream_ctrl_t *ctrl, uint8_t probe, enum uvc_req_code req);
 
         uvc_error_t uvc_init(uvc_context_t **ctx, struct libusb_context *usb_ctx);
-uvc_error_t uvc_init2(uvc_context_t **ctx, struct libusb_context *usb_ctx, const char *usbfs);
+uvc_error_t uvc_init2(uvc_context_t **ctx, struct libusb_context *usb_ctx);
 void uvc_exit(uvc_context_t *ctx);
 
 uvc_error_t uvc_get_device_list(uvc_context_t *ctx, uvc_device_t ***list);
@@ -559,9 +559,9 @@ uvc_error_t uvc_find_device2(uvc_context_t *ctx, uvc_device_t **dev, int vid,
 		int pid, const char *sn, int fd);
 // XXX
 uvc_error_t uvc_get_device_with_fd(uvc_context_t *ctx, uvc_device_t **device,
-		int vid, int pid, const char *serial, int fd, int busnum, int devaddr);
+								   uvc_device_handle_t **devh , int fd);
 
-uvc_error_t uvc_open(uvc_device_t *dev, uvc_device_handle_t **devh);
+uvc_error_t uvc_open(uvc_device_t *dev, uvc_device_handle_t *uvc_handle);
 void uvc_close(uvc_device_handle_t *devh);
 // XXX
 uvc_error_t uvc_set_reset_altsetting(uvc_device_handle_t *devh, uint8_t reset_on_release_if);

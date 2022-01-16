@@ -94,6 +94,7 @@ YUV stream from a UVC device such as a standard webcam.
  */
 void *_uvc_handle_events(void *arg) {
 	uvc_context_t *ctx = (uvc_context_t *) arg;
+#define TAG "From init.c"
 
 #if defined(__ANDROID__)
 	// try to increase thread priority
@@ -118,23 +119,38 @@ void *_uvc_handle_events(void *arg) {
  * @param[in]  usb_ctx Optional USB context to use
  * @return Error opening context or UVC_SUCCESS
  */
-uvc_error_t uvc_init2(uvc_context_t **pctx, struct libusb_context *usb_ctx, const char *usbfs) {
-	uvc_error_t ret = UVC_SUCCESS;
+uvc_error_t uvc_init2(uvc_context_t **pctx, struct libusb_context *usb_ctx) {
+
+
+	int rc;
+
 	uvc_context_t *ctx = calloc(1, sizeof(*ctx));
 
 	if (usb_ctx == NULL) {
-		if (usbfs && strlen(usbfs) > 0) {
-			LOGD("call #libusb_init2");
-			//ERROR
-			//ret = libusb_init2(&ctx->usb_ctx, usbfs);
-			ret = libusb_init(&ctx->usb_ctx);
-		} else {
-			LOGD("call #libusb_init");
-			ret = libusb_init(&ctx->usb_ctx);
+		rc = libusb_set_option(ctx->usb_ctx, LIBUSB_OPTION_NO_DEVICE_DISCOVERY, NULL);
+		if (rc != LIBUSB_SUCCESS) {
+			__android_log_print(ANDROID_LOG_ERROR, TAG,"libusb_set_option failed: %d\n", rc);
+			return -1;
 		}
+
+		rc = libusb_init(&ctx->usb_ctx);
+		//ret = libusb_init(NULL);
+        if (rc < 0) {
+            __android_log_print(ANDROID_LOG_ERROR, TAG,
+                                "libusb_init failed: %d\n", rc);
+			__android_log_print(ANDROID_LOG_DEBUG, TAG,"Trying to initialize with NULL CTX");
+			rc = libusb_init(NULL);
+            if (rc < 0) {
+                __android_log_print(ANDROID_LOG_ERROR, TAG,
+                                    "libusb_init failed: %d\n", rc);
+                LOGD("Trying to initialize with NULL CTX");
+                return -1;
+            } else __android_log_print(ANDROID_LOG_DEBUG, TAG,"libusb_init only sucessful without Context");
+        } else __android_log_print(ANDROID_LOG_DEBUG, TAG,"libusb_init with Context sucessful");
+
 		ctx->own_usb_ctx = 1;
-		if (UNLIKELY(ret != UVC_SUCCESS)) {
-			LOGW("failed:err=%d", ret);
+		if (UNLIKELY(rc != UVC_SUCCESS)) {
+			LOGW("failed:err=%d", rc);
 			free(ctx);
 			ctx = NULL;
 		}
@@ -145,12 +161,11 @@ uvc_error_t uvc_init2(uvc_context_t **pctx, struct libusb_context *usb_ctx, cons
 
 	if (ctx != NULL)
 		*pctx = ctx;
-
-	return ret;
+	return rc;
 }
 
 uvc_error_t uvc_init(uvc_context_t **pctx, struct libusb_context *usb_ctx) {
-	return uvc_init2(pctx, usb_ctx, NULL);
+	return uvc_init2(pctx, usb_ctx);
 #if 0
 	uvc_error_t ret = UVC_SUCCESS;
 	uvc_context_t *ctx = calloc(1, sizeof(*ctx));

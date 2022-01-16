@@ -104,6 +104,7 @@ extern unsigned char * probeCommitControl();
 // Camera Set up Methods
 extern void startAutoDetection ();
 extern void getFramesOverLibUsb(int yuvFrameIsZero, int stream, int whichTestrun);
+extern void getFramesOverLibUVC();
 extern int awaitFrame () ;
 extern void probeCommitControl_cleanup();
 extern void sendCtlForConnection(int bmHin, int camFormatInde, int camFrameInde, int camFrameInterva);
@@ -157,7 +158,10 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniPrepairStr
 		(JNIEnv *, jobject);
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniStreamOverSurface
 		(JNIEnv *, jobject);
-
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniPrepairStreamOverSurfaceUVC
+        (JNIEnv *, jobject);
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniStreamOverSurfaceUVC
+        (JNIEnv *, jobject);
 
 ////////    SetUpTheDevice
 JNIEXPORT void JNICALL Java_humer_UvcCamera_SetUpTheUsbDevice_JniIsoStreamActivity
@@ -190,7 +194,6 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniPrep
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////   CONSTANTS         /////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 
 #define align_buffer_64(var, size)                                           \
@@ -270,7 +273,7 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniPrep
 #define PREVIEW_PIXEL_BYTES 4	// RGBA/RGBX
 #define FRAME_POOL_SZ MAX_FRAME + 2
 
-#define  LOG_TAG    "From Native"
+#define  LOG_TAG    "From libuvc_support"
 
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
@@ -283,7 +286,7 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniPrep
 #define UVC_STREAM_PTS (1 << 2)
 #define UVC_STREAM_EOF (1 << 1)
 #define UVC_STREAM_FID (1 << 0)
-#define TAG "LibUsb"
+#define TAG "From libuvc_support"
 
 
 #define nullptr ((void*)0)
@@ -472,6 +475,7 @@ static const unsigned char mjpgHuffmanTable[] = {
 #define DW_TO_INT(p) ((p)[0] | ((p)[1] << 8) | ((p)[2] << 16) | ((p)[3] << 24))
 
   #endif  // iso_h__
+
 
 
 

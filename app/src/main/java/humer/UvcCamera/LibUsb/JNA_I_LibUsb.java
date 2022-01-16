@@ -83,6 +83,8 @@ public interface JNA_I_LibUsb extends Library {
 
     public void getFramesOverLibUsb(int yuvFrameIsZero, int stream, int whichTestrun);
 
+    public void getFramesOverLibUVC(int yuvFrameIsZero, int stream, int whichTestrun);
+
     public void setRotation(int rot, int horizontalFlip, int verticalFlip);
 
     // WebRtc Methods
