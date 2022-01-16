@@ -176,6 +176,7 @@ public class SetUpTheUsbDevice extends Activity {
     public StringBuilder    stringBuilder;
     public int []           convertedMaxPacketSize;
     public static boolean   camIsOpen;
+    private boolean         videoProbeCommitTransferDone;
 
     private enum Options { searchTheCamera, testrun, listdevice, showTestRunMenu, setUpWithUvcSettings };
 
@@ -286,6 +287,8 @@ public class SetUpTheUsbDevice extends Activity {
             System.loadLibrary("jpeg");
             System.loadLibrary("jpeg-turbo");
             System.loadLibrary("Uvc_Support");
+            System.loadLibrary("uvc");
+
             isLoaded = true;
         }
     }
@@ -1886,6 +1889,10 @@ public class SetUpTheUsbDevice extends Activity {
             }
         }
         if(libUsb) {
+            if (!camIsOpen) {
+                displayMessage("Run the Controltransfer first");
+                return;
+            }
             if(!libusb_is_initialized) {
                 libusb_is_initialized = true;
             }
@@ -1913,7 +1920,9 @@ public class SetUpTheUsbDevice extends Activity {
                 e.printStackTrace();
             }
 
+
             latch = new CountDownLatch(1);
+
             JNA_I_LibUsb.INSTANCE.setCallback(new JNA_I_LibUsb.eventCallback(){
                 public boolean callback(Pointer videoFrame, int frameSize) {
                     log("frame received");
@@ -1953,6 +1962,68 @@ public class SetUpTheUsbDevice extends Activity {
                     return true;
                 }
             });
+
+
+            JNA_I_LibUsb.INSTANCE.getFramesOverLibUVC( videoFormatToInt(), 0, 1);
+
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            //mService.altSettingStream();
+            //mService.streamOnPause = true;
+            //mService.streamPerformed = true;
+            JNA_I_LibUsb.INSTANCE.stopStreaming();
+
+
+
+
+
+
+
+
+            /*
+            latch = new CountDownLatch(1);
+            JNA_I_LibUsb.INSTANCE.setCallback(new JNA_I_LibUsb.eventCallback(){
+                public boolean callback(Pointer videoFrame, int frameSize) {
+                    log("frame received");
+                    sframeCnt ++;
+                    log("Event Callback called:\nFrameLength = " + frameSize);
+                    latch.countDown();
+                    stringBuilder = new StringBuilder();
+                    stringBuilder.append("Received one Frame with LibUsb:\n\n");
+                    stringBuilder.append("Length = " + frameSize + "\n");
+                    if (frameSize == (imageWidth*imageHeight*2)) stringBuilder.append("\nThe Frame length matches it's expected size.\nThis are the first 20 bytes of the frame:");
+                    stringBuilder.append("\ndata = " + hexDump(videoFrame.getByteArray(0,50), Math.min(32, 50)));
+                    //// Save to File
+                    /*
+                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) {
+                        String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/OutputFile/";
+                        File file = new File(rootPath);
+                        if (!file.exists()) {
+                            file.mkdirs();
+                        }
+                        String fileName = new File(rootPath + "data" + ".bin").getAbsolutePath() ;
+                        try {
+                            writeBytesToFile(fileName, videoFrame.getByteArray(0,frameSize));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        log ("file saved");
+                    }
+                    *//*
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tv = (ZoomTextView) findViewById(R.id.textDarstellung);
+                            tv.setText(stringBuilder.toString());
+                            tv.setTextColor(Color.BLACK);
+                        }
+                    });
+                    return true;
+                }
+            });
             //mService.jnaCallbackSet = true;
             JNA_I_LibUsb.INSTANCE.getFramesOverLibUsb( videoFormatToInt(), 0, 1);
             //mService.altSettingControl();
@@ -1966,6 +2037,15 @@ public class SetUpTheUsbDevice extends Activity {
             //mService.streamOnPause = true;
             //mService.streamPerformed = true;
             JNA_I_LibUsb.INSTANCE.stopStreaming();
+
+
+*/
+
+
+
+
+
+
         } else {
             if(libusb_is_initialized) {
                 try {
@@ -2032,6 +2112,7 @@ public class SetUpTheUsbDevice extends Activity {
             if(!libusb_is_initialized) {
                 libusb_is_initialized = true;
             }
+            if (!camIsOpen)  return;
             try {
                 if (camDeviceConnection == null) {
                     findCam();

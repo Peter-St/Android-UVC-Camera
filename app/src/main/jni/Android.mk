@@ -7,5 +7,6 @@ include $(PROJ_PATH)/libUvc_Support/Android.mk
 include $(PROJ_PATH)/android-libjpeg-turbo/Android.mk
 include $(PROJ_PATH)/jpeg8d/Android.mk
 include $(PROJ_PATH)/libyuv/Android.mk
+include $(PROJ_PATH)/libuvc/android/jni/Android.mk
 
 LOCAL_LDLIBS := -llog

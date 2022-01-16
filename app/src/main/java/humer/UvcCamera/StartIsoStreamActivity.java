@@ -97,6 +97,7 @@ import humer.UvcCamera.UsbIso64.USBIso;
 import humer.UvcCamera.UsbIso64.usbdevice_fs_util;
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
+import noman.zoomtextview.ZoomTextView;
 
 import static java.lang.Integer.parseInt;
 
@@ -250,6 +251,8 @@ public class StartIsoStreamActivity extends Activity {
 
     public native void JniPrepairStreamOverSurface();
     public native void JniStreamOverSurface();
+    public native void JniPrepairStreamOverSurfaceUVC();
+    public native void JniStreamOverSurfaceUVC();
 
 
     //public native void JniProbeCommitControl(int bmHint,int camFormatIndex,int camFrameIndex,int  camFrameInterval);
@@ -266,6 +269,7 @@ public class StartIsoStreamActivity extends Activity {
             System.loadLibrary("jpeg");
             System.loadLibrary("jpeg-turbo");
             System.loadLibrary("Uvc_Support");
+            System.loadLibrary("uvc");
             isLoaded = true;
         }
     }
@@ -1603,18 +1607,40 @@ public class StartIsoStreamActivity extends Activity {
                 /////////////// Service Method
                 log("prepair for streaming ..");
 
+                Pointer ctlValues = JNA_I_LibUsb.INSTANCE.probeCommitControl(1, camFormatIndex, camFrameIndex,  camFrameInterval, camDeviceConnection.getFileDescriptor());
+
+
                 log("Compare Video Format");
 
                 if (videoformat.equals("MJPEG")) {
                     ////////////////////////////////    MJPEG
+                    JNA_I_LibUsb.INSTANCE.setCallback(new JNA_I_LibUsb.eventCallback(){
+                        public boolean callback(Pointer videoFrame, int frameSize) {
+
+
+                            try {
+                                processReceivedMJpegVideoFrameKamera(videoFrame.getByteArray(0, frameSize));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+
+                            return true;
+                        }
+                    });
+
+
                     if (!libusb_is_initialized) {
-                        mPreviewSurface = mUVCCameraView.getHolder().getSurface();
-                        JniSetSurfaceView(mPreviewSurface);
+                        //mPreviewSurface = mUVCCameraView.getHolder().getSurface();
+                        //JniSetSurfaceView(mPreviewSurface);
                         //mService.jniMethodsAndConstantsSet = true;
                     }
-                    if (!libusb_is_initialized) JniSetSurfaceView(null);
-                    JniPrepairStreamOverSurface();
-                    JniStreamOverSurface();
+                    //if (!libusb_is_initialized) JniSetSurfaceView(null);
+                    mUVCCameraView = (SurfaceView) findViewById(R.id.surfaceView);
+                    mUVCCameraView.setVisibility(View.GONE);
+                    mUVCCameraView.setVisibility(View.INVISIBLE);
+                    JniPrepairStreamOverSurfaceUVC();
+                    JniStreamOverSurfaceUVC();
                     libusb_is_initialized = true;
                     log("service started (MJPEG) ... waiting for intent");
 
@@ -1629,9 +1655,9 @@ public class StartIsoStreamActivity extends Activity {
                         //mService.jniMethodsAndConstantsSet = true;
                     }
                     log("prepair for streaming ..");
-                    JniPrepairStreamOverSurface();
+                    JniPrepairStreamOverSurfaceUVC();
                     log("Start the stream ..");
-                    JniStreamOverSurface();
+                    JniStreamOverSurfaceUVC();
                     libusb_is_initialized = true;
                     log("service started (YUV) ... waiting for intent");
                 }
