@@ -116,6 +116,7 @@ extern void setCallback(eventCallback evnHnd);
 typedef int ( *jnaFrameCallback)(void  *videoframe, int value);
 extern void setJnaFrameCallback(jnaFrameCallback evnHnd);
 extern int eheckEventHandling();
+extern int preInitDevice (int FD);
 extern unsigned char * probeCommitControl(int bmHin, int camFormatInde, int camFrameInde, int camFrameInterva, int FD);
 typedef int ( *frameComplete)(int bitmap);
 extern void setFrameComplete(frameComplete evnHnd);

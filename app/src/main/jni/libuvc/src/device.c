@@ -297,10 +297,10 @@ uvc_error_t uvc_open(uvc_device_t *dev, uvc_device_handle_t *uvc_handle) {
 
 	__android_log_print(ANDROID_LOG_DEBUG, TAG,"uvc_open: \n");
 
-	dev->usb_dev = libusb_get_device(uvc_handle->usb_devh);
+	if(dev->usb_dev == NULL) dev->usb_dev = libusb_get_device(uvc_handle->usb_devh);
 
 	if (dev->usb_dev == NULL) __android_log_print(ANDROID_LOG_DEBUG, TAG,"dev->usb_dev == NULL");
-	else __android_log_print(ANDROID_LOG_DEBUG, TAG,"dev->usb_dev != NULL");
+	else __android_log_print(ANDROID_LOG_DEBUG, TAG,"obtained Usb Device !");
 	uvc_error_t ret;
 	struct libusb_device_descriptor desc;
 	//struct libusb_device_handle *usb_devh;
@@ -308,11 +308,11 @@ uvc_error_t uvc_open(uvc_device_t *dev, uvc_device_handle_t *uvc_handle) {
 
 	__android_log_print(ANDROID_LOG_DEBUG, TAG,"libusb_get_device_descriptor: \n");
 
-    ret = libusb_get_device_descriptor(libusb_get_device(uvc_handle->usb_devh), &desc);
+    ret = libusb_get_device_descriptor(dev->usb_dev, &desc);
     if (ret < 0) {
 		UVC_DEBUG(stderr, "failed to get device descriptor");
         return -1;
-    } else 	__android_log_print(ANDROID_LOG_DEBUG, TAG,"libusb_get_device_descriptor() returned = %d", ret);
+    } else 	__android_log_print(ANDROID_LOG_DEBUG, TAG,"libusb_get_device_descriptor() sucessful. Return = %d", ret);
     ret = libusb_open(dev->usb_dev, &uvc_handle->usb_devh);
 	__android_log_print(ANDROID_LOG_DEBUG, TAG,"libusb_open() = %d", ret);
 
@@ -321,25 +321,27 @@ uvc_error_t uvc_open(uvc_device_t *dev, uvc_device_handle_t *uvc_handle) {
 		//UVC_EXIT(ret);
 		//return ret;
 	}
-
-	uvc_ref_device(dev);
+	if (dev->ref == 0) uvc_ref_device(dev);
 	//uvc_handle->usb_devh = usb_devh;
 	uvc_handle->reset_on_release_if = 0;	// XXX
 	ret = uvc_get_device_info(dev, &(uvc_handle->info));
 	pthread_mutex_init(&uvc_handle->status_mutex, NULL);	// XXX saki
 
-	if (UNLIKELY(ret != UVC_SUCCESS))
-		goto fail2;	// uvc_claim_if was not called yet and we don't need to call uvc_release_if
+	if (UNLIKELY(ret != UVC_SUCCESS)) {
+		__android_log_print(ANDROID_LOG_DEBUG, TAG,"uvc_get_device_info failed. Return = %d", ret);
+		goto fail2;    // uvc_claim_if was not called yet and we don't need to call uvc_release_if
+	}
 #if !UVC_DETACH_ATTACH
 	/* enable automatic attach/detach kernel driver on supported platforms in libusb */
 	libusb_set_auto_detach_kernel_driver(uvc_handle->usb_devh, 1);
 #endif
-	__android_log_print(ANDROID_LOG_DEBUG, TAG, "claiming control interface %d",
+	__android_log_print(ANDROID_LOG_DEBUG, TAG, "Trying to claim interface number %d",
 						uvc_handle->info->ctrl_if.bInterfaceNumber);
 	ret = uvc_claim_if(uvc_handle, uvc_handle->info->ctrl_if.bInterfaceNumber);
-	if (UNLIKELY(ret != UVC_SUCCESS))
-		goto fail;
-
+	if (UNLIKELY(ret != UVC_SUCCESS)) {
+		__android_log_print(ANDROID_LOG_DEBUG, TAG,"uvc_claim_if failed. Return = %d", ret);
+		goto fail2;
+	}
 	libusb_get_device_descriptor(dev->usb_dev, &desc);
 	uvc_handle->is_isight = (desc.idVendor == 0x05ac && desc.idProduct == 0x8501);
 
@@ -348,6 +350,7 @@ uvc_error_t uvc_open(uvc_device_t *dev, uvc_device_handle_t *uvc_handle) {
 		uvc_handle->status_xfer = libusb_alloc_transfer(0);
 		if (UNLIKELY(!uvc_handle->status_xfer)) {
 			ret = UVC_ERROR_NO_MEM;
+			__android_log_print(ANDROID_LOG_DEBUG, TAG,"libusb_alloc_transfer failed. Return = %d", ret);
 			goto fail;
 		}
 
@@ -369,6 +372,7 @@ uvc_error_t uvc_open(uvc_device_t *dev, uvc_device_handle_t *uvc_handle) {
 	if (dev->ctx->own_usb_ctx && dev->ctx->open_devices == NULL) {
 		/* Since this is our first device, we need to spawn the event handler thread */
 		uvc_start_handler_thread(dev->ctx);
+
 	}
 
 	DL_APPEND(dev->ctx->open_devices, uvc_handle);
@@ -378,6 +382,8 @@ uvc_error_t uvc_open(uvc_device_t *dev, uvc_device_handle_t *uvc_handle) {
 	UVC_EXIT(ret);
 
 	return ret;
+
+
 
 fail:
 	__android_log_print(ANDROID_LOG_ERROR, TAG, "Fail");
@@ -872,7 +878,7 @@ uvc_error_t uvc_claim_if(uvc_device_handle_t *devh, int idx) {
 	UVC_ENTER();
 #if !UVC_DETACH_ATTACH
 	// libusb automatically attach/detach kernel driver on supported platforms
-	UVC_DEBUG("claiming interface %d", idx);
+	LOGDEB("claiming interface %d", idx);
 	ret = libusb_claim_interface(devh->usb_devh, idx);
 #else
 	/* Tell libusb to detach any active kernel drivers. libusb will keep track of whether

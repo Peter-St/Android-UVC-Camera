@@ -1076,10 +1076,12 @@ public class SetUpTheUsbDevice extends Activity {
             camDeviceConnection = null;
         }
         else if (camDeviceConnection != null) {
-            camDeviceConnection.releaseInterface(camControlInterface);
-            camDeviceConnection.releaseInterface(camStreamingInterface);
-            camDeviceConnection.close();
-            camDeviceConnection = null;
+            if (!libUsb) {
+                camDeviceConnection.releaseInterface(camControlInterface);
+                camDeviceConnection.releaseInterface(camStreamingInterface);
+                camDeviceConnection.close();
+                camDeviceConnection = null;
+            }
         }
         camDeviceIsClosed = true;
     }
@@ -1166,7 +1168,6 @@ public class SetUpTheUsbDevice extends Activity {
             }
             return;
         }
-        // (For transfer buffer sizes > 196608 the kernel file drivers/usb/core/devio.c must be patched.)
         camControlInterface = getVideoControlInterface(camDevice);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (camControlInterface.getName() != null) deviceName = camControlInterface.getName();
@@ -1184,6 +1185,26 @@ public class SetUpTheUsbDevice extends Activity {
         }
         bulkMode = camStreamingEndpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK;
         if (bulkMode) log("\n bulkMode detected !! \n");
+        camControlInterface = getVideoControlInterface(camDevice);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (camControlInterface.getName() != null) deviceName = camControlInterface.getName();
+        }
+        camStreamingInterface = getVideoStreamingInterface(camDevice);
+        log("camControlInterface = " + camControlInterface + "  //  camStreamingInterface = " + camStreamingInterface);
+        if (camStreamingInterface.getEndpointCount() < 1) {
+            throw new Exception("Streaming interface has no endpoint.");
+        } else {
+            log("setting Endpoints");
+            camStreamingEndpoint = camStreamingInterface.getEndpoint(0);
+        }
+        if (camControlInterface.getEndpointCount()>0) {
+            camControlEndpoint = camControlInterface.getEndpoint(0);
+        }
+        bulkMode = camStreamingEndpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK;
+        if (bulkMode) log("\n bulkMode detected !! \n");
+
+        // (For transfer buffer sizes > 196608 the kernel file drivers/usb/core/devio.c must be patched.)
+
         log("opening the usb device");
         camDeviceConnection = usbManager.openDevice(camDevice);
         if (camDeviceConnection == null) {
@@ -2333,6 +2354,13 @@ public class SetUpTheUsbDevice extends Activity {
                     try {
                         log("libusb_openCam(true)");
                         rc = libusb_openCam(true);
+                        if (rc < 0) {
+                            tv = (ZoomTextView) findViewById(R.id.textDarstellung);
+                            if (rc == -6) tv.setText("Libusb failure!\nERROR:\n" + rc + "\nUVC_ERROR_BUSY" );
+                            else tv.setText("Libusb failure!\nERROR:\n" + rc );
+                            tv.setTextColor(Color.RED);
+                            return ;
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -2364,6 +2392,8 @@ public class SetUpTheUsbDevice extends Activity {
                     if (ctlValues == null) {
                         //JNA_I_LibUsb.INSTANCE.probeCommitControl_cleanup();
                         //mService.ctl_for_camera_sucessful = false;
+                        tv = (ZoomTextView) findViewById(R.id.textDarstellung);
+                        tv.setTextColor(Color.RED);
                         tv.setText("The Control Transfers to the Camera failed!\n\nSolutions: Try to connect the camera without LibUsb\n\n" );
                         return ;
                     }

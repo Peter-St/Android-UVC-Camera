@@ -1564,13 +1564,14 @@ int print_device(libusb_device *dev, int level, libusb_device_handle *handle, st
     uint8_t i;
     LOGD("Print Device");
     verbose = 1;
+    /*
     ret = libusb_get_device_descriptor(dev, &desc);
     if (ret < 0) {
         LOGD(stderr, "failed to get device descriptor");
         return -1;
     }
 
-    LOGD("\nKamera gefunden\n");
+    LOGD("\nFound the camera\n");
     fflush(stdout);
     ret = libusb_open(dev, &handle);
     LOGD("libusb_open returned = %d", ret);
@@ -1620,6 +1621,7 @@ int print_device(libusb_device *dev, int level, libusb_device_handle *handle, st
             libusb_free_config_descriptor(config);
         }
     }
+    */
     return 0;
 }
 
@@ -1715,7 +1717,7 @@ int libUsb_open_def_fd(int vid, int pid, const char *serial, int FD, int busnum,
 
     int r = libusb_set_interface_alt_setting(uvcDeviceHandle_global->usb_devh, camStreamingInterfaceNum, 0); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
     if (r != LIBUSB_SUCCESS) {
-        LOGD("libusb_set_interface_alt_setting(uvcDeviceHandle_global->usb_devh, 1, 1) failed with error %d\n", r);
+        LOGD("libusb_set_interface_alt_setting(uvcDeviceHandle_global->usb_devh, Interface 1, alternate_setting 0) failed with error %d\n", r);
     } else {
         LOGD("Altsettings sucessfuly set! %d ; Altsetting = 0\n", r);
     }
@@ -1844,7 +1846,13 @@ int initStreamingParms(int FD) {
     }
     if (!camIsOpen) {
         ret = uvc_open(mDevice_global, uvcDeviceHandle_global);
-        if (ret == UVC_SUCCESS) camIsOpen = true;
+        if (ret == UVC_SUCCESS) {
+            LOGD("uvc_open sucessful");
+            camIsOpen = true;
+        } else {
+            LOGD("uvc_open failed. Return = %d", ret);
+            return ret;
+        }
     }
     LOGD("trying to claim the interfaces");
     for (int if_num = 0; if_num < (camStreamingInterfaceNum + 1); if_num++) {
@@ -1865,8 +1873,8 @@ int initStreamingParms(int FD) {
     print_device(libusb_get_device(uvcDeviceHandle_global->usb_devh) , 0, uvcDeviceHandle_global->usb_devh, desc);
     int r = libusb_set_interface_alt_setting(uvcDeviceHandle_global->usb_devh, camStreamingInterfaceNum, 0); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
     if (r != LIBUSB_SUCCESS) {
-        LOGD("libusb_set_interface_alt_setting(uvcDeviceHandle_global->usb_devh, 1, 1) failed with error %d\n", r);
-        return -4;
+        LOGD("libusb_set_interface_alt_setting(uvcDeviceHandle_global->usb_devh, Interface 1, alternate_setting 0) failed with error %d\n", r);
+        return r;
     } else {
         LOGD("Die Alternativeinstellungen wurden erfolgreich gesetzt: %d ; Altsetting = 0\n", r);
     }
@@ -1922,6 +1930,32 @@ void stopVideoCapture() {    videoCapture = false;}
 void startVideoCaptureLongClick() {    videoCaptureLongClick = true;}
 void stopVideoCaptureLongClick() { videoCaptureLongClick = false;}
 
+int preInitDevice (int FD) {
+    if (!camIsOpen) {
+        int ret;
+        enum libusb_error rc;
+        if (!libusb_Is_initialized) {
+            result = uvc_init2(&uvcContext_global, NULL);
+            if (result == UVC_SUCCESS) libusb_Is_initialized = 1;
+            else return -1;
+        }
+        if (!cameraDevice_is_wraped) {
+            if (uvc_get_device_with_fd(uvcContext_global, &mDevice_global,  &uvcDeviceHandle_global, FD) == 0) {
+                LOGD("Successfully wraped The CameraDevice");
+                cameraDevice_is_wraped = 1;
+            } else return -1;
+        }
+        if (!camIsOpen) {
+            LOGD("Opening the Camera");
+            ret = uvc_open(mDevice_global, uvcDeviceHandle_global);
+            if (ret == UVC_SUCCESS) {
+                camIsOpen = true;
+                return 0;
+            } else return -1;
+        }
+    }
+    return 0;
+}
 
 unsigned char * probeCommitControl(int bmHin, int camFormatInde, int camFrameInde, int camFrameInterva, int FD) {
     bmHint = bmHin;
@@ -1963,7 +1997,7 @@ unsigned char * probeCommitControl(int bmHin, int camFormatInde, int camFrameInd
     print_device(libusb_get_device(uvcDeviceHandle_global->usb_devh) , 0, uvcDeviceHandle_global->usb_devh, desc);
     int r = libusb_set_interface_alt_setting(uvcDeviceHandle_global->usb_devh, camStreamingInterfaceNum, 0); // camStreamingAltSetting = 7;    // 7 = 3x1024 bytes packet size
     if (r != LIBUSB_SUCCESS) {
-        LOGD("libusb_set_interface_alt_setting(uvcDeviceHandle_global->usb_devh, 1, 1) failed with error %d\n", r);
+        LOGD("libusb_set_interface_alt_setting(uvcDeviceHandle_global->usb_devh, camStreamingInterface, 0) failed with error %d\n", r);
         return NULL;
     } else {
         LOGD("Die Alternativeinstellungen wurden erfolgreich gesetzt: %d ; Altsetting = 0\n", r);
@@ -3106,7 +3140,15 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniPrepairStr
 
     }
 
+    int status = (*env)->GetJavaVM(env, &javaVm);
+    if(status != 0) {
+        LOGE("failed to attach javaVm");
+    }
 
+    class = (*env)->GetObjectClass(env, obj);
+    jniHelperClass = (*env)->NewGlobalRef(env, class);
+    mainActivityObj = (*env)->NewGlobalRef(env, obj);
+    javaRetrievedStreamActivityFrameFromLibUsb = (*env)->GetMethodID(env, jniHelperClass, "retrievedStreamActivityFrameFromLibUsb", "([B)V");
 
 
     /*
@@ -3572,74 +3614,52 @@ void cb_jni_stream_Surface(struct libusb_transfer *the_transfer) {
 
 void cb_stream_UVC(uvc_frame_t *frame, void *ptr) {
 
-    uvc_frame_t *rgb;
-    unsigned char *jpg_buffer;
-    int jpeglength = total;
-    int* jpglength_ptr = &jpeglength;
 
 
-    switch (frame->frame_format) {
-        case UVC_FRAME_FORMAT_YUYV:
-            frame->step = frame->width * 2;
-            rgb = uvc_allocate_frame(imageWidth * imageHeight * 4);
-            if (!rgb) {
-                printf("unable to allocate rgb frame!");
-                return;
-            }
-            // Do the RGB conversion
-            uvc_yuyv2rgbx(frame, rgb);
+    if (frame->frame_format == UVC_FRAME_FORMAT_YUYV) {
+        uvc_frame_t *rgb;
+        frame->step = frame->width * 2;
+        rgb = uvc_allocate_frame(imageWidth * imageHeight * 4);
+        if (!rgb) {
+            printf("unable to allocate rgb frame!");
+            return;
+        }
+        // Do the RGB conversion
+        uvc_yuyv2rgbx(frame, rgb);
 
-            copyToSurface(rgb, &mCaptureWindow);
-            //uvc_free_frame(rgb);
-            break;
+        copyToSurface(rgb, &mCaptureWindow);
+        //uvc_free_frame(rgb);
+    } else if (frame->frame_format == UVC_FRAME_FORMAT_MJPEG) {
 
-        case UVC_FRAME_FORMAT_MJPEG:
+        JNIEnv * jenv;
+        int errorCode = (*javaVm)->AttachCurrentThread(javaVm, (void**) &jenv, NULL);
+        jbyteArray array = (*jenv)->NewByteArray(jenv, frame->data_bytes);
+        (*jenv)->SetByteArrayRegion(jenv, array, 0, frame->data_bytes, (jbyte *) frame->data);
+        // Main Activity
+        //LOGD("javaRetrievedStreamActivityFrameFromLibUsb");
+        (*jenv)->CallVoidMethod(jenv, mainActivityObj, javaRetrievedStreamActivityFrameFromLibUsb, array);
+        //LOGD("complete");
 
 
-            if (sendReceivedDataToJava != NULL) sendReceivedDataToJava(frame->data, frame->data_bytes) ;
+        //if (sendReceivedDataToJava != NULL) sendReceivedDataToJava(frame->data, frame->data_bytes) ;
+
+        /*
+
+        frame->step = 0;
+        rgb = uvc_allocate_frame(imageWidth * imageHeight * 4);
+        if (!rgb) {
+            printf("unable to allocate rgb frame!");
+            return;
+        }
+        // Do the RGB conversion
+        uvc_mjpeg2rgbx(frame, rgb);
+        copyToSurface(rgb, &mCaptureWindow);
+        //uvc_free_frame(rgb);
+        */
+    } else {
 
 
-/*
-            frame->step = 0;
-            rgb = uvc_allocate_frame(imageWidth * imageHeight * 4);
-            if (!rgb) {
-                printf("unable to allocate rgb frame!");
-                return;
-            }
-            // Do the RGB conversion
-            uvc_mjpeg2rgbx(frame, rgb);
-            copyToSurface(rgb, &mCaptureWindow);
-            //uvc_free_frame(rgb);
-            */
-            break;
-
-        case UVC_FRAME_FORMAT_UNKNOWN:
-            break;
-        case UVC_FRAME_FORMAT_UNCOMPRESSED:
-            break;
-        case UVC_FRAME_FORMAT_COMPRESSED:
-            break;
-        case UVC_FRAME_FORMAT_UYVY:
-            break;
-        case UVC_FRAME_FORMAT_RGB565:
-            break;
-        case UVC_FRAME_FORMAT_RGB:
-            break;
-        case UVC_FRAME_FORMAT_BGR:
-            break;
-        case UVC_FRAME_FORMAT_RGBX:
-            break;
-        case UVC_FRAME_FORMAT_GRAY8:
-            break;
-        case UVC_FRAME_FORMAT_BY8:
-            break;
-        case UVC_FRAME_FORMAT_COUNT:
-            break;
-        default:
-            frame->step = 0;
-            break;
     }
-
 
     if (!runningStream) uvc_stop_streaming(uvcDeviceHandle_global);
 }

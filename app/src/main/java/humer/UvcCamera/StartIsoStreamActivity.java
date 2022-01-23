@@ -1605,7 +1605,7 @@ public class StartIsoStreamActivity extends Activity {
                 }
                 //mService.native_values_set = true;
                 /////////////// Service Method
-                log("prepair for streaming ..");
+                log("sending a probeCommitControl ..");
 
                 Pointer ctlValues = JNA_I_LibUsb.INSTANCE.probeCommitControl(1, camFormatIndex, camFrameIndex,  camFrameInterval, camDeviceConnection.getFileDescriptor());
 
@@ -1617,6 +1617,7 @@ public class StartIsoStreamActivity extends Activity {
                     JNA_I_LibUsb.INSTANCE.setCallback(new JNA_I_LibUsb.eventCallback(){
                         public boolean callback(Pointer videoFrame, int frameSize) {
 
+                            log("frame received. Framelength = " + frameSize);
 
                             try {
                                 processReceivedMJpegVideoFrameKamera(videoFrame.getByteArray(0, frameSize));
@@ -1633,7 +1634,6 @@ public class StartIsoStreamActivity extends Activity {
                     if (!libusb_is_initialized) {
                         //mPreviewSurface = mUVCCameraView.getHolder().getSurface();
                         //JniSetSurfaceView(mPreviewSurface);
-                        //mService.jniMethodsAndConstantsSet = true;
                     }
                     //if (!libusb_is_initialized) JniSetSurfaceView(null);
                     mUVCCameraView = (SurfaceView) findViewById(R.id.surfaceView);
@@ -1642,7 +1642,7 @@ public class StartIsoStreamActivity extends Activity {
                     JniPrepairStreamOverSurfaceUVC();
                     JniStreamOverSurfaceUVC();
                     libusb_is_initialized = true;
-                    log("service started (MJPEG) ... waiting for intent");
+                    log("stream started (MJPEG) ... ");
 
                 } else {
                     ////////////////////////////////    YUV
@@ -1655,11 +1655,11 @@ public class StartIsoStreamActivity extends Activity {
                         //mService.jniMethodsAndConstantsSet = true;
                     }
                     log("prepair for streaming ..");
-                    JniPrepairStreamOverSurfaceUVC();
+                    //JniPrepairStreamOverSurfaceUVC();
                     log("Start the stream ..");
                     JniStreamOverSurfaceUVC();
                     libusb_is_initialized = true;
-                    log("service started (YUV) ... waiting for intent");
+                    log("stream started (YUV) ... ");
                 }
             } else {
                 try {

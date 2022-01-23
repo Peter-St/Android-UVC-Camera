@@ -76,6 +76,8 @@ public interface JNA_I_LibUsb extends Library {
 
     public void native_uvc_unref_device();
 
+    public int preInitDevice (int FD);
+
     public Pointer probeCommitControl(int bmHint, int camFormatInde,
                                       int camFrameInde, int camFrameInterva, int FD);
 
