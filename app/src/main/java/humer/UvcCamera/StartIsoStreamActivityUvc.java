@@ -50,7 +50,6 @@ import android.hardware.usb.UsbManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
@@ -88,8 +87,6 @@ import com.sample.timelapse.MJPEGGenerator ;
 import com.sun.jna.Pointer;
 
 import humer.UvcCamera.LibUsb.JNA_I_LibUsb;
-import humer.UvcCamera.LibUsb.LibUsbManagerService;
-import humer.UvcCamera.LibUsb.StartIsoStreamService;
 import humer.UvcCamera.UVC_Descriptor.IUVC_Descriptor;
 import humer.UvcCamera.UVC_Descriptor.UVC_Descriptor;
 import humer.UvcCamera.UVC_Descriptor.UVC_Initializer;
@@ -97,11 +94,10 @@ import humer.UvcCamera.UsbIso64.USBIso;
 import humer.UvcCamera.UsbIso64.usbdevice_fs_util;
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
-import noman.zoomtextview.ZoomTextView;
 
 import static java.lang.Integer.parseInt;
 
-public class StartIsoStreamActivity extends Activity {
+public class StartIsoStreamActivityUvc extends Activity {
 
     private static final String ACTION_USB_PERMISSION = "humer.uvc_camera.USB_PERMISSION";
     // USB codes:
@@ -200,7 +196,6 @@ public class StartIsoStreamActivity extends Activity {
     // Other Classes
     private MJPEGGenerator generator;
     private BitmapToVideoEncoder bitmapToVideoEncoder;
-    private volatile StartIsoStreamActivity.IsochronousStream runningStream;
     private volatile IsochronousStreamLibUsb runningStreamLibUsb;
     private SeekBar simpleSeekBar;
     private Button defaultButton;
@@ -259,20 +254,7 @@ public class StartIsoStreamActivity extends Activity {
     private Surface mPreviewSurface;
     private SurfaceView mUVCCameraView;
 
-    private static StartIsoStreamActivity instance;
-
-    private static boolean isLoaded;
-    static {
-        if (!isLoaded) {
-            System.loadLibrary("usb1.0");
-            System.loadLibrary("yuv");
-            System.loadLibrary("jpeg");
-            System.loadLibrary("jpeg-turbo");
-            System.loadLibrary("Uvc_Support");
-            System.loadLibrary("uvc");
-            isLoaded = true;
-        }
-    }
+    private static StartIsoStreamActivityUvc instance;
 
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -294,43 +276,6 @@ public class StartIsoStreamActivity extends Activity {
         }
     };
 
-    /*
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Bundle bundle = intent.getExtras();
-            if (bundle != null) {
-                log("BroadcastReceiver receiver");
-                int resultCode = bundle.getInt(StartIsoStreamService.RESULT);
-                if (resultCode == RESULT_OK) {
-
-                } else {
-                    displayMessage("Stream failed");
-                }
-            }
-        }
-    };
-
-    // LibUsbService
-    // private LibUsbManagerService mService;
-    //private boolean mBound = false;
-/*
-    private ServiceConnection mConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            LibUsbManagerService.MyBinder binder = (LibUsbManagerService.MyBinder) service;
-            mService = binder.getService();
-            mBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
-        }
-    };
-*/
     @Override
     protected void onStart() {
         super.onStart();
@@ -365,9 +310,9 @@ public class StartIsoStreamActivity extends Activity {
 
 
 
-    public static StartIsoStreamActivity getInstance() {
+    public static StartIsoStreamActivityUvc getInstance() {
         if (instance == null) {
-            instance = new StartIsoStreamActivity();
+            instance = new StartIsoStreamActivityUvc();
         }
         return instance;
     }
@@ -390,7 +335,7 @@ public class StartIsoStreamActivity extends Activity {
                     }
                 }
                 //Creating the instance of PopupMenu
-                PopupMenu popup = new PopupMenu(StartIsoStreamActivity.this, startStream);
+                PopupMenu popup = new PopupMenu(StartIsoStreamActivityUvc.this, startStream);
                 //Inflating the Popup using xml file
                 popup.getMenuInflater().inflate(R.menu.iso_stream_start_stream_menu, popup.getMenu());
                 //registering popup with OnMenuItemClickListener
@@ -496,8 +441,8 @@ public class StartIsoStreamActivity extends Activity {
         FrameLayout layout = (FrameLayout)findViewById(R.id.switch_view);
         layout.setVisibility(View.GONE);
         photoButton = (ImageButton) findViewById(R.id.Bildaufnahme);
-        final MediaPlayer mp2 = MediaPlayer.create(StartIsoStreamActivity.this, R.raw.sound2);
-        final MediaPlayer mp1 = MediaPlayer.create(StartIsoStreamActivity.this, R.raw.sound1);
+        final MediaPlayer mp2 = MediaPlayer.create(StartIsoStreamActivityUvc.this, R.raw.sound2);
+        final MediaPlayer mp1 = MediaPlayer.create(StartIsoStreamActivityUvc.this, R.raw.sound1);
         photoButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -961,7 +906,7 @@ public class StartIsoStreamActivity extends Activity {
                 CFAlertDialog.Builder builder;
                 switch (item.getItemId()) {
                     case R.id.resolution:
-                        builder = new CFAlertDialog.Builder(StartIsoStreamActivity.this);
+                        builder = new CFAlertDialog.Builder(StartIsoStreamActivityUvc.this);
                         builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
                         builder.setTitle("Select your Resolution");
                         builder.setMessage("Current Resolution: " + imageWidth + "x" + imageHeight);
@@ -981,10 +926,6 @@ public class StartIsoStreamActivity extends Activity {
                                 imageHeight = resolutions[index][1];
                                 camFrameIndex = index + 1;
                                 displayMessage("Resolution selected.\nPlease restart the camera stream!");
-                                if (runningStream != null) {
-                                    View v = null;
-                                    stopTheCameraStreamClickEvent(v);
-                                }
                                 dialogInterface.dismiss();
                             }
                         });
@@ -998,7 +939,7 @@ public class StartIsoStreamActivity extends Activity {
                         int [] intervals;
                         if (videoformat.equals("MJPEG")) intervals = iuvc_descriptor.findDifferentFrameIntervals(true, new int [] {imageWidth, imageHeight});
                         else intervals = iuvc_descriptor.findDifferentFrameIntervals(false, new int [] {imageWidth, imageHeight});
-                        builder = new CFAlertDialog.Builder(StartIsoStreamActivity.this);
+                        builder = new CFAlertDialog.Builder(StartIsoStreamActivityUvc.this);
                         builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
                         builder.setTitle("Select your FrameInterval");
                         builder.setMessage("Current Interval: " + (10000000 / camFrameInterval) + " Frames per Second");
@@ -1010,10 +951,6 @@ public class StartIsoStreamActivity extends Activity {
                                 log("intervals[index] = " + intervals[index]);
                                 camFrameInterval = intervals[index];
                                 displayMessage("FrameInterval selected.\nPlease restart the camera stream!");
-                                if (runningStream != null) {
-                                    View v = null;
-                                    stopTheCameraStreamClickEvent(v);
-                                }
                                 dialogInterface.dismiss();
                             }
                         });
@@ -1071,7 +1008,7 @@ public class StartIsoStreamActivity extends Activity {
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if (camDevice == null || runningStream == null) return false;
+                if (camDevice == null ) return false;
                 switch (item.getItemId()) {
                     case R.id.brightness:
                         runOnUiThread(new Runnable() {
@@ -1292,7 +1229,6 @@ public class StartIsoStreamActivity extends Activity {
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if (runningStream == null) return false;
                 switch (item.getItemId()) {
                     case R.id.scanning_Mode:
                         displayMessage("Not supported up to now...");
@@ -1457,7 +1393,7 @@ public class StartIsoStreamActivity extends Activity {
             usbManager.requestPermission(camDevice, mPermissionIntent);
             return;
         }
-        if (runningStream != null) stopTheCameraStreamClickEvent(null);
+        //if (runningStream != null) stopTheCameraStreamClickEvent(null);
         Intent intent = new Intent(this, WebRtc_MainActivity.class);
         Bundle bundle=new Bundle();
         bundle.putBoolean("edit", true);
@@ -1482,12 +1418,12 @@ public class StartIsoStreamActivity extends Activity {
         bundle.putBoolean("bulkMode", bulkMode);
         intent.putExtra("bun",bundle);
         startActivity(intent);
-        StartIsoStreamActivity.this.finish();
+        StartIsoStreamActivityUvc.this.finish();
     }
 
     public void returnToConfigScreen() {
         stopKamera = true;
-        runningStream = null;
+        //runningStream = null;
         //imageView = (ImageView) findViewById(R.id.imageView);
         onBackPressed();
     }
@@ -1662,46 +1598,7 @@ public class StartIsoStreamActivity extends Activity {
                     log("stream started (YUV) ... ");
                 }
             } else {
-                try {
-                    openCam(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                initStillImageParms();
-                if (camIsOpen) {
-                    if (runningStream != null) {
-                        return;
-                    }
-                    runningStream = new StartIsoStreamActivity.IsochronousStream(this);
-                    runningStream.start();
-                    byte[] a = camDeviceConnection.getRawDescriptors();
-                    ByteBuffer uvcData = ByteBuffer.wrap(a);
-                    UVC_Descriptor uvc_descriptor = new UVC_Descriptor(uvcData);
-                    if (uvc_descriptor.phraseUvcData() == 0) {
-                        iuvc_descriptor = new UVC_Initializer(uvc_descriptor);
-                        log("videoformat = " + videoformat);
-                        if (videoformat.equals("MJPEG") ) {
-                            log ("Arrays.deepToString(iuvc_descriptor.findDifferentResolutions(false)) = " + Arrays.deepToString(iuvc_descriptor.findDifferentResolutions(true)));
-                            log ("");
-                            log ("iuvc_descriptor.findDifferentFrameIntervals( = " + Arrays.toString(iuvc_descriptor.findDifferentFrameIntervals(true, new int[] {imageWidth, imageHeight})));
-                            log ("");
-                        } else {
-                            log ("Arrays.deepToString(iuvc_descriptor.findDifferentResolutions(false)) = " + Arrays.deepToString(iuvc_descriptor.findDifferentResolutions(false)));
-                            log ("");
-                            log ("iuvc_descriptor.findDifferentFrameIntervals( = " + Arrays.toString(iuvc_descriptor.findDifferentFrameIntervals(false, new int[] {imageWidth, imageHeight})));
-                            log ("");
-                        }
-                    } else displayMessage("Interface initialization for the Descriptor failed.");
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (msg != null) displayMessage(msg);
-                            else displayMessage("Failed to start the Camera Stream");
-                            msg = null;
-                        }
-                    });
-                }
+                displayMessage("LIBUSB NOT SET ;-(");
             }
         }
     }
@@ -1849,7 +1746,7 @@ public class StartIsoStreamActivity extends Activity {
             camDeviceConnection.close();
             camDeviceConnection = null;
         }
-        runningStream = null;
+        //runningStream = null;
     }
 
     private void initCamera() throws Exception {
@@ -1871,7 +1768,7 @@ public class StartIsoStreamActivity extends Activity {
         } catch (Exception e) {
             log("Warning: getVideoStreamErrorCode() failed: " + e);
         }   // ignore error, some cameras do not support the request
-        initStreamingParms();
+        //initStreamingParms();
         //initBrightnessParms();
     }
 
@@ -1912,7 +1809,7 @@ public class StartIsoStreamActivity extends Activity {
             }
             displayMessage("Stopped ");
             log("Stopped");
-            runningStream = null;
+            //runningStream = null;
         }
     }
 
@@ -2621,49 +2518,6 @@ public class StartIsoStreamActivity extends Activity {
         return -1;
     }
 
-    private void initStreamingParms() throws Exception {
-        stringBuilder = new StringBuilder();
-        final int timeout = 5000;
-        int usedStreamingParmsLen;
-        int len;
-        byte[] streamingParms = new byte[26];
-        // The e-com module produces errors with 48 bytes (UVC 1.5) instead of 26 bytes (UVC 1.1) streaming parameters! We could use the USB version info to determine the size of the streaming parameters.
-        streamingParms[0] = (byte) 0x01;                // (0x01: dwFrameInterval) //D0: dwFrameInterval //D1: wKeyFrameRate // D2: wPFrameRate // D3: wCompQuality // D4: wCompWindowSize
-        streamingParms[2] = (byte) camFormatIndex;                // bFormatIndex
-        streamingParms[3] = (byte) camFrameIndex;                 // bFrameIndex
-        packUsbInt(camFrameInterval, streamingParms, 4);         // dwFrameInterval
-        log("Initial streaming parms: " + dumpStreamingParms(streamingParms));
-        stringBuilder.append("Initial streaming parms: \n");
-        stringBuilder.append(dumpStreamingParms(streamingParms));
-        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, VS_PROBE_CONTROL << 8, camStreamingInterface.getId(), streamingParms, streamingParms.length, timeout);
-        if (len != streamingParms.length) {
-            throw new Exception("Camera initialization failed. Streaming parms probe set failed, len=" + len + ".");
-        }
-        // for (int i = 0; i < streamingParms.length; i++) streamingParms[i] = 99;          // temp test
-        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, VS_PROBE_CONTROL << 8, camStreamingInterface.getId(), streamingParms, streamingParms.length, timeout);
-        if (len != streamingParms.length) {
-            throw new Exception("Camera initialization failed. Streaming parms probe get failed.");
-        }
-        log("Probed streaming parms: " + dumpStreamingParms(streamingParms));
-        stringBuilder.append("\nProbed streaming parms:  \n");
-        stringBuilder.append(dumpStreamingParms(streamingParms));
-        usedStreamingParmsLen = len;
-        // log("Streaming parms length: " + usedStreamingParmsLen);
-        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, VS_COMMIT_CONTROL << 8, camStreamingInterface.getId(), streamingParms, usedStreamingParmsLen, timeout);
-        if (len != streamingParms.length) {
-            throw new Exception("Camera initialization failed. Streaming parms commit set failed.");
-        }
-        // for (int i = 0; i < streamingParms.length; i++) streamingParms[i] = 99;          // temp test
-        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, VS_COMMIT_CONTROL << 8, camStreamingInterface.getId(), streamingParms, usedStreamingParmsLen, timeout);
-        if (len != streamingParms.length) {
-            log("Final streaming parms receive failed");
-            //throw new Exception("Camera initialization failed. Streaming parms commit get failed.");
-        }
-        log("Final streaming parms: " + dumpStreamingParms(streamingParms));
-        stringBuilder.append("\nFinal streaming parms: \n");
-        stringBuilder.append(dumpStreamingParms(streamingParms));
-        controlltransfer = new String(dumpStreamingParms(streamingParms));
-    }
 
     private String dumpStreamingParms(byte[] p) {
         StringBuilder s = new StringBuilder(128);
@@ -2679,42 +2533,6 @@ public class StartIsoStreamActivity extends Activity {
         s.append(" maxVideoFrameSize=" + unpackUsbInt(p, 18));
         s.append(" maxPayloadTransferSize=" + unpackUsbInt(p, 22));
         return s.toString();
-    }
-
-    private void initStillImageParms() {
-        final int timeout = 5000;
-        int len;
-        byte[] parms = new byte[11];
-        if (moveToNative) return;
-        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_MIN, VS_STILL_PROBE_CONTROL << 8, camStreamingInterface.getId(), parms, parms.length, timeout);
-        if (len != parms.length) {
-            log("Camera initialization failed. Still image parms probe get failed.");
-        }
-        log("Probed still image parms (GET_MIN): " + dumpStillImageParms(parms));
-        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_MAX, VS_STILL_PROBE_CONTROL << 8, camStreamingInterface.getId(), parms, parms.length, timeout);
-        if (len != parms.length) {
-            log("Camera initialization failed. Still image parms probe get failed.");
-        }
-        log("Probed still image parms (GET_MAX): " + dumpStillImageParms(parms));
-        parms[0] = (byte) camFormatIndex;
-        parms[1] = (byte) camFrameIndex;
-        //parms[2] = 1;
-
-        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, VS_STILL_PROBE_CONTROL << 8, camStreamingInterface.getId(), parms, parms.length, timeout);
-        if (len != parms.length) {
-            log("Camera initialization failed. Still image parms probe get failed.");
-        }
-        log("Probed still image parms (GET_CUR): " + dumpStillImageParms(parms));
-        parms[0] = (byte) camFormatIndex;
-        parms[1] = (byte) camFrameIndex;
-        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_SET, SET_CUR, VS_STILL_COMMIT_CONTROL << 8, camStreamingInterface.getId(), parms, parms.length, timeout);
-        if (len != parms.length) {
-            log("Camera initialization failed. Still image parms commit set failed.");
-        }
-        len = camDeviceConnection.controlTransfer(RT_CLASS_INTERFACE_GET, GET_CUR, VS_STILL_COMMIT_CONTROL << 8, camStreamingInterface.getId(), parms, parms.length, timeout);
-        if (len != parms.length) {
-            log("Camera initialization failed. Still image parms commit get failed. len=" + len); }
-        log("Final still image parms: " + dumpStillImageParms(parms));
     }
 
     private String dumpStillImageParms(byte[] p) {
@@ -2815,7 +2633,7 @@ public class StartIsoStreamActivity extends Activity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(StartIsoStreamActivity.this, msg, Toast.LENGTH_LONG).show();
+                Toast.makeText(StartIsoStreamActivityUvc.this, msg, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -2877,130 +2695,6 @@ public class StartIsoStreamActivity extends Activity {
             (byte) 0xc8, (byte) 0xc9, (byte) 0xca, (byte) 0xd2, (byte) 0xd3, (byte) 0xd4, (byte) 0xd5, (byte) 0xd6, (byte) 0xd7, (byte) 0xd8,
             (byte) 0xd9, (byte) 0xda, (byte) 0xe2, (byte) 0xe3, (byte) 0xe4, (byte) 0xe5, (byte) 0xe6, (byte) 0xe7, (byte) 0xe8, (byte) 0xe9,
             (byte) 0xea, (byte) 0xf2, (byte) 0xf3, (byte) 0xf4, (byte) 0xf5, (byte) 0xf6, (byte) 0xf7, (byte) 0xf8, (byte) 0xf9, (byte) 0xfa};
-
-
-    public class IsochronousStream extends Thread {
-        private Activity activity;
-        private boolean reapTheLastFrames;
-        private int lastReapedFrames = 0;
-        public IsochronousStream(Context mContext) {
-            setPriority(Thread.MAX_PRIORITY);
-            activity = (Activity) mContext;
-        }
-        private boolean write = false;
-        private int framecnt = 0;
-        public void run() {
-            try {
-                USBIso usbIso64 = new USBIso(camDeviceConnection.getFileDescriptor(), packetsPerRequest, maxPacketSize, (byte) camStreamingEndpoint.getAddress());
-                usbIso64.preallocateRequests(activeUrbs);
-                ByteArrayOutputStream frameData = new ByteArrayOutputStream(0x20000);
-                int skipFrames = 0;
-                byte[] data = new byte[maxPacketSize];
-                enableStreaming(true);
-                usbIso64.submitUrbs();
-                while (true) {
-                    if (pauseCamera) {
-                        Thread.sleep(200);
-                    } else {
-                        USBIso.Request req = usbIso64.reapRequest(true);
-                        for (int packetNo = 0; packetNo < req.getNumberOfPackets(); packetNo++) {
-                            int packetStatus = req.getPacketStatus(packetNo);
-                            try {if (packetStatus != 0) {
-                                skipFrames = 1;}
-                            } catch (Exception e){
-                                log("Camera read error, packet status=" + packetStatus);
-                            }
-                            int packetLen = req.getPacketActualLength(packetNo);
-                            if (packetLen == 0) {
-                                continue;
-                            }
-                            if (packetLen > maxPacketSize) {
-                                throw new Exception("packetLen > maxPacketSize");
-                            }
-                            req.getPacketData(packetNo, data, packetLen);
-                            int headerLen = data[0] & 0xff;
-
-                            try { if (headerLen < 2 || headerLen > packetLen) {
-                                skipFrames = 1;
-                            }
-                            } catch (Exception e) {
-                                log("Invalid payload header length.");
-                            }
-                            int headerFlags = data[1] & 0xff;
-                            int dataLen = packetLen - headerLen;
-                            boolean error = (headerFlags & 0x40) != 0;
-                            if (error && skipFrames == 0) skipFrames = 1;
-                            if (dataLen > 0 && skipFrames == 0) frameData.write(data, headerLen, dataLen);
-                            if ((headerFlags & 2) != 0) {
-                                if (frameData.size() <= 20000 ) skipFrames = 1;
-                                // check Frame Size
-                                if (checkFrameSize(frameData.size())) {
-                                    skipFrames = 1;
-                                    log("Checking Frame --> Skip Retruned");
-                                } else if (frameData.size() > (imageWidth * imageHeight * 2)) {
-                                    log("Framesize > Max YUY2 FrameSize");
-                                    skipFrames = 1;
-                                }
-                                if (skipFrames > 0) {
-                                    log("Skipping frame, len= " + frameData.size());
-                                    frameData.reset();
-                                    skipFrames--;
-                                }
-                                else {
-                                    if (stillImageAufnahme) {
-                                        sendStillImageTrigger();
-                                        stillImageAufnahme = false;
-                                    }
-                                    if ((headerFlags & 0x20) != 0) {
-                                        log("Still Image Bit set.\nSetting saveStillImage");
-                                        saveStillImage = true;
-
-                                    }
-                                    frameData.write(data, headerLen, dataLen);
-                                    if (videoformat.equals("MJPEG") ) {
-                                        try {
-                                            //log("Frame, len= " + frameData.size());
-                                            processReceivedMJpegVideoFrameKamera(frameData.toByteArray());
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                    } else if (videoformat.equals("YUV")){
-                                        processReceivedVideoFrameYuv(frameData.toByteArray(), Videoformat.YUV);
-                                    } else if (videoformat.equals("YUY2")){
-                                        processReceivedVideoFrameYuv(frameData.toByteArray(), Videoformat.YUY2);
-                                    } else if (videoformat.equals("YUY2")){
-                                        processReceivedVideoFrameYuv(frameData.toByteArray(), Videoformat.YV12);
-                                    } else if (videoformat.equals("YUV_420_888")){
-                                        processReceivedVideoFrameYuv(frameData.toByteArray(), Videoformat.YUV_420_888);
-                                    } else if (videoformat.equals("YUV_422_888")){
-                                        processReceivedVideoFrameYuv(frameData.toByteArray(), Videoformat.YUV_422_888);
-                                    }  else if (videoformat.equals("UYVY")) {
-                                        processReceivedVideoFrameYuv(frameData.toByteArray(), Videoformat.UYVY);
-                                    }
-
-                                    frameData.reset();
-                                }
-                            }
-                        }
-                        if (reapTheLastFrames) {
-                            if (++ lastReapedFrames == activeUrbs) break;
-                        } else {
-                            req.initialize();
-                            req.submit();
-                        }
-                        if (stopKamera == true) {
-                            reapTheLastFrames = true;
-                            break;
-                        }
-                    }
-                }
-                log("OK");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            runningStream = null;
-        }
-    }
 
     public class IsochronousStreamLibUsb extends Thread {
         private Activity activity;

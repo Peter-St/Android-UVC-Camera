@@ -88,7 +88,7 @@ import noman.zoomtextview.ZoomTextView;
 import static java.lang.Integer.parseInt;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
-public class SetUpTheUsbDevice extends Activity {
+public class SetUpTheUsbDeviceUsbIso extends Activity {
     // USB codes:
     private static final String ACTION_USB_PERMISSION = "humer.uvc_camera.USB_PERMISSION";
     private static final String DEFAULT_USBFS = "/dev/bus/usb";
@@ -278,20 +278,6 @@ public class SetUpTheUsbDevice extends Activity {
             buttonHandler = null;
         }
     };
-
-    private static boolean isLoaded;
-    static {
-        if (!isLoaded) {
-            System.loadLibrary("usb1.0");
-            System.loadLibrary("yuv");
-            System.loadLibrary("jpeg");
-            System.loadLibrary("jpeg-turbo");
-            System.loadLibrary("Uvc_Support");
-            System.loadLibrary("uvc");
-
-            isLoaded = true;
-        }
-    }
 
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -748,7 +734,7 @@ public class SetUpTheUsbDevice extends Activity {
 
     public void setUpWithUvcSettings(View view) {
 
-        if (bulkMode) libUsb = false;
+        //if (bulkMode) libUsb = false;
 
         log("setUpWithUvcSettings pressed;\n");
         if (camDevice == null) {
@@ -1236,22 +1222,7 @@ public class SetUpTheUsbDevice extends Activity {
             View setup_auto_manual_view = li.inflate(R.layout.set_up_the_device_manual_automatic, null);
             builder.setHeaderView(setup_auto_manual_view);
             builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
-            Switch libUsbActivate = setup_auto_manual_view.findViewById(R.id.activateLibUsb);
-            if (!(camFormatIndex == 0 || camFrameIndex == 0 ||camFrameInterval == 0 ||packetsPerRequest == 0 ||maxPacketSize == 0 ||imageWidth == 0 || activeUrbs == 0 )) {
-                if (libUsb) libUsbActivate.setChecked(true);
-                else libUsbActivate.setChecked(false);
-            } else {
-                if (bulkMode) libUsb = false;
-                else libUsb = true;
-            }
-            log("Showing the SetUvcSettings Screen");
             alertDialog = builder.show();
-            libUsbActivate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if(isChecked) libUsb = true;
-                    else libUsb = false;
-                }
-            });
             CFPushButton automatic = setup_auto_manual_view.findViewById(R.id.automatic) ;
             automatic.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -1574,14 +1545,14 @@ public class SetUpTheUsbDevice extends Activity {
 
     class IsochronousRead extends Thread {
 
-        SetUpTheUsbDevice setUpTheUsbDevice;
+        SetUpTheUsbDeviceUsbIso setUpTheUsbDeviceUsbIso;
         Context mContext;
         Activity activity;
         StringBuilder stringBuilder;
 
-        public IsochronousRead(SetUpTheUsbDevice setUpTheUsbDevice, Context mContext) {
+        public IsochronousRead(SetUpTheUsbDeviceUsbIso setUpTheUsbDeviceUsbIso, Context mContext) {
             setPriority(Thread.MAX_PRIORITY);
-            this.setUpTheUsbDevice = setUpTheUsbDevice;
+            this.setUpTheUsbDeviceUsbIso = setUpTheUsbDeviceUsbIso;
             this.mContext = mContext;
             activity = (Activity)mContext;
         }
@@ -1738,13 +1709,13 @@ public class SetUpTheUsbDevice extends Activity {
     }
 
     class IsochronousRead1Frame extends Thread {
-        SetUpTheUsbDevice setUpTheUsbDevice;
+        SetUpTheUsbDeviceUsbIso setUpTheUsbDeviceUsbIso;
         Context mContext;
         Activity activity;
         StringBuilder stringBuilder;
-        public IsochronousRead1Frame(SetUpTheUsbDevice setUpTheUsbDevice, Context mContext) {
+        public IsochronousRead1Frame(SetUpTheUsbDeviceUsbIso setUpTheUsbDeviceUsbIso, Context mContext) {
             setPriority(Thread.MAX_PRIORITY);
-            this.setUpTheUsbDevice = setUpTheUsbDevice;
+            this.setUpTheUsbDeviceUsbIso = setUpTheUsbDeviceUsbIso;
             this.mContext = mContext;
             activity = (Activity)mContext;
         }
@@ -2571,7 +2542,7 @@ public class SetUpTheUsbDevice extends Activity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(SetUpTheUsbDevice.this, msg, Toast.LENGTH_LONG).show();
+                Toast.makeText(SetUpTheUsbDeviceUsbIso.this, msg, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -2743,7 +2714,7 @@ public class SetUpTheUsbDevice extends Activity {
             srequestCnt = data.getIntExtra("srequestCnt", 0);
             fiveFrames = data.getBooleanExtra("fiveFrames", false);
             submiterror = data.getBooleanExtra("submiterror", false);
-            Jna_AutoDetect_Handler jnaAutoDetectHandler = new Jna_AutoDetect_Handler(SetUpTheUsbDevice.this, SetUpTheUsbDevice.this);
+            Jna_AutoDetect_Handler jnaAutoDetectHandler = new Jna_AutoDetect_Handler(SetUpTheUsbDeviceUsbIso.this, SetUpTheUsbDeviceUsbIso.this);
             if(data.getBooleanExtra("stopAutoDetecton", false))   progressBar.setVisibility(View.INVISIBLE);
             switch (jnaAutoDetectHandler.compare()) {
                 case -1:
@@ -2769,7 +2740,7 @@ public class SetUpTheUsbDevice extends Activity {
             doneTransfers++;
             if(data.getBooleanExtra("stopAutoDetecton", false))   progressBar.setVisibility(View.INVISIBLE);
             boolean exit = data.getBooleanExtra("closeProgram", false);
-            Jna_AutoDetect_Handler jnaAutoDetectHandler = new Jna_AutoDetect_Handler(SetUpTheUsbDevice.this, SetUpTheUsbDevice.this);
+            Jna_AutoDetect_Handler jnaAutoDetectHandler = new Jna_AutoDetect_Handler(SetUpTheUsbDeviceUsbIso.this, SetUpTheUsbDeviceUsbIso.this);
             if(data.getBooleanExtra("stopAutoDetecton", false))   progressBar.setVisibility(View.INVISIBLE);
             displayMessage("Result received");
             log ("result received");

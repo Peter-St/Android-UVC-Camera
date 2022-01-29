@@ -46,6 +46,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.crowdfire.cfalertdialog.views.CFPushButton;
@@ -95,7 +96,9 @@ public class SaveToFile  {
 
 
     private LibUsb_AutoDetect libUsb_autoDetect;
-    private SetUpTheUsbDevice setUpTheUsbDevice;
+    private SetUpTheUsbDeviceUsbIso setUpTheUsbDeviceUsbIso;
+    private SetUpTheUsbDeviceUvc setUpTheUsbDeviceUvc;
+
     private Jna_AutoDetect jna_autoDetect;
     private Main uvc_camera = null;
     private Context mContext;
@@ -154,8 +157,16 @@ public class SaveToFile  {
         this.activity = (Activity)mContext;
     }
 
-    public SaveToFile (SetUpTheUsbDevice setUpTheUsbDevice, Context mContext, View v) {
-        this.setUpTheUsbDevice = setUpTheUsbDevice;
+    public SaveToFile (SetUpTheUsbDeviceUsbIso setUpTheUsbDeviceUsbIso, Context mContext, View v) {
+        this.setUpTheUsbDeviceUsbIso = setUpTheUsbDeviceUsbIso;
+        this.mContext = mContext;
+        this.activity = (Activity)mContext;
+        this.v = v;
+        this.init = true;
+    }
+
+    public SaveToFile (SetUpTheUsbDeviceUvc setUpTheUsbDeviceUvc, Context mContext, View v) {
+        this.setUpTheUsbDeviceUvc = setUpTheUsbDeviceUvc;
         this.mContext = mContext;
         this.activity = (Activity)mContext;
         this.v = v;
@@ -202,7 +213,8 @@ public class SaveToFile  {
                 testrun.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        setUpTheUsbDevice.showTestRunMenu(view);
+                        if (setUpTheUsbDeviceUsbIso != null) setUpTheUsbDeviceUsbIso.showTestRunMenu(view);
+                        if (setUpTheUsbDeviceUvc != null) setUpTheUsbDeviceUvc.showTestRunMenu(view);
                     }
                 });
                 Button button = activity.findViewById(R.id.raiseSize_setUp);
@@ -217,23 +229,30 @@ public class SaveToFile  {
                             final int TIME_TO_WAIT = 2500;
                             Button button = activity.findViewById(R.id.raiseSize_setUp);
                             if (button.isEnabled()) {
-                                setUpTheUsbDevice.buttonHandler.removeCallbacks(setUpTheUsbDevice.myRunnable);
-                                setUpTheUsbDevice.buttonHandler.postDelayed(setUpTheUsbDevice.myRunnable, TIME_TO_WAIT);
+                                if (setUpTheUsbDeviceUsbIso != null) {
+                                    setUpTheUsbDeviceUsbIso.buttonHandler.removeCallbacks(setUpTheUsbDeviceUsbIso.myRunnable);
+                                    setUpTheUsbDeviceUsbIso.buttonHandler.postDelayed(setUpTheUsbDeviceUsbIso.myRunnable, TIME_TO_WAIT);
+                                } else {
+                                    setUpTheUsbDeviceUvc.buttonHandler.removeCallbacks(setUpTheUsbDeviceUvc.myRunnable);
+                                    setUpTheUsbDeviceUvc.buttonHandler.postDelayed(setUpTheUsbDeviceUvc.myRunnable, TIME_TO_WAIT);
+                                }
+
                                 return ;
                             }
                             button.setEnabled(true);
                             button.setAlpha(0.8f);
                             Button button2 = activity.findViewById(R.id.lowerSize_setUp);
                             button2.setEnabled(true); button2.setAlpha(0.8f);
-
-                            setUpTheUsbDevice.buttonHandler = new Handler();
-                            setUpTheUsbDevice.buttonHandler.postDelayed(setUpTheUsbDevice.myRunnable, TIME_TO_WAIT);
-
+                            if (setUpTheUsbDeviceUsbIso != null) {
+                                setUpTheUsbDeviceUsbIso.buttonHandler = new Handler();
+                                setUpTheUsbDeviceUsbIso.buttonHandler.postDelayed(setUpTheUsbDeviceUsbIso.myRunnable, TIME_TO_WAIT);
+                            } else {
+                                setUpTheUsbDeviceUvc.buttonHandler = new Handler();
+                                setUpTheUsbDeviceUvc.buttonHandler.postDelayed(setUpTheUsbDeviceUvc.myRunnable, TIME_TO_WAIT);
+                            }
                         }
                     });
                 }
-
-
             }
         });
     }
@@ -268,8 +287,6 @@ public class SaveToFile  {
         spacketsPerRequest_text.setText(setColorText("PacketsPerRequest:\n", String.format("%s" , spacketsPerRequest)), TextView.BufferType.SPANNABLE);
         sactiveUrbs_text = (TextView) activity.findViewById(R.id.ActiveUrbs);
         sactiveUrbs_text.setText(setColorText("ACTIVE_URBS:\n", String.format("%s" , sactiveUrbs)), TextView.BufferType.SPANNABLE);
-        sLibUsb_text = (TextView) activity.findViewById(R.id.slibusb);
-        sLibUsb_text.setText(setColorText("LibUSb Support:\n", String.format("%s" , libUsb)), TextView.BufferType.SPANNABLE);
 
 
         valueInput = (TextInputLayout) activity.findViewById(R.id.Video);
@@ -328,45 +345,6 @@ public class SaveToFile  {
             }
         });
 
-
-        valueInput_libUsb = (TextInputLayout) activity.findViewById(R.id.LibUsb);
-        valueInput_libUsb.getEditText().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
-                builderSingle.setIcon(R.drawable.ic_menu_camera);
-                builderSingle.setTitle("Select LibUsb Support:");
-                //builderSingle.setMessage("Select the maximal size of the Packets, which where sent to the camera device!! Important for Mediathek Devices !!");
-
-                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_singlechoice);
-                arrayAdapter.add("Use LibUsb");
-                arrayAdapter.add("Use the Device Driver");
-
-                builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String input = arrayAdapter.getItem(which);
-                        if (input == "Use LibUsb") {
-                            valueInput_libUsb = (TextInputLayout) activity.findViewById(R.id.LibUsb);
-                            valueInput_libUsb.getEditText().setText("true");
-                        }
-                        else if (input == "Use the Device Driver") {
-                            valueInput_libUsb = (TextInputLayout) activity.findViewById(R.id.LibUsb);
-                            valueInput_libUsb.getEditText().setText("false");
-                        }
-                        System.out.println("libusb = " + libUsb);
-                    }
-                });
-                builderSingle.show();
-            }
-        });
-        ///////
         Button button_cancle = (Button) activity.findViewById(R.id.button_cancel);
         button_cancle.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
@@ -400,9 +378,6 @@ public class SaveToFile  {
                 if (valueInput.getEditText().getText().toString().isEmpty() == false) spacketsPerRequest = Integer.parseInt(valueInput.getEditText().getText().toString());
                 valueInput = (TextInputLayout) activity.findViewById(R.id.ActiveUr);
                 if (valueInput.getEditText().getText().toString().isEmpty() == false) sactiveUrbs = Integer.parseInt(valueInput.getEditText().getText().toString());
-                valueInput_libUsb = (TextInputLayout) activity.findViewById(R.id.LibUsb);
-                if (valueInput_libUsb.getEditText().getText().toString().isEmpty() == false) libUsb = Boolean.parseBoolean(valueInput_libUsb.getEditText().getText().toString());
-
 
                 DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                     @Override
@@ -604,28 +579,54 @@ public class SaveToFile  {
     ////// Buttons  END //////////
 
     public void fetchTheValues(){
-        if (setUpTheUsbDevice != null) {
-            sALT_SETTING = setUpTheUsbDevice.camStreamingAltSetting;
-            svideoformat = setUpTheUsbDevice.videoformat;
-            scamFormatIndex = setUpTheUsbDevice.camFormatIndex;
-            simageWidth = setUpTheUsbDevice.imageWidth;
-            simageHeight = setUpTheUsbDevice.imageHeight;
-            scamFrameIndex = setUpTheUsbDevice.camFrameIndex;
-            scamFrameInterval = setUpTheUsbDevice.camFrameInterval;
-            spacketsPerRequest = setUpTheUsbDevice.packetsPerRequest;
-            smaxPacketSize = setUpTheUsbDevice.maxPacketSize;
-            sactiveUrbs = setUpTheUsbDevice.activeUrbs;
-            sdeviceName = setUpTheUsbDevice.deviceName;
-            bUnitID = setUpTheUsbDevice.bUnitID;
-            bTerminalID = setUpTheUsbDevice.bTerminalID;
-            bNumControlTerminal = setUpTheUsbDevice.bNumControlTerminal;
-            bNumControlUnit = setUpTheUsbDevice.bNumControlUnit;
-            bcdUVC = setUpTheUsbDevice.bcdUVC;
-            bcdUSB = setUpTheUsbDevice.bcdUSB;
-            bStillCaptureMethod = setUpTheUsbDevice.bStillCaptureMethod;
-            libUsb = setUpTheUsbDevice.libUsb;
-            moveToNative = setUpTheUsbDevice.moveToNative;
-            bulkMode = setUpTheUsbDevice.bulkMode;
+        if (setUpTheUsbDeviceUsbIso != null) {
+
+        }
+        if (setUpTheUsbDeviceUsbIso != null) {
+            sALT_SETTING = setUpTheUsbDeviceUsbIso.camStreamingAltSetting;
+            svideoformat = setUpTheUsbDeviceUsbIso.videoformat;
+            scamFormatIndex = setUpTheUsbDeviceUsbIso.camFormatIndex;
+            simageWidth = setUpTheUsbDeviceUsbIso.imageWidth;
+            simageHeight = setUpTheUsbDeviceUsbIso.imageHeight;
+            scamFrameIndex = setUpTheUsbDeviceUsbIso.camFrameIndex;
+            scamFrameInterval = setUpTheUsbDeviceUsbIso.camFrameInterval;
+            spacketsPerRequest = setUpTheUsbDeviceUsbIso.packetsPerRequest;
+            smaxPacketSize = setUpTheUsbDeviceUsbIso.maxPacketSize;
+            sactiveUrbs = setUpTheUsbDeviceUsbIso.activeUrbs;
+            sdeviceName = setUpTheUsbDeviceUsbIso.deviceName;
+            bUnitID = setUpTheUsbDeviceUsbIso.bUnitID;
+            bTerminalID = setUpTheUsbDeviceUsbIso.bTerminalID;
+            bNumControlTerminal = setUpTheUsbDeviceUsbIso.bNumControlTerminal;
+            bNumControlUnit = setUpTheUsbDeviceUsbIso.bNumControlUnit;
+            bcdUVC = setUpTheUsbDeviceUsbIso.bcdUVC;
+            bcdUSB = setUpTheUsbDeviceUsbIso.bcdUSB;
+            bStillCaptureMethod = setUpTheUsbDeviceUsbIso.bStillCaptureMethod;
+            libUsb = setUpTheUsbDeviceUsbIso.libUsb;
+            moveToNative = setUpTheUsbDeviceUsbIso.moveToNative;
+            bulkMode = setUpTheUsbDeviceUsbIso.bulkMode;
+
+        } else if (setUpTheUsbDeviceUvc != null) {
+            sALT_SETTING = setUpTheUsbDeviceUvc.camStreamingAltSetting;
+            svideoformat = setUpTheUsbDeviceUvc.videoformat;
+            scamFormatIndex = setUpTheUsbDeviceUvc.camFormatIndex;
+            simageWidth = setUpTheUsbDeviceUvc.imageWidth;
+            simageHeight = setUpTheUsbDeviceUvc.imageHeight;
+            scamFrameIndex = setUpTheUsbDeviceUvc.camFrameIndex;
+            scamFrameInterval = setUpTheUsbDeviceUvc.camFrameInterval;
+            spacketsPerRequest = setUpTheUsbDeviceUvc.packetsPerRequest;
+            smaxPacketSize = setUpTheUsbDeviceUvc.maxPacketSize;
+            sactiveUrbs = setUpTheUsbDeviceUvc.activeUrbs;
+            sdeviceName = setUpTheUsbDeviceUvc.deviceName;
+            bUnitID = setUpTheUsbDeviceUvc.bUnitID;
+            bTerminalID = setUpTheUsbDeviceUvc.bTerminalID;
+            bNumControlTerminal = setUpTheUsbDeviceUvc.bNumControlTerminal;
+            bNumControlUnit = setUpTheUsbDeviceUvc.bNumControlUnit;
+            bcdUVC = setUpTheUsbDeviceUvc.bcdUVC;
+            bcdUSB = setUpTheUsbDeviceUvc.bcdUSB;
+            bStillCaptureMethod = setUpTheUsbDeviceUvc.bStillCaptureMethod;
+            libUsb = setUpTheUsbDeviceUvc.libUsb;
+            moveToNative = setUpTheUsbDeviceUvc.moveToNative;
+            bulkMode = setUpTheUsbDeviceUvc.bulkMode;
 
         } else if (libUsb_autoDetect != null) {
             sALT_SETTING = libUsb_autoDetect.camStreamingAltSetting;
@@ -648,7 +649,7 @@ public class SaveToFile  {
             bStillCaptureMethod = libUsb_autoDetect.bStillCaptureMethod;
             libUsb = libUsb_autoDetect.libUsb;
             moveToNative = libUsb_autoDetect.moveToNative;
-            bulkMode = setUpTheUsbDevice.bulkMode;
+            bulkMode = libUsb_autoDetect.bulkMode;
 
         } else if (jna_autoDetect != null) {
             sALT_SETTING = jna_autoDetect.camStreamingAltSetting;
@@ -671,7 +672,7 @@ public class SaveToFile  {
             bStillCaptureMethod = jna_autoDetect.bStillCaptureMethod;
             libUsb = jna_autoDetect.libUsb;
             moveToNative = jna_autoDetect.moveToNative;
-            bulkMode = setUpTheUsbDevice.bulkMode;
+            bulkMode = jna_autoDetect.bulkMode;
         }
     }
 
@@ -699,29 +700,51 @@ public class SaveToFile  {
             uvc_camera.moveToNative = moveToNative;
             uvc_camera.bulkMode = bulkMode;
 
-        } else if (setUpTheUsbDevice != null) {
-            setUpTheUsbDevice.camStreamingAltSetting = sALT_SETTING;
-            setUpTheUsbDevice.videoformat = svideoformat;
-            setUpTheUsbDevice.camFormatIndex = scamFormatIndex;
-            setUpTheUsbDevice.imageWidth = simageWidth;
-            setUpTheUsbDevice.imageHeight = simageHeight;
-            setUpTheUsbDevice.camFrameIndex = scamFrameIndex;
-            setUpTheUsbDevice.camFrameInterval = scamFrameInterval;
-            setUpTheUsbDevice.packetsPerRequest = spacketsPerRequest;
-            setUpTheUsbDevice.maxPacketSize = smaxPacketSize;
-            setUpTheUsbDevice.activeUrbs = sactiveUrbs;
-            setUpTheUsbDevice.deviceName = sdeviceName;
-            setUpTheUsbDevice.bUnitID = bUnitID;
-            setUpTheUsbDevice.bTerminalID = bTerminalID;
-            setUpTheUsbDevice.bNumControlTerminal = bNumControlTerminal;
-            setUpTheUsbDevice.bNumControlUnit = bNumControlUnit;
-            setUpTheUsbDevice.bcdUVC = bcdUVC;
-            setUpTheUsbDevice.bcdUSB = bcdUSB;
-            setUpTheUsbDevice.bStillCaptureMethod = bStillCaptureMethod;
-            setUpTheUsbDevice.libUsb = libUsb;
-            setUpTheUsbDevice.moveToNative = moveToNative;
-            setUpTheUsbDevice.bulkMode = bulkMode;
+        } else if (setUpTheUsbDeviceUsbIso != null) {
+            setUpTheUsbDeviceUsbIso.camStreamingAltSetting = sALT_SETTING;
+            setUpTheUsbDeviceUsbIso.videoformat = svideoformat;
+            setUpTheUsbDeviceUsbIso.camFormatIndex = scamFormatIndex;
+            setUpTheUsbDeviceUsbIso.imageWidth = simageWidth;
+            setUpTheUsbDeviceUsbIso.imageHeight = simageHeight;
+            setUpTheUsbDeviceUsbIso.camFrameIndex = scamFrameIndex;
+            setUpTheUsbDeviceUsbIso.camFrameInterval = scamFrameInterval;
+            setUpTheUsbDeviceUsbIso.packetsPerRequest = spacketsPerRequest;
+            setUpTheUsbDeviceUsbIso.maxPacketSize = smaxPacketSize;
+            setUpTheUsbDeviceUsbIso.activeUrbs = sactiveUrbs;
+            setUpTheUsbDeviceUsbIso.deviceName = sdeviceName;
+            setUpTheUsbDeviceUsbIso.bUnitID = bUnitID;
+            setUpTheUsbDeviceUsbIso.bTerminalID = bTerminalID;
+            setUpTheUsbDeviceUsbIso.bNumControlTerminal = bNumControlTerminal;
+            setUpTheUsbDeviceUsbIso.bNumControlUnit = bNumControlUnit;
+            setUpTheUsbDeviceUsbIso.bcdUVC = bcdUVC;
+            setUpTheUsbDeviceUsbIso.bcdUSB = bcdUSB;
+            setUpTheUsbDeviceUsbIso.bStillCaptureMethod = bStillCaptureMethod;
+            setUpTheUsbDeviceUsbIso.libUsb = libUsb;
+            setUpTheUsbDeviceUsbIso.moveToNative = moveToNative;
+            setUpTheUsbDeviceUsbIso.bulkMode = bulkMode;
 
+        } else if (setUpTheUsbDeviceUvc != null) {
+            setUpTheUsbDeviceUvc.camStreamingAltSetting = sALT_SETTING;
+            setUpTheUsbDeviceUvc.videoformat = svideoformat;
+            setUpTheUsbDeviceUvc.camFormatIndex = scamFormatIndex;
+            setUpTheUsbDeviceUvc.imageWidth = simageWidth;
+            setUpTheUsbDeviceUvc.imageHeight = simageHeight;
+            setUpTheUsbDeviceUvc.camFrameIndex = scamFrameIndex;
+            setUpTheUsbDeviceUvc.camFrameInterval = scamFrameInterval;
+            setUpTheUsbDeviceUvc.packetsPerRequest = spacketsPerRequest;
+            setUpTheUsbDeviceUvc.maxPacketSize = smaxPacketSize;
+            setUpTheUsbDeviceUvc.activeUrbs = sactiveUrbs;
+            setUpTheUsbDeviceUvc.deviceName = sdeviceName;
+            setUpTheUsbDeviceUvc.bUnitID = bUnitID;
+            setUpTheUsbDeviceUvc.bTerminalID = bTerminalID;
+            setUpTheUsbDeviceUvc.bNumControlTerminal = bNumControlTerminal;
+            setUpTheUsbDeviceUvc.bNumControlUnit = bNumControlUnit;
+            setUpTheUsbDeviceUvc.bcdUVC = bcdUVC;
+            setUpTheUsbDeviceUvc.bcdUSB = bcdUSB;
+            setUpTheUsbDeviceUvc.bStillCaptureMethod = bStillCaptureMethod;
+            setUpTheUsbDeviceUvc.libUsb = libUsb;
+            setUpTheUsbDeviceUvc.moveToNative = moveToNative;
+            setUpTheUsbDeviceUvc.bulkMode = bulkMode;
 
         } else if (libUsb_autoDetect != null) {
             libUsb_autoDetect.camStreamingAltSetting = sALT_SETTING;
@@ -1025,6 +1048,19 @@ public class SaveToFile  {
         catch(Exception exc){
             exc.printStackTrace();
         }
+        if (uvc_camera != null ) {
+            ToggleButton libUsbActivate = activity.findViewById(R.id.libusbToggleButton);
+            if (!libUsbActivate.isEnabled()) {
+                if (uvc_camera.LIBUSB != libUsb) {
+                    StringBuilder sb = new StringBuilder();
+                    if (!uvc_camera.LIBUSB) sb.append(String.format("Restoring not possible! (Libusb Driver is needed, but not enabled)\n\nRestart the app to solve the issue"));
+                    else sb.append(String.format("Restoring not possible! (Libusb Driver is enabled, but is not needed)\n\nRestart the app to solve the issue"));
+                    libUsb = uvc_camera.LIBUSB;
+                    writeMsgMain(sb.toString());
+                    return;
+                }
+            }
+        }
         log("sALT_SETTING = " + sALT_SETTING + "  /  svideoformat = " + svideoformat + "  /  scamFormatIndex = " + scamFormatIndex + "  /  scamFrameIndex = " + scamFrameIndex);
         writeTheValues();
         StringBuilder sb = new StringBuilder();
@@ -1053,7 +1089,8 @@ public class SaveToFile  {
 
     private void displayMessage(final String msg) {
         if (uvc_camera != null)  uvc_camera.displayMessage(msg);
-        else setUpTheUsbDevice.displayMessage(msg);
+        else if (setUpTheUsbDeviceUsbIso != null) setUpTheUsbDeviceUsbIso.displayMessage(msg);
+        else setUpTheUsbDeviceUvc.displayMessage(msg);
     }
 
     private void log(String msg) {
@@ -1093,11 +1130,20 @@ public class SaveToFile  {
         }
         if (moveToNative) {
             maxPacketSizeStr = new String [uvc_descriptor.maxPacketSizeArray.size()];
-            setUpTheUsbDevice.convertedMaxPacketSize = new int[uvc_descriptor.maxPacketSizeArray.size()];
-            for (int a =0; a<uvc_descriptor.maxPacketSizeArray.size(); a++) {
-                setUpTheUsbDevice.convertedMaxPacketSize[a] = uvc_descriptor.maxPacketSizeArray.get(a);
-                maxPacketSizeStr[a] = Integer.toString(uvc_descriptor.maxPacketSizeArray.get(a));
+            if (setUpTheUsbDeviceUsbIso != null) {
+                setUpTheUsbDeviceUsbIso.convertedMaxPacketSize = new int[uvc_descriptor.maxPacketSizeArray.size()];
+                for (int a =0; a<uvc_descriptor.maxPacketSizeArray.size(); a++) {
+                    setUpTheUsbDeviceUsbIso.convertedMaxPacketSize[a] = uvc_descriptor.maxPacketSizeArray.get(a);
+                    maxPacketSizeStr[a] = Integer.toString(uvc_descriptor.maxPacketSizeArray.get(a));
+                }
+            } else {
+                setUpTheUsbDeviceUvc.convertedMaxPacketSize = new int[uvc_descriptor.maxPacketSizeArray.size()];
+                for (int a =0; a<uvc_descriptor.maxPacketSizeArray.size(); a++) {
+                    setUpTheUsbDeviceUvc.convertedMaxPacketSize[a] = uvc_descriptor.maxPacketSizeArray.get(a);
+                    maxPacketSizeStr[a] = Integer.toString(uvc_descriptor.maxPacketSizeArray.get(a));
+                }
             }
+
         } else {
             maxPacketSizeStr = new String [maxPacketSizeArray.length];
             for (int a =0; a<maxPacketSizeArray.length; a++) {
@@ -1112,7 +1158,9 @@ public class SaveToFile  {
 
     private void selectMaxPacketSize(boolean automatic){
         if (!automatic) {
-            int[] maxPacketsSizeArray = setUpTheUsbDevice.convertedMaxPacketSize.clone();
+            int[] maxPacketsSizeArray;
+            if (setUpTheUsbDeviceUsbIso != null) maxPacketsSizeArray = setUpTheUsbDeviceUsbIso.convertedMaxPacketSize.clone();
+            else maxPacketsSizeArray = setUpTheUsbDeviceUvc.convertedMaxPacketSize.clone();
             CFAlertDialog.Builder builder = new CFAlertDialog.Builder(mContext);
             builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
             builder.setTitle("Select the maximal Packet Size:");
@@ -1147,7 +1195,8 @@ public class SaveToFile  {
             // Select highest Max Packet Size
             if (!highestMaxPacketSizeDone) {
                 int[] maxPacketsSizeArray;
-                if (setUpTheUsbDevice != null) maxPacketsSizeArray = setUpTheUsbDevice.convertedMaxPacketSize.clone();
+                if (setUpTheUsbDeviceUsbIso != null) maxPacketsSizeArray = setUpTheUsbDeviceUsbIso.convertedMaxPacketSize.clone();
+                if (setUpTheUsbDeviceUvc != null) maxPacketsSizeArray = setUpTheUsbDeviceUvc.convertedMaxPacketSize.clone();
                 else if (libUsb_autoDetect != null) maxPacketsSizeArray = libUsb_autoDetect.convertedMaxPacketSize.clone();
                 else if (jna_autoDetect != null) maxPacketsSizeArray = jna_autoDetect.convertedMaxPacketSize.clone();
                 else return;
@@ -1631,6 +1680,11 @@ public class SaveToFile  {
             @Override
             public void run() {
                 displayMessage(msg);
+                //log("setting libusb Button");
+                ToggleButton libUsbActivate = activity.findViewById(R.id.libusbToggleButton);
+                if (libUsb == true) libUsbActivate.setChecked(true);
+                else libUsbActivate.setChecked(false);
+                libUsbActivate.setEnabled(false);
             }
         });
 
@@ -1815,12 +1869,22 @@ public class SaveToFile  {
     }
 
     private void writeTheOrders() {
-        setUpTheUsbDevice.completed = completed;
-        setUpTheUsbDevice.highQuality = highQuality;
-        setUpTheUsbDevice.raiseMaxPacketSize = raiseMaxPacketSize;
-        setUpTheUsbDevice.lowerMaxPacketSize = lowerMaxPacketSize;
-        setUpTheUsbDevice.raisePacketsPerRequest = raisePacketsPerRequest;
-        setUpTheUsbDevice.raiseActiveUrbs = raiseActiveUrbs;
+        if (setUpTheUsbDeviceUsbIso != null) {
+            setUpTheUsbDeviceUsbIso.completed = completed;
+            setUpTheUsbDeviceUsbIso.highQuality = highQuality;
+            setUpTheUsbDeviceUsbIso.raiseMaxPacketSize = raiseMaxPacketSize;
+            setUpTheUsbDeviceUsbIso.lowerMaxPacketSize = lowerMaxPacketSize;
+            setUpTheUsbDeviceUsbIso.raisePacketsPerRequest = raisePacketsPerRequest;
+            setUpTheUsbDeviceUsbIso.raiseActiveUrbs = raiseActiveUrbs;
+        } else {
+            setUpTheUsbDeviceUvc.completed = completed;
+            setUpTheUsbDeviceUvc.highQuality = highQuality;
+            setUpTheUsbDeviceUvc.raiseMaxPacketSize = raiseMaxPacketSize;
+            setUpTheUsbDeviceUvc.lowerMaxPacketSize = lowerMaxPacketSize;
+            setUpTheUsbDeviceUvc.raisePacketsPerRequest = raisePacketsPerRequest;
+            setUpTheUsbDeviceUvc.raiseActiveUrbs = raiseActiveUrbs;
+        }
+
 
     }
 

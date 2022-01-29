@@ -4,14 +4,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
-import humer.UvcCamera.SetUpTheUsbDevice;
+import humer.UvcCamera.SetUpTheUsbDeviceUsbIso;
 
 
 public class Jna_AutoDetect_Handler {
 
     private Context mContext;
     private Activity activity;
-    private SetUpTheUsbDevice setUpTheUsbDevice;
+    private SetUpTheUsbDeviceUsbIso setUpTheUsbDeviceUsbIso;
 
     public static int sALT_SETTING;
     public static int smaxPacketSize ;
@@ -59,8 +59,8 @@ public class Jna_AutoDetect_Handler {
     private static boolean max_Framelength_cant_reached;
 
 
-    public Jna_AutoDetect_Handler(SetUpTheUsbDevice setUpTheUsbDevice, Context mContext) {
-        this.setUpTheUsbDevice = setUpTheUsbDevice;
+    public Jna_AutoDetect_Handler(SetUpTheUsbDeviceUsbIso setUpTheUsbDeviceUsbIso, Context mContext) {
+        this.setUpTheUsbDeviceUsbIso = setUpTheUsbDeviceUsbIso;
         this.mContext = mContext;
         fetchTheValues();
 
@@ -73,14 +73,14 @@ public class Jna_AutoDetect_Handler {
     public int compare() {
         fetchTheValues();
         if (submiterror) {
-            setUpTheUsbDevice.transferSucessful = false;
+            setUpTheUsbDeviceUsbIso.transferSucessful = false;
             int i = solveSubmitError();
             writeTheValues();
             return i;
         }
         else {
-            setUpTheUsbDevice.transferSucessful = true;
-            setUpTheUsbDevice.sucessfulDoneTransfers ++;
+            setUpTheUsbDeviceUsbIso.transferSucessful = true;
+            setUpTheUsbDeviceUsbIso.sucessfulDoneTransfers ++;
         }
 
 
@@ -105,72 +105,72 @@ public class Jna_AutoDetect_Handler {
                 }
             }
         }
-        if (!setUpTheUsbDevice.maxPacketsPerRequestReached) {
+        if (!setUpTheUsbDeviceUsbIso.maxPacketsPerRequestReached) {
             switch (spacketsPerRequest) {
                 case 1:
-                    setUpTheUsbDevice.progress = "3% done";
+                    setUpTheUsbDeviceUsbIso.progress = "3% done";
                     spacketsPerRequest = 2;
                     writeTheValues();
                     return 1;
                 case 2:
-                    setUpTheUsbDevice.progress = "5% done";
+                    setUpTheUsbDeviceUsbIso.progress = "5% done";
 
                     spacketsPerRequest = 4;
                     writeTheValues();
                     return 1;
                 case 4:
-                    setUpTheUsbDevice.progress = "8% done";
+                    setUpTheUsbDeviceUsbIso.progress = "8% done";
                     spacketsPerRequest = 8;
                     writeTheValues();
                     return 1;
                 case 8:
-                    setUpTheUsbDevice.progress = "10% done";
+                    setUpTheUsbDeviceUsbIso.progress = "10% done";
                     spacketsPerRequest = 16;
                     writeTheValues();
                     return 1;
                 case 16:
-                    setUpTheUsbDevice.progress = "12% done";
+                    setUpTheUsbDeviceUsbIso.progress = "12% done";
                     spacketsPerRequest = 32;
                     writeTheValues();
                     return 1;
                 case 32:
                     maxPacketsPerRequestReached = true;
-                    setUpTheUsbDevice.maxPacketsPerRequestReached = true;
+                    setUpTheUsbDeviceUsbIso.maxPacketsPerRequestReached = true;
                     break;
             }
         }
 
-        if (!setUpTheUsbDevice.maxActiveUrbsReached) {
+        if (!setUpTheUsbDeviceUsbIso.maxActiveUrbsReached) {
             switch (sactiveUrbs) {
                 case 1:
-                    setUpTheUsbDevice.progress = "20% done";
+                    setUpTheUsbDeviceUsbIso.progress = "20% done";
                     sactiveUrbs = 2;
                     writeTheValues();
                     return 1;
                 case 2:
-                    setUpTheUsbDevice.progress = "30% done";
+                    setUpTheUsbDeviceUsbIso.progress = "30% done";
                     sactiveUrbs = 4;
                     writeTheValues();
                     return 1;
                 case 4:
-                    setUpTheUsbDevice.progress = "40% done";
+                    setUpTheUsbDeviceUsbIso.progress = "40% done";
                     sactiveUrbs = 8;
                     writeTheValues();
                     return 1;
                 case 8:
-                    setUpTheUsbDevice.progress = "50% done";
+                    setUpTheUsbDeviceUsbIso.progress = "50% done";
                     sactiveUrbs = 16;
                     writeTheValues();
                     return 1;
                 case 16:
-                    setUpTheUsbDevice.progress = "60% done";
+                    setUpTheUsbDeviceUsbIso.progress = "60% done";
                     sactiveUrbs = 32;
                     writeTheValues();
                     return 1;
                 case 32:
-                    setUpTheUsbDevice.progress = "70% done";
+                    setUpTheUsbDeviceUsbIso.progress = "70% done";
                     maxActiveUrbsReached = true;
-                    setUpTheUsbDevice.maxActiveUrbsReached = true;
+                    setUpTheUsbDeviceUsbIso.maxActiveUrbsReached = true;
                     break;
             }
         }
@@ -179,8 +179,8 @@ public class Jna_AutoDetect_Handler {
     }
 
     private int solveSubmitError() {
-        if (setUpTheUsbDevice.sucessfulDoneTransfers > 1) {
-            if (setUpTheUsbDevice.last_transferSucessful) {
+        if (setUpTheUsbDeviceUsbIso.sucessfulDoneTransfers > 1) {
+            if (setUpTheUsbDeviceUsbIso.last_transferSucessful) {
                restoreLastValues();
                return -1;
             }
@@ -189,16 +189,16 @@ public class Jna_AutoDetect_Handler {
     }
 
     private void restoreLastValues() {
-        setUpTheUsbDevice.last_camStreamingAltSetting = sALT_SETTING;
-        setUpTheUsbDevice.last_camFormatIndex = scamFormatIndex;
-        setUpTheUsbDevice.last_camFrameIndex = scamFrameIndex;
-        setUpTheUsbDevice.last_camFrameInterval = scamFrameInterval;
-        setUpTheUsbDevice.last_packetsPerRequest = spacketsPerRequest;
-        setUpTheUsbDevice.last_maxPacketSize = smaxPacketSize;
-        setUpTheUsbDevice.last_imageWidth = simageWidth;
-        setUpTheUsbDevice.last_imageHeight = simageHeight;
-        setUpTheUsbDevice.last_activeUrbs = sactiveUrbs;
-        setUpTheUsbDevice.last_videoformat = svideoformat;
+        setUpTheUsbDeviceUsbIso.last_camStreamingAltSetting = sALT_SETTING;
+        setUpTheUsbDeviceUsbIso.last_camFormatIndex = scamFormatIndex;
+        setUpTheUsbDeviceUsbIso.last_camFrameIndex = scamFrameIndex;
+        setUpTheUsbDeviceUsbIso.last_camFrameInterval = scamFrameInterval;
+        setUpTheUsbDeviceUsbIso.last_packetsPerRequest = spacketsPerRequest;
+        setUpTheUsbDeviceUsbIso.last_maxPacketSize = smaxPacketSize;
+        setUpTheUsbDeviceUsbIso.last_imageWidth = simageWidth;
+        setUpTheUsbDeviceUsbIso.last_imageHeight = simageHeight;
+        setUpTheUsbDeviceUsbIso.last_activeUrbs = sactiveUrbs;
+        setUpTheUsbDeviceUsbIso.last_videoformat = svideoformat;
 
     }
 
@@ -215,79 +215,79 @@ public class Jna_AutoDetect_Handler {
     }
 
     public void fetchTheValues() {
-        if (setUpTheUsbDevice != null) {
-            sALT_SETTING = setUpTheUsbDevice.camStreamingAltSetting;
-            svideoformat = setUpTheUsbDevice.videoformat;
-            scamFormatIndex = setUpTheUsbDevice.camFormatIndex;
-            simageWidth = setUpTheUsbDevice.imageWidth;
-            simageHeight = setUpTheUsbDevice.imageHeight;
-            scamFrameIndex = setUpTheUsbDevice.camFrameIndex;
-            scamFrameInterval = setUpTheUsbDevice.camFrameInterval;
-            spacketsPerRequest = setUpTheUsbDevice.packetsPerRequest;
-            smaxPacketSize = setUpTheUsbDevice.maxPacketSize;
-            sactiveUrbs = setUpTheUsbDevice.activeUrbs;
-            sdeviceName = setUpTheUsbDevice.deviceName;
-            bUnitID = setUpTheUsbDevice.bUnitID;
-            bTerminalID = setUpTheUsbDevice.bTerminalID;
-            bNumControlTerminal = setUpTheUsbDevice.bNumControlTerminal;
-            bNumControlUnit = setUpTheUsbDevice.bNumControlUnit;
-            bcdUVC = setUpTheUsbDevice.bcdUVC;
-            bStillCaptureMethod = setUpTheUsbDevice.bStillCaptureMethod;
-            libUsb = setUpTheUsbDevice.libUsb;
-            progress = setUpTheUsbDevice.progress;
-            submiterror = setUpTheUsbDevice.submiterror;
-            sframeLenArray = setUpTheUsbDevice.sframeLenArray;
+        if (setUpTheUsbDeviceUsbIso != null) {
+            sALT_SETTING = setUpTheUsbDeviceUsbIso.camStreamingAltSetting;
+            svideoformat = setUpTheUsbDeviceUsbIso.videoformat;
+            scamFormatIndex = setUpTheUsbDeviceUsbIso.camFormatIndex;
+            simageWidth = setUpTheUsbDeviceUsbIso.imageWidth;
+            simageHeight = setUpTheUsbDeviceUsbIso.imageHeight;
+            scamFrameIndex = setUpTheUsbDeviceUsbIso.camFrameIndex;
+            scamFrameInterval = setUpTheUsbDeviceUsbIso.camFrameInterval;
+            spacketsPerRequest = setUpTheUsbDeviceUsbIso.packetsPerRequest;
+            smaxPacketSize = setUpTheUsbDeviceUsbIso.maxPacketSize;
+            sactiveUrbs = setUpTheUsbDeviceUsbIso.activeUrbs;
+            sdeviceName = setUpTheUsbDeviceUsbIso.deviceName;
+            bUnitID = setUpTheUsbDeviceUsbIso.bUnitID;
+            bTerminalID = setUpTheUsbDeviceUsbIso.bTerminalID;
+            bNumControlTerminal = setUpTheUsbDeviceUsbIso.bNumControlTerminal;
+            bNumControlUnit = setUpTheUsbDeviceUsbIso.bNumControlUnit;
+            bcdUVC = setUpTheUsbDeviceUsbIso.bcdUVC;
+            bStillCaptureMethod = setUpTheUsbDeviceUsbIso.bStillCaptureMethod;
+            libUsb = setUpTheUsbDeviceUsbIso.libUsb;
+            progress = setUpTheUsbDeviceUsbIso.progress;
+            submiterror = setUpTheUsbDeviceUsbIso.submiterror;
+            sframeLenArray = setUpTheUsbDeviceUsbIso.sframeLenArray;
 
 
-            spacketCnt = setUpTheUsbDevice.spacketCnt;
-            spacket0Cnt = setUpTheUsbDevice.spacket0Cnt;
-            spacket12Cnt = setUpTheUsbDevice.spacket12Cnt;
-            spacketDataCnt = setUpTheUsbDevice.spacketDataCnt;
-            spacketHdr8Ccnt = setUpTheUsbDevice.spacketHdr8Ccnt;
-            spacketErrorCnt = setUpTheUsbDevice.spacketErrorCnt;
-            sframeCnt = setUpTheUsbDevice.sframeCnt;
-            sframeLen = setUpTheUsbDevice.sframeLen;
-            srequestCnt = setUpTheUsbDevice.srequestCnt;
-            fiveFrames = setUpTheUsbDevice.fiveFrames;
-            doneTransfers = setUpTheUsbDevice.doneTransfers;
-            highQuality = setUpTheUsbDevice.highQuality;
-            max_Framelength_cant_reached = setUpTheUsbDevice.max_Framelength_cant_reached;
-            maxPacketsPerRequestReached = setUpTheUsbDevice.maxPacketsPerRequestReached;
-            maxActiveUrbsReached = setUpTheUsbDevice.maxActiveUrbsReached;
+            spacketCnt = setUpTheUsbDeviceUsbIso.spacketCnt;
+            spacket0Cnt = setUpTheUsbDeviceUsbIso.spacket0Cnt;
+            spacket12Cnt = setUpTheUsbDeviceUsbIso.spacket12Cnt;
+            spacketDataCnt = setUpTheUsbDeviceUsbIso.spacketDataCnt;
+            spacketHdr8Ccnt = setUpTheUsbDeviceUsbIso.spacketHdr8Ccnt;
+            spacketErrorCnt = setUpTheUsbDeviceUsbIso.spacketErrorCnt;
+            sframeCnt = setUpTheUsbDeviceUsbIso.sframeCnt;
+            sframeLen = setUpTheUsbDeviceUsbIso.sframeLen;
+            srequestCnt = setUpTheUsbDeviceUsbIso.srequestCnt;
+            fiveFrames = setUpTheUsbDeviceUsbIso.fiveFrames;
+            doneTransfers = setUpTheUsbDeviceUsbIso.doneTransfers;
+            highQuality = setUpTheUsbDeviceUsbIso.highQuality;
+            max_Framelength_cant_reached = setUpTheUsbDeviceUsbIso.max_Framelength_cant_reached;
+            maxPacketsPerRequestReached = setUpTheUsbDeviceUsbIso.maxPacketsPerRequestReached;
+            maxActiveUrbsReached = setUpTheUsbDeviceUsbIso.maxActiveUrbsReached;
 
 
         }
     }
 
     public void writeTheValues() {
-        if (setUpTheUsbDevice != null) {
-            setUpTheUsbDevice.packetsPerRequest = spacketsPerRequest;
-            setUpTheUsbDevice.activeUrbs = sactiveUrbs;
-            setUpTheUsbDevice.fiveFrames = fiveFrames;
-            setUpTheUsbDevice.highQuality = highQuality;
-            setUpTheUsbDevice.max_Framelength_cant_reached = max_Framelength_cant_reached;
-            setUpTheUsbDevice.sframeLenArray = sframeLenArray;
+        if (setUpTheUsbDeviceUsbIso != null) {
+            setUpTheUsbDeviceUsbIso.packetsPerRequest = spacketsPerRequest;
+            setUpTheUsbDeviceUsbIso.activeUrbs = sactiveUrbs;
+            setUpTheUsbDeviceUsbIso.fiveFrames = fiveFrames;
+            setUpTheUsbDeviceUsbIso.highQuality = highQuality;
+            setUpTheUsbDeviceUsbIso.max_Framelength_cant_reached = max_Framelength_cant_reached;
+            setUpTheUsbDeviceUsbIso.sframeLenArray = sframeLenArray;
 
 
             // other values
-            setUpTheUsbDevice.camStreamingAltSetting = sALT_SETTING;
-            setUpTheUsbDevice.videoformat = svideoformat;
-            setUpTheUsbDevice.camFormatIndex = scamFormatIndex;
-            setUpTheUsbDevice.imageWidth = simageWidth;
-            setUpTheUsbDevice.imageHeight = simageHeight;
-            setUpTheUsbDevice.camFrameIndex = scamFrameIndex;
-            setUpTheUsbDevice.camFrameInterval = scamFrameInterval;
-            setUpTheUsbDevice.maxPacketSize = smaxPacketSize;
-            setUpTheUsbDevice.deviceName = sdeviceName;
-            setUpTheUsbDevice.bUnitID = bUnitID;
-            setUpTheUsbDevice.bTerminalID = bTerminalID;
-            setUpTheUsbDevice.bNumControlTerminal = bNumControlTerminal;
-            setUpTheUsbDevice.bNumControlUnit = bNumControlUnit;
-            setUpTheUsbDevice.bcdUVC = bcdUVC;
-            setUpTheUsbDevice.bStillCaptureMethod = bStillCaptureMethod;
-            setUpTheUsbDevice.libUsb = libUsb;
-            setUpTheUsbDevice.maxPacketsPerRequestReached = maxPacketsPerRequestReached;
-            setUpTheUsbDevice.maxActiveUrbsReached = maxActiveUrbsReached;
+            setUpTheUsbDeviceUsbIso.camStreamingAltSetting = sALT_SETTING;
+            setUpTheUsbDeviceUsbIso.videoformat = svideoformat;
+            setUpTheUsbDeviceUsbIso.camFormatIndex = scamFormatIndex;
+            setUpTheUsbDeviceUsbIso.imageWidth = simageWidth;
+            setUpTheUsbDeviceUsbIso.imageHeight = simageHeight;
+            setUpTheUsbDeviceUsbIso.camFrameIndex = scamFrameIndex;
+            setUpTheUsbDeviceUsbIso.camFrameInterval = scamFrameInterval;
+            setUpTheUsbDeviceUsbIso.maxPacketSize = smaxPacketSize;
+            setUpTheUsbDeviceUsbIso.deviceName = sdeviceName;
+            setUpTheUsbDeviceUsbIso.bUnitID = bUnitID;
+            setUpTheUsbDeviceUsbIso.bTerminalID = bTerminalID;
+            setUpTheUsbDeviceUsbIso.bNumControlTerminal = bNumControlTerminal;
+            setUpTheUsbDeviceUsbIso.bNumControlUnit = bNumControlUnit;
+            setUpTheUsbDeviceUsbIso.bcdUVC = bcdUVC;
+            setUpTheUsbDeviceUsbIso.bStillCaptureMethod = bStillCaptureMethod;
+            setUpTheUsbDeviceUsbIso.libUsb = libUsb;
+            setUpTheUsbDeviceUsbIso.maxPacketsPerRequestReached = maxPacketsPerRequestReached;
+            setUpTheUsbDeviceUsbIso.maxActiveUrbsReached = maxActiveUrbsReached;
 
         }
 
@@ -352,7 +352,7 @@ public class Jna_AutoDetect_Handler {
     private void setTheMaxPacketSize (boolean highest, boolean lowest, int value) {
 
         if (highest) {
-            int[] maxPacketsSizeArray = setUpTheUsbDevice.convertedMaxPacketSize.clone();
+            int[] maxPacketsSizeArray = setUpTheUsbDeviceUsbIso.convertedMaxPacketSize.clone();
             int minValue = maxPacketsSizeArray[0];
             int minPos = 0;
             for (int i = 0; i < maxPacketsSizeArray.length; i++) {
@@ -364,7 +364,7 @@ public class Jna_AutoDetect_Handler {
             sALT_SETTING = (minPos + 1);
             smaxPacketSize = maxPacketsSizeArray[minPos];
         } else if (lowest) {
-            int[] maxPacketsSizeArray = setUpTheUsbDevice.convertedMaxPacketSize.clone();
+            int[] maxPacketsSizeArray = setUpTheUsbDeviceUsbIso.convertedMaxPacketSize.clone();
             int maxValue = maxPacketsSizeArray[0];
             int maxPos = 0;
             for (int i = 0; i < maxPacketsSizeArray.length; i++) {
@@ -376,7 +376,7 @@ public class Jna_AutoDetect_Handler {
             sALT_SETTING = (maxPos + 1);
             smaxPacketSize = maxPacketsSizeArray[maxPos];
         } else {
-            int[] maxPacketsSizeArray = setUpTheUsbDevice.convertedMaxPacketSize.clone();
+            int[] maxPacketsSizeArray = setUpTheUsbDeviceUsbIso.convertedMaxPacketSize.clone();
             if (maxPacketsSizeArray.length >= value) {
                 sALT_SETTING = (value + 1);
                 smaxPacketSize = maxPacketsSizeArray[value];

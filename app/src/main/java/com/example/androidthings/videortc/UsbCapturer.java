@@ -23,26 +23,20 @@ import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.os.Build;
-import android.os.Environment;
 
 import android.support.annotation.ColorInt;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.sun.jna.Memory;
-
 import org.webrtc.SurfaceTextureHelper;
 import org.webrtc.SurfaceViewRenderer;
 import org.webrtc.VideoCapturer;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 
 import humer.UvcCamera.LibUsb.JNA_I_LibUsb;
-import humer.UvcCamera.LibUsb.StartIsoStreamService;
 import humer.UvcCamera.UsbIso64.USBIso;
 import humer.UvcCamera.UsbIso64.usbdevice_fs_util;
 

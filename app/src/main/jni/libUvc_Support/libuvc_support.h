@@ -116,7 +116,7 @@ extern void setCallback(eventCallback evnHnd);
 typedef int ( *jnaFrameCallback)(void  *videoframe, int value);
 extern void setJnaFrameCallback(jnaFrameCallback evnHnd);
 extern int eheckEventHandling();
-extern int preInitDevice (int FD);
+extern int preInitDeviceUYVYpixeltobmp (int FD);
 extern unsigned char * probeCommitControl(int bmHin, int camFormatInde, int camFrameInde, int camFrameInterva, int FD);
 typedef int ( *frameComplete)(int bitmap);
 extern void setFrameComplete(frameComplete evnHnd);
@@ -132,40 +132,41 @@ extern void startVideoCapture();
 extern void stopVideoCapture();
 extern void startVideoCaptureLongClick() ;
 extern void stopVideoCaptureLongClick() ;
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamActivitySurface
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniIsoStreamActivitySurface
         (JNIEnv *, jobject, jobject, jint, jint);
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamActivity
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniIsoStreamActivity
         (JNIEnv *, jobject, jint, jint);
 // Streaming Method
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniSetSurfaceView
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniSetSurfaceView
         (JNIEnv *, jobject, jobject);
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniSetSurfaceYuv
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniSetSurfaceYuv
         (JNIEnv *, jobject, jobject);
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_PictureVideoSave
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_PictureVideoSave
         (JNIEnv* env, jobject thiz, jobject bitmap);
 
 //////////  Frame Conversation:
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_YUY2pixeltobmp( JNIEnv* env, jobject thiz, jbyteArray data, jobject bitmap, int im_width, int im_height);
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_UYVYpixeltobmp( JNIEnv* env, jobject thiz, jbyteArray data, jobject bitmap, int im_width, int im_height);
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_YUY2pixeltobmp( JNIEnv* env, jobject thiz, jbyteArray data, jobject bitmap, int im_width, int im_height);
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_UYVYpixeltobmp( JNIEnv* env, jobject thiz, jbyteArray data, jobject bitmap, int im_width, int im_height);
+
 extern unsigned char* convertUYVYtoJPEG (unsigned char* UYVY_frame_array, int* jpgLength, int UYVYframeLength, int imageWidth, int imageHeight);
         // get Bitmap
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_frameToBitmap( JNIEnv* env, jobject thiz, jobject bitmap);
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_frameToBitmap( JNIEnv* env, jobject thiz, jobject bitmap);
 
 
 
 
 ///////////////   Stream over JNI and native Surface View
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniPrepairStreamOverSurface
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniPrepairStreamOverSurface
 		(JNIEnv *, jobject);
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniStreamOverSurface
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniStreamOverSurface
 		(JNIEnv *, jobject);
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniPrepairStreamOverSurfaceUVC
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniPrepairStreamOverSurfaceUVC
         (JNIEnv *, jobject);
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniStreamOverSurfaceUVC
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniStreamOverSurfaceUVC
         (JNIEnv *, jobject);
 
 ////////    SetUpTheDevice
-JNIEXPORT void JNICALL Java_humer_UvcCamera_SetUpTheUsbDevice_JniIsoStreamActivity
+JNIEXPORT void JNICALL Java_humer_UvcCamera_SetUpTheUsbDeviceUvc_JniIsoStreamActivity
         (JNIEnv *, jobject, jobject, jint, jint);
 
 ////////// WebRTC

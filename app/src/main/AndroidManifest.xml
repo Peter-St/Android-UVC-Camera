@@ -17,7 +17,7 @@
     <uses-feature android:name="android.hardware.usb.host" />
 
     <uses-sdk
-        android:targetSdkVersion="29"
+        android:targetSdkVersion="30"
         tools:overrideLibrary="org.webrtc, com.akexorcist.localizationactivity, com.rafakob.floatingedittext"/>
 
     <application
@@ -44,14 +44,28 @@
         </activity>
         <activity android:name="humer.UvcCamera.ReadMeActivity" >
         </activity>
-        <activity android:name="humer.UvcCamera.StartIsoStreamActivity" >
+        <activity android:name="humer.UvcCamera.StartIsoStreamActivityUsbIso" >
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
             </intent-filter>
         </activity>
-        <activity android:name="humer.UvcCamera.SetUpTheUsbDevice" >
+        <activity android:name="humer.UvcCamera.StartIsoStreamActivityUvc" >
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+            </intent-filter>
+        </activity>
+        <activity android:name="humer.UvcCamera.SetUpTheUsbDeviceUsbIso" >
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+            </intent-filter>
+        </activity>
+        <activity android:name="humer.UvcCamera.SetUpTheUsbDeviceUvc" >
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
@@ -82,12 +96,8 @@
             android:theme="@style/CallActivityTheme"/>
         <activity android:name="com.example.androidthings.videortc.WebRtc_MainActivity">
         </activity>
-        <service android:name="humer.UvcCamera.LibUsb.StartIsoStreamService" >
-        </service>
-        <service android:name="com.example.androidthings.videortc.WebRtcService" >
-        </service>
-        <service android:name="humer.UvcCamera.LibUsb.LibUsbManagerService" >
-        </service>
+
+
 
     </application>
 

@@ -8,8 +8,8 @@ android {
     defaultConfig {
         applicationId "humer.uvc_camera"
         minSdkVersion 15
-        versionCode 105
-        versionName "2.0.3"
+        versionCode 107
+        versionName "2.0.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         ndk.debugSymbolLevel = 'FULL'
@@ -177,7 +177,7 @@ dependencies {
     implementation 'com.crowdfire.cfalertdialog:cfalertdialog:1.1.0'
 
     //JNA
-    implementation 'net.java.dev.jna:jna:5.6.0@aar'
+    implementation 'net.java.dev.jna:jna:5.10.0@aar'
 
     // WebRtc
     implementation 'org.webrtc:google-webrtc:1.0.22672'

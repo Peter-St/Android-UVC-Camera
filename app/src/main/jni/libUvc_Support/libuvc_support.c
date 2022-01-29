@@ -2858,7 +2858,7 @@ void cb_jni_stream_ImageView(struct libusb_transfer *the_transfer) {
 }
 
 
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamActivity
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniIsoStreamActivity
         (JNIEnv *env, jobject obj, jint stream, jint frameIndex) {
     if (initialized) {
         uvc_stream_handle_t *strmh = NULL;
@@ -3021,7 +3021,7 @@ void cb_jni_stream_Surface_Activity(struct libusb_transfer *the_transfer) {
         }
 }
 
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamActivitySurface
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniIsoStreamActivitySurface
         (JNIEnv *env, jobject obj, jobject jSurface, jint stream, jint frameIndex) {
 
     ANativeWindow *preview_window = jSurface ? ANativeWindow_fromSurface(env, jSurface) : NULL;
@@ -3085,7 +3085,7 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniIsoStreamA
     }
 }
 
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniSetSurfaceView
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniSetSurfaceView
         (JNIEnv *env, jobject obj, jobject jSurface) {
     if (jSurface != NULL ) {
         ANativeWindow *preview_window = jSurface ? ANativeWindow_fromSurface(env, jSurface) : NULL;
@@ -3107,7 +3107,7 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniSetSurface
     javaPictureVideoCaptureRGB =  (*env)->GetMethodID(env, jniHelperClass, "pictureVideoCaptureRGB", "([B)V");
 }
 
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniSetSurfaceYuv
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniSetSurfaceYuv
         (JNIEnv *env, jobject obj, jobject jSurface) {
     if (jSurface != NULL ) {
         ANativeWindow *preview_window = jSurface ? ANativeWindow_fromSurface(env, jSurface) : NULL;
@@ -3132,7 +3132,7 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniSetSurface
 
 
 // Init SurfaceView for Service
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniPrepairStreamOverSurfaceUVC
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniPrepairStreamOverSurfaceUVC
         (JNIEnv *env, jobject obj) {
 
     if (initialized) {
@@ -3178,7 +3178,7 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniPrepairStr
 }
 
 // Init SurfaceView for Service
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniPrepairStreamOverSurface
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniPrepairStreamOverSurface
         (JNIEnv *env, jobject obj) {
 
 
@@ -3664,7 +3664,7 @@ void cb_stream_UVC(uvc_frame_t *frame, void *ptr) {
     if (!runningStream) uvc_stop_streaming(uvcDeviceHandle_global);
 }
 
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniStreamOverSurfaceUVC
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniStreamOverSurfaceUVC
         (JNIEnv *env, jobject obj) {
     LOGD("\nJniOverSurfaceUVC\n");
     uvc_error_t ret;
@@ -3783,7 +3783,7 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniStreamOver
    // }
 }
 
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniStreamOverSurface
+JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniStreamOverSurface
         (JNIEnv *env, jobject obj) {
     LOGD("\nJniServiceOverSurface\n");
     if (initialized) {
@@ -4125,7 +4125,7 @@ unsigned char* convertYUY2toJPEG (unsigned char* YUY2_frame_array, int* jpgLengt
 
 // Frame Conversation JNI METHOD:
 void
-Java_humer_UvcCamera_StartIsoStreamActivity_UYVYpixeltobmp( JNIEnv* env, jobject thiz, jbyteArray data, jobject bitmap, int im_width, int im_height){
+Java_humer_UvcCamera_StartIsoStreamActivityUvc_UYVYpixeltobmp( JNIEnv* env, jobject thiz, jbyteArray data, jobject bitmap, int im_width, int im_height){
     jsize num_bytes = (*env)->GetArrayLength(env, data);
     unsigned char* UYVY_frame_array;
     UYVY_frame_array = (char *) malloc (num_bytes);
@@ -4169,7 +4169,7 @@ Java_humer_UvcCamera_StartIsoStreamActivity_UYVYpixeltobmp( JNIEnv* env, jobject
 
 // Frame Conversation JNI METHOD:
 void
-Java_humer_UvcCamera_StartIsoStreamActivity_YUY2pixeltobmp( JNIEnv* env, jobject thiz, jbyteArray data, jobject bitmap, int im_width, int im_height){
+Java_humer_UvcCamera_StartIsoStreamActivityUvc_YUY2pixeltobmp( JNIEnv* env, jobject thiz, jbyteArray data, jobject bitmap, int im_width, int im_height){
     jsize num_bytes = (*env)->GetArrayLength(env, data);
     unsigned char* YUY2_frame_array;
     YUY2_frame_array = (char *) malloc (num_bytes);
@@ -4213,7 +4213,7 @@ Java_humer_UvcCamera_StartIsoStreamActivity_YUY2pixeltobmp( JNIEnv* env, jobject
 
 // Bitmap Method
 
-void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_frameToBitmap( JNIEnv* env, jobject thiz, jobject bitmap) {
+void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_frameToBitmap( JNIEnv* env, jobject thiz, jobject bitmap) {
 
     uvc_frame_t *rgbx;
     uvc_frame_t *rgb;
@@ -4358,7 +4358,7 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniServ
     }
 }
 
- JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivity_JniGetAnotherFrame
+ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniGetAnotherFrame
         (JNIEnv *env, jobject obj, jint stream, jint frameIndex) {
     if (initialized) {
         uvc_stream_handle_t *strmh = NULL;

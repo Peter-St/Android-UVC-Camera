@@ -109,6 +109,13 @@
         app:layout_constraintGuide_percent="0.25" />
 
     <android.support.constraint.Guideline
+        android:id="@+id/guideline50"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <android.support.constraint.Guideline
         android:id="@+id/guideline2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -223,6 +230,21 @@
             app:layout_constraintBottom_toBottomOf="parent"
             android:onClick="lowerSize"
             app:layout_constraintEnd_toEndOf="parent" />
+
+    <ToggleButton
+        android:id="@+id/libusbToggleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ToggleButton"
+        tools:layout_editor_absoluteX="158dp"
+        app:layout_constraintLeft_toLeftOf="@id/guideline50"
+        app:layout_constraintRight_toRightOf="@id/guideline50"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/bg_button_toggle_libusb"
+        android:textOff=""
+        android:textOn=""
+        android:checked="true"
+        />
 
     <!--
 

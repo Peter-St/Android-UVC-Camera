@@ -279,17 +279,6 @@
                 app:layout_constraintTop_toBottomOf="@id/PacketsPerReq"
                 />
 
-            <TextView
-                android:id="@+id/slibusb"
-                android:layout_width="0dp"
-                android:layout_height="55dp"
-                android:text="LibUsb"
-                android:textSize="18sp"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="@id/v_guideline1"
-                app:layout_constraintTop_toBottomOf="@id/ActiveUrbs"
-                />
-
             <com.rafakob.floatingedittext.FloatingEditText
                 android:id="@+id/alt"
                 android:layout_width="0dp"
@@ -418,19 +407,7 @@
                 android:inputType="number">
             </com.rafakob.floatingedittext.FloatingEditText>
 
-            <com.rafakob.floatingedittext.FloatingEditText
-                android:id="@+id/LibUsb"
-                android:layout_width="0dp"
-                android:layout_height="55dp"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintLeft_toLeftOf="@id/v_guideline1"
-                app:layout_constraintTop_toBottomOf="@id/ActiveUr"
-                app:hintAnimationEnabled="true"
-                android:hint="Support for LibUsb"
-                android:inputType="none"
-                android:focusable="false"
-                >
-            </com.rafakob.floatingedittext.FloatingEditText>
+
         </android.support.constraint.ConstraintLayout>
     </android.support.v4.widget.NestedScrollView>
 
