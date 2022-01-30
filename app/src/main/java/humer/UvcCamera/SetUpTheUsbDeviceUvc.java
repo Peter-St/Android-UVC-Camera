@@ -24,7 +24,6 @@ This Repository is provided "as is", without warranties of any kind.
 package humer.UvcCamera;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -38,8 +37,6 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
-import android.hardware.usb.UsbRequest;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -52,13 +49,10 @@ import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
@@ -66,7 +60,6 @@ import com.crowdfire.cfalertdialog.views.CFPushButton;
 import com.sun.jna.Pointer;
 import com.tomer.fadingtextview.FadingTextView;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -77,9 +70,8 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import humer.UvcCamera.AutomaticDetection.Jna_AutoDetect;
-import humer.UvcCamera.AutomaticDetection.Jna_AutoDetect_Handler;
 import humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect;
-import humer.UvcCamera.LibUsb.JNA_I_LibUsb;
+import humer.UvcCamera.JNA_I_LibUsb.JNA_I_LibUsb;
 import humer.UvcCamera.UVC_Descriptor.UVC_Descriptor;
 import noman.zoomtextview.ZoomTextView;
 
@@ -880,6 +872,82 @@ public class SetUpTheUsbDeviceUvc extends Activity {
     }
 
     private void listDevice(UsbDevice usbDevice) {
+
+        if (camDevice == null) return;
+        if (camDeviceConnection == null) camDeviceConnection = usbManager.openDevice(usbDevice);
+
+        //JNA_I_LibUsb.INSTANCE.listDeviceUvc(camDeviceConnection.getFileDescriptor());
+
+        final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info = JNA_I_LibUsb.INSTANCE.listDeviceUvc(camDeviceConnection.getFileDescriptor());
+
+
+        if (uvc_device_info != null) {
+            log ("DeviceInfo obtained !");
+
+            log("uvc_device_info.stream_ifs.bInterfaceNumber = " + uvc_device_info.stream_ifs.bInterfaceNumber);
+
+            log("uvc_device_info.stream_ifs.format_descs.bFormatIndex = " + uvc_device_info.stream_ifs.format_descs.bFormatIndex);
+
+            log("FrameIndex = " + uvc_device_info.stream_ifs.format_descs.frame_descs.bFrameIndex);
+
+            JNA_I_LibUsb.uvc_format_desc uvc_format_desc;
+            JNA_I_LibUsb.uvc_frame_desc uvc_frame_desc;
+
+            StringBuilder streamInterfaceEntries = new StringBuilder();
+
+            streamInterfaceEntries.append("List the Camera\n\n");
+
+            uvc_format_desc = uvc_device_info.stream_ifs.format_descs;
+
+            while (uvc_format_desc != null ) {
+                streamInterfaceEntries.append("\n");
+                streamInterfaceEntries.append("FormatDescriptor " + uvc_format_desc.bFormatIndex + "\n");
+                log("uvc_format_desc.bFormatIndex = " + uvc_format_desc.bFormatIndex);
+                uvc_frame_desc = uvc_format_desc.frame_descs;
+                while (uvc_frame_desc != null ) {
+                    streamInterfaceEntries.append("   FrameIndex " + uvc_frame_desc.bFrameIndex + "\n");
+                    streamInterfaceEntries.append("      " + uvc_frame_desc.wWidth + " x " + uvc_frame_desc.wHeight + "\n");
+                    streamInterfaceEntries.append("      Interval = " + (10000000 / uvc_frame_desc.intervals.getValue() )  + " frames/sec\n");
+
+                    log("FrameIndex = " + uvc_frame_desc.bFrameIndex);
+                    uvc_frame_desc = uvc_frame_desc.next;
+                }
+
+                uvc_format_desc = uvc_format_desc.next;
+            }
+
+            JNA_I_LibUsb.uvc_streaming_interface streaming_interface = uvc_device_info.stream_ifs.next;
+            if (streaming_interface != null) log("streaming_interface.bInterfaceNumber = " + streaming_interface.bInterfaceNumber);
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
+                    tv.setSingleLine(false);
+                    tv.setText(streamInterfaceEntries.toString());
+                    tv.setTextColor(Color.BLACK);
+                    tv.bringToFront();
+                }
+            });
+
+
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    //setContentView(R.layout.layout_main);
+                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
+                    tv.setSingleLine(false);
+                    tv.setText("There is something wrong with your camera\n\nThere have not been detected enought interfaces from your usb device\n\n" + usbDevice.getInterfaceCount() + " - Interfaces have been found, but there should be at least more than 2");
+                    tv.setTextColor(darker(Color.RED, 50));
+                    tv.bringToFront();
+                }
+            });
+            log ("DeviceInfo = null   ;-/");
+        }
+
+
+        /*
         int a = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (usbDevice.getConfigurationCount() > 1) {
@@ -1037,6 +1105,8 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                 }
             });
         }
+
+         */
     }
 
     private int returnConvertedValue(int wSize) {

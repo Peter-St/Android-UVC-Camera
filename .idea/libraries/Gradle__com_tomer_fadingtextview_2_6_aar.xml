@@ -1,12 +1,12 @@
 <component name="libraryTable">
   <library name="Gradle: com.tomer:fadingtextview:2.6@aar">
     <ANNOTATIONS>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/5794adee8ce3f76d3df4f72bd9e2b2c6/transformed/fadingtextview-2.6/annotations.zip!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/e27e4ecc0157f4a1f9d7b8aebed3579d/transformed/fadingtextview-2.6/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/5794adee8ce3f76d3df4f72bd9e2b2c6/transformed/fadingtextview-2.6/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/5794adee8ce3f76d3df4f72bd9e2b2c6/transformed/fadingtextview-2.6/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/5794adee8ce3f76d3df4f72bd9e2b2c6/transformed/fadingtextview-2.6/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/e27e4ecc0157f4a1f9d7b8aebed3579d/transformed/fadingtextview-2.6/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/e27e4ecc0157f4a1f9d7b8aebed3579d/transformed/fadingtextview-2.6/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/e27e4ecc0157f4a1f9d7b8aebed3579d/transformed/fadingtextview-2.6/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.tomer/fadingtextview/2.6/e5a298efe9c6bd268281e9c9e728961ae55e9dea/fadingtextview-2.6-javadoc.jar!/" />

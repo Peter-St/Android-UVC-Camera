@@ -7,7 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import humer.UvcCamera.LibUsb.JNA_I_LibUsb;
+import humer.UvcCamera.JNA_I_LibUsb.JNA_I_LibUsb;
 
 public class WebRtcService extends IntentService {
 

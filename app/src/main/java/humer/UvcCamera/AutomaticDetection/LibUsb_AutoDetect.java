@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 
-import humer.UvcCamera.LibUsb.JNA_I_LibUsb;
+import humer.UvcCamera.JNA_I_LibUsb.JNA_I_LibUsb;
 import humer.UvcCamera.R;
 import humer.UvcCamera.SaveToFile;
 import humer.UvcCamera.UVC_Descriptor.UVC_Descriptor;

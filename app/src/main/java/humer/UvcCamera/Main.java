@@ -50,7 +50,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
-import android.widget.Switch;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -89,7 +88,7 @@ public class Main extends AppCompatActivity {
     public static byte[]    bcdUVC;
     public static byte[]    bcdUSB;
     public static byte      bStillCaptureMethod;
-    public static boolean   LIBUSB;
+    public static boolean   LIBUSB = true;
     public static boolean   moveToNative;
     public static boolean   bulkMode;
 
@@ -490,6 +489,8 @@ public class Main extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (showStoragePermissionRead() && showStoragePermissionWrite() && showCameraPermissionCamera()) {
                 if (LIBUSB) {
+
+
                     Intent intent = new Intent(this, SetUpTheUsbDeviceUvc.class);
                     Bundle bundle=new Bundle();
                     bundle.putBoolean("edit", true);
@@ -548,6 +549,7 @@ public class Main extends AppCompatActivity {
         }
         else if (showStoragePermissionRead() && showStoragePermissionWrite()) {
             if (LIBUSB) {
+
                 Intent intent = new Intent(this, SetUpTheUsbDeviceUvc.class);
                 Bundle bundle=new Bundle();
                 bundle.putBoolean("edit", true);
@@ -605,6 +607,7 @@ public class Main extends AppCompatActivity {
         }
         else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
             if (LIBUSB) {
+
                 Intent intent = new Intent(this, SetUpTheUsbDeviceUvc.class);
                 Bundle bundle=new Bundle();
                 bundle.putBoolean("edit", true);

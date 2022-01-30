@@ -84,9 +84,8 @@ import java.util.concurrent.Executors;
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.example.androidthings.videortc.WebRtc_MainActivity;
 import com.sample.timelapse.MJPEGGenerator ;
-import com.sun.jna.Pointer;
 
-import humer.UvcCamera.LibUsb.JNA_I_LibUsb;
+import humer.UvcCamera.JNA_I_LibUsb.JNA_I_LibUsb;
 import humer.UvcCamera.UVC_Descriptor.IUVC_Descriptor;
 import humer.UvcCamera.UVC_Descriptor.UVC_Descriptor;
 import humer.UvcCamera.UVC_Descriptor.UVC_Initializer;

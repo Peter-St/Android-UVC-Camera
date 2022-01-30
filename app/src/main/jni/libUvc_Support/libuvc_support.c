@@ -4266,6 +4266,35 @@ void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_frameToBitmap( JNIEn
     AndroidBitmap_unlockPixels(env, bitmap);
 }
 
+int initLibUsb() {
+    if (!libusb_Is_initialized) {
+        result = uvc_init2(&uvcContext_global, NULL);
+        if (result == UVC_SUCCESS) libusb_Is_initialized = 1;
+    }
+}
+
+struct uvc_device_info * listDeviceUvc(int fd) {
+    if (!libusb_Is_initialized) {
+        result = uvc_init2(&uvcContext_global, NULL);
+        if (result == UVC_SUCCESS) libusb_Is_initialized = 1;
+    }
+    if (!cameraDevice_is_wraped) {
+                if (uvc_get_device_with_fd(uvcContext_global, &mDevice_global,  &uvcDeviceHandle_global, fd) == 0) {
+            LOGD("Successfully wraped The CameraDevice");
+            cameraDevice_is_wraped = 1;
+        } else return  NULL;
+    }
+    if (!camIsOpen) {
+        uvc_error_t ret;
+        ret = uvc_open(mDevice_global, uvcDeviceHandle_global);
+        if (ret == UVC_SUCCESS) camIsOpen = true;
+    }
+
+    if (camIsOpen) return  uvcDeviceHandle_global->info;
+    else return NULL;
+
+}
+
 /* // Service Methods
  *
 JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniServiceOverSurface

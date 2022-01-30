@@ -49,6 +49,11 @@ This Repository is provided "as is", without warranties of any kind.
 #include "libuvc/include/libuvc/libuvc.h"
 #include "libuvc/include/libuvc/libuvc_internal.h"
 
+///////////////// LibUvc ////////////////////////////////
+
+extern int initLibUsb() ;
+struct uvc_device_info * listDeviceUvc(int fd) ;
+
 
 //////////////// Auto Detect Methods ////////////////////
 struct AutotransferStruct; /* Forward declaration */
