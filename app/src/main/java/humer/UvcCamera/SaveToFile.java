@@ -28,7 +28,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Build;
-import android.os.Environment;
 
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
@@ -50,6 +49,7 @@ import android.widget.ToggleButton;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.crowdfire.cfalertdialog.views.CFPushButton;
+import com.sun.jna.Pointer;
 import com.tomer.fadingtextview.FadingTextView;
 
 import java.io.File;
@@ -57,11 +57,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import humer.UvcCamera.AutomaticDetection.Jna_AutoDetect;
 import humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect;
+import humer.UvcCamera.JNA_I_LibUsb.JNA_I_LibUsb;
 import humer.UvcCamera.UVC_Descriptor.UVC_Descriptor;
 
 public class SaveToFile  {
@@ -150,6 +152,16 @@ public class SaveToFile  {
     public static boolean lowestMaxPacketSizeDone;
 
     private boolean libUsb_AutoDetect;
+
+    // VS Interface Descriptor Subtypes
+    private final static byte VS_UNDEFINED = 0x00;
+    private final static byte VS_input_header = 0x01;
+    private final static byte VS_still_image_frame = 0x03;
+    private final static byte VS_format_uncompressed = 0x04;
+    private final static byte VS_frame_uncompressed = 0x05;
+    private final static byte VS_format_mjpeg = 0x06;
+    private final static byte VS_frame_mjpeg = 0x07;
+    private final static byte VS_colour_format = 0x0D;
 
     public SaveToFile(Main main, Context mContext) {
         this.uvc_camera = main;
@@ -1156,6 +1168,61 @@ public class SaveToFile  {
         }
     }
 
+    public void setUpWithUvcValues_libusb(final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info, int[] maxPacketSizeArray) {
+        fetchTheValues();
+
+        if(uvc_device_info == null) return;
+        //if (uvc_device_info.ctrl_if.processing_unit_descs.bUnitID != 0)  bUnitID = uvc_device_info.ctrl_if.processing_unit_descs.bUnitID;
+        //bTerminalID = uvc_device_info.ctrl_if.output_term_descs.bTerminalID;
+        //bNumControlTerminal = uvc_desc.bNumControlTerminal;
+        //bNumControlUnit = uvc_desc.bNumControlUnit;
+        //bcdUVC = uvc_desc.bcdUVC;
+        //bcdUSB = uvc_desc.bcdUSB;
+        /*
+        log ("bcdUSB = " + bcdUSB[0] + "." + bcdUSB[1]);
+        if (bcdUSB[0] == 2) log ("bcdUVC = " + bcdUVC[0] + bcdUVC[1]);
+        if (bcdUSB[0] == 3) {
+        }
+        */
+        bStillCaptureMethod = uvc_device_info.stream_ifs.bStillCaptureMethod;
+        /*
+        UVC_Descriptor.FormatIndex formatIndex;
+        int [] arrayFormatFrameIndexes = new int [uvc_descriptor.formatIndex.size()];
+        for (int i=0; i<uvc_descriptor.formatIndex.size(); i++) {
+            formatIndex = uvc_descriptor.getFormatIndex(i);
+            arrayFormatFrameIndexes[i] = formatIndex.frameIndex.size();
+        }
+        */
+
+
+        if (moveToNative) {
+            maxPacketSizeStr = new String [maxPacketSizeArray.length];
+            if (setUpTheUsbDeviceUsbIso != null) {
+                setUpTheUsbDeviceUsbIso.convertedMaxPacketSize = new int[maxPacketSizeArray.length];
+                for (int a =0; a<maxPacketSizeArray.length; a++) {
+                    //setUpTheUsbDeviceUsbIso.convertedMaxPacketSize[a] = maxPacketSizeArray[a];
+                    maxPacketSizeStr[a] = Integer.toString(maxPacketSizeArray[a]);
+                }
+            } else {
+                setUpTheUsbDeviceUvc.convertedMaxPacketSize = new int[uvc_descriptor.maxPacketSizeArray.size()];
+                for (int a =0; a<uvc_descriptor.maxPacketSizeArray.size(); a++) {
+                   // setUpTheUsbDeviceUvc.convertedMaxPacketSize[a] = uvc_descriptor.maxPacketSizeArray.get(a);
+                    maxPacketSizeStr[a] = Integer.toString(maxPacketSizeArray[a]);
+                }
+            }
+
+        } else {
+            maxPacketSizeStr = new String [maxPacketSizeArray.length];
+            for (int a =0; a<maxPacketSizeArray.length; a++) {
+                maxPacketSizeStr[a] = Integer.toString(maxPacketSizeArray[a]);
+            }
+        }
+
+
+        selectMaxPacketSize(uvc_device_info);
+
+    }
+
     private void selectMaxPacketSize(boolean automatic){
         if (!automatic) {
             int[] maxPacketsSizeArray;
@@ -1218,6 +1285,42 @@ public class SaveToFile  {
                 return;
             }
         }
+    }
+
+    private void selectMaxPacketSize(final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info){
+        int[] maxPacketsSizeArray;
+        if (setUpTheUsbDeviceUsbIso != null) maxPacketsSizeArray = setUpTheUsbDeviceUsbIso.convertedMaxPacketSize.clone();
+        else maxPacketsSizeArray = setUpTheUsbDeviceUvc.convertedMaxPacketSize.clone();
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(mContext);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+        builder.setTitle("Select the maximal Packet Size:");
+        builder.setMessage("Your current MaxPacketSize: " + smaxPacketSize);
+        int selectedItem = 0;
+        for (int a =0; a<maxPacketsSizeArray.length; a++) {
+            if (maxPacketsSizeArray[a] == smaxPacketSize) selectedItem = a;
+        }
+        int coise;
+        builder.setSingleChoiceItems(maxPacketSizeStr, selectedItem, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int index) {
+                smaxPacketSize = Integer.parseInt(maxPacketSizeStr[index]);
+                sALT_SETTING = index +1;
+                System.out.println("sALT_SETTING = " + sALT_SETTING);
+                System.out.println("smaxPacketSize = " + smaxPacketSize);
+            }
+        });
+
+        builder.addButton("DONE", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.END, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int index) {
+                if(sALT_SETTING == 0) sALT_SETTING = index +1;
+                if(smaxPacketSize == 0) smaxPacketSize = Integer.parseInt(maxPacketSizeStr[index]);
+                selectPackets(uvc_device_info);
+                dialogInterface.dismiss();
+            }
+        });
+        builder.show();
+
     }
 
     public void selectPackets(boolean automatic) {
@@ -1310,6 +1413,92 @@ public class SaveToFile  {
             //if (raisePacketsPerRequest) spacketsPerRequest ++;
             selectUrbs(true);
         }
+    }
+
+    public void selectPackets(final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info) {
+            CFAlertDialog alertDialog;
+            CFAlertDialog.Builder builder = new CFAlertDialog.Builder(mContext);
+            LayoutInflater li = LayoutInflater.from(mContext);
+            View stf_select_max_package_layout_view = li.inflate(R.layout.stf_select_max_package_layout, null);
+            builder.setHeaderView(stf_select_max_package_layout_view);
+            builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+            builder.setTitle("Select your Packets per Request");
+            builder.setMessage("Your current Value = " + spacketsPerRequest);
+            final EditText input = new EditText(mContext);
+            input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+            builder.setFooterView(input);
+            builder.addButton("Done", Color.parseColor("#FFFFFF"), Color.parseColor("#429ef4"), CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (input.getText().toString().isEmpty() == false) {
+                        spacketsPerRequest = Integer.parseInt(input.getText().toString());
+                        selectUrbs(uvc_device_info);
+                        dialog.dismiss();
+                    }
+                    else if (spacketsPerRequest != 0) {
+                        selectUrbs(uvc_device_info);
+                        dialog.dismiss();
+                    }
+                    else displayMessage("Select a Number, or type in a Value");
+                }
+            });
+            alertDialog = builder.show();
+            TextView tv = stf_select_max_package_layout_view.findViewById(R.id.textView_setPackets);
+            tv.setText("One Packets has a size of " + smaxPacketSize + " bytes");
+            CFPushButton packetOne = stf_select_max_package_layout_view.findViewById(R.id.one) ;
+            packetOne.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    spacketsPerRequest = 1;
+                    alertDialog.dismiss();
+                    selectUrbs(uvc_device_info);
+                }
+            });
+            CFPushButton packetTwo = stf_select_max_package_layout_view.findViewById(R.id.two) ;
+            packetTwo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    spacketsPerRequest = 2;
+                    alertDialog.dismiss();
+                    selectUrbs(uvc_device_info);
+                }
+            });
+            CFPushButton packetThree = stf_select_max_package_layout_view.findViewById(R.id.three) ;
+            packetThree.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    spacketsPerRequest = 4;
+                    alertDialog.dismiss();
+                    selectUrbs(uvc_device_info);
+                }
+            });
+            CFPushButton packetFour = stf_select_max_package_layout_view.findViewById(R.id.four) ;
+            packetFour.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    spacketsPerRequest = 8;
+                    alertDialog.dismiss();
+                    selectUrbs(uvc_device_info);
+                }
+            });
+            CFPushButton packetFive = stf_select_max_package_layout_view.findViewById(R.id.five) ;
+            packetFive.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    spacketsPerRequest = 16;
+                    alertDialog.dismiss();
+                    selectUrbs(uvc_device_info);
+                }
+            });
+            CFPushButton packetSix = stf_select_max_package_layout_view.findViewById(R.id.six) ;
+            packetSix.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    spacketsPerRequest = 32;
+                    alertDialog.dismiss();
+                    selectUrbs(uvc_device_info);
+                }
+            });
     }
 
     public void selectUrbs(boolean automatic) {
@@ -1407,6 +1596,96 @@ public class SaveToFile  {
         }
     }
 
+    public void selectUrbs(final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info) {
+            CFAlertDialog alertDialog;
+            CFAlertDialog.Builder builder = new CFAlertDialog.Builder(mContext);
+            LayoutInflater li = LayoutInflater.from(mContext);
+            View stf_select_max_package_layout_view = li.inflate(R.layout.stf_select_active_urbs, null);
+            builder.setHeaderView(stf_select_max_package_layout_view);
+
+            builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+            builder.setTitle("Select your active Usb Request Blocks");
+            builder.setMessage("Your current Value = " + sactiveUrbs);
+            final EditText input = new EditText(mContext);
+            input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+            builder.setFooterView(input);
+            builder.addButton("Done", Color.parseColor("#FFFFFF"), Color.parseColor("#429ef4"), CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (input.getText().toString().isEmpty() == false) {
+                        sactiveUrbs = Integer.parseInt(input.getText().toString());
+                        selectFormatIndex(uvc_device_info);
+                        dialog.dismiss();
+                    }
+                    else if (sactiveUrbs != 0) {
+                        selectFormatIndex(uvc_device_info);
+                        dialog.dismiss();
+                    }
+                    else displayMessage("Select a Number, or type in a Value");
+                }
+            });
+            alertDialog = builder.show();
+            TextView tv = stf_select_max_package_layout_view.findViewById(R.id.textView_setUrbs);
+            tv.setText("One Usb Request Block has a size of " + smaxPacketSize + " x " + spacketsPerRequest +" bytes");
+            CFPushButton packetOne = stf_select_max_package_layout_view.findViewById(R.id.uone) ;
+            packetOne.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    log("selectUrbs --> one clicked");
+                    sactiveUrbs = 1;
+                    alertDialog.dismiss();
+                    selectFormatIndex(uvc_device_info);
+                    log("selectUrbs --> one end");
+
+                }
+            });
+            CFPushButton packetTwo = stf_select_max_package_layout_view.findViewById(R.id.utwo) ;
+            packetTwo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    sactiveUrbs = 2;
+                    alertDialog.dismiss();
+                    selectFormatIndex(uvc_device_info);
+                }
+            });
+            CFPushButton packetThree = stf_select_max_package_layout_view.findViewById(R.id.uthree) ;
+            packetThree.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    sactiveUrbs = 4;
+                    alertDialog.dismiss();
+                    selectFormatIndex(uvc_device_info);
+                }
+            });
+            CFPushButton packetFour = stf_select_max_package_layout_view.findViewById(R.id.ufour) ;
+            packetFour.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    sactiveUrbs = 8;
+                    alertDialog.dismiss();
+                    selectFormatIndex(uvc_device_info);
+                }
+            });
+            CFPushButton packetFive = stf_select_max_package_layout_view.findViewById(R.id.ufive) ;
+            packetFive.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    sactiveUrbs = 16;
+                    alertDialog.dismiss();
+                    selectFormatIndex(uvc_device_info);
+                }
+            });
+            CFPushButton packetSix = stf_select_max_package_layout_view.findViewById(R.id.usix) ;
+            packetSix.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    sactiveUrbs = 32;
+                    alertDialog.dismiss();
+                    selectFormatIndex(uvc_device_info);
+                }
+            });
+    }
+
     public void selectFormatIndex (boolean automatic) {
         if (!automatic) {
             log("formatIndex");
@@ -1497,6 +1776,112 @@ public class SaveToFile  {
         }
     }
 
+    public void selectFormatIndex (final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info) {
+        log("formatIndex");
+        JNA_I_LibUsb.uvc_format_desc uvc_format_desc;
+        uvc_format_desc = uvc_device_info.stream_ifs.format_descs;
+        int numberOfFormatDescriptors = 0;
+        while (uvc_format_desc != null ) {
+            numberOfFormatDescriptors ++;
+            //streamInterfaceEntries.append("\n");
+            //streamInterfaceEntries.append("FormatDescriptor " + uvc_format_desc.bFormatIndex + "\n");
+            //log("uvc_format_desc.bFormatIndex = " + uvc_format_desc.bFormatIndex);
+            uvc_format_desc = uvc_format_desc.next;
+        }
+        log ("numberOfFormatDescriptors = " + numberOfFormatDescriptors);
+
+        final JNA_I_LibUsb.uvc_format_desc[] format_descs_Array;
+
+        format_descs_Array = new JNA_I_LibUsb.uvc_format_desc[numberOfFormatDescriptors];
+        uvc_format_desc = uvc_device_info.stream_ifs.format_descs;
+        int num = 0;
+        while (uvc_format_desc != null ) {
+            format_descs_Array[num] = uvc_format_desc;
+            //streamInterfaceEntries.append("\n");
+            //streamInterfaceEntries.append("FormatDescriptor " + uvc_format_desc.bFormatIndex + "\n");
+            //log("uvc_format_desc.bFormatIndex = " + uvc_format_desc.bFormatIndex);
+            uvc_format_desc = uvc_format_desc.next;
+            num++;
+        }
+        //final JNA_I_LibUsb.uvc_format_desc[] format_descs_Array = (JNA_I_LibUsb.uvc_format_desc[])uvc_device_info.stream_ifs.format_descs.toArray(numberOfFormatDescriptors) ;
+        numberFormatIndexes = new int[numberOfFormatDescriptors];
+        final String[] textmsg = new String[numberOfFormatDescriptors];
+        for (int a = 0; a < numberOfFormatDescriptors; a++) {
+            if (format_descs_Array[a].bDescriptorSubtype == VS_format_mjpeg) {
+                System.out.println("formatIndex = VS_format_mjpeg");
+                numberFormatIndexes[a] = format_descs_Array[a].bFormatIndex;
+                System.out.println("numberFormatIndexes[" + a + "] = " + numberFormatIndexes[a]);
+                textmsg[a] = "MJPEG";
+                //svideoformat =
+            } else if (format_descs_Array[a].bDescriptorSubtype == VS_format_uncompressed) {
+                System.out.println("formatIndex = VS_format_uncompressed");
+                numberFormatIndexes[a] = format_descs_Array[a].bFormatIndex;
+                String guidFormat = null;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                    guidFormat = new String(format_descs_Array[a].formatSpecifier.guidFormat, StandardCharsets.UTF_8);
+                } else guidFormat =  new String (format_descs_Array[a].formatSpecifier.guidFormat);
+                String fourccFormat = guidFormat.substring(0,4);
+                System.out.println("fourccFormat = " + fourccFormat);
+                System.out.println("numberFormatIndexes[" + a + "] = " + numberFormatIndexes[a]);
+                textmsg[a] = fourccFormat;
+            }
+        }
+        final CFAlertDialog.Builder builder = new CFAlertDialog.Builder(mContext);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+        builder.setTitle("Select the Camera Format (MJPEG / YUV / ...)");
+        if (svideoformat != null) builder.setMessage("Your current format: " + svideoformat);
+        int selectedItem = 0;
+        for (int a =0; a<numberFormatIndexes.length; a++) {
+            if (numberFormatIndexes[a] == scamFormatIndex) selectedItem = a;
+        }
+        final int startvalue = selectedItem;
+        builder.setSingleChoiceItems(textmsg, startvalue, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int index) {
+                scamFormatIndex = numberFormatIndexes[index];
+
+                if (format_descs_Array[index].bDescriptorSubtype == VS_format_mjpeg) svideoformat = "MJPEG";
+                else if (format_descs_Array[index].bDescriptorSubtype == VS_format_uncompressed) {
+                    String guidFormat = null;
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                        guidFormat = new String(format_descs_Array[index].formatSpecifier.guidFormat, StandardCharsets.UTF_8);
+                    } else guidFormat =  new String (format_descs_Array[index].formatSpecifier.guidFormat);
+                    String fourccFormat = guidFormat.substring(0,4);
+                    System.out.println("fourccFormat = " + fourccFormat);
+                    svideoformat = fourccFormat;
+                }
+
+                log("svideoformat = " + svideoformat);
+                log("index = " + index);
+                selectFrameIndex(uvc_device_info, format_descs_Array[index]);
+                dialogInterface.dismiss();
+            }
+        });
+        builder.addButton("DONE", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.END, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int index) {
+                log("index = " + index);
+                scamFormatIndex = numberFormatIndexes[index];
+
+                if (format_descs_Array[index].bDescriptorSubtype == VS_format_mjpeg) svideoformat = "MJPEG";
+                else if (format_descs_Array[index].bDescriptorSubtype == VS_format_uncompressed) {
+                    String guidFormat = null;
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                        guidFormat = new String(format_descs_Array[index].formatSpecifier.guidFormat, StandardCharsets.UTF_8);
+                    } else guidFormat =  new String (format_descs_Array[index].formatSpecifier.guidFormat);
+                    String fourccFormat = guidFormat.substring(0,4);
+                    System.out.println("fourccFormat = " + fourccFormat);
+                    svideoformat = fourccFormat;
+                }
+                log("svideoformat = " + svideoformat);
+                log("index = " + index);
+                selectFrameIndex(uvc_device_info, format_descs_Array[index]);
+                dialogInterface.dismiss();
+            }
+        });
+        builder.show();
+    }
+
     private void selectFrameIndex (boolean automatic) {
         if (!automatic) {
             int [] scamFrameIndexArray = new int [formatIndex.numberOfFrameDescriptors];
@@ -1540,7 +1925,6 @@ public class SaveToFile  {
                         simageWidth = frameIndex.wWidth;
                         simageHeight = frameIndex.wHeight;
                     }
-
                     selectDWFrameIntervall(automatic);
                     dialogInterface.dismiss();
                 }
@@ -1572,15 +1956,104 @@ public class SaveToFile  {
                 System.out.println("scamFrameIndex = " + scamFrameIndex);
                 System.out.println("simageWidth = " + simageWidth);
                 System.out.println("simageHeight = " + simageHeight);
-
                 selectDWFrameIntervall(automatic);
                 return;
             }
-
-
-
             selectDWFrameIntervall(automatic);
         }
+    }
+
+    private void selectFrameIndex (final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info, final JNA_I_LibUsb.uvc_format_desc format_descs) {
+
+
+        log ("format_descs.bNumFrameDescriptors = " + format_descs.bNumFrameDescriptors);
+        log ("format_descs.bFormatIndex = " + format_descs.bFormatIndex);
+        log ("format_descs.frame_descs.bFrameIndex = " + format_descs.frame_descs.bFrameIndex);
+        log ("format_descs.frame_descs.wWidth = " + format_descs.frame_descs.wWidth);
+        log ("format_descs.frame_descs.wHeight = " + format_descs.frame_descs.wHeight);
+
+
+
+        JNA_I_LibUsb.uvc_frame_desc uvc_frame_desc;
+
+
+        int numberOfFrameDescriptors = 0;
+        uvc_frame_desc = format_descs.frame_descs;
+        if (uvc_frame_desc == null) log("uvc_frame_desc == null");
+
+        log("uvc_frame_desc != null");
+
+        while (uvc_frame_desc != null ) {
+            numberOfFrameDescriptors ++;
+            uvc_frame_desc = uvc_frame_desc.next;
+        }
+        log("numberOfFrameDescriptors = " + numberOfFrameDescriptors);
+
+        JNA_I_LibUsb.uvc_frame_desc[] frame_descs_Array = new JNA_I_LibUsb.uvc_frame_desc[numberOfFrameDescriptors];
+
+        uvc_frame_desc = format_descs.frame_descs;
+
+        int count = 0;
+        while (uvc_frame_desc != null ) {
+            frame_descs_Array[count] = uvc_frame_desc;
+            uvc_frame_desc = uvc_frame_desc.next;
+            count ++;
+        }
+
+
+        //final JNA_I_LibUsb.uvc_format_desc[] format_descs_Array = (JNA_I_LibUsb.uvc_format_desc[])uvc_device_info.stream_ifs.format_descs.toArray(numberOfFormatDescriptors) ;
+        //final JNA_I_LibUsb.uvc_frame_desc[] frame_descs_Array = (JNA_I_LibUsb.uvc_frame_desc[])format_descs.frame_descs.toArray(numberOfFrameDescriptors) ;
+
+
+
+        log("scamFrameIndexArray");
+
+        int [] scamFrameIndexArray = new int [numberOfFrameDescriptors];
+        log("numberOfFrameDescriptors = " + numberOfFrameDescriptors);
+        frameDescriptorsResolutionArray = new String[numberOfFrameDescriptors];
+
+
+        for (int j = 0; j < numberOfFrameDescriptors; j++) {
+            StringBuilder stringb = new StringBuilder();
+            stringb.append(Integer.toString(frame_descs_Array[j].wWidth));
+            stringb.append(" x ");
+            stringb.append(Integer.toString(frame_descs_Array[j].wHeight));
+            frameDescriptorsResolutionArray[j] = stringb.toString();
+            scamFrameIndexArray[j] = frame_descs_Array[j].bFrameIndex;
+        }
+        final CFAlertDialog.Builder builder = new CFAlertDialog.Builder(mContext);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+        builder.setTitle("Camera Resolution (Frame Format)");
+        builder.setMessage("Your current Resolution: " + simageWidth + "x" + simageHeight);
+        int selectedItem = 0;
+        for (int a =0; a<scamFrameIndexArray.length; a++) {
+            if (scamFrameIndexArray[a] == scamFrameIndex) selectedItem = a;
+        }
+        builder.setSingleChoiceItems(frameDescriptorsResolutionArray, selectedItem, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int index) {
+                scamFrameIndex = frame_descs_Array[index].bFrameIndex;
+                System.out.println("scamFrameIndex = " + scamFrameIndex);
+                simageWidth = frame_descs_Array[index].wWidth;
+                simageHeight = frame_descs_Array[index].wHeight;
+            }
+        });
+        builder.addButton("DONE", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.END, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int index) {
+                if (scamFrameIndex == 0) {
+                    scamFrameIndex = frame_descs_Array[index].bFrameIndex;
+                }
+                if (simageWidth == 0 || simageHeight == 0) {
+                    scamFrameIndex = frame_descs_Array[index].bFrameIndex;
+                    simageWidth = frame_descs_Array[index].wWidth;
+                    simageHeight = frame_descs_Array[index].wHeight;
+                }
+                selectDWFrameIntervall(uvc_device_info, frame_descs_Array[index]);
+                dialogInterface.dismiss();
+            }
+        });
+        builder.show();
     }
 
     private void selectDWFrameIntervall(boolean automatic){
@@ -1604,11 +2077,6 @@ public class SaveToFile  {
                 builderArray[k] = "";
                 builderArray[k] += (  (10000000 / frameIndex.dwFrameInterval[k] )  + "  -  Frames per Second") ;
             }
-
-
-
-
-
             builder.setSingleChoiceItems(builderArray, selectedItem, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int index) {
@@ -1650,6 +2118,66 @@ public class SaveToFile  {
         }
     }
 
+    private void selectDWFrameIntervall(final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info, final JNA_I_LibUsb.uvc_frame_desc frame_desc){
+
+        dwFrameIntervalArray = new String [frame_desc.bFrameIntervalType];
+
+
+
+
+        log("frame_desc.bFrameIntervalType = " + frame_desc.bFrameIntervalType);
+
+        log("frame_desc.intervals.getValue() = " + frame_desc.intervals.getInt(0));
+        log("frame_desc.intervals.getValue() = " + frame_desc.intervals.getInt(4));
+        log("frame_desc.intervals.getValue() = " + frame_desc.intervals.getInt(8));
+        log("frame_desc.intervals.getValue() = " + frame_desc.intervals.getInt(12));
+        log("frame_desc.intervals.getValue() = " + frame_desc.intervals.getInt(16));
+
+
+
+        //Pointer p = frame_desc.intervals.getPointer();
+
+
+
+
+        for (int k=0,j=0; k<dwFrameIntervalArray.length; k++,j+=4) {
+            dwFrameIntervalArray[k] = Integer.toString(frame_desc.intervals.getInt(j));
+        }
+
+        final CFAlertDialog.Builder builder = new CFAlertDialog.Builder(mContext);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+        builder.setTitle("Select the camera Frame Intervall");
+        if (scamFrameInterval == 0)  builder.setMessage("Your current FrameInterval:  " + scamFrameInterval + " fps");
+        else builder.setMessage("Your current FrameInterval: " + (10000000 /  scamFrameInterval) + " fps");
+
+        int selectedItem = 0;
+        for (int a =0, j = 0; a<frame_desc.bFrameIntervalType; a++, j+=4) {
+            if (frame_desc.intervals.getInt(j) == scamFrameInterval) selectedItem = a;
+        }
+        String [] builderArray = new String[frame_desc.bFrameIntervalType];
+        for (int k=0, l=0; k<builderArray.length; k++, l+=4) {
+            builderArray[k] = "";
+            builderArray[k] += (  (10000000 / frame_desc.intervals.getInt(l) )  + "  -  Frames per Second") ;
+        }
+        builder.setSingleChoiceItems(builderArray, selectedItem, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int index) {
+
+                scamFrameInterval = frame_desc.intervals.getInt(index*4);
+
+            }
+        });
+        builder.addButton("DONE", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.END, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int index) {
+                if (scamFrameInterval == 0) scamFrameInterval = frame_desc.intervals.getInt(index*4);
+                writeTheValues();
+                saveYesNo();
+                dialogInterface.dismiss();
+            }
+        });
+        builder.show();
+    }
 
     private void saveYesNo() {
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {

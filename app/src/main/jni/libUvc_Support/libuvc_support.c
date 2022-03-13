@@ -4290,6 +4290,8 @@ struct uvc_device_info * listDeviceUvc(int fd) {
         if (ret == UVC_SUCCESS) camIsOpen = true;
     }
 
+    uvcDeviceHandle_global->info->stream_ifs->format_descs[0].frame_descs[0].intervals[1];
+
     if (camIsOpen) return  uvcDeviceHandle_global->info;
     else return NULL;
 

@@ -14,7 +14,6 @@
   <component name="ChangeListManager">
     <list default="true" id="719e864b-07d8-4e68-9be1-a80bb76647d2" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/cache.properties" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/cache.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" afterDir="false" />
@@ -27,24 +26,15 @@
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_webrtc_google_webrtc_1_0_22672_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_webrtc_google_webrtc_1_0_22672_aar.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules/app/Android-UVC-Camera.app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/Android-UVC-Camera.app.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/videortc/UsbCapturer.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/videortc/UsbCapturer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/videortc/WebRtcService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/videortc/WebRtcService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/AutomaticDetection/LibUsb_AutoDetect.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/AutomaticDetection/LibUsb_AutoDetect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/LibUsb/JNA_I_LibUsb.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/JNA_I_LibUsb/JNA_I_LibUsb.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDeviceUsbIso.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDeviceUsbIso.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/JNA_I_LibUsb/JNA_I_LibUsb.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/JNA_I_LibUsb/JNA_I_LibUsb.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SaveToFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SaveToFile.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDeviceUvc.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDeviceUvc.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivityUsbIso.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivityUsbIso.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivityUvc.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivityUvc.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/jni/libUvc_Support/libuvc_support.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libUvc_Support/libuvc_support.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libUvc_Support/libuvc_support.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libUvc_Support/libuvc_support.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libUvc_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libUvc_Support.so" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libUvc_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libUvc_Support.so" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libUvc_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/libUvc_Support.so" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libUvc_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/libUvc_Support.so" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,6 +49,23 @@
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
     </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="Android-UVC-Camera" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -77,6 +84,14 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
   <component name="ProjectId" id="20EuKt9QQ9ehhMIA98aEWZbdRMp" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -92,12 +107,13 @@
     <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="cidr.known.project.marker" value="true" />
+    <property name="com.intellij.openapi.externalSystem.service.settings.ExternalSystemGroupConfigurable" value="ALL" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../unRootedSample" />
     <property name="memory.settings.postsync.last.time.stamp" value="1642248332894" />
-    <property name="project.structure.last.edited" value="SDK Location" />
+    <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.17" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="settings.editor.selected.configurable" value="language.cpp.clang-tidy" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.project.gradle" />
   </component>
   <component name="PsdUISettings">
     <option name="LAST_EDITED_BUILD_TYPE" value="release" />

@@ -129,8 +129,8 @@ public interface JNA_I_LibUsb extends Library {
 
     // LibUsb Methods
     public int initLibUsb();
-
     public uvc_device_info.ByReference listDeviceUvc(int fd);
+
 
 
 
@@ -202,63 +202,48 @@ public interface JNA_I_LibUsb extends Library {
 
 
 
+
+
     ///////////////////  UVC Structures
+
+
+
 
 
     @FieldOrder({"config", "ctrl_if", "stream_ifs"})
     public static class uvc_device_info extends Structure {
-        public static class ByReference extends uvc_device_info implements Structure.ByReference {
-        }
-
-        public static class ByValue extends uvc_device_info implements Structure.ByValue {
-        }
-
-        /*
-        public Pointer config;
-
-        public Pointer ctrl_if;
-
-        public Pointer stream_ifs;
-
-        */
-
-
-
+        public static class ByReference extends uvc_device_info implements Structure.ByReference{}
+        public static class ByValue extends uvc_device_info implements Structure.ByValue{}
         public libusb_config_descriptor.ByReference config;
-
         public uvc_control_interface.ByValue ctrl_if;
-
         public uvc_streaming_interface.ByReference stream_ifs;
-
-
     }
 
     @FieldOrder({"bLength", "bDescriptorType", "wTotalLength", "bNumInterfaces", "bConfigurationValue", "iConfiguration",
             "bmAttributes", "MaxPower", "interFace", "extra", "extra_length"})
     public static class libusb_config_descriptor extends Structure {
-
-        public static class ByReference extends libusb_config_descriptor implements Structure.ByReference {
-        }
-
+        public static class ByReference extends libusb_config_descriptor implements Structure.ByReference { }
+        public static class ByValue extends libusb_config_descriptor implements Structure.ByValue { }
         public byte bLength;
         public byte bDescriptorType;
         public short wTotalLength;
+        /** Number of interfaces supported by this configuration */
         public byte bNumInterfaces;
         public byte bConfigurationValue;
         public byte iConfiguration;
         public byte bmAttributes;
         public byte MaxPower;
+        /** Array of interfaces supported by this configuration. The length of
+         * this array is determined by the bNumInterfaces field. */
         public libusb_interface.ByReference interFace;
         public String extra;
         public int extra_length;
-
     }
 
     @FieldOrder({"altsetting", "num_altsetting"})
     public static class libusb_interface extends Structure {
-        public static class ByReference extends libusb_interface implements Structure.ByReference {
-        }
-
+        public static class ByReference extends libusb_interface implements Structure.ByReference {  }
+        public static class ByValue extends libusb_interface implements Structure.ByValue {}
         public libusb_interface_descriptor.ByReference altsetting;
         public int num_altsetting;
     }
@@ -266,9 +251,8 @@ public interface JNA_I_LibUsb extends Library {
     @FieldOrder({"bLength", "bDescriptorType", "bInterfaceNumber", "bAlternateSetting", "bNumEndpoints", "bInterfaceClass", "bInterfaceSubClass",
             "bInterfaceProtocol", "iInterface", "endpoint", "extra", "extra_length"})
     public static class libusb_interface_descriptor extends Structure {
-        public static class ByReference extends libusb_interface_descriptor implements Structure.ByReference {
-        }
-
+        public static class ByReference extends libusb_interface_descriptor implements Structure.ByReference { }
+        public static class ByValue extends libusb_interface_descriptor implements Structure.ByValue {}
         public byte bLength;
         public byte bDescriptorType;
         public byte bInterfaceNumber;
@@ -286,9 +270,7 @@ public interface JNA_I_LibUsb extends Library {
     @FieldOrder({"bLength", "bDescriptorType", "bEndpointAddress", "bmAttributes", "wMaxPacketSize", "bInterval",
             "bRefresh", "bSynchAddress", "extra", "extra_length"})
     public static class libusb_endpoint_descriptor extends Structure {
-        public static class ByReference extends libusb_endpoint_descriptor implements Structure.ByReference {
-        }
-
+        public static class ByReference extends libusb_endpoint_descriptor implements Structure.ByReference {        }
         public byte bLength;
         public byte bDescriptorType;
         public byte bEndpointAddress;
@@ -307,12 +289,8 @@ public interface JNA_I_LibUsb extends Library {
     @FieldOrder({"parent", "input_term_descs", "output_term_descs", "processing_unit_descs", "extension_unit_descs",
             "bcdUVC", "bEndpointAddress", "bInterfaceNumber"})
     public static class uvc_control_interface extends Structure {
-        public static class ByReference extends uvc_control_interface implements Structure.ByReference {
-        }
-
-        public static class ByValue extends uvc_control_interface implements Structure.ByValue {
-        }
-
+        public static class ByReference extends uvc_control_interface implements Structure.ByReference {        }
+        public static class ByValue extends uvc_control_interface implements Structure.ByValue {        }
         public uvc_device_info.ByReference parent;
         public uvc_input_terminal.ByReference input_term_descs;
         public uvc_output_terminal.ByReference output_term_descs;
@@ -329,9 +307,7 @@ public interface JNA_I_LibUsb extends Library {
     @FieldOrder({"prev", "next", "bTerminalID", "wTerminalType", "wObjectiveFocalLengthMin",
             "wObjectiveFocalLengthMax", "wOcularFocalLength", "bmControls", "request"})
     public static class uvc_input_terminal extends Structure {
-        public static class ByReference extends uvc_input_terminal implements Structure.ByReference {
-        }
-
+        public static class ByReference extends uvc_input_terminal implements Structure.ByReference {        }
         public uvc_input_terminal.ByReference prev, next;
         /**
          * Index of the terminal within the device
@@ -353,20 +329,13 @@ public interface JNA_I_LibUsb extends Library {
          */
         public short request;
     }
-
-
-
-    ;
-
     /**
      * Representation of the interface that brings data into the UVC device
      */
     @FieldOrder({"prev", "next", "bTerminalID", "wTerminalType",
             "bAssocTerminal", "bSourceID", "iTerminal", "request"})
     public static class uvc_output_terminal extends Structure {
-        public static class ByReference extends uvc_output_terminal implements Structure.ByReference {
-        }
-
+        public static class ByReference extends uvc_output_terminal implements Structure.ByReference {        }
         uvc_output_terminal.ByReference prev, next;
         /** @todo */
         /**
@@ -391,9 +360,7 @@ public interface JNA_I_LibUsb extends Library {
      */
     @FieldOrder({"prev", "next", "bUnitID", "bSourceID", "bmControls", "request"})
     public static class uvc_processing_unit extends Structure {
-        public static class ByReference extends uvc_processing_unit implements Structure.ByReference {
-        }
-
+        public static class ByReference extends uvc_processing_unit implements Structure.ByReference {        }
         public uvc_processing_unit.ByReference prev, next;
         /**
          * Index of the processing unit within the device
@@ -418,9 +385,7 @@ public interface JNA_I_LibUsb extends Library {
      */
     @FieldOrder({"prev", "next", "bUnitID", "guidExtensionCode", "bmControls", "request"})
     public static class uvc_extension_unit extends Structure {
-        public static class ByReference extends uvc_extension_unit implements Structure.ByReference {
-        }
-
+        public static class ByReference extends uvc_extension_unit implements Structure.ByReference {        }
         public uvc_extension_unit.ByReference prev, next;
         /**
          * Index of the extension unit within the device
@@ -443,12 +408,8 @@ public interface JNA_I_LibUsb extends Library {
     @FieldOrder({"parent", "prev", "next", "bInterfaceNumber", "format_descs",
             "bEndpointAddress", "bTerminalLink", "bmInfo", "bStillCaptureMethod", "bTriggerSupport", "bTriggerUsage", "bmaControls"})
     public static class uvc_streaming_interface extends Structure {
-        public static class ByReference extends uvc_streaming_interface implements Structure.ByReference {
-        }
-
-        public static class ByValue extends uvc_streaming_interface implements Structure.ByValue {
-        }
-
+        public static class ByReference extends uvc_streaming_interface implements Structure.ByReference {        }
+        public static class ByValue extends uvc_streaming_interface implements Structure.ByValue {        }
         public uvc_device_info.ByReference parent;
         public uvc_streaming_interface.ByReference prev, next;
         /**
@@ -476,8 +437,8 @@ public interface JNA_I_LibUsb extends Library {
             "bDefaultFrameIndex", "bAspectRatioX", "bAspectRatioY",
             "bmInterlaceFlags", "bCopyProtect", "bVariableSize", "frame_descs"})
     public static class uvc_format_desc extends Structure {
-        public static class ByReference extends uvc_format_desc implements Structure.ByReference {
-        }
+        public static class ByReference extends uvc_format_desc implements Structure.ByReference {        }
+        public static class ByValue extends uvc_format_desc implements Structure.ByValue {        }
 
         public uvc_streaming_interface.ByReference parent;
         public uvc_format_desc.ByReference prev;
@@ -523,9 +484,8 @@ public interface JNA_I_LibUsb extends Library {
             "wWidth", "wHeight", "dwMinBitRate", "dwMaxBitRate", "dwMaxVideoFrameBufferSize", "dwDefaultFrameInterval",
             "dwMinFrameInterval", "dwMaxFrameInterval", "dwFrameIntervalStep", "bFrameIntervalType", "dwBytesPerLine", "intervals"})
     public static class uvc_frame_desc extends Structure {
-        public static class ByReference extends uvc_frame_desc implements Structure.ByReference {
-        }
-
+        public static class ByReference extends uvc_frame_desc implements Structure.ByReference {        }
+        public static class ByValue extends uvc_frame_desc implements Structure.ByValue {        }
         public uvc_format_desc.ByReference parent;
         public uvc_frame_desc.ByReference prev, next;
         /**
@@ -584,7 +544,7 @@ public interface JNA_I_LibUsb extends Library {
         /**
          * Available frame rates, zero-terminated (in 100ns units)
          */
-        public IntByReference intervals;
+        public Pointer intervals;
     }
 
 

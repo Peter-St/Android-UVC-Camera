@@ -148,6 +148,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
     public static boolean moveToNative;
     public boolean transferSucessful;
     public boolean bulkMode;
+    public static boolean isochronous;
 
 
     // Vales for debuging the camera
@@ -872,33 +873,20 @@ public class SetUpTheUsbDeviceUvc extends Activity {
     }
 
     private void listDevice(UsbDevice usbDevice) {
-
         if (camDevice == null) return;
         if (camDeviceConnection == null) camDeviceConnection = usbManager.openDevice(usbDevice);
-
-        //JNA_I_LibUsb.INSTANCE.listDeviceUvc(camDeviceConnection.getFileDescriptor());
-
+        // Get the Device Info
         final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info = JNA_I_LibUsb.INSTANCE.listDeviceUvc(camDeviceConnection.getFileDescriptor());
-
-
         if (uvc_device_info != null) {
             log ("DeviceInfo obtained !");
-
+            StringBuilder streamInterfaceEntries = new StringBuilder();
+            streamInterfaceEntries.append("List the Camera\n\n");
             log("uvc_device_info.stream_ifs.bInterfaceNumber = " + uvc_device_info.stream_ifs.bInterfaceNumber);
-
             log("uvc_device_info.stream_ifs.format_descs.bFormatIndex = " + uvc_device_info.stream_ifs.format_descs.bFormatIndex);
-
             log("FrameIndex = " + uvc_device_info.stream_ifs.format_descs.frame_descs.bFrameIndex);
-
             JNA_I_LibUsb.uvc_format_desc uvc_format_desc;
             JNA_I_LibUsb.uvc_frame_desc uvc_frame_desc;
-
-            StringBuilder streamInterfaceEntries = new StringBuilder();
-
-            streamInterfaceEntries.append("List the Camera\n\n");
-
             uvc_format_desc = uvc_device_info.stream_ifs.format_descs;
-
             while (uvc_format_desc != null ) {
                 streamInterfaceEntries.append("\n");
                 streamInterfaceEntries.append("FormatDescriptor " + uvc_format_desc.bFormatIndex + "\n");
@@ -907,18 +895,48 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                 while (uvc_frame_desc != null ) {
                     streamInterfaceEntries.append("   FrameIndex " + uvc_frame_desc.bFrameIndex + "\n");
                     streamInterfaceEntries.append("      " + uvc_frame_desc.wWidth + " x " + uvc_frame_desc.wHeight + "\n");
-                    streamInterfaceEntries.append("      Interval = " + (10000000 / uvc_frame_desc.intervals.getValue() )  + " frames/sec\n");
-
+                    //streamInterfaceEntries.append("      Interval = " + (10000000 / uvc_frame_desc.intervals.getValue() )  + " frames/sec\n");
                     log("FrameIndex = " + uvc_frame_desc.bFrameIndex);
                     uvc_frame_desc = uvc_frame_desc.next;
                 }
-
                 uvc_format_desc = uvc_format_desc.next;
             }
-
             JNA_I_LibUsb.uvc_streaming_interface streaming_interface = uvc_device_info.stream_ifs.next;
             if (streaming_interface != null) log("streaming_interface.bInterfaceNumber = " + streaming_interface.bInterfaceNumber);
+            final JNA_I_LibUsb.libusb_interface[] interfaceArray = (JNA_I_LibUsb.libusb_interface[])uvc_device_info.config.interFace.toArray(uvc_device_info.config.bNumInterfaces)  ;
+            // Check if the Device is UVC
+            isochronous = (interfaceArray[uvc_device_info.stream_ifs.bInterfaceNumber].num_altsetting > 1);
+            if (isochronous) {
+                log("VS interface has multiple altsettings --> isochronous transfer supported");
+                streamInterfaceEntries.append("  Isochronous transfer supported\n");
+            } else {
+                log("VS interface has only one altsetting --> isochronous transfer not supported");
+                streamInterfaceEntries.append(" VS interface has only one altsettings --> isochronous transfer not supported\n");
+                return;
+            }
+            List<Integer> maxPacketSizeArray = new ArrayList<Integer>();
+            for (int intLoop=0; intLoop<uvc_device_info.config.bNumInterfaces; intLoop++) {
+                log("Interface " + intLoop +  " has " + interfaceArray[intLoop].num_altsetting + " altsettings\n");
+                streamInterfaceEntries.append("\nInterface " + intLoop +  " has " + interfaceArray[intLoop].num_altsetting + " altsettings\n");
 
+                final JNA_I_LibUsb.libusb_interface_descriptor[] altsettingArray = (JNA_I_LibUsb.libusb_interface_descriptor[])
+                        interfaceArray[uvc_device_info.stream_ifs.bInterfaceNumber].altsetting.toArray(interfaceArray[uvc_device_info.stream_ifs.bInterfaceNumber].num_altsetting)  ;
+                //log("altsettingArray obtained");
+                for (int altLoop=0; altLoop<interfaceArray[intLoop].num_altsetting; altLoop++) {
+                    if(altsettingArray[altLoop].endpoint != null) {
+                        log("Altsetting " + altLoop +  " has a packetSize of: " + returnConvertedValue(altsettingArray[altLoop].endpoint.wMaxPacketSize)  + " \n");
+                        streamInterfaceEntries.append("   Altsetting " + altLoop +  " maxPacketSize: " + returnConvertedValue(altsettingArray[altLoop].endpoint.wMaxPacketSize) + " \n");
+                        maxPacketSizeArray.add(returnConvertedValue(altsettingArray[altLoop].endpoint.wMaxPacketSize));
+                    } else {
+                        log("Altsetting has no endpoint");
+                        streamInterfaceEntries.append("  Altsetting has no endpoint\n");
+                    }
+                }
+            }
+            convertedMaxPacketSize = new int[maxPacketSizeArray.size()];
+            for (int intLoop=0; intLoop<maxPacketSizeArray.size(); intLoop++) {
+                convertedMaxPacketSize[intLoop] = maxPacketSizeArray.get(intLoop);
+            }
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -938,175 +956,14 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                     //setContentView(R.layout.layout_main);
                     tv = (ZoomTextView) findViewById(R.id.textDarstellung);
                     tv.setSingleLine(false);
-                    tv.setText("There is something wrong with your camera\n\nThere have not been detected enought interfaces from your usb device\n\n" + usbDevice.getInterfaceCount() + " - Interfaces have been found, but there should be at least more than 2");
+                    tv.setText("There is something wrong with your camera\n\nThere have not been detected enought interfaces from your usb device\n\n"
+                            + usbDevice.getInterfaceCount() + " - Interfaces have been found, but there should be at least more than 2");
                     tv.setTextColor(darker(Color.RED, 50));
                     tv.bringToFront();
                 }
             });
             log ("DeviceInfo = null   ;-/");
         }
-
-
-        /*
-        int a = 0;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (usbDevice.getConfigurationCount() > 1) {
-                AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
-                builderSingle.setIcon(R.drawable.ic_menu_camera);
-                builderSingle.setTitle("Your camera has more than one configurations:");
-                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_singlechoice);
-                for (int i = 0; i < usbDevice.getConfigurationCount(); i++) {
-                    arrayAdapter.add(Integer.toString(i));
-                }
-                builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String input = arrayAdapter.getItem(which);
-                        int configurations = Integer.parseInt(input.toString());
-                        System.out.println("usbDevice.getConfigurationCount() = " + usbDevice.getConfigurationCount());
-                        System.out.println("configurations = " + configurations);
-                        //camDeviceConnection.setConfiguration(usbDevice.getConfiguration(configurations));
-                    }
-                });
-                builderSingle.show();
-            } else log("1 Configuration found");
-        }
-        if (usbDevice.getInterfaceCount() == 0) {
-            if (moveToNative) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        //setContentView(R.layout.layout_main);
-                        tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                        tv.setSingleLine(false);
-                        tv.setText("Only Nate Mode Available:\n\nCameraDevice:\n\n" + "USB device \"" + usbDevice.getDeviceName() + "\": " + usbDevice);
-                        tv.setTextColor(darker(Color.BLUE, 50));
-                        tv.bringToFront();
-                    }
-                });
-                return;
-            } else runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    //setContentView(R.layout.layout_main);
-                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                    tv.setSingleLine(false);
-                    tv.setText("There is something wrong with your camera\n\nThere have not been detected enought interfaces from your usb device\n\n" + usbDevice.getInterfaceCount() + " - Interfaces have been found, but there should be at least more than 2");
-                    tv.setTextColor(darker(Color.RED, 50));
-                    tv.bringToFront();
-                }
-            });
-            return;
-        } else if (usbDevice.getInterfaceCount() == 1) {
-            convertedMaxPacketSize = new int[(usbDevice.getInterfaceCount())];
-            stringBuilder = new StringBuilder();
-            int interfaces = usbDevice.getInterfaceCount();
-            for (int i = 0; i < interfaces; i++) {
-                UsbInterface usbInterface = usbDevice.getInterface(i);
-                log("Interface " + interfaces + " opened");
-                log("    usbInterface.getId() = " + usbInterface.getId());
-                log("    usbInterface.getInterfaceClass() = " + usbInterface.getInterfaceClass());
-                log("    usbInterface.getInterfaceSubclass() = " + usbInterface.getInterfaceSubclass());
-                log("    usbInterface.getEndpointCount() = " + usbInterface.getEndpointCount());
-                log("  Start counting the endpoints:");
-                StringBuilder logEntry = new StringBuilder("InterfaceID " + usbInterface.getId() + "\n  [ Interfaceclass = " + usbInterface.getInterfaceClass() + " / InterfaceSubclass = " + usbInterface.getInterfaceSubclass() + " ]");
-                stringBuilder.append(logEntry.toString());
-                stringBuilder.append("\n");
-                int endpoints = usbInterface.getEndpointCount();
-                log("usbInterface.getEndpointCount() = " + usbInterface.getEndpointCount());
-                for (int j = 0; j < endpoints; j++) {
-                    UsbEndpoint usbEndpoint = usbInterface.getEndpoint(j);
-                    log("- Endpoint: addr=" + String.format("0x%02x ", usbEndpoint.getAddress()).toString() + " maxPacketSize=" + returnConvertedValue(usbEndpoint.getMaxPacketSize()) + " type=" + usbEndpoint.getType() + " ]");
-                    StringBuilder logEntry2 = new StringBuilder("    [ Endpoint " + j + " - addr " + String.format("0x%02x ", usbEndpoint.getAddress()).toString() + ", maxPacketSize=" + returnConvertedValue(usbEndpoint.getMaxPacketSize()) + " ]");
-                    stringBuilder.append(logEntry2.toString());
-                    stringBuilder.append("\n");
-                    if (usbInterface.getId() == 1) {
-                        convertedMaxPacketSize[a] = returnConvertedValue(usbEndpoint.getMaxPacketSize());
-                        a++;
-                    }
-                    if (usbEndpoint.getAddress() == 0x03) {
-                        camStreamingEndpoint = usbEndpoint;
-                        log("Endpointadress set");
-                    }
-                }
-            }
-            stringBuilder.append("\n\nYour Camera looks like to be no UVC supported device.\nThis means your camera can't be used by this app, because your camera can't be acessed over the Universal Video Class Protocoll");
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                    tv.setSingleLine(false);
-                    tv.setText(stringBuilder.toString());
-                    tv.setTextColor(Color.BLACK);
-                    tv.bringToFront();
-                }
-            });
-            moveToNative = true;
-        }
-        // STANDARD METHOD FOR UVC CAMS
-        else {
-            //MaxPacketSizeArray
-            List<Integer> maxPacketSizeArray = new ArrayList<Integer>();
-            log("Interface count: " + usbDevice.getInterfaceCount());
-            int interfaces = usbDevice.getInterfaceCount();
-            stringBuilder = new StringBuilder();
-            boolean cont = false, stream = false;
-            for (int i = 0; i < interfaces; i++) {
-                UsbInterface usbInterface = usbDevice.getInterface(i);
-                log("[ - Interface: " + usbInterface.getId() + " class=" + usbInterface.getInterfaceClass() + " subclass=" + usbInterface.getInterfaceSubclass());
-                // UsbInterface.getAlternateSetting() has been added in Android 5.
-                log("usbInterface.getEndpointCount = " + usbInterface.getEndpointCount());
-                int endpoints = usbInterface.getEndpointCount();
-                StringBuilder logEntry = new StringBuilder("InterfaceID " + usbInterface.getId() + "\n    [ Interfaceclass = " + usbInterface.getInterfaceClass() + " / InterfaceSubclass = " + usbInterface.getInterfaceSubclass() + " ]");
-                if (!cont) {
-                    stringBuilder.append(logEntry.toString());
-                    stringBuilder.append("\n");
-                } else if (!stream) {
-                    stringBuilder.append(logEntry.toString());
-                    stringBuilder.append("\n");
-                }
-                if (usbInterface.getId() == 0) cont = true;
-                else if (usbInterface.getId() == 1) stream = true;
-                for (int j = 0; j < endpoints; j++) {
-                    UsbEndpoint usbEndpoint = usbInterface.getEndpoint(j);
-                    log("- Endpoint: address=" + String.format("0x%02x ", usbEndpoint.getAddress()).toString() + " maxPacketSize=" + returnConvertedValue(usbEndpoint.getMaxPacketSize()) + " type=" + usbEndpoint.getType() + " ]");
-                    StringBuilder logEntry2 = new StringBuilder("        [ Endpoint " + Math.max(0, (i - 1)) + " - address " + String.format("0x%02x ", usbEndpoint.getAddress()).toString() + " - maxPacketSize=" + returnConvertedValue(usbEndpoint.getMaxPacketSize()) + " ]");
-                    stringBuilder.append(logEntry2.toString());
-                    stringBuilder.append("\n");
-                    if (usbInterface.getId() == 1 && usbInterface.getEndpointCount() > 0) {
-                        maxPacketSizeArray.add(returnConvertedValue(usbEndpoint.getMaxPacketSize()));
-                        //convertedMaxPacketSize[a] = returnConvertedValue(usbEndpoint.getMaxPacketSize());
-                        a++;
-                    }
-                }
-            }
-            //convertedMaxPacketSize = new int [(usbDevice.getInterfaceCount()-2)];
-            log("Number of MaxPacketSizes = " + maxPacketSizeArray.size());
-            convertedMaxPacketSize = new int[maxPacketSizeArray.size()];
-            for (int c = 0; c < maxPacketSizeArray.size(); c++) {
-                convertedMaxPacketSize[c] = maxPacketSizeArray.get(c);
-            }
-            stringBuilder.append("\n\n\n\nThe number of the Endpoint represents the value of the Altsetting\nIf the Altsetting is 0 than the Video Control Interface will be used.\nIf the Altsetting is higher, than the Video Stream Interface with its specific Max Packet Size will be used");
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    //setContentView(R.layout.layout_main);
-                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                    tv.setSingleLine(false);
-                    tv.setText(stringBuilder.toString());
-                    tv.bringToFront();
-                    tv.setTextColor(Color.BLACK);
-                }
-            });
-        }
-
-         */
     }
 
     private int returnConvertedValue(int wSize) {
@@ -1285,76 +1142,85 @@ public class SetUpTheUsbDeviceUvc extends Activity {
         }
         //if (bulkMode) return;
         if (!init) {
-            log("getting the raw descriptors");
-            byte[] a = camDeviceConnection.getRawDescriptors();
-            ByteBuffer uvcData = ByteBuffer.wrap(a);
-            uvc_descriptor = new UVC_Descriptor(uvcData);
-            CFAlertDialog alertDialog;
-            CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
-            LayoutInflater li = LayoutInflater.from(this);
-            View setup_auto_manual_view = li.inflate(R.layout.set_up_the_device_manual_automatic, null);
-            builder.setHeaderView(setup_auto_manual_view);
-            builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
-            alertDialog = builder.show();
-            CFPushButton automatic = setup_auto_manual_view.findViewById(R.id.automatic);
-            automatic.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (!bulkMode) {
-                        displayMessage("Please select the manual Method");
-                        return;
-                    }
-                    log("Automatic Button Pressed");
-                    automaticStart = true;
-                    if (convertedMaxPacketSize == null) listDevice(camDevice);
-                    ProgressBar progressBar = findViewById(R.id.progressBar);
-                    progressBar.setVisibility(View.VISIBLE);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                            tv.setText("");
-                            tv.setTextColor(Color.BLACK);
-                        }
-                    });
-                    alertDialog.dismiss();
-                }
-            });
-            CFPushButton manual = setup_auto_manual_view.findViewById(R.id.manual);
-            manual.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    log("Manual Button Pressed");
-                    // Set up from UVC manually
-                    if (uvc_descriptor.phraseUvcData() == 0) {
-                        if (convertedMaxPacketSize == null) listDevice(camDevice);
-                        if (uvc_descriptor.bcdUSB[0] == 3) {
+            if (convertedMaxPacketSize == null) listDevice(camDevice);
+            if(!isochronous) {
+                displayMessage("Camera not supported");
+                log("No Isochronous Camera");
+            } else {
 
+
+                CFAlertDialog alertDialog;
+                CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
+                LayoutInflater li = LayoutInflater.from(this);
+                View setup_auto_manual_view = li.inflate(R.layout.set_up_the_device_manual_automatic, null);
+                builder.setHeaderView(setup_auto_manual_view);
+                builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+                alertDialog = builder.show();
+                CFPushButton automatic = setup_auto_manual_view.findViewById(R.id.automatic);
+                automatic.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (!bulkMode) {
+                            displayMessage("Please select the manual Method");
+                            return;
                         }
+                        log("Automatic Button Pressed");
+                        //automaticStart = true;
+                        if (convertedMaxPacketSize == null) listDevice(camDevice);
+                       /*
+                        ProgressBar progressBar = findViewById(R.id.progressBar);
+                        progressBar.setVisibility(View.VISIBLE);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tv = (ZoomTextView) findViewById(R.id.textDarstellung);
+                                tv.setText("");
+                                tv.setTextColor(Color.BLACK);
+                            }
+                        });
+
+                        */
+                        alertDialog.dismiss();
+                    }
+                });
+                CFPushButton manual = setup_auto_manual_view.findViewById(R.id.manual);
+                manual.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        log("Manual Button Pressed");
+                        // Set up from UVC manually
+                        if (convertedMaxPacketSize == null) listDevice(camDevice);
                         log("running stf.setUvcSettingsMethod");
-                        stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize, false);
+                        final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info = JNA_I_LibUsb.INSTANCE.listDeviceUvc(camDeviceConnection.getFileDescriptor());
+                        stf.setUpWithUvcValues_libusb(uvc_device_info, convertedMaxPacketSize);
+                        alertDialog.dismiss();
                     }
-                    alertDialog.dismiss();
-                }
-            });
-            alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                    progress = "1% done";
-                    if (automaticStart) {
-                        // Automatic UVC Detection
-                        packetsPerRequest = 1;
-                        activeUrbs = 1;
-                        closeCameraDevice();
-                        doneTransfers = 0;
-                        if (libUsb) {
-                            startLibUsbAutoDetection();
-                        } else {
-                            startJnaAutoDetection();
+                });
+                alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        progress = "1% done";
+                        if (automaticStart) {
+                            // Automatic UVC Detection
+                            packetsPerRequest = 1;
+                            activeUrbs = 1;
+                            closeCameraDevice();
+                            doneTransfers = 0;
+                            if (libUsb) {
+                                startLibUsbAutoDetection();
+                            } else {
+                                startJnaAutoDetection();
+                            }
                         }
                     }
-                }
-            });
+                });
+
+
+
+
+
+
+            }
         }
     }
 
