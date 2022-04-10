@@ -214,13 +214,14 @@ uvc_error_t uvc_query_stream_ctrl(uvc_device_handle_t *devh,
 			}
 		}
 	}
-
+	LOGDEB("before the CTL");
 	/* do the transfer */
 	err = libusb_control_transfer(devh->usb_devh,
 			req == UVC_SET_CUR ? 0x21 : 0xA1, req,
 			probe ? (UVC_VS_PROBE_CONTROL << 8) : (UVC_VS_COMMIT_CONTROL << 8),
 			ctrl->bInterfaceNumber, buf, len, 0);
-
+	if (err <= 0) LOGDEB("Control Transfer failed");
+	if (err == len) LOGDEB("Control Transfer Sucessful");
 	if (UNLIKELY(err <= 0)) {
 		// when libusb_control_transfer returned error or transfer bytes was zero.
 		if (!err) {
@@ -545,6 +546,8 @@ uvc_error_t uvc_get_stream_ctrl_format_size_fps(uvc_device_handle_t *devh,
 
 	ENTER();
 
+    //LOGDEB("uvc_get_stream_ctrl_format_size_fps");
+
 	uvc_streaming_interface_t *stream_if;
 	uvc_error_t result;
 
@@ -560,6 +563,7 @@ uvc_error_t uvc_get_stream_ctrl_format_size_fps(uvc_device_handle_t *devh,
 
 			result = _uvc_get_stream_ctrl_format(devh, stream_if, ctrl, format, width, height, min_fps, max_fps);
 			if (!result) {	// UVC_SUCCESS
+				LOGDEB("_uvc_get_stream_ctrl_format = UVC_SUCCESS");
 				goto found;
 			}
 		}
@@ -585,7 +589,8 @@ uvc_error_t uvc_probe_stream_ctrl(uvc_device_handle_t *devh,
 	if (UNLIKELY(err)) {
 		LOGE("uvc_claim_if:err=%d", err);
 		return err;
-	}
+	} else	LOGDEB("uvc_claim_if = UVC_SUCCESS");
+
 
 	err = uvc_query_stream_ctrl(devh, ctrl, 1, UVC_SET_CUR);	// probe query
 	if (UNLIKELY(err)) {

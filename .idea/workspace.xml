@@ -14,27 +14,24 @@
   <component name="ChangeListManager">
     <list default="true" id="719e864b-07d8-4e68-9be1-a80bb76647d2" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_constraint_constraint_layout_2_0_4_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_android_support_constraint_constraint_layout_2_0_4_aar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_crowdfire_cfalertdialog_cfalertdialog_1_1_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_crowdfire_cfalertdialog_cfalertdialog_1_1_0_aar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_rafakob_floatingedittext_1_0_5_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_rafakob_floatingedittext_1_0_5_aar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_tomer_fadingtextview_2_6_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_tomer_fadingtextview_2_6_aar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__io_github_yavski_fab_speed_dial_1_0_7_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__io_github_yavski_fab_speed_dial_1_0_7_aar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__io_reactivex_rxjava2_rxandroid_2_0_2_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__io_reactivex_rxjava2_rxandroid_2_0_2_aar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_webrtc_google_webrtc_1_0_22672_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_webrtc_google_webrtc_1_0_22672_aar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/app/Android-UVC-Camera.app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/Android-UVC-Camera.app.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/JNA_I_LibUsb/JNA_I_LibUsb.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/JNA_I_LibUsb/JNA_I_LibUsb.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SaveToFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SaveToFile.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDeviceUvc.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDeviceUvc.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/jni/libUvc_Support/libuvc_support.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libUvc_Support/libuvc_support.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libUvc_Support/libuvc_support.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libUvc_Support/libuvc_support.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libuvc/include/libuvc/libuvc.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libuvc/include/libuvc/libuvc.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libuvc/include/libuvc/libuvc_internal.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libuvc/include/libuvc/libuvc_internal.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libuvc/src/diag.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libuvc/src/diag.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libuvc/src/stream.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libuvc/src/stream.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libUvc_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libUvc_Support.so" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libuvc.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libuvc.so" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libUvc_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libUvc_Support.so" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libuvc.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libuvc.so" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libUvc_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/libUvc_Support.so" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libuvc.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/libuvc.so" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libUvc_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/libUvc_Support.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libuvc.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/libuvc.so" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +41,7 @@
   <component name="ClangdSettings">
     <option name="clangTidyViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[192.168.10.184:5555]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[192.168.50.8:5555]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />

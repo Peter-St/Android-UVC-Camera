@@ -52,7 +52,16 @@ This Repository is provided "as is", without warranties of any kind.
 ///////////////// LibUvc ////////////////////////////////
 
 extern int initLibUsb() ;
-struct uvc_device_info * listDeviceUvc(int fd) ;
+extern struct uvc_device_info * listDeviceUvc(int fd) ;
+extern void probeCommitControlUVC();
+
+extern struct uvc_stream_ctrl probeSetCur_TransferUVC();
+extern struct uvc_stream_ctrl probeGetCur_TransferUVC(struct uvc_stream_ctrl ctrl);
+extern struct uvc_stream_ctrl CommitSetCur_TransferUVC(struct uvc_stream_ctrl ctrl);
+extern struct uvc_stream_ctrl CommitGetCur_TransferUVC(struct uvc_stream_ctrl ctrl);
+
+extern void getOneFrameUVC(struct uvc_stream_ctrl ctrl);
+
 
 
 //////////////// Auto Detect Methods ////////////////////
@@ -103,8 +112,6 @@ extern void native_uvc_unref_device();
 extern void closeLibUsb();
 extern int libUsb_open_def_fd(int vid, int pid, const char *serial, int fd, int busnum, int devaddr);
 extern unsigned char * probeCommitControl();
-
-
 
 // Camera Set up Methods
 extern void startAutoDetection ();

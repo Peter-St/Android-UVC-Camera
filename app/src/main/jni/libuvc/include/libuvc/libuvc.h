@@ -103,8 +103,9 @@ enum uvc_frame_format {
 	/** YUYV/YUV2/YUV422: YUV encoding with one luminance value per pixel and
 	 * one UV (chrominance) pair for every two pixels.
 	 */
-	UVC_FRAME_FORMAT_YUYV,
+	UVC_FRAME_FORMAT_YUYV,      // Added 9.4.2022 by Peter Stoiber
 	UVC_FRAME_FORMAT_UYVY,
+	UVC_FRAME_FORMAT_NV21,
 	/** 16-bits RGB */
 	UVC_FRAME_FORMAT_RGB565,	// RGB565
 	/** 24-bit RGB */

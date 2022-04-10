@@ -128,35 +128,36 @@ void uvc_print_stream_ctrl(uvc_stream_ctrl_t *ctrl, FILE *stream) {
 	if (stream == NULL)
 		stream = stderr;
 
-	FPRINTF(stream, "bmHint: %04x\n", ctrl->bmHint);
-	FPRINTF(stream, "bFormatIndex: %d\n", ctrl->bFormatIndex);
-	FPRINTF(stream, "bFrameIndex: %d\n", ctrl->bFrameIndex);
-	FPRINTF(stream, "dwFrameInterval: %u\n", ctrl->dwFrameInterval);
-	FPRINTF(stream, "wKeyFrameRate: %d\n", ctrl->wKeyFrameRate);
-	FPRINTF(stream, "wPFrameRate: %d\n", ctrl->wPFrameRate);
-	FPRINTF(stream, "wCompQuality: %d\n", ctrl->wCompQuality);
-	FPRINTF(stream, "wCompWindowSize: %d\n", ctrl->wCompWindowSize);
-	FPRINTF(stream, "wDelay: %d\n", ctrl->wDelay);
-	FPRINTF(stream, "dwMaxVideoFrameSize: %u\n", ctrl->dwMaxVideoFrameSize);
-	FPRINTF(stream, "dwMaxPayloadTransferSize: %u\n", ctrl->dwMaxPayloadTransferSize);
-	FPRINTF(stream, "bInterfaceNumber: %d\n", ctrl->bInterfaceNumber);
+	LOGDEB("bmHint: %04x\n", ctrl->bmHint);
+
+	LOGDEB( "bFormatIndex: %d\n", ctrl->bFormatIndex);
+	LOGDEB( "bFrameIndex: %d\n", ctrl->bFrameIndex);
+	LOGDEB( "dwFrameInterval: %u\n", ctrl->dwFrameInterval);
+	LOGDEB( "wKeyFrameRate: %d\n", ctrl->wKeyFrameRate);
+	LOGDEB( "wPFrameRate: %d\n", ctrl->wPFrameRate);
+	LOGDEB( "wCompQuality: %d\n", ctrl->wCompQuality);
+	LOGDEB( "wCompWindowSize: %d\n", ctrl->wCompWindowSize);
+	LOGDEB( "wDelay: %d\n", ctrl->wDelay);
+	LOGDEB( "dwMaxVideoFrameSize: %u\n", ctrl->dwMaxVideoFrameSize);
+	LOGDEB( "dwMaxPayloadTransferSize: %u\n", ctrl->dwMaxPayloadTransferSize);
+	LOGDEB( "bInterfaceNumber: %d\n", ctrl->bInterfaceNumber);
 //
 	/** add UVC 1.1 parameters */
-	FPRINTF(stream, "dwClockFrequency: %d\n", ctrl->dwClockFrequency);
-	FPRINTF(stream, "bmFramingInfo: %d\n", ctrl->bmFramingInfo);
-	FPRINTF(stream, "bPreferedVersion: %d\n", ctrl->bPreferedVersion);
-	FPRINTF(stream, "bMinVersion: %d\n", ctrl->bMinVersion);
-	FPRINTF(stream, "bMaxVersion: %d\n", ctrl->bMaxVersion);
+	LOGDEB( "dwClockFrequency: %d\n", ctrl->dwClockFrequency);
+	LOGDEB( "bmFramingInfo: %d\n", ctrl->bmFramingInfo);
+	LOGDEB( "bPreferedVersion: %d\n", ctrl->bPreferedVersion);
+	LOGDEB( "bMinVersion: %d\n", ctrl->bMinVersion);
+	LOGDEB( "bMaxVersion: %d\n", ctrl->bMaxVersion);
 	/** add UVC 1.5 parameters */
-	FPRINTF(stream, "bUsage: %d\n", ctrl->bUsage);
-	FPRINTF(stream, "bBitDepthLuma: %d\n", ctrl->bBitDepthLuma);
-	FPRINTF(stream, "bmSettings: %d\n", ctrl->bmSettings);
-	FPRINTF(stream, "bMaxNumberOfRefFramesPlus1: %d\n", ctrl->bMaxNumberOfRefFramesPlus1);
-	FPRINTF(stream, "bmRateControlModes: %d\n", ctrl->bmRateControlModes);
+	LOGDEB( "bUsage: %d\n", ctrl->bUsage);
+	LOGDEB( "bBitDepthLuma: %d\n", ctrl->bBitDepthLuma);
+	LOGDEB( "bmSettings: %d\n", ctrl->bmSettings);
+	LOGDEB( "bMaxNumberOfRefFramesPlus1: %d\n", ctrl->bMaxNumberOfRefFramesPlus1);
+	LOGDEB( "bmRateControlModes: %d\n", ctrl->bmRateControlModes);
 #if !defined(__LP64__)
-	FPRINTF(stream, "bmLayoutPerStream: %llx\n", ctrl->bmLayoutPerStream);
+	LOGDEB( "bmLayoutPerStream: %llx\n", ctrl->bmLayoutPerStream);
 #else
-	FPRINTF(stream, "bmLayoutPerStream: %lx\n", ctrl->bmLayoutPerStream);
+	LOGDEB( "bmLayoutPerStream: %lx\n", ctrl->bmLayoutPerStream);
 #endif
 }
 

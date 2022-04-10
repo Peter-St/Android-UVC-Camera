@@ -23,6 +23,7 @@ This Repository is provided "as is", without warranties of any kind.
 package humer.UvcCamera.JNA_I_LibUsb;
 
 import com.sun.jna.Callback;
+import com.sun.jna.IntegerType;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
@@ -89,6 +90,15 @@ public interface JNA_I_LibUsb extends Library {
                                       int camFrameInde, int camFrameInterva, int FD);
 
     //public void probeCommitControl_cleanup();
+
+    public void probeCommitControlUVC();
+
+    public uvc_stream_ctrl.ByValue probeSetCur_TransferUVC();
+    public uvc_stream_ctrl.ByValue probeGetCur_TransferUVC(uvc_stream_ctrl.ByValue ctrl);
+    public uvc_stream_ctrl.ByValue CommitSetCur_TransferUVC(uvc_stream_ctrl.ByValue ctrl);
+    public uvc_stream_ctrl.ByValue CommitGetCur_TransferUVC(uvc_stream_ctrl.ByValue ctrl);
+
+    public void getOneFrameUVC(uvc_stream_ctrl.ByValue ctrl);
 
     public void getFramesOverLibUsb(int yuvFrameIsZero, int stream, int whichTestrun);
 
@@ -199,7 +209,6 @@ public interface JNA_I_LibUsb extends Library {
             return value;
         }
     }
-
 
 
 
@@ -547,6 +556,112 @@ public interface JNA_I_LibUsb extends Library {
         public Pointer intervals;
     }
 
+    @FieldOrder({"bmHint", "bFormatIndex", "bFrameIndex", "dwFrameInterval", "wKeyFrameRate", "wPFrameRate",
+            "wCompQuality", "wCompWindowSize", "wDelay", "dwMaxVideoFrameSize", "dwMaxPayloadTransferSize", "dwClockFrequency",
+            "bmFramingInfo", "bPreferedVersion", "bMinVersion", "bMaxVersion",
+            "bUsage", "bBitDepthLuma", "bmSettings", "bMaxNumberOfRefFramesPlus1", "bmRateControlModes", "bmLayoutPerStream", "bInterfaceNumber"})
+    public static class uvc_stream_ctrl extends Structure {
+        public static class ByReference extends uvc_stream_ctrl implements Structure.ByReference {        }
+        public static class ByValue extends uvc_stream_ctrl implements Structure.ByValue {        }
+        public short bmHint;
+        public byte bFormatIndex;
+        public byte bFrameIndex;
+        public int dwFrameInterval;
+        public short wKeyFrameRate;
+        public short wPFrameRate;
+        public short wCompQuality;
+        public short wCompWindowSize;
+        public short wDelay;
+        public int dwMaxVideoFrameSize;
+        public int dwMaxPayloadTransferSize;
+        /** XXX add UVC 1.1 parameters */
+        public int dwClockFrequency;
+        public byte bmFramingInfo;
+        public byte bPreferedVersion;
+        public byte bMinVersion;
+        public byte bMaxVersion;
+        /** XXX add UVC 1.5 parameters */
+        public byte bUsage;
+        public byte bBitDepthLuma;
+        public byte bmSettings;
+        public byte bMaxNumberOfRefFramesPlus1;
+        public short bmRateControlModes;
+        public long bmLayoutPerStream;
+        //
+        public byte bInterfaceNumber;
+    }
 
+    public static class size_t extends IntegerType {
+        public size_t() { this(0); }
+        public size_t(long value) { super(Native.SIZE_T_SIZE, value); }
+    }
+
+    /** An image frame received from the UVC device
+     * @ingroup streaming
+     */
+    @FieldOrder({"data", "data_bytes", "actual_bytes", "width", "height", "frame_format",
+            "step", "sequence", "capture_time", "source", "library_owns_data"})
+    public static class uvc_frame extends Structure {
+        public static class ByReference extends uvc_frame implements Structure.ByReference {        }
+        public static class ByValue extends uvc_frame implements Structure.ByValue {        }
+        public Pointer data;
+        public size_t data_bytes;
+        public size_t actual_bytes;
+        public int width;
+        public int height;
+        public int frame_format;
+
+        public size_t step;
+        public int sequence;
+        public timeval capture_time;
+        /** Handle on the device that produced the image.
+         * @warning You must not call any uvc_* functions during a callback. */
+        public Pointer source;
+        public byte library_owns_data;
+    }
+    @FieldOrder({"tv_sec", "tv_usec"})
+    public static class timeval extends Structure {
+        /**
+         * Seconds.<br>
+         * C type : __time_t
+         */
+        public int tv_sec;
+        /**
+         * Microseconds.<br>
+         * C type : __suseconds_t
+         */
+        public int tv_usec;
+        public timeval() {
+            super();
+        }
+        public timeval(int tv_sec, int tv_usec) {
+            super();
+            this.tv_sec = tv_sec;
+            this.tv_usec = tv_usec;
+        }
+        protected ByReference newByReference() {
+            ByReference s = new ByReference();
+            s.useMemory(getPointer());
+            write();
+            s.read();
+            return s;
+        }
+        protected ByValue newByValue() {
+            ByValue s = new ByValue();
+            s.useMemory(getPointer());
+            write();
+            s.read();
+            return s;
+        }
+        protected timeval newInstance() {
+            timeval s = new timeval();
+            s.useMemory(getPointer());
+            write();
+            s.read();
+            return s;
+        }
+        public static class ByReference extends timeval implements com.sun.jna.Structure.ByReference {}
+        public static class ByValue extends timeval implements com.sun.jna.Structure.ByValue {}
+    }
 
 }

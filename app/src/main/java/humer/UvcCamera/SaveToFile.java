@@ -1021,7 +1021,7 @@ public class SaveToFile  {
             save.writeObject(moveToNative);
             save.writeObject(bcdUVC);
             save.writeObject(bulkMode);
-            if (bcdUSB[0] == 3) save.writeObject(bcdUSB);
+            //if (bcdUSB[0] == 3) save.writeObject(bcdUSB);
             save.close(); // This also closes saveFile.
         } catch (Exception e) { log("Error"); e.printStackTrace();}
         returnToMainLayout(String.format("Values edited and saved\nSavefile = %s", savePath));
