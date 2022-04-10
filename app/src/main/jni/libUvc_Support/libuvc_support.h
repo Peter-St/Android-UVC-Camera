@@ -115,7 +115,7 @@ extern unsigned char * probeCommitControl();
 
 // Camera Set up Methods
 extern void startAutoDetection ();
-extern void getFramesOverLibUsb(int yuvFrameIsZero, int stream, int whichTestrun);
+extern void getFramesOverLibUsb5sec(struct uvc_stream_ctrl ctrl);
 extern void getFramesOverLibUVC();
 extern int awaitFrame () ;
 extern void probeCommitControl_cleanup();

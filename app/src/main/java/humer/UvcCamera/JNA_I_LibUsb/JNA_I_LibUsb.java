@@ -100,7 +100,7 @@ public interface JNA_I_LibUsb extends Library {
 
     public void getOneFrameUVC(uvc_stream_ctrl.ByValue ctrl);
 
-    public void getFramesOverLibUsb(int yuvFrameIsZero, int stream, int whichTestrun);
+    public void getFramesOverLibUsb5sec(uvc_stream_ctrl.ByValue ctrl);
 
     public void getFramesOverLibUVC(int yuvFrameIsZero, int stream, int whichTestrun);
 

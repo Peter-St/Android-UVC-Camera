@@ -1519,31 +1519,15 @@ public class StartIsoStreamActivityUvc extends Activity {
                     lowAndroid = 1;
                 }
                 int bcdUVC_int = 0;
-                if (!moveToNative) {
-                    if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
-                    if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
-                    bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
-                    JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                            camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(),
-                            videoformat,0, bcdUVC_int, lowAndroid);
-                } else {
-                    // fetch The camStreamingEndpointAdress
-                    camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
-                    //mService.libusb_wrapped = true;
-                    //mService.libusb_InterfacesClaimed = true;
-                    JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                            camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1,
-                            videoformat,0, bcdUVC_int, lowAndroid);
-                }
-                //mService.native_values_set = true;
-                /////////////// Service Method
-                log("sending a probeCommitControl ..");
+                //mService.libusb_wrapped = true;
+                //mService.libusb_InterfacesClaimed = true;
+                JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                        camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1,
+                        videoformat,0, bcdUVC_int, lowAndroid);
 
-                Pointer ctlValues = JNA_I_LibUsb.INSTANCE.probeCommitControl(1, camFormatIndex, camFrameIndex,  camFrameInterval, camDeviceConnection.getFileDescriptor());
-
+                JNA_I_LibUsb.INSTANCE.listDeviceUvc(camDeviceConnection.getFileDescriptor());
 
                 log("Compare Video Format");
-
                 if (videoformat.equals("MJPEG")) {
                     ////////////////////////////////    MJPEG
                     JNA_I_LibUsb.INSTANCE.setCallback(new JNA_I_LibUsb.eventCallback(){

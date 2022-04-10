@@ -2096,123 +2096,7 @@ public class SetUpTheUsbDeviceUsbIso extends Activity {
                 if ( a >= 10) break;
             }
         }
-        if(libUsb) {
-            //if (camDeviceConnection != null || camStreamingInterface != null) closeCameraDevice();
-            if(!libusb_is_initialized) {
-                libusb_is_initialized = true;
-            }
-            if (!camIsOpen)  return;
-            try {
-                if (camDeviceConnection == null) {
-                    findCam();
-                    openCameraDevice(true);
-                }
-                if (fd == 0) fd = camDeviceConnection.getFileDescriptor();
-                if(productID == 0) productID = camDevice.getProductId();
-                if(vendorID == 0) vendorID = camDevice.getVendorId();
-                if(adress == null)  adress = camDevice.getDeviceName();
-                if (moveToNative) {
-                   if(camStreamingEndpointAdress == 0) {
-                        //mService.libusb_wrapped = true;
-                        //mService.libusb_InterfacesClaimed = true;
-                        camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
-                    }
-                } else if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
-                if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
-                int bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
-                if (moveToNative) {
-                    if(camStreamingEndpointAdress == 0) {
-                        //mService.libusb_wrapped = true;
-                        //mService.libusb_InterfacesClaimed = true;
-                        camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
-                    }
-                } else if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
-                //mService.native_values_set = true;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            sframeCnt = 0;
-            final long time0 = System.currentTimeMillis();
-            final int time = 5000;
-            //latch = new CountDownLatch(1);
-            List<Integer> myVar = new ArrayList<Integer>();
-            ArrayList<String> logArray = new ArrayList<>(512);
-            stringBuilder = new StringBuilder();
-            Thread th = new Thread(new Runnable() {
-                private long startTime = System.currentTimeMillis();
-                private boolean started = false;
-                public void run() {
-                    while ((time0+time) > System.currentTimeMillis()) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                                tv.setVisibility(View.GONE);
-                                ConstraintLayout fadingTextView = (ConstraintLayout) findViewById(R.id.fadingTextViewLayout);
-                                fadingTextView.setVisibility(View.VISIBLE);
-                                FadingTextView FTV = (FadingTextView) findViewById(R.id.fadingTextView);
-                                FTV.setTimeout(250, MILLISECONDS);
-                                FTV.setVisibility(View.VISIBLE);
-                                String[] texts = {"0   Sec","0,5 Sec","1   Sec","1,5 Sec","2   Sec","2,5 Sec","3   Sec", "3,5 Sec","4   Sec","4,5 Sec","5   Sec","5,5 Sec",
-                                        "6   Sec","6,5 Sec","7   Sec", "7,5 Sec","8   Sec", "8,5 Sec","9   Sec","9,5 Sec"};
-                                FTV.setTexts(texts);
-                                FTV.forceRefresh();
-                            }
-                        });
-                        try {
-                            Thread.sleep(100);
-                            if (!started) {
-                                JNA_I_LibUsb.INSTANCE.setCallback(new JNA_I_LibUsb.eventCallback(){
-                                    public boolean callback(Pointer videoFrame, int frameSize) {
-                                        log("frame received " + sframeCnt);
-                                        sframeCnt ++;
-                                        myVar.add(frameSize);
-                                        logArray.add("bytes // data = " + hexDump(videoFrame.getByteArray(0,50), Math.min(32, 50)));
-                                        return true;
-                                    }
-                                });
-                                JNA_I_LibUsb.INSTANCE.getFramesOverLibUsb(videoFormatToInt(), 0, 5);
-                                //mService.altSettingControl();
-                                started = true;
-                            }
-                            Thread.sleep(900);
-                        }
-                        catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    JNA_I_LibUsb.INSTANCE.stopStreaming();
-                    //mService.altSettingStream();
-                    //mService.streamOnPause = true;
-                    //mService.streamPerformed = true;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                            tv.setVisibility(View.VISIBLE);
-                            stringBuilder.append(String.format("Counted Frames in a Time of %d seconds:\n", (time/1000)));
-                            stringBuilder.append("You received " + myVar.size() + " Frames over LibUsb\n\n");
-                            for (Integer s : myVar) {
-                                stringBuilder.append("\n\n");
-                                stringBuilder.append("Frame len = " + s);
-                            }
-                            for (String s : logArray) {
-                                stringBuilder.append("\n\n");
-                                stringBuilder.append(s);
-                            }
-                            tv.setText(stringBuilder.toString());
-                            ConstraintLayout fadingTextView = (ConstraintLayout) findViewById(R.id.fadingTextViewLayout);
-                            fadingTextView.setVisibility(View.GONE);
-                            fadingTextView.setVisibility(View.INVISIBLE);
-                            FadingTextView FTV = (FadingTextView) findViewById(R.id.fadingTextView);
-                            FTV.setVisibility(View.GONE);
-                            FTV.setVisibility(View.INVISIBLE);
-                        }
-                    });
-                }
-            });
-            th.start();
-        } else {
+
             if(libusb_is_initialized) {
                 JNA_I_LibUsb.INSTANCE.stopStreaming();
                 JNA_I_LibUsb.INSTANCE.closeLibUsb();
@@ -2248,7 +2132,7 @@ public class SetUpTheUsbDeviceUsbIso extends Activity {
                 });
             }
         }
-    }
+
 
     private void videoProbeCommitTransfer() {
         log("VideoProbeCommitControl");
