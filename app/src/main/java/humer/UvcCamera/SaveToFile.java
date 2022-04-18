@@ -1168,9 +1168,8 @@ public class SaveToFile  {
         }
     }
 
-    public void setUpWithUvcValues_libusb(final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info, int[] maxPacketSizeArray) {
+    public void setUpWithUvcValues_libusb(final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info, int[] maxPacketSizeArray, boolean automatic) {
         fetchTheValues();
-
         if(uvc_device_info == null) return;
         //if (uvc_device_info.ctrl_if.processing_unit_descs.bUnitID != 0)  bUnitID = uvc_device_info.ctrl_if.processing_unit_descs.bUnitID;
         //bTerminalID = uvc_device_info.ctrl_if.output_term_descs.bTerminalID;
@@ -1217,10 +1216,8 @@ public class SaveToFile  {
                 maxPacketSizeStr[a] = Integer.toString(maxPacketSizeArray[a]);
             }
         }
-
-
-        selectMaxPacketSize(uvc_device_info);
-
+        if (automatic) selectFormatIndex_Libusb_Automatic(uvc_device_info);
+        else selectMaxPacketSize(uvc_device_info);
     }
 
     private void selectMaxPacketSize(boolean automatic){
@@ -1862,7 +1859,6 @@ public class SaveToFile  {
             public void onClick(DialogInterface dialogInterface, int index) {
                 log("index = " + index);
                 scamFormatIndex = numberFormatIndexes[index];
-
                 if (format_descs_Array[index].bDescriptorSubtype == VS_format_mjpeg) svideoformat = "MJPEG";
                 else if (format_descs_Array[index].bDescriptorSubtype == VS_format_uncompressed) {
                     String guidFormat = null;
@@ -1880,6 +1876,88 @@ public class SaveToFile  {
             }
         });
         builder.show();
+    }
+
+    public void selectFormatIndex_Libusb_Automatic (final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info) {
+        log("formatIndex");
+        JNA_I_LibUsb.uvc_format_desc uvc_format_desc;
+        uvc_format_desc = uvc_device_info.stream_ifs.format_descs;
+        int numberOfFormatDescriptors = 0;
+        while (uvc_format_desc != null ) {
+            numberOfFormatDescriptors ++;
+            uvc_format_desc = uvc_format_desc.next;
+        }
+        log ("numberOfFormatDescriptors = " + numberOfFormatDescriptors);
+        final JNA_I_LibUsb.uvc_format_desc[] format_descs_Array;
+        format_descs_Array = new JNA_I_LibUsb.uvc_format_desc[numberOfFormatDescriptors];
+        uvc_format_desc = uvc_device_info.stream_ifs.format_descs;
+        int num = 0;
+        while (uvc_format_desc != null ) {
+            format_descs_Array[num] = uvc_format_desc;
+            uvc_format_desc = uvc_format_desc.next;
+            num++;
+        }
+        numberFormatIndexes = new int[numberOfFormatDescriptors];
+        if (numberOfFormatDescriptors == 1) {
+            scamFormatIndex = format_descs_Array[0].bFormatIndex;
+            if (format_descs_Array[0].bDescriptorSubtype == VS_format_mjpeg) svideoformat = "MJPEG";
+            else if (format_descs_Array[0].bDescriptorSubtype == VS_format_uncompressed) {
+                String guidFormat = null;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                    guidFormat = new String(format_descs_Array[0].formatSpecifier.guidFormat, StandardCharsets.UTF_8);
+                } else guidFormat =  new String (format_descs_Array[0].formatSpecifier.guidFormat);
+                String fourccFormat = guidFormat.substring(0,4);
+                System.out.println("fourccFormat = " + fourccFormat);
+                svideoformat = fourccFormat;
+            }
+            selectFrameIndex_Libusb_Automatic(uvc_device_info, format_descs_Array[0]);
+        }
+        else {
+            for (int a = 0; a < numberOfFormatDescriptors; a++) {
+                if (format_descs_Array[a].bDescriptorSubtype == VS_format_uncompressed) {
+                    System.out.println("formatIndex = VS_format_uncompressed");
+                    numberFormatIndexes[a] = format_descs_Array[a].bFormatIndex;
+                    String guidFormat = null;
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                        guidFormat = new String(format_descs_Array[a].formatSpecifier.guidFormat, StandardCharsets.UTF_8);
+                    } else guidFormat =  new String (format_descs_Array[a].formatSpecifier.guidFormat);
+                    String fourccFormat = guidFormat.substring(0,4);
+                    System.out.println("fourccFormat = " + fourccFormat);
+                    System.out.println("numberFormatIndexes[" + a + "] = " + numberFormatIndexes[a]);
+                    scamFormatIndex = format_descs_Array[a].bFormatIndex;
+                    if (format_descs_Array[a].bDescriptorSubtype == VS_format_mjpeg) svideoformat = "MJPEG";
+                    else if (format_descs_Array[a].bDescriptorSubtype == VS_format_uncompressed) {
+                        guidFormat = null;
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                            guidFormat = new String(format_descs_Array[a].formatSpecifier.guidFormat, StandardCharsets.UTF_8);
+                        } else guidFormat =  new String (format_descs_Array[a].formatSpecifier.guidFormat);
+                        fourccFormat = guidFormat.substring(0,4);
+                        System.out.println("fourccFormat = " + fourccFormat);
+                        svideoformat = fourccFormat;
+                    }
+                    selectFrameIndex_Libusb_Automatic(uvc_device_info, format_descs_Array[a]);
+                    break;
+
+                } else if (format_descs_Array[a].bDescriptorSubtype == VS_format_mjpeg) {
+                    System.out.println("formatIndex = VS_format_mjpeg");
+                    numberFormatIndexes[a] = format_descs_Array[a].bFormatIndex;
+                    System.out.println("numberFormatIndexes[" + a + "] = " + numberFormatIndexes[a]);
+                    scamFormatIndex = format_descs_Array[a].bFormatIndex;
+                    if (format_descs_Array[a].bDescriptorSubtype == VS_format_mjpeg) svideoformat = "MJPEG";
+                    else if (format_descs_Array[a].bDescriptorSubtype == VS_format_uncompressed) {
+                        String guidFormat = null;
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                            guidFormat = new String(format_descs_Array[a].formatSpecifier.guidFormat, StandardCharsets.UTF_8);
+                        } else guidFormat =  new String (format_descs_Array[a].formatSpecifier.guidFormat);
+                        String fourccFormat = guidFormat.substring(0,4);
+                        System.out.println("fourccFormat = " + fourccFormat);
+                        svideoformat = fourccFormat;
+                    }
+                    selectFrameIndex_Libusb_Automatic(uvc_device_info, format_descs_Array[a]);
+                    break;
+                }
+            }
+        }
     }
 
     private void selectFrameIndex (boolean automatic) {
@@ -1964,55 +2042,25 @@ public class SaveToFile  {
     }
 
     private void selectFrameIndex (final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info, final JNA_I_LibUsb.uvc_format_desc format_descs) {
-
-
-        log ("format_descs.bNumFrameDescriptors = " + format_descs.bNumFrameDescriptors);
-        log ("format_descs.bFormatIndex = " + format_descs.bFormatIndex);
-        log ("format_descs.frame_descs.bFrameIndex = " + format_descs.frame_descs.bFrameIndex);
-        log ("format_descs.frame_descs.wWidth = " + format_descs.frame_descs.wWidth);
-        log ("format_descs.frame_descs.wHeight = " + format_descs.frame_descs.wHeight);
-
-
-
         JNA_I_LibUsb.uvc_frame_desc uvc_frame_desc;
-
-
         int numberOfFrameDescriptors = 0;
         uvc_frame_desc = format_descs.frame_descs;
-        if (uvc_frame_desc == null) log("uvc_frame_desc == null");
-
-        log("uvc_frame_desc != null");
-
         while (uvc_frame_desc != null ) {
             numberOfFrameDescriptors ++;
             uvc_frame_desc = uvc_frame_desc.next;
         }
         log("numberOfFrameDescriptors = " + numberOfFrameDescriptors);
-
         JNA_I_LibUsb.uvc_frame_desc[] frame_descs_Array = new JNA_I_LibUsb.uvc_frame_desc[numberOfFrameDescriptors];
-
         uvc_frame_desc = format_descs.frame_descs;
-
         int count = 0;
         while (uvc_frame_desc != null ) {
             frame_descs_Array[count] = uvc_frame_desc;
             uvc_frame_desc = uvc_frame_desc.next;
             count ++;
         }
-
-
-        //final JNA_I_LibUsb.uvc_format_desc[] format_descs_Array = (JNA_I_LibUsb.uvc_format_desc[])uvc_device_info.stream_ifs.format_descs.toArray(numberOfFormatDescriptors) ;
-        //final JNA_I_LibUsb.uvc_frame_desc[] frame_descs_Array = (JNA_I_LibUsb.uvc_frame_desc[])format_descs.frame_descs.toArray(numberOfFrameDescriptors) ;
-
-
-
-        log("scamFrameIndexArray");
-
         int [] scamFrameIndexArray = new int [numberOfFrameDescriptors];
         log("numberOfFrameDescriptors = " + numberOfFrameDescriptors);
         frameDescriptorsResolutionArray = new String[numberOfFrameDescriptors];
-
-
         for (int j = 0; j < numberOfFrameDescriptors; j++) {
             StringBuilder stringb = new StringBuilder();
             stringb.append(Integer.toString(frame_descs_Array[j].wWidth));
@@ -2054,6 +2102,49 @@ public class SaveToFile  {
             }
         });
         builder.show();
+    }
+
+    private void selectFrameIndex_Libusb_Automatic (final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info, final JNA_I_LibUsb.uvc_format_desc format_descs) {
+        JNA_I_LibUsb.uvc_frame_desc uvc_frame_desc;
+        int numberOfFrameDescriptors = 0;
+        uvc_frame_desc = format_descs.frame_descs;
+        while (uvc_frame_desc != null ) {
+            numberOfFrameDescriptors ++;
+            uvc_frame_desc = uvc_frame_desc.next;
+        }
+        log("numberOfFrameDescriptors = " + numberOfFrameDescriptors);
+        JNA_I_LibUsb.uvc_frame_desc[] frame_descs_Array = new JNA_I_LibUsb.uvc_frame_desc[numberOfFrameDescriptors];
+        uvc_frame_desc = format_descs.frame_descs;
+        int count = 0;
+        while (uvc_frame_desc != null ) {
+            frame_descs_Array[count] = uvc_frame_desc;
+            uvc_frame_desc = uvc_frame_desc.next;
+            count ++;
+        }
+        int [] scamFrameIndexArray = new int [numberOfFrameDescriptors];
+        log("numberOfFrameDescriptors = " + numberOfFrameDescriptors);
+
+        if (numberOfFrameDescriptors == 1) {
+            scamFrameIndex = frame_descs_Array[0].bFrameIndex;
+            simageWidth = frame_descs_Array[0].wWidth;
+            simageHeight = frame_descs_Array[0].wHeight;
+            selectDWFrameIntervall_Libusb_Automatic(uvc_device_info, frame_descs_Array[0]);
+        }
+        else {
+            // Seach the greatest Resolution and proceed
+            int greatest_resolution = 0;
+            int pos = 0;
+            for (int j = 0; j < numberOfFrameDescriptors; j++) {
+                if((frame_descs_Array[j].wWidth * frame_descs_Array[j].wHeight) > greatest_resolution) {
+                    pos = j;
+                    greatest_resolution = frame_descs_Array[j].wWidth * frame_descs_Array[j].wHeight;
+                }
+            }
+            scamFrameIndex = frame_descs_Array[pos].bFrameIndex;
+            simageWidth = frame_descs_Array[pos].wWidth;
+            simageHeight = frame_descs_Array[pos].wHeight;
+            selectDWFrameIntervall_Libusb_Automatic(uvc_device_info, frame_descs_Array[pos]);
+        }
     }
 
     private void selectDWFrameIntervall(boolean automatic){
@@ -2119,37 +2210,15 @@ public class SaveToFile  {
     }
 
     private void selectDWFrameIntervall(final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info, final JNA_I_LibUsb.uvc_frame_desc frame_desc){
-
         dwFrameIntervalArray = new String [frame_desc.bFrameIntervalType];
-
-
-
-
-        log("frame_desc.bFrameIntervalType = " + frame_desc.bFrameIntervalType);
-
-        log("frame_desc.intervals.getValue() = " + frame_desc.intervals.getInt(0));
-        log("frame_desc.intervals.getValue() = " + frame_desc.intervals.getInt(4));
-        log("frame_desc.intervals.getValue() = " + frame_desc.intervals.getInt(8));
-        log("frame_desc.intervals.getValue() = " + frame_desc.intervals.getInt(12));
-        log("frame_desc.intervals.getValue() = " + frame_desc.intervals.getInt(16));
-
-
-
-        //Pointer p = frame_desc.intervals.getPointer();
-
-
-
-
         for (int k=0,j=0; k<dwFrameIntervalArray.length; k++,j+=4) {
             dwFrameIntervalArray[k] = Integer.toString(frame_desc.intervals.getInt(j));
         }
-
         final CFAlertDialog.Builder builder = new CFAlertDialog.Builder(mContext);
         builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
         builder.setTitle("Select the camera Frame Intervall");
         if (scamFrameInterval == 0)  builder.setMessage("Your current FrameInterval:  " + scamFrameInterval + " fps");
         else builder.setMessage("Your current FrameInterval: " + (10000000 /  scamFrameInterval) + " fps");
-
         int selectedItem = 0;
         for (int a =0, j = 0; a<frame_desc.bFrameIntervalType; a++, j+=4) {
             if (frame_desc.intervals.getInt(j) == scamFrameInterval) selectedItem = a;
@@ -2177,6 +2246,11 @@ public class SaveToFile  {
             }
         });
         builder.show();
+    }
+
+    private void selectDWFrameIntervall_Libusb_Automatic(final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info, final JNA_I_LibUsb.uvc_frame_desc frame_desc){
+        scamFrameInterval = frame_desc.dwDefaultFrameInterval;
+        writeTheValues();
     }
 
     private void saveYesNo() {
@@ -2404,16 +2478,7 @@ public class SaveToFile  {
             setUpTheUsbDeviceUsbIso.lowerMaxPacketSize = lowerMaxPacketSize;
             setUpTheUsbDeviceUsbIso.raisePacketsPerRequest = raisePacketsPerRequest;
             setUpTheUsbDeviceUsbIso.raiseActiveUrbs = raiseActiveUrbs;
-        } else {
-            setUpTheUsbDeviceUvc.completed = completed;
-            setUpTheUsbDeviceUvc.highQuality = highQuality;
-            setUpTheUsbDeviceUvc.raiseMaxPacketSize = raiseMaxPacketSize;
-            setUpTheUsbDeviceUvc.lowerMaxPacketSize = lowerMaxPacketSize;
-            setUpTheUsbDeviceUvc.raisePacketsPerRequest = raisePacketsPerRequest;
-            setUpTheUsbDeviceUvc.raiseActiveUrbs = raiseActiveUrbs;
         }
-
-
     }
 
 }

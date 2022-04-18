@@ -17,7 +17,6 @@
     <uses-feature android:name="android.hardware.usb.host" />
 
     <uses-sdk
-        android:targetSdkVersion="30"
         tools:overrideLibrary="org.webrtc, com.akexorcist.localizationactivity, com.rafakob.floatingedittext"/>
 
     <application
@@ -40,46 +39,49 @@
             </intent-filter>
 
         </activity>
-        <activity android:name="humer.UvcCamera.PrivacyPolicyActivity" >
+        <activity android:name="humer.UvcCamera.PrivacyPolicyActivity">
         </activity>
-        <activity android:name="humer.UvcCamera.ReadMeActivity" >
+        <activity android:name="humer.UvcCamera.ReadMeActivity"
+            android:exported="true">
         </activity>
-        <activity android:name="humer.UvcCamera.StartIsoStreamActivityUsbIso" >
+        <activity android:name="humer.UvcCamera.StartIsoStreamActivityUsbIso">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
             </intent-filter>
         </activity>
-        <activity android:name="humer.UvcCamera.StartIsoStreamActivityUvc" >
+        <activity android:name="humer.UvcCamera.StartIsoStreamActivityUvc">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
             </intent-filter>
         </activity>
-        <activity android:name="humer.UvcCamera.SetUpTheUsbDeviceUsbIso" >
+        <activity android:name="humer.UvcCamera.SetUpTheUsbDeviceUsbIso">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
             </intent-filter>
         </activity>
-        <activity android:name="humer.UvcCamera.SetUpTheUsbDeviceUvc" >
+        <activity android:name="humer.UvcCamera.SetUpTheUsbDeviceUvc">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
             </intent-filter>
         </activity>
-        <activity android:name="humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect" android:theme="@style/Theme.Transparent" >
+        <activity android:name="humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect"
+            android:theme="@style/Theme.Transparent">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
             </intent-filter>
         </activity>
-        <activity android:name="humer.UvcCamera.AutomaticDetection.Jna_AutoDetect" android:theme="@style/Theme.Transparent" >
+        <activity android:name="humer.UvcCamera.AutomaticDetection.Jna_AutoDetect"
+            android:theme="@style/Theme.Transparent">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />

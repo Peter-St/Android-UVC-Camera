@@ -188,6 +188,17 @@ enum uvc_status_type {
 #define UVC_CONTROL_CAP_AUTOUPDATE (1 << 3)
 #define UVC_CONTROL_CAP_ASYNCHRONOUS (1 << 4)
 
+/** Added 2022 by Peter Stoiber
+ * Here the values were stored, which the UVC library uses to perform the stream
+ */
+struct auto_detect_struct;
+typedef struct {
+    size_t maxPacketSize;
+    size_t altsetting;
+    size_t packetsPerRequest;
+    size_t activeUrbs;
+} auto_detect_struct_t;
+
 struct uvc_streaming_interface;
 struct uvc_device_info;
 
@@ -247,7 +258,7 @@ typedef struct uvc_device_info {
   We could/should change this to allow reduce it to, say, 5 by default
   and then allow the user to change the number of buffers as required.
  */
-#define LIBUVC_NUM_TRANSFER_BUFS 16
+#define LIBUVC_NUM_TRANSFER_BUFS 10
 
 #define LIBUVC_XFER_BUF_SIZE	( 16 * 1024 * 1024 )
 

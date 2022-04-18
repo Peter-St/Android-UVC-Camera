@@ -1532,16 +1532,12 @@ public class StartIsoStreamActivityUvc extends Activity {
                     ////////////////////////////////    MJPEG
                     JNA_I_LibUsb.INSTANCE.setCallback(new JNA_I_LibUsb.eventCallback(){
                         public boolean callback(Pointer videoFrame, int frameSize) {
-
                             log("frame received. Framelength = " + frameSize);
-
                             try {
                                 processReceivedMJpegVideoFrameKamera(videoFrame.getByteArray(0, frameSize));
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-
-
                             return true;
                         }
                     });

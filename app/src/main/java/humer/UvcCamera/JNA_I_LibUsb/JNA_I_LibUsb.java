@@ -75,8 +75,13 @@ public interface JNA_I_LibUsb extends Library {
     public interface eventCallback extends Callback {
         boolean callback(Pointer videoFrame, int frameSize);
     }
-
     public void setCallback(eventCallback evnHnd);
+
+    //// SetUpTheUsbDevice Automatic Method
+    public interface eventCallbackAuto extends Callback {
+        boolean callback(auto_detect_struct.ByReference auto_values);
+    }
+    public void setCallbackAuto(eventCallbackAuto evnHnd);
 
     public void stopStreaming();
 
@@ -140,7 +145,7 @@ public interface JNA_I_LibUsb extends Library {
     // LibUsb Methods
     public int initLibUsb();
     public uvc_device_info.ByReference listDeviceUvc(int fd);
-
+    public void automaticDetection();
 
 
 
@@ -592,8 +597,10 @@ public interface JNA_I_LibUsb extends Library {
     }
 
     public static class size_t extends IntegerType {
+        public static final size_t ZERO = new size_t();
+        private static final long serialVersionUID = 1L;
         public size_t() { this(0); }
-        public size_t(long value) { super(Native.SIZE_T_SIZE, value); }
+        public size_t(long value) { super(Native.SIZE_T_SIZE, value, true); }
     }
 
     /** An image frame received from the UVC device
@@ -662,6 +669,15 @@ public interface JNA_I_LibUsb extends Library {
         }
         public static class ByReference extends timeval implements com.sun.jna.Structure.ByReference {}
         public static class ByValue extends timeval implements com.sun.jna.Structure.ByValue {}
+    }
+
+    @FieldOrder({"maxPacketSize", "altsetting", "packetsPerRequest", "activeUrbs"})
+    public static class auto_detect_struct extends Structure {
+        public static class ByReference extends auto_detect_struct implements com.sun.jna.Structure.ByReference {}
+        public size_t maxPacketSize;
+        public size_t altsetting;
+        public size_t packetsPerRequest;
+        public size_t activeUrbs;
     }
 
 }

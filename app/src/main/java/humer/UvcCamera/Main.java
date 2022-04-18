@@ -70,6 +70,17 @@ import noman.zoomtextview.ZoomTextView;
 public class Main extends AppCompatActivity {
 
 
+    // Used to load the 'native-lib' library on application startup.
+    static {
+        System.loadLibrary("usb1.0");
+        System.loadLibrary("yuv");
+        System.loadLibrary("jpeg");
+        System.loadLibrary("jpeg-turbo");
+        System.loadLibrary("Uvc_Support");
+        System.loadLibrary("uvc");
+        isLoaded = true;
+    }
+
     public static int       camStreamingAltSetting;
     public static int       camFormatIndex;
     public static int       camFrameIndex;
@@ -475,16 +486,6 @@ public class Main extends AppCompatActivity {
 
     public void setUpTheUsbDevice(View view){
         // load the libs if needed
-        if (!isLoaded && LIBUSB) {
-            System.loadLibrary("usb1.0");
-            System.loadLibrary("yuv");
-            System.loadLibrary("jpeg");
-            System.loadLibrary("jpeg-turbo");
-            System.loadLibrary("Uvc_Support");
-            System.loadLibrary("uvc");
-
-            isLoaded = true;
-        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (showStoragePermissionRead() && showStoragePermissionWrite() && showCameraPermissionCamera()) {
@@ -684,17 +685,6 @@ public class Main extends AppCompatActivity {
     }
 
     public void isoStream(View view){
-        // load the libs if needed
-        if (!isLoaded && LIBUSB) {
-            System.loadLibrary("usb1.0");
-            System.loadLibrary("yuv");
-            System.loadLibrary("jpeg");
-            System.loadLibrary("jpeg-turbo");
-            System.loadLibrary("Uvc_Support");
-            System.loadLibrary("uvc");
-
-            isLoaded = true;
-        }
         if (showStoragePermissionRead() && showStoragePermissionWrite()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 if(!showCameraPermissionCamera()) return;

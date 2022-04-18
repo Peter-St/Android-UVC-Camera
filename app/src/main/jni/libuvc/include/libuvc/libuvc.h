@@ -13,15 +13,15 @@ extern "C" {
 
 #define  LOG_TAGS    "from_LibUVC"
 
-#define  LOGWAR(...)  __android_log_print(ANDROID_LOG_WARNING, LOG_TAGS, __VA_ARGS__)
-#define  LOGDEB(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAGS, __VA_ARGS__)
-#define  LOGERR(...)  __android_log_print(ANDROID_LOG_ERROR, LOG_TAGS, __VA_ARGS__)
+#define  LOGWAR(...)  __android_log_print(ANDROID_LOG_WARNING, LOG_TAGS, __VA_ARGS__)  // added Peter Stoiber
+#define  LOGDEB(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAGS, __VA_ARGS__)  // added Peter Stoiber
+#define  LOGERR(...)  __android_log_print(ANDROID_LOG_ERROR, LOG_TAGS, __VA_ARGS__)  // added Peter Stoiber
 
 /** UVC error types, based on libusb errors
  * @ingroup diag
  */
 
-static int LIBUVC_NUM_TRANSFER_ACTIVE_URBS = 16;
+static int LIBUVC_NUM_TRANSFER_ACTIVE_URBS = 10;
 
 typedef enum uvc_error {
 	/** Success (no error) */
@@ -618,7 +618,9 @@ uvc_error_t uvc_stream_ctrl(uvc_stream_handle_t *strmh,
 uvc_error_t uvc_stream_start(uvc_stream_handle_t *strmh,
 		uvc_frame_callback_t *cb, void *user_ptr, uint8_t flags);
 uvc_error_t uvc_stream_start_random(uvc_stream_handle_t *strmh, uvc_frame_callback_t *cb, void *user_ptr, float bandwidth_factor, uint8_t flags,
-									int activeUrbs, int packetsPerRequest, int altset, int maxPacketSize);
+									int activeUrbs, int packetsPerRequest, int altset, int maxPacketSize);  // XXX added Peter Stoiber
+uvc_error_t uvc_stream_start_automatic_detection(uvc_stream_handle_t *strmh,
+uvc_frame_callback_t *cb, void *user_ptr, float bandwidth, uint8_t flags);	// XXX added Peter Stoiber
 uvc_error_t uvc_stream_start_bandwidth(uvc_stream_handle_t *strmh,
 		uvc_frame_callback_t *cb, void *user_ptr, float bandwidth, uint8_t flags);	// XXX added saki
 uvc_error_t uvc_stream_start_iso(uvc_stream_handle_t *strmh,

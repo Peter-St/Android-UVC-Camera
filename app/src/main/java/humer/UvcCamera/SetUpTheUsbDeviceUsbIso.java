@@ -1877,197 +1877,38 @@ public class SetUpTheUsbDeviceUsbIso extends Activity {
                 if ( a >= 10) break;
             }
         }
-        if(libUsb) {
-            if (!camIsOpen) {
-                displayMessage("Run the Controltransfer first");
-                return;
-            }
-            if(!libusb_is_initialized) {
-                libusb_is_initialized = true;
-            }
-
+        if(libusb_is_initialized) {
             try {
-                if (camDeviceConnection == null) {
-                    findCam();
-                    openCameraDevice(true);
-                }
-                if (fd == 0) fd = camDeviceConnection.getFileDescriptor();
-                if(productID == 0) productID = camDevice.getProductId();
-                if(vendorID == 0) vendorID = camDevice.getVendorId();
-                if(adress == null)  adress = camDevice.getDeviceName();
-                if (moveToNative) {
-                    if (camStreamingEndpointAdress == 0) {
-                        //mService.libusb_wrapped = true;
-                        //mService.libusb_InterfacesClaimed = true;
-                        camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
-                    }
-                } else if (camStreamingEndpointAdress == 0) camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
-                //mService.native_values_set=true;
-                if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
-                int bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-
-            latch = new CountDownLatch(1);
-
-            JNA_I_LibUsb.INSTANCE.setCallback(new JNA_I_LibUsb.eventCallback(){
-                public boolean callback(Pointer videoFrame, int frameSize) {
-                    log("frame received");
-                    sframeCnt ++;
-                    log("Event Callback called:\nFrameLength = " + frameSize);
-                    latch.countDown();
-                    stringBuilder = new StringBuilder();
-                    stringBuilder.append("Received one Frame with LibUsb:\n\n");
-                    stringBuilder.append("Length = " + frameSize + "\n");
-                    if (frameSize == (imageWidth*imageHeight*2)) stringBuilder.append("\nThe Frame length matches it's expected size.\nThis are the first 20 bytes of the frame:");
-                    stringBuilder.append("\ndata = " + hexDump(videoFrame.getByteArray(0,50), Math.min(32, 50)));
-                    //// Save to File
-                    /*
-                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) {
-                        String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/OutputFile/";
-                        File file = new File(rootPath);
-                        if (!file.exists()) {
-                            file.mkdirs();
-                        }
-                        String fileName = new File(rootPath + "data" + ".bin").getAbsolutePath() ;
-                        try {
-                            writeBytesToFile(fileName, videoFrame.getByteArray(0,frameSize));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        log ("file saved");
-                    }
-                    */
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                            tv.setText(stringBuilder.toString());
-                            tv.setTextColor(Color.BLACK);
-                        }
-                    });
-                    return true;
-                }
-            });
-
-
-            JNA_I_LibUsb.INSTANCE.getFramesOverLibUVC( videoFormatToInt(), 0, 1);
-
-            try {
-                latch.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            //mService.altSettingStream();
-            //mService.streamOnPause = true;
-            //mService.streamPerformed = true;
-            JNA_I_LibUsb.INSTANCE.stopStreaming();
-
-
-
-
-
-
-
-
-            /*
-            latch = new CountDownLatch(1);
-            JNA_I_LibUsb.INSTANCE.setCallback(new JNA_I_LibUsb.eventCallback(){
-                public boolean callback(Pointer videoFrame, int frameSize) {
-                    log("frame received");
-                    sframeCnt ++;
-                    log("Event Callback called:\nFrameLength = " + frameSize);
-                    latch.countDown();
-                    stringBuilder = new StringBuilder();
-                    stringBuilder.append("Received one Frame with LibUsb:\n\n");
-                    stringBuilder.append("Length = " + frameSize + "\n");
-                    if (frameSize == (imageWidth*imageHeight*2)) stringBuilder.append("\nThe Frame length matches it's expected size.\nThis are the first 20 bytes of the frame:");
-                    stringBuilder.append("\ndata = " + hexDump(videoFrame.getByteArray(0,50), Math.min(32, 50)));
-                    //// Save to File
-                    /*
-                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) {
-                        String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/OutputFile/";
-                        File file = new File(rootPath);
-                        if (!file.exists()) {
-                            file.mkdirs();
-                        }
-                        String fileName = new File(rootPath + "data" + ".bin").getAbsolutePath() ;
-                        try {
-                            writeBytesToFile(fileName, videoFrame.getByteArray(0,frameSize));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        log ("file saved");
-                    }
-                    *//*
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                            tv.setText(stringBuilder.toString());
-                            tv.setTextColor(Color.BLACK);
-                        }
-                    });
-                    return true;
-                }
-            });
-            //mService.jnaCallbackSet = true;
-            JNA_I_LibUsb.INSTANCE.getFramesOverLibUsb( videoFormatToInt(), 0, 1);
-            //mService.altSettingControl();
-            // Reconnected the Camera through setting the Altsetting to CTL
-            try {
-                latch.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            //mService.altSettingStream();
-            //mService.streamOnPause = true;
-            //mService.streamPerformed = true;
-            JNA_I_LibUsb.INSTANCE.stopStreaming();
-
-
-*/
-
-
-
-
-
-
-        } else {
-            if(libusb_is_initialized) {
-                try {
-                    findCam();
-                    openCam(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                libusb_is_initialized = false;
-            }
-            try {
+                findCam();
                 openCam(true);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if (camIsOpen) {
-                if (runningTransfer1Frame != null) {
-                    return;
-                }
-                runningTransfer1Frame = new IsochronousRead1Frame(this, this);
-                runningTransfer1Frame.start();
-            } else {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                        tv.setText("Failed to initialise the camera" + initStreamingParmsResult);
-                        tv.setTextColor(Color.BLACK);
-                    }
-                });
+            libusb_is_initialized = false;
+        }
+        try {
+            openCam(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (camIsOpen) {
+            if (runningTransfer1Frame != null) {
+                return;
             }
+            runningTransfer1Frame = new IsochronousRead1Frame(this, this);
+            runningTransfer1Frame.start();
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
+                    tv.setText("Failed to initialise the camera" + initStreamingParmsResult);
+                    tv.setTextColor(Color.BLACK);
+                }
+            });
         }
     }
+
 
     private void writeBytesToFile(String fileName, byte[] data) throws IOException {
         FileOutputStream fileOutputStream = null;

@@ -67,6 +67,7 @@ volatile int total = 0;
 volatile int totalFrame = 0;
 volatile bool initialized = false;
 volatile  bool runningStream = false;
+volatile bool auto_values_collected = false;
 volatile bool runningStreamFragment = false;
 static uint8_t frameUeberspringen = 0;
 static uint8_t numberOfAutoFrames;
@@ -140,9 +141,16 @@ void getStreamingParmsArray(int *array, uint8_t *buf) {
     array[2] = (buf[pos + 3] << 24) | ((buf[pos + 2] & 0xFF) << 16) | ((buf[pos + 1] & 0xFF) << 8) | (buf[pos] & 0xFF);
 }
 
+// CALLBACK METHODS
+
 eventCallback sendReceivedDataToJava = NULL;
 void setCallback(eventCallback evnHnd) {
     sendReceivedDataToJava = evnHnd;
+}
+  //AUTO DETECT METHOID
+eventCallbackAuto automatic_callback = NULL;
+void setCallbackAuto(eventCallbackAuto evnHnd) {
+    automatic_callback = evnHnd;
 }
 
 frameComplete sendFrameComplete = NULL;
@@ -2311,10 +2319,7 @@ void isoc_transfer_completion_handler_stream(struct libusb_transfer *the_transfe
         }
 }
 
-
-/* This callback function runs once per frame. Use it to perform any
- * quick processing you need, or have it put the frame into your application's
- * input queue. If this function takes too long, you'll start losing frames. */
+/*
 void cb_FiveFrames(uvc_frame_t *frame, void *ptr) {
 
     LOGD("CallbackFunction called");
@@ -2323,7 +2328,7 @@ void cb_FiveFrames(uvc_frame_t *frame, void *ptr) {
     uvc_frame_t *bgr;
     uvc_error_t ret;
 
-    if (sendReceivedDataToJava != NULL) sendReceivedDataToJava(frame->data, frame->data_bytes) ;
+    if (sendReceivedDataToJava != NULL) sendReceivedDataToJava(frame->data, frame->actual_bytes) ;
 
     if(runningStream == false) uvc_stop_streaming(uvcDeviceHandle_global);
 }
@@ -2334,40 +2339,35 @@ void cb_OneFrame(uvc_frame_t *frame, void *ptr) {
     LOGD("actual len = %d   /// len = %d", frame->actual_bytes, frame->data_bytes);
     LOGD("width = %d   /// height = %d", frame->width, frame->height);
 
-    if (sendReceivedDataToJava != NULL) sendReceivedDataToJava(frame->data, frame->actual_bytes) ;
+    //if (sendReceivedDataToJava != NULL) sendReceivedDataToJava(frame->data, frame->actual_bytes) ;
 
     uvc_stop_streaming(uvcDeviceHandle_global);
 }
+*/
+/*
 
 void getFramesOverLibUVC(int yuvFrameIsZero, int stream, int whichTestrun){
-
     uvc_error_t ret;
-
     probeCommitControl_UVC(bmHint, camFormatIndex, camFrameIndex,camFrameInterval);
     probeCommitControl_cleanup();
-
     uvc_stream_handle_t *strmh;
     LOGD("uvc_stream_open_ctrl");
     initialize_global_UVC_CTL();
     ret = uvc_stream_open_ctrl(uvcDeviceHandle_global, &strmh, &global_UVC_ctrl);
     if (UNLIKELY(ret != UVC_SUCCESS))
         LOGD("return = %d", ret);
-
     runningStream = true;
-
     LOGD("uvc_stream_start_random");
-
     uvc_error_t err = uvc_stream_start_random(strmh, whichTestrun == 1 ? cb_OneFrame : cb_FiveFrames, 12345, 0, 0, activeUrbs, packetsPerRequest, camStreamingAltSetting, maxPacketSize );
     if (err == 0) LOGD("0 return");
     else {
         LOGD("return = %d", err);
         uvc_perror(result, "failed start_streaming");
     }
-
-
-    LOGD("ISO Stream complete");
-
+    LOGD("getFramesOverLibUVC complete");
 }
+
+*/
 
 void initialize_global_UVC_CTL() {
     global_UVC_ctrl->bmHint = SW_TO_SHORT(streamControl);
@@ -3270,8 +3270,6 @@ void cb_jni_stream_Surface(struct libusb_transfer *the_transfer) {
 
 void cb_stream_UVC(uvc_frame_t *frame, void *ptr) {
 
-
-
     if (frame->frame_format == UVC_FRAME_FORMAT_YUYV) {
         uvc_frame_t *rgb;
         frame->step = frame->width * 2;
@@ -3911,16 +3909,11 @@ struct uvc_device_info * listDeviceUvc(int fd) {
         ret = uvc_open(mDevice_global, uvcDeviceHandle_global);
         if (ret == UVC_SUCCESS) camIsOpen = true;
     }
-
-    //uvcDeviceHandle_global->info->stream_ifs->format_descs[0].frame_descs[0].intervals[1];
-
     if (camIsOpen) return  uvcDeviceHandle_global->info;
     else return NULL;
-
 }
 
 struct uvc_stream_ctrl probeSetCur_TransferUVC() {
-
     uvc_error_t err;
     err = uvc_claim_if(uvcDeviceHandle_global, uvcDeviceHandle_global->info->stream_ifs->bInterfaceNumber);
     if (UNLIKELY(err)) {
@@ -3993,20 +3986,25 @@ struct uvc_stream_ctrl CommitGetCur_TransferUVC(struct uvc_stream_ctrl ctrl){
 }
 
 void cb_one_frame_UVC(uvc_frame_t *frame, void *ptr) {
+    LOGDEB("Frame");
     if (frame->frame_format == UVC_FRAME_FORMAT_YUYV) {
         LOGD("frame_format == UVC_FRAME_FORMAT_YUYV");
-        LOGD("frame->width = %d, frame->height = %d", frame->width, frame->height);
-        LOGD("frame->actual_bytes = %d", frame->actual_bytes);
-        if (sendReceivedDataToJava != NULL) sendReceivedDataToJava(frame->data, frame->data_bytes) ;
+        //LOGD("frame->width = %d, frame->height = %d", frame->width, frame->height);
+        //LOGD("frame->actual_bytes = %d", frame->actual_bytes);
+        //if (sendReceivedDataToJava != NULL) sendReceivedDataToJava(NULL, (int) frame->actual_bytes) ;
     } else if (frame->frame_format == UVC_FRAME_FORMAT_MJPEG) {
         LOGD("frame_format == UVC_FRAME_FORMAT_MJPEG");
-        LOGD("frame->width = %d, frame->height = %d", frame->width, frame->height);
-        LOGD("frame->actual_bytes = %d", frame->actual_bytes);
-        if (sendReceivedDataToJava != NULL) sendReceivedDataToJava(frame->data, frame->data_bytes) ;
+        //LOGD("frame->width = %d, frame->height = %d", frame->width, frame->height);
+        //LOGD("frame->actual_bytes = %d", frame->actual_bytes);
+        //if (sendReceivedDataToJava != NULL) sendReceivedDataToJava(frame->data, frame->actual_bytes) ;
     }
-    runningStream = false;
-    uvc_stop_streaming(uvcDeviceHandle_global);
-    if (!runningStream) uvc_stop_streaming(uvcDeviceHandle_global);
+    //uvc_stop_streaming(uvcDeviceHandle_global);
+    if (!runningStream) {
+        LOGDEB("trying to stop the stream");
+        uvc_stop_streaming(uvcDeviceHandle_global);
+        LOGDEB("uvc_stop_streaming sucessful");
+
+    }
 }
 
 void getOneFrameUVC(struct uvc_stream_ctrl ctrl) {
@@ -4023,13 +4021,14 @@ void getOneFrameUVC(struct uvc_stream_ctrl ctrl) {
         runningStream = true;
         LOGD("uvc_stream_start_random");
 
-        uvc_error_t err = uvc_stream_start_random(strmh, cb_one_frame_UVC, 12345, 0, 0, activeUrbs, packetsPerRequest, camStreamingAltSetting, maxPacketSize );
+        uvc_error_t err = uvc_stream_start_random(strmh, cb_one_frame_UVC, 12345, 0, 0, activeUrbs,
+                                                  packetsPerRequest, camStreamingAltSetting, maxPacketSize );
         if (err == 0) LOGD("0 return");
         else {
             LOGD("return = %d", err);
             uvc_perror(result, "failed start_streaming");
         }
-        LOGD("ISO Stream complete");
+        LOGD("getOneFrameUVC complete");
     }
 }
 
@@ -4039,42 +4038,88 @@ void cb_frames5sec_UVC(uvc_frame_t *frame, void *ptr) {
         LOGD("frame_format == UVC_FRAME_FORMAT_YUYV");
         LOGD("frame->width = %d, frame->height = %d", frame->width, frame->height);
         LOGD("frame->actual_bytes = %d", frame->actual_bytes);
-        if (sendReceivedDataToJava != NULL) sendReceivedDataToJava(frame->data, frame->data_bytes) ;
+        if (sendReceivedDataToJava != NULL) sendReceivedDataToJava(frame->data, frame->actual_bytes) ;
     } else if (frame->frame_format == UVC_FRAME_FORMAT_MJPEG) {
         LOGD("frame_format == UVC_FRAME_FORMAT_MJPEG");
         LOGD("frame->width = %d, frame->height = %d", frame->width, frame->height);
         LOGD("frame->actual_bytes = %d", frame->actual_bytes);
-        if (sendReceivedDataToJava != NULL) sendReceivedDataToJava(frame->data, frame->data_bytes) ;
+        if (sendReceivedDataToJava != NULL) sendReceivedDataToJava(frame->data, frame->actual_bytes) ;
     }
     if (!runningStream) uvc_stop_streaming(uvcDeviceHandle_global);
 }
 
 void getFramesOverLibUsb5sec( struct uvc_stream_ctrl ctrl) {
-
     uvc_error_t ret;
     uvc_stream_handle_t *strmh;
-
     ret = uvc_stream_open_ctrl(uvcDeviceHandle_global, &strmh, &ctrl);
-
     if (UNLIKELY(ret != UVC_SUCCESS)) {
         LOGD("uvc_stream_open_ctrl failed: %d", ret);
         runningStream = false;
-
     } else {
         runningStream = true;
         LOGD("uvc_stream_start_random");
 
-        uvc_error_t err = uvc_stream_start_random(strmh, cb_frames5sec_UVC, 12345, 0, 0, activeUrbs, packetsPerRequest, camStreamingAltSetting, maxPacketSize );
-        if (err == 0) LOGD("0 return");
+        uvc_error_t err = uvc_stream_start_random(strmh, cb_frames5sec_UVC, 12345, 0, 0, activeUrbs,
+                                                  packetsPerRequest, camStreamingAltSetting, maxPacketSize );
+        if (err == 0) LOGD("uvc_stream_start_random sucessful");
         else {
             LOGD("return = %d", err);
             uvc_perror(result, "failed start_streaming");
         }
-        LOGD("ISO Stream started");
+        LOGD("getFramesOverLibUsb5sec complete");
+    }
+}
+
+void cb_automatic_detection(uvc_frame_t *frame, void *ptr) {
+
+    if (!auto_values_collected) {
+        auto_values_collected = true;
+        auto_detect_struct_t *stream_values = (auto_detect_struct_t *) ptr;
+        LOGD("stream_values->activeUrbs: %d", stream_values->activeUrbs);
+        LOGD("stream_values->altsetting: %d", stream_values->altsetting);
+        LOGD("stream_values->packetsPerRequest: %d", stream_values->packetsPerRequest);
+        LOGD("stream_values->maxPacketSize: %d", stream_values->maxPacketSize);
+        if (automatic_callback != NULL) automatic_callback(stream_values) ;
+        free (stream_values);
+        LOGD("Frame received and freed");
     }
 
-
+    if (!runningStream) {
+        uvc_stop_streaming(uvcDeviceHandle_global);
+        LOGD("uvc_stop_streaming sucessful");
+    }
 }
+
+void automaticDetection() {
+    uvc_error_t ret;
+    auto_values_collected = false;
+    int requestMode = 0;
+    if (strcmp(frameFormat, "MJPEG") == 0) requestMode = 1;
+    else if (strcmp(frameFormat, "YUY2") == 0) requestMode = 0;
+    else if (strcmp(frameFormat, "UYVY") == 0) requestMode = 0;
+    else if (strcmp(frameFormat, "NV21") == 0) requestMode = 0;
+    else requestMode = 0;
+    uvc_stream_ctrl_t ctrl;
+    LOGD("uvc_get_stream_ctrl_format_size:");
+    ret = uvc_get_stream_ctrl_format_size( uvcDeviceHandle_global, &ctrl, !requestMode ? UVC_FRAME_FORMAT_YUYV : UVC_FRAME_FORMAT_MJPEG, imageWidth, imageHeight, (10000000/camFrameInterval));
+    LOGD("uvc_get_stream_ctrl_format_size returned: %d", ret);
+    LOGD("ctrl.dwFrameInterval: %d", ctrl.dwFrameInterval);
+    uvc_stream_handle_t *strmh;
+    LOGD("uvc_stream_open_ctrl:");
+    ret = uvc_stream_open_ctrl(uvcDeviceHandle_global, &strmh, &ctrl);
+    if (UNLIKELY(ret != UVC_SUCCESS))
+        return ;
+    auto_detect_struct_t *custom_Values = malloc(sizeof(auto_detect_struct_t));
+    LOGD("uvc_stream_start_automatic_detection:");
+    runningStream = true;
+    ret = uvc_stream_start_automatic_detection(strmh, cb_automatic_detection, custom_Values, 0, 0);
+    if (UNLIKELY(ret != UVC_SUCCESS)) {
+        uvc_stream_close(strmh);
+        runningStream = false;
+        return ;
+    }
+}
+
 
 
 

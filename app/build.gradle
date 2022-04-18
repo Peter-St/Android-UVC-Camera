@@ -3,12 +3,13 @@ import org.apache.tools.ant.taskdefs.condition.Os
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 30
     defaultConfig {
         applicationId "humer.uvc_camera"
+        targetSdkVersion 30
         minSdkVersion 15
-        versionCode 107
-        versionName "2.0.5"
+        versionCode 109
+        versionName "2.0.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         ndk.debugSymbolLevel = 'FULL'

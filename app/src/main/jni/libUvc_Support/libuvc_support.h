@@ -62,9 +62,9 @@ extern struct uvc_stream_ctrl CommitGetCur_TransferUVC(struct uvc_stream_ctrl ct
 
 extern void getOneFrameUVC(struct uvc_stream_ctrl ctrl);
 
-
-
 //////////////// Auto Detect Methods ////////////////////
+extern void automaticDetection();
+
 struct AutotransferStruct; /* Forward declaration */
 typedef struct AutotransferStruct {
     int packetCnt;
@@ -123,8 +123,13 @@ extern void sendCtlForConnection(int bmHin, int camFormatInde, int camFrameInde,
       // Callback Methods
 typedef int ( *autoStreamComplete)();
 extern void setAutoStreamComplete(autoStreamComplete autoStream);
-typedef int ( *eventCallback)(unsigned char *videoframe, int value);
+
+typedef int ( *eventCallbackAuto)(auto_detect_struct_t *auto_values);
+extern void setCallbackAuto(eventCallbackAuto evnHnd);
+
+typedef int ( *eventCallback)(void *data, int value);
 extern void setCallback(eventCallback evnHnd);
+
 typedef int ( *jnaFrameCallback)(void  *videoframe, int value);
 extern void setJnaFrameCallback(jnaFrameCallback evnHnd);
 extern int eheckEventHandling();
