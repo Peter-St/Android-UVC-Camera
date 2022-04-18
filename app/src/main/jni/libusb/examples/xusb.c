@@ -220,7 +220,7 @@ static int display_ps3_status(libusb_device_handle *handle)
 			printf("\tRIGHT 3 pressed\n");
 			break;
 		case 0x08:
-			printf("\tSTART presed\n");
+			printf("\tSTART pressed\n");
 			break;
 		case 0x10:
 			printf("\tUP pressed\n");
@@ -246,7 +246,7 @@ static int display_ps3_status(libusb_device_handle *handle)
 			printf("\tLEFT 1 pressed\n");
 			break;
 		case 0x08:
-			printf("\tRIGHT 1 presed\n");
+			printf("\tRIGHT 1 pressed\n");
 			break;
 		case 0x10:
 			printf("\tTRIANGLE pressed\n");
@@ -863,6 +863,7 @@ static int test_device(uint16_t vid, uint16_t pid)
 
 	printf("\nReading first configuration descriptor:\n");
 	CALL_CHECK_CLOSE(libusb_get_config_descriptor(dev, 0, &conf_desc), handle);
+	printf("              total length: %d\n", conf_desc->wTotalLength);
 	printf("         descriptor length: %d\n", conf_desc->bLength);
 	nb_ifaces = conf_desc->bNumInterfaces;
 	printf("             nb interfaces: %d\n", nb_ifaces);

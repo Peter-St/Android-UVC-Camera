@@ -26,6 +26,9 @@
 #define LIBUSB_H
 
 #if defined(_MSC_VER)
+#pragma warning(push)
+/* Disable: warning C4200: nonstandard extension used : zero-sized array in struct/union */
+#pragma warning(disable:4200)
 /* on MS environments, the inline keyword is available in C++ only */
 #if !defined(__cplusplus)
 #define inline __inline
@@ -139,7 +142,7 @@ typedef SSIZE_T ssize_t;
  * Internally, LIBUSB_API_VERSION is defined as follows:
  * (libusb major << 24) | (libusb minor << 16) | (16 bit incremental)
  */
-#define LIBUSB_API_VERSION 0x01000108
+#define LIBUSB_API_VERSION 0x01000109
 
 /* The following is kept for compatibility, but will be deprecated in the future */
 #define LIBUSBX_API_VERSION LIBUSB_API_VERSION
@@ -982,8 +985,9 @@ struct libusb_version {
  * Sessions are created by libusb_init() and destroyed through libusb_exit().
  * If your application is guaranteed to only ever include a single libusb
  * user (i.e. you), you do not have to worry about contexts: pass NULL in
- * every function call where a context is required. The default context
- * will be used.
+ * every function call where a context is required, and the default context
+ * will be used. Note that libusb_set_option(NULL, ...) is special, and adds
+ * an option to a list of default options for new contexts.
  *
  * For more information, see \ref libusb_contexts.
  */
@@ -2114,20 +2118,22 @@ enum libusb_option {
 	 * This is typically needed on Android, where access to USB devices
 	 * is limited.
 	 *
+	 * For LIBUSB_API_VERSION 0x01000108 it was called LIBUSB_OPTION_WEAK_AUTHORITY
+	 *
 	 * Only valid on Linux.
 	 */
 	LIBUSB_OPTION_NO_DEVICE_DISCOVERY = 2,
 
-	/** Flag that libusb has weak authority.
-	 *
-	 * (Deprecated) alias for LIBUSB_OPTION_NO_DEVICE_DISCOVERY
-	 */
-	LIBUSB_OPTION_WEAK_AUTHORITY = 3,
+#define LIBUSB_OPTION_WEAK_AUTHORITY LIBUSB_OPTION_NO_DEVICE_DISCOVERY
 
-	LIBUSB_OPTION_MAX = 4
+	LIBUSB_OPTION_MAX = 3
 };
 
 int LIBUSB_CALL libusb_set_option(libusb_context *ctx, enum libusb_option option, ...);
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #if defined(__cplusplus)
 }

@@ -523,26 +523,26 @@ static int windows_assign_endpoints(struct libusb_device_handle *dev_handle, uin
 		return r;
 	}
 
+	if (iface >= conf_desc->bNumInterfaces) {
+		usbi_err(HANDLE_CTX(dev_handle), "interface %d out of range for device", iface);
+		return LIBUSB_ERROR_NOT_FOUND;
+	}
 	if_desc = &conf_desc->interface[iface].altsetting[altsetting];
 	safe_free(priv->usb_interface[iface].endpoint);
 
 	if (if_desc->bNumEndpoints == 0) {
 		usbi_dbg(HANDLE_CTX(dev_handle), "no endpoints found for interface %u", iface);
-		libusb_free_config_descriptor(conf_desc);
-		priv->usb_interface[iface].current_altsetting = altsetting;
-		return LIBUSB_SUCCESS;
-	}
-
-	priv->usb_interface[iface].endpoint = malloc(if_desc->bNumEndpoints);
-	if (priv->usb_interface[iface].endpoint == NULL) {
-		libusb_free_config_descriptor(conf_desc);
-		return LIBUSB_ERROR_NO_MEM;
-	}
-
-	priv->usb_interface[iface].nb_endpoints = if_desc->bNumEndpoints;
-	for (i = 0; i < if_desc->bNumEndpoints; i++) {
-		priv->usb_interface[iface].endpoint[i] = if_desc->endpoint[i].bEndpointAddress;
-		usbi_dbg(HANDLE_CTX(dev_handle), "(re)assigned endpoint %02X to interface %u", priv->usb_interface[iface].endpoint[i], iface);
+	} else {
+		priv->usb_interface[iface].endpoint = malloc(if_desc->bNumEndpoints);
+		if (priv->usb_interface[iface].endpoint == NULL) {
+			libusb_free_config_descriptor(conf_desc);
+			return LIBUSB_ERROR_NO_MEM;
+		}
+		priv->usb_interface[iface].nb_endpoints = if_desc->bNumEndpoints;
+		for (i = 0; i < if_desc->bNumEndpoints; i++) {
+			priv->usb_interface[iface].endpoint[i] = if_desc->endpoint[i].bEndpointAddress;
+			usbi_dbg(HANDLE_CTX(dev_handle), "(re)assigned endpoint %02X to interface %u", priv->usb_interface[iface].endpoint[i], iface);
+		}
 	}
 	libusb_free_config_descriptor(conf_desc);
 
@@ -1619,6 +1619,7 @@ static int winusb_get_device_list(struct libusb_context *ctx, struct discovered_
 				if (key == INVALID_HANDLE_VALUE)
 					break;
 				// Look for both DeviceInterfaceGUIDs *and* DeviceInterfaceGUID, in that order
+				// If multiple GUIDs just process the first and ignore the others
 				size = sizeof(guid_string);
 				s = pRegQueryValueExA(key, "DeviceInterfaceGUIDs", NULL, &reg_type,
 					(LPBYTE)guid_string, &size);
@@ -1628,7 +1629,7 @@ static int winusb_get_device_list(struct libusb_context *ctx, struct discovered_
 				pRegCloseKey(key);
 				if (s == ERROR_FILE_NOT_FOUND) {
 					break; /* no DeviceInterfaceGUID registered */
-				} else if (s != ERROR_SUCCESS) {
+				} else if (s != ERROR_SUCCESS && s != ERROR_MORE_DATA) {
 					usbi_warn(ctx, "unexpected error from pRegQueryValueExA for '%s'", dev_id);
 					break;
 				}
@@ -2769,7 +2770,7 @@ static int winusbx_submit_control_transfer(int sub_api, struct usbi_transfer *it
 	struct winusb_transfer_priv *transfer_priv = get_winusb_transfer_priv(itransfer);
 	struct winusb_device_handle_priv *handle_priv = get_winusb_device_handle_priv(transfer->dev_handle);
 	PWINUSB_SETUP_PACKET setup = (PWINUSB_SETUP_PACKET)transfer->buffer;
-	ULONG size;
+	ULONG size, transferred;
 	HANDLE winusb_handle;
 	OVERLAPPED *overlapped;
 	int current_interface;
@@ -2809,11 +2810,13 @@ static int winusbx_submit_control_transfer(int sub_api, struct usbi_transfer *it
 		}
 		windows_force_sync_completion(itransfer, 0);
 	} else {
-		if (!WinUSBX[sub_api].ControlTransfer(winusb_handle, *setup, transfer->buffer + LIBUSB_CONTROL_SETUP_SIZE, size, NULL, overlapped)) {
+		if (!WinUSBX[sub_api].ControlTransfer(winusb_handle, *setup, transfer->buffer + LIBUSB_CONTROL_SETUP_SIZE, size, &transferred, overlapped)) {
 			if (GetLastError() != ERROR_IO_PENDING) {
 				usbi_warn(TRANSFER_CTX(transfer), "ControlTransfer failed: %s", windows_error_str(0));
 				return LIBUSB_ERROR_IO;
 			}
+		} else {
+			windows_force_sync_completion(itransfer, transferred);
 		}
 	}
 
@@ -2987,7 +2990,11 @@ static int winusbx_submit_iso_transfer(int sub_api, struct usbi_transfer *itrans
 			// WinUSB only supports isoch transfers spanning a full USB frames. Later, we might be smarter about this
 			// and allocate a temporary buffer. However, this is harder than it seems as its destruction would depend on overlapped
 			// IO...
-			iso_transfer_size_multiple = (pipe_info_ex.MaximumBytesPerInterval * 8) / interval;
+			if (transfer->dev_handle->dev->speed >= LIBUSB_SPEED_HIGH) // Microframes (125us)
+				iso_transfer_size_multiple = (pipe_info_ex.MaximumBytesPerInterval * 8) / interval;
+			else // Normal Frames (1ms)
+				iso_transfer_size_multiple = pipe_info_ex.MaximumBytesPerInterval / interval;
+
 			if (transfer->length % iso_transfer_size_multiple != 0) {
 				usbi_err(TRANSFER_CTX(transfer), "length of isoch buffer must be a multiple of the MaximumBytesPerInterval * 8 / Interval");
 				return LIBUSB_ERROR_INVALID_PARAM;
@@ -3226,12 +3233,25 @@ static enum libusb_transfer_status winusbx_copy_transfer_data(int sub_api, struc
 	int i;
 
 	if (transfer->type == LIBUSB_TRANSFER_TYPE_ISOCHRONOUS) {
+		struct winusb_device_priv *priv = usbi_get_device_priv(transfer->dev_handle->dev);
+
+		if (sub_api == SUB_API_NOTSET)
+			sub_api = priv->sub_api;
+		if (WinUSBX[sub_api].hDll == NULL)
+			return LIBUSB_TRANSFER_ERROR;
+
 		// for isochronous, need to copy the individual iso packet actual_lengths and statuses
 		if ((sub_api == SUB_API_LIBUSBK) || (sub_api == SUB_API_LIBUSB0)) {
 			// iso only supported on libusbk-based backends for now
 			PKISO_CONTEXT iso_context = transfer_priv->iso_context;
 			for (i = 0; i < transfer->num_iso_packets; i++) {
-				transfer->iso_packet_desc[i].actual_length = iso_context->IsoPackets[i].actual_length;
+				if (IS_XFERIN(transfer)) {
+					transfer->iso_packet_desc[i].actual_length = iso_context->IsoPackets[i].actual_length;
+				} else {
+					// On Windows the usbd Length field is not used for OUT transfers.
+					// Copy the requested value back for consistency with other platforms.
+					transfer->iso_packet_desc[i].actual_length = transfer->iso_packet_desc[i].length;
+				}
 				// TODO translate USDB_STATUS codes http://msdn.microsoft.com/en-us/library/ff539136(VS.85).aspx to libusb_transfer_status
 				//transfer->iso_packet_desc[i].status = transfer_priv->iso_context->IsoPackets[i].status;
 			}
@@ -3252,6 +3272,9 @@ static enum libusb_transfer_status winusbx_copy_transfer_data(int sub_api, struc
 			} else {
 				for (i = 0; i < transfer->num_iso_packets; i++) {
 					transfer->iso_packet_desc[i].status = LIBUSB_TRANSFER_COMPLETED;
+					// On Windows the usbd Length field is not used for OUT transfers.
+					// Copy the requested value back for consistency with other platforms.
+					transfer->iso_packet_desc[i].actual_length = transfer->iso_packet_desc[i].length;
 				}
 			}
 		} else {
@@ -3861,7 +3884,10 @@ static int hid_open(int sub_api, struct libusb_device_handle *dev_handle)
 
 		priv->hid->string_index[1] = dev->device_descriptor.iProduct;
 		if (priv->hid->string_index[1] != 0)
-			HidD_GetProductString(hid_handle, priv->hid->string[1], sizeof(priv->hid->string[1]));
+			// Using HidD_GetIndexedString() instead of HidD_GetProductString(), as the latter would otherwise return the name
+			// of the interface instead of the iProduct string whenever the iInterface member of the USB_INTERFACE_DESCRIPTOR
+			// structure for the interface is nonzero (see Remarks section in the documentation of the HID API routines)
+			HidD_GetIndexedString(hid_handle, priv->hid->string_index[1], priv->hid->string[1], sizeof(priv->hid->string[1]));
 		else
 			priv->hid->string[1][0] = 0;
 
