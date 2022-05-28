@@ -1384,7 +1384,7 @@ uvc_error_t uvc_stream_open_ctrl(uvc_device_handle_t *devh,
 	return UVC_SUCCESS;
 
 fail:
-	LOGERR("Something failed");
+	LOGERR("uvc_stream_open_ctrl - Something failed");
 	if (strmh)
 		free(strmh);
 	UVC_EXIT(ret);
@@ -2345,7 +2345,7 @@ void uvc_stop_streaming(uvc_device_handle_t *devh) {
  */
 uvc_error_t uvc_stream_stop(uvc_stream_handle_t *strmh) {
 
-	LOGD("uvc_stream_stop");
+	LOGDEB("uvc_stream_stop");
 	int i;
 	ENTER();
 

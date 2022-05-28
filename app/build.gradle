@@ -124,6 +124,12 @@ android {
         pickFirst 'lib/x86/libuvc.so'
         pickFirst 'lib/armeabi-v7a/libuvc.so'
         pickFirst 'lib/arm64-v8a/libuvc.so'
+
+        pickFirst 'lib/x86/libunrooted_android.so'
+        pickFirst 'lib/armeabi/libunrooted_android.so'
+        pickFirst 'lib/x86_64/libunrooted_android.so'
+        pickFirst 'lib/armeabi-v7a/libunrooted_android.so'
+        pickFirst 'lib/arm64-v8a/libunrooted_android.so'
     }
 }
 

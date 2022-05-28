@@ -1564,7 +1564,6 @@ public class StartIsoStreamActivityUvc extends Activity {
                         mPreviewSurface = mUVCCameraView.getHolder().getSurface();
                         log("JniSetSurfaceView");
                         JniSetSurfaceView(mPreviewSurface);
-                        //mService.jniMethodsAndConstantsSet = true;
                     }
                     log("prepair for streaming ..");
                     //JniPrepairStreamOverSurfaceUVC();

@@ -1405,24 +1405,18 @@ public class SetUpTheUsbDeviceUvc extends Activity {
     private void isoRead1Frame() {
         if (!camIsOpen) return;
 
-        /*
+        log("getOneFrameUVC - Setting Callback");
         JNA_I_LibUsb.INSTANCE.setCallback(new JNA_I_LibUsb.eventCallback() {
             public boolean callback(Pointer videoFrame, int frameSize) {
-                log("frame received");
-
+                log("frame received (JavaMsg)");
                 sframeCnt++;
                 log("Event Callback called:\nFrameLength = " + frameSize);
-
                 stringBuilder = new StringBuilder();
                 stringBuilder.append("Received one Frame with LibUsb:\n\n");
                 stringBuilder.append("Length = " + frameSize + "\n");
-
                 if (frameSize == (imageWidth * imageHeight * 2))
                     stringBuilder.append("\nThe Frame length matches it's expected size.\nThis are the first 20 bytes of the frame:");
                 stringBuilder.append("\ndata = " + hexDump(videoFrame.getByteArray(0, 50), Math.min(32, 50)));
-
-
-
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -1431,21 +1425,15 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                         tv.setTextColor(Color.BLACK);
                     }
                 });
-
                 JNA_I_LibUsb.INSTANCE.stopStreaming();
-
                 return true;
             }
         });
-        */
-
-        log("getOneFrameUVC");
+        log("getOneFrameUVC - native call");
         JNA_I_LibUsb.INSTANCE.getOneFrameUVC(ControlValues);
-        log("waiting");
-
-        log("stopping");
-        JNA_I_LibUsb.INSTANCE.stopStreaming();
-        log("stopped");
+        //log("getOneFrameUVC - stopStreaming");
+        //JNA_I_LibUsb.INSTANCE.stopStreaming();
+        log("getOneFrameUVC - complete (JavaMsg)");
     }
 
     private void isoRead5sec() {
@@ -1574,9 +1562,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                 bcdUVC[1] = (byte)((bcdUVC_short >> 8) & 0xff);
                 int bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
                 if (mUsbFs == null) mUsbFs = getUSBFSName(camDevice);
-
                 log("JNA_I_LibUsb.INSTANCE.set_the_native_Values");
-
                 int framesReceive = 1;
                 if (fiveFrames) framesReceive = 5;
                 int lowAndroid = 0;
@@ -1598,6 +1584,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
         int one = -1, two = -1, three = -1, four = -1;
         camIsOpen = false;
         initStreamingParmsResult = "Camera Controltransfer Failed \n\n";
+        log("Starting with the Control Transfers");
         JNA_I_LibUsb.uvc_stream_ctrl.ByValue probeSet = JNA_I_LibUsb.INSTANCE.probeSetCur_TransferUVC();
         if (probeSet.bInterfaceNumber < 0) one = probeSet.bInterfaceNumber;
         else { one = 0;
