@@ -14,77 +14,15 @@
   <component name="ChangeListManager">
     <list default="true" id="719e864b-07d8-4e68-9be1-a80bb76647d2" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__junit_junit_4_12.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__junit_junit_4_12.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/Android-UVC-Camera.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/Android-UVC-Camera.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/app/Android-UVC-Camera.app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/Android-UVC-Camera.app.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/jna/Android-UVC-Camera.jna.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/jna/Android-UVC-Camera.jna.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDeviceUvc.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDeviceUvc.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivityUvc.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivityUvc.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/jni/libUvc_Support/libuvc_support.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libUvc_Support/libuvc_support.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libuvc/src/stream.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libuvc/src/stream.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/dpfp" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/dpfp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/dpfp_threaded" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/dpfp_threaded" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/fxload" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/fxload" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/hotplugtest" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/hotplugtest" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/jni/libUvc_Support/libuvc_support.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/jni/libUvc_Support/libuvc_support.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libUvc_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libUvc_Support.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libjpeg-turbo.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libjpeg-turbo.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libjpeg.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libjpeg.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libusb1.0.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libusb1.0.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libuvc.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libuvc.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libyuv.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/libyuv.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/listdevs" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/listdevs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/sam3u_benchmark" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/sam3u_benchmark" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/stress" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/stress" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/xusb" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/arm64-v8a/xusb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/dpfp" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/dpfp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/dpfp_threaded" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/dpfp_threaded" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/fxload" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/fxload" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/hotplugtest" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/hotplugtest" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libUvc_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libUvc_Support.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libjpeg-turbo.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libjpeg-turbo.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libjpeg.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libjpeg.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libusb1.0.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libusb1.0.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libuvc.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libuvc.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libyuv.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/libyuv.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/listdevs" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/listdevs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/sam3u_benchmark" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/sam3u_benchmark" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/stress" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/stress" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/xusb" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/armeabi-v7a/xusb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/dpfp" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/dpfp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/dpfp_threaded" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/dpfp_threaded" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/fxload" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/fxload" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/hotplugtest" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/hotplugtest" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libUvc_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/libUvc_Support.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libjpeg-turbo.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/libjpeg-turbo.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libjpeg.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/libjpeg.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libusb1.0.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/libusb1.0.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libuvc.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/libuvc.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/libyuv.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/libyuv.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/listdevs" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/listdevs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/sam3u_benchmark" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/sam3u_benchmark" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/stress" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/stress" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86/xusb" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86/xusb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/dpfp" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/dpfp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/dpfp_threaded" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/dpfp_threaded" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/fxload" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/fxload" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/hotplugtest" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/hotplugtest" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libUvc_Support.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/libUvc_Support.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libjpeg-turbo.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/libjpeg-turbo.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libjpeg.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/libjpeg.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libusb1.0.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/libusb1.0.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libuvc.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/libuvc.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/libyuv.so" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/libyuv.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/listdevs" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/listdevs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/sam3u_benchmark" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/sam3u_benchmark" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/stress" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/stress" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/libs/x86_64/xusb" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/libs/x86_64/xusb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

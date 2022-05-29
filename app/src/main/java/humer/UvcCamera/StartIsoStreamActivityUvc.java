@@ -243,7 +243,7 @@ public class StartIsoStreamActivityUvc extends Activity {
     public native void JniPrepairStreamOverSurface();
     public native void JniStreamOverSurface();
     public native void JniPrepairStreamOverSurfaceUVC();
-    public native void JniStreamOverSurfaceUVC();
+    public native int JniStreamOverSurfaceUVC();
 
 
     //public native void JniProbeCommitControl(int bmHint,int camFormatIndex,int camFrameIndex,int  camFrameInterval);
@@ -1489,15 +1489,6 @@ public class StartIsoStreamActivityUvc extends Activity {
             return;
         }
         else {
-            ((Button) findViewById(R.id.startStream)).setEnabled(false);
-            stopStreamButton.getBackground().setAlpha(180);  // 25% transparent
-            stopStreamButton.setEnabled(true);
-            startStream.getBackground().setAlpha(20);  // 95% transparent
-            photoButton.setEnabled(true);
-            photoButton.setBackgroundResource(R.drawable.bg_button_bildaufnahme);
-            videoButton.setEnabled(true);
-            videoButton.setAlpha(1); // 100% transparent
-            stopKamera = false;
             if (LIBUSB) {
                 //showAllServiceStats();
                 if (!libusb_is_initialized) {
@@ -1552,11 +1543,26 @@ public class StartIsoStreamActivityUvc extends Activity {
                     mUVCCameraView.setVisibility(View.GONE);
                     mUVCCameraView.setVisibility(View.INVISIBLE);
                     JniPrepairStreamOverSurfaceUVC();
-                    JniStreamOverSurfaceUVC();
+                    int result = -1;
+                    result = JniStreamOverSurfaceUVC();
+                    if (result == 0) {
+                        ((Button) findViewById(R.id.startStream)).setEnabled(false);
+                        stopStreamButton.getBackground().setAlpha(180);  // 25% transparent
+                        stopStreamButton.setEnabled(true);
+                        startStream.getBackground().setAlpha(20);  // 95% transparent
+                        photoButton.setEnabled(true);
+                        photoButton.setBackgroundResource(R.drawable.bg_button_bildaufnahme);
+                        videoButton.setEnabled(true);
+                        videoButton.setAlpha(1); // 100% transparent
+                        stopKamera = false;
+                    } else {
+                        displayMessage("Stream failed;  Result = " + result);
+                        log ("Stream failed;  Result = " + result);
+                    }
                     libusb_is_initialized = true;
                     log("stream started (MJPEG) ... ");
 
-                } else {
+                } else if (videoformat.equals("YUY2")) {
                     ////////////////////////////////    YUV
                     // Steam Over SurfaceView
                     // fastest Method
@@ -1565,13 +1571,60 @@ public class StartIsoStreamActivityUvc extends Activity {
                         log("JniSetSurfaceView");
                         JniSetSurfaceView(mPreviewSurface);
                     }
-                    log("prepair for streaming ..");
+                    //log("prepair for streaming ..");
                     //JniPrepairStreamOverSurfaceUVC();
                     log("Start the stream ..");
-                    JniStreamOverSurfaceUVC();
+
+                    int result = -1;
+                    result = JniStreamOverSurfaceUVC();
+                    if (result == 0) {
+                        ((Button) findViewById(R.id.startStream)).setEnabled(false);
+                        stopStreamButton.getBackground().setAlpha(180);  // 25% transparent
+                        stopStreamButton.setEnabled(true);
+                        startStream.getBackground().setAlpha(20);  // 95% transparent
+                        photoButton.setEnabled(true);
+                        photoButton.setBackgroundResource(R.drawable.bg_button_bildaufnahme);
+                        videoButton.setEnabled(true);
+                        videoButton.setAlpha(1); // 100% transparent
+                        stopKamera = false;
+                    } else {
+                        displayMessage("Stream failed;  Result = " + result);
+                        log ("Stream failed;  Result = " + result);
+                    }
+
                     libusb_is_initialized = true;
-                    log("stream started (YUV) ... ");
-                }
+                    log("stream started (YUY2) ... ");
+                } else if (videoformat.equals("UYVY")) {
+                    ////////////////////////////////    UYVY
+                    // Steam Over SurfaceView
+                    // fastest Method
+                    if (!libusb_is_initialized) {
+                        mPreviewSurface = mUVCCameraView.getHolder().getSurface();
+                        log("JniSetSurfaceView");
+                        JniSetSurfaceView(mPreviewSurface);
+                    }
+                    //log("prepair for streaming ..");
+                    //JniPrepairStreamOverSurfaceUVC();
+                    log("Start the stream ..");
+                    int result = -1;
+                    result = JniStreamOverSurfaceUVC();
+                    if (result == 0) {
+                        ((Button) findViewById(R.id.startStream)).setEnabled(false);
+                        stopStreamButton.getBackground().setAlpha(180);  // 25% transparent
+                        stopStreamButton.setEnabled(true);
+                        startStream.getBackground().setAlpha(20);  // 95% transparent
+                        photoButton.setEnabled(true);
+                        photoButton.setBackgroundResource(R.drawable.bg_button_bildaufnahme);
+                        videoButton.setEnabled(true);
+                        videoButton.setAlpha(1); // 100% transparent
+                        stopKamera = false;
+                    } else {
+                        displayMessage("Stream failed;  Result = " + result);
+                        log ("Stream failed;  Result = " + result);
+                    }
+                    libusb_is_initialized = true;
+                    log("stream started (UYVY) ... ");
+                } else displayMessage("CAMERA FORMAT NOT SUPPORTED");
             } else {
                 displayMessage("LIBUSB NOT SET ;-(");
             }

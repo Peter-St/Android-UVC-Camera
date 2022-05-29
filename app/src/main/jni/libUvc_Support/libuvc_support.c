@@ -3310,8 +3310,18 @@ void cb_stream_UVC(uvc_frame_t *frame, void *ptr) {
         copyToSurface(rgb, &mCaptureWindow);
         //uvc_free_frame(rgb);
         */
-    } else {
-
+    } else if (frame->frame_format == UVC_FRAME_FORMAT_UYVY)  {
+        uvc_frame_t *rgb;
+        frame->step = frame->width * 2;
+        rgb = uvc_allocate_frame(imageWidth * imageHeight * 4);
+        if (!rgb) {
+            printf("unable to allocate rgb frame!");
+            return;
+        }
+        // Do the RGB conversion
+        uvc_uyvy2rgbx(frame, rgb);
+        copyToSurface(rgb, &mCaptureWindow);
+        //uvc_free_frame(rgb);
 
     }
 
@@ -3320,7 +3330,6 @@ void cb_stream_UVC(uvc_frame_t *frame, void *ptr) {
 
 
 uvc_error_t control_TransferUVC(uvc_stream_ctrl_t *ctrl) {
-
     uvc_error_t result;
     result = uvc_claim_if(uvcDeviceHandle_global, uvcDeviceHandle_global->info->stream_ifs->bInterfaceNumber);
     if (UNLIKELY(result)) {
@@ -3333,54 +3342,41 @@ uvc_error_t control_TransferUVC(uvc_stream_ctrl_t *ctrl) {
     LOGD("PROBE SET CUR QUERY");
     result = uvc_query_stream_ctrl(uvcDeviceHandle_global, ctrl, 0, request);
     LOGD("result = %d", result);
-
-
-    LOGD("ctrl.bmHint = %d\nctrl.bFormatIndex = %d\nctrl.dwMaxPayloadTransferSize = %d", ctrl->bmHint, ctrl->bFormatIndex, ctrl->dwMaxPayloadTransferSize);
-    LOGD("uvc_get_stream_ctrl_format_size_fps returned: %d", result);
-    LOGD("global_UVC_ctrl->bFormatIndex = %d", ctrl->bFormatIndex);
-    LOGD("bmHint: %04x\n", ctrl->bmHint);
-    LOGD( "bFormatIndex: %d\n", ctrl->bFormatIndex);
-    LOGD( "bFrameIndex: %d\n", ctrl->bFrameIndex);
-    LOGD( "dwFrameInterval: %u\n", ctrl->dwFrameInterval);
-    LOGD( "wKeyFrameRate: %d\n", ctrl->wKeyFrameRate);
-    LOGD( "wPFrameRate: %d\n", ctrl->wPFrameRate);
-    LOGD( "wCompQuality: %d\n", ctrl->wCompQuality);
-    LOGD( "wCompWindowSize: %d\n", ctrl->wCompWindowSize);
-    LOGD( "wDelay: %d\n", ctrl->wDelay);
-    LOGD( "dwMaxVideoFrameSize: %u\n", ctrl->dwMaxVideoFrameSize);
-    LOGD( "dwMaxPayloadTransferSize: %u\n", ctrl->dwMaxPayloadTransferSize);
-    LOGD( "bInterfaceNumber: %d\n", ctrl->bInterfaceNumber);
-
-
-
-
+/*
+    LOGD( "   bmHint: %04x\n", ctrl->bmHint);
+    LOGD( "   bFormatIndex: %d\n", ctrl->bFormatIndex);
+    LOGD( "   bFrameIndex: %d\n", ctrl->bFrameIndex);
+    LOGD( "   dwFrameInterval: %u\n", ctrl->dwFrameInterval);
+    LOGD( "   wKeyFrameRate: %d\n", ctrl->wKeyFrameRate);
+    LOGD( "   wPFrameRate: %d\n", ctrl->wPFrameRate);
+    LOGD( "   wCompQuality: %d\n", ctrl->wCompQuality);
+    LOGD( "   wCompWindowSize: %d\n", ctrl->wCompWindowSize);
+    LOGD( "   wDelay: %d\n", ctrl->wDelay);
+    LOGD( "   dwMaxVideoFrameSize: %u\n", ctrl->dwMaxVideoFrameSize);
+    LOGD( "   dwMaxPayloadTransferSize: %u\n", ctrl->dwMaxPayloadTransferSize);
+    LOGD( "   bInterfaceNumber: %d\n", ctrl->bInterfaceNumber);
+*/
     if (result == UVC_SUCCESS) {
         request = UVC_GET_CUR;
         LOGD("PROBE GET CUR QUERY");
         result = uvc_query_stream_ctrl(uvcDeviceHandle_global, ctrl, 0, request);
         LOGD("result = %d", result);
+        request = UVC_SET_CUR;
+        LOGD("COMMIT SET CUR QUERY");
+        result = uvc_query_stream_ctrl(uvcDeviceHandle_global, ctrl, 1, request);
+        LOGD("result = %d", result);
         if (result == UVC_SUCCESS) {
-            request = UVC_SET_CUR;
-            LOGD("COMMIT SET CUR QUERY");
+            request = UVC_GET_CUR;
+            LOGD("COMMIT GET CUR QUERY");
             result = uvc_query_stream_ctrl(uvcDeviceHandle_global, ctrl, 1, request);
             LOGD("result = %d", result);
             if (result == UVC_SUCCESS) {
-                enum uvc_req_code request;
-                request = UVC_GET_CUR;
-                LOGD("COMMIT GET CUR QUERY");
-                result = uvc_query_stream_ctrl(uvcDeviceHandle_global, ctrl, 1, request);
-                LOGD("result = %d", result);
-                if (result == UVC_SUCCESS) {
-                    return result;
-                }else {
-                    //ctrl->bInterfaceNumber = result ;
-                    return result;
-                }
+                return result;
             }else {
-                ctrl->bInterfaceNumber = result ;
+                //ctrl->bInterfaceNumber = result ;
                 return result;
             }
-        } else {
+        }else {
             ctrl->bInterfaceNumber = result ;
             return result;
         }
@@ -3390,10 +3386,14 @@ uvc_error_t control_TransferUVC(uvc_stream_ctrl_t *ctrl) {
     }
 }
 
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniStreamOverSurfaceUVC
+JNIEXPORT int JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniStreamOverSurfaceUVC
         (JNIEnv *env, jobject obj) {
     LOGD("\nJniOverSurfaceUVC\n");
-    uvc_stream_ctrl_t ctrl;
+
+    uvc_error_t err;
+    uvc_stream_ctrl_t ctrl ;
+    memset(&ctrl, 0, sizeof(uvc_stream_ctrl_t));
+
     ctrl.bInterfaceNumber = uvcDeviceHandle_global->info->stream_ifs->bInterfaceNumber;
     ctrl.bmHint = 1;
     ctrl.bFormatIndex = camFormatIndex;
@@ -3403,28 +3403,33 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniStreamO
     uvc_error_t result = control_TransferUVC(&ctrl);
     if (UNLIKELY(result)) {
         LOGE("control_TransferUVC failed!!\ncontrol_TransferUVC:err=%d", result);
-        return;
+        return -1;
     } else	LOGDEB("control_TransferUVC = UVC_SUCCESS");
 
-    if(ctrl.bInterfaceNumber < 0) return;
+    if(ctrl.bInterfaceNumber < 0) return -1;
     uvc_error_t ret;
     uvc_stream_handle_t *strmh;
 
     LOGD("ctrl.bmHint = %d, ctrl.bFormatIndex = %d, ctrl.dwMaxPayloadTransferSize = %d", ctrl.bmHint, ctrl.bFormatIndex, ctrl.dwMaxPayloadTransferSize);
     LOGD("uvc_stream_open_ctrl");
     ret = uvc_stream_open_ctrl(uvcDeviceHandle_global, &strmh, &ctrl);
-
-    if (UNLIKELY(ret != UVC_SUCCESS))
-        LOGD("return = %d", ret);
+    if (UNLIKELY(ret != UVC_SUCCESS)) {
+        LOGE("uvc_stream_open_ctrl failed !!; return = %d", ret);
+        return -1;
+    }
     runningStream = true;
     LOGD("uvc_stream_start_random");
-    uvc_error_t err = uvc_stream_start_random(strmh, cb_stream_UVC, 12345, 0, 0, activeUrbs, packetsPerRequest, camStreamingAltSetting, maxPacketSize );
-    if (err == 0) LOGD("0 return");
+    err = uvc_stream_start_random(strmh, cb_stream_UVC, 12345, 0, 0, activeUrbs, packetsPerRequest, camStreamingAltSetting, maxPacketSize );
+    if (err == 0) {
+        LOGD("uvc_stream_start_random sucessful (nativeMsg) ; return = %d", err);
+    }
     else {
-        LOGD("return = %d", err);
+        LOGE("uvc_stream_start_random failed !!; return = %d", err);
         uvc_perror(result, "failed start_streaming");
+        return -2;
     }
     LOGD("ISO Stream complete");
+    return 0;
 }
 
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniStreamOverSurface

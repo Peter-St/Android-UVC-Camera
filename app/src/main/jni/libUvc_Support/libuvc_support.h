@@ -179,7 +179,7 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniStreamO
 		(JNIEnv *, jobject);
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniPrepairStreamOverSurfaceUVC
         (JNIEnv *, jobject);
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniStreamOverSurfaceUVC
+JNIEXPORT int JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniStreamOverSurfaceUVC
         (JNIEnv *, jobject);
 
 ////////    SetUpTheDevice
