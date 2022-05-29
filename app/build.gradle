@@ -4,6 +4,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 30
+    ndkVersion "21.1.6352462"
     defaultConfig {
         applicationId "humer.uvc_camera"
         targetSdkVersion 30
@@ -139,16 +140,12 @@ tasks.withType(JavaCompile) {
 }
 
 String getNdkBuildPath() {
-    Properties properties = new Properties()
-    properties.load(project.rootProject.file('local.properties').newDataInputStream())
-    def ndkBuildingDir = properties.getProperty("ndk.dir")
-    def ndkBuildPath = ndkBuildingDir
+    def ndkBuildingDir = project.android.ndkDirectory.path
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        ndkBuildPath = ndkBuildingDir + '/ndk-build.cmd'
+        return ndkBuildingDir + '/ndk-build.cmd'
     } else {
-        ndkBuildPath = ndkBuildingDir + '/ndk-build'
+        return ndkBuildingDir + '/ndk-build'
     }
-    return ndkBuildPath
 }
 
 task ndkBuild(type: Exec, description: 'Compile JNI source via NDK') {

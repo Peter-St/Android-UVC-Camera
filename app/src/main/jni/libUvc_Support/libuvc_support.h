@@ -22,8 +22,7 @@ This Repository is provided "as is", without warranties of any kind.
 
 #ifndef libuvc_support_h__
 #define libuvc_support_h__
-#include </home/peter/Android/Sdk/ndk/21.1.6352462/sysroot/usr/include/android/native_window.h>
-#include </home/peter/Android/Sdk/ndk/21.1.6352462/sysroot/usr/include/jni.h>
+#include <jni.h>
 #include <libusb.h>
 #include <pthread.h>
 
