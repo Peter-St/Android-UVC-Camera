@@ -121,7 +121,6 @@ void *_uvc_handle_events(void *arg) {
  */
 uvc_error_t uvc_init2(uvc_context_t **pctx, struct libusb_context *usb_ctx) {
 
-
 	int rc;
 
 	uvc_context_t *ctx = calloc(1, sizeof(*ctx));
@@ -129,7 +128,7 @@ uvc_error_t uvc_init2(uvc_context_t **pctx, struct libusb_context *usb_ctx) {
 	if (usb_ctx == NULL) {
 		// set libusb debug
 		//libusb_set_option(ctx->usb_ctx, LIBUSB_OPTION_LOG_LEVEL, LIBUSB_LOG_LEVEL_DEBUG);
-		rc = libusb_set_option(ctx->usb_ctx, LIBUSB_OPTION_NO_DEVICE_DISCOVERY, NULL);
+		rc = libusb_set_option(ctx->usb_ctx, LIBUSB_OPTION_NO_DEVICE_DISCOVERY, LIBUSB_LOG_LEVEL_DEBUG);
 		if (rc != LIBUSB_SUCCESS) {
 			__android_log_print(ANDROID_LOG_ERROR, TAG,"libusb_set_option failed: %d\n", rc);
 			return -1;

@@ -3322,7 +3322,10 @@ void cb_stream_UVC(uvc_frame_t *frame, void *ptr) {
         uvc_uyvy2rgbx(frame, rgb);
         copyToSurface(rgb, &mCaptureWindow);
         //uvc_free_frame(rgb);
-
+    } else  {
+        LOGE("FrameFormat not supported!!!");
+        LOGE("FrameFormat = %d", frame->frame_format);
+        LOGD("FrameFormat = %d", frame->frame_format);
     }
 
     if (!runningStream) uvc_stop_streaming(uvcDeviceHandle_global);

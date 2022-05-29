@@ -2427,7 +2427,8 @@ void uvc_stream_close(uvc_stream_handle_t *strmh) {
 		strmh->holdbuf = NULL;
 	}
 	pthread_cond_destroy(&strmh->cb_cond);
-	pthread_mutex_destroy(&strmh->cb_mutex);
+	// Crash on Android 11 when destroying mutex ?!?
+	//pthread_mutex_destroy(&strmh->cb_mutex);
 
 	DL_DELETE(strmh->devh->streams, strmh);
 	free(strmh);
