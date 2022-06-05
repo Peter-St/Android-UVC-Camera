@@ -73,9 +73,9 @@ public class Main extends AppCompatActivity {
     // Used to load the 'native-lib' library on application startup.
     static {
         System.loadLibrary("usb1.0");
-        System.loadLibrary("yuv");
+        //System.loadLibrary("yuv");
         System.loadLibrary("jpeg");
-        System.loadLibrary("jpeg-turbo");
+        //System.loadLibrary("jpeg-turbo");
         System.loadLibrary("Uvc_Support");
         System.loadLibrary("uvc");
         isLoaded = true;

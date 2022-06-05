@@ -4,7 +4,6 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 30
-    ndkVersion "21.1.6352462"
     defaultConfig {
         applicationId "humer.uvc_camera"
         targetSdkVersion 30
@@ -74,21 +73,32 @@ android {
         resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.2'
     }
 
-
+/*
     sourceSets {
         main {
             jniLibs.srcDir 'src/main/libs'
             jni.srcDirs = []
         }
     }
-
+*/
     externalNativeBuild {
-        ndkBuild {
-            path 'src/main/jni/Android.mk'
+        cmake {
+            path "src/main/c/libUvc_Support/CMakeLists.txt"
+            version "3.10.2"
         }
     }
 
-    publishNonDefault true
+/*
+    externalNativeBuild {
+        cmake {
+            path "src/main/c/libjpeg/CMakeLists.txt"
+            version "3.10.2"
+        }
+    }
+*/
+
+
+
     packagingOptions {
         pickFirst 'lib/x86_64/libUvc_Support.so'
         pickFirst 'lib/armeabi/libUvc_Support.so'
@@ -132,35 +142,11 @@ android {
         pickFirst 'lib/armeabi-v7a/libunrooted_android.so'
         pickFirst 'lib/arm64-v8a/libunrooted_android.so'
     }
+
+
 }
 
 
-tasks.withType(JavaCompile) {
-    compileTask -> compileTask.dependsOn ndkBuild
-}
-
-String getNdkBuildPath() {
-    def ndkBuildingDir = project.android.ndkDirectory.path
-    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        return ndkBuildingDir + '/ndk-build.cmd'
-    } else {
-        return ndkBuildingDir + '/ndk-build'
-    }
-}
-
-task ndkBuild(type: Exec, description: 'Compile JNI source via NDK') {
-    println('executing ndkBuild')
-    def ndkBuildPath = getNdkBuildPath();
-    commandLine ndkBuildPath, '-j8', '-C', file('src/main').absolutePath
-}
-
-task ndkClean(type: Exec, description: 'clean JNI libraries') {
-    println('executing ndkBuild clean')
-    def ndkBuildPath = getNdkBuildPath();
-    commandLine ndkBuildPath, 'clean', '-C', file('src/main').absolutePath
-}
-
-clean.dependsOn 'ndkClean'
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
