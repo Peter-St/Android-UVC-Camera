@@ -13,21 +13,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="719e864b-07d8-4e68-9be1-a80bb76647d2" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/c/libUvc_Support/libuvc_support.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/c/libUvc_Support/libuvc_support.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/c/libUvc_Support/libuvc_support.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/c/libUvc_Support/libuvc_support.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/c/libuvc/include/libuvc/libuvc.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/c/libuvc/include/libuvc/libuvc.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/c/libuvc/src/frame.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/c/libuvc/src/frame.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/c/libuvc/src/stream.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/c/libuvc/src/stream.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[192.168.10.184:5555]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -63,6 +59,7 @@
     <option name="KEY_STORE_PATH" value="$PROJECT_DIR$/../Build_APK_Key/my.keystore" />
     <option name="KEY_ALIAS" value="app" />
     <option name="REMEMBER_PASSWORDS" value="true" />
+    <option name="BUILD_TARGET_KEY" value="apk" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />

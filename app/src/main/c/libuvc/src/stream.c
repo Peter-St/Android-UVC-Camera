@@ -146,6 +146,15 @@ static enum uvc_frame_format uvc_frame_format_for_guid(uint8_t guid[16]) {
 	struct format_table_entry *format;
 	enum uvc_frame_format fmt;
 
+	int i, x = 16;
+	for (i = 0; i < x; i++)
+	{
+		if (i > 0) printf(":");
+		LOGDEB("%02X", guid[i]);
+	}
+	LOGDEB("\n");
+
+
 	for (fmt = 0; fmt < UVC_FRAME_FORMAT_COUNT; ++fmt) {
 		format = _get_format_entry(fmt);
 		if (!format || format->abstract_fmt)
@@ -1954,7 +1963,7 @@ uvc_error_t uvc_stream_start_random(uvc_stream_handle_t *strmh, uvc_frame_callba
         ret = UVC_ERROR_NOT_SUPPORTED;
         LOGE("unlnown frame format");
         goto fail;
-    }
+    } else LOGDEB ("Frameformat detected by uvc Lib\nFrameformat = %d\n", strmh->frame_format);
     const uint32_t dwMaxVideoFrameSize = ctrl->dwMaxVideoFrameSize <= frame_desc->dwMaxVideoFrameBufferSize
                                          ? ctrl->dwMaxVideoFrameSize : frame_desc->dwMaxVideoFrameBufferSize;
 
@@ -2232,15 +2241,18 @@ void _uvc_populate_frame(uvc_stream_handle_t *strmh) {
 	frame->actual_bytes = LIKELY(!strmh->hold_bfh_err) ? strmh->hold_bytes : 0;
 
 	switch (frame->frame_format) {
-	case UVC_FRAME_FORMAT_YUYV:
-		frame->step = frame->width * 2;
-		break;
-	case UVC_FRAME_FORMAT_MJPEG:
-		frame->step = 0;
-		break;
-	default:
-		frame->step = 0;
-		break;
+        case UVC_FRAME_FORMAT_YUYV:
+            frame->step = frame->width * 2;
+            break;
+        case UVC_FRAME_FORMAT_MJPEG:
+            frame->step = 0;
+            break;
+        case UVC_FRAME_FORMAT_UYVY:
+            frame->step = frame->width * 2;
+            break;
+        default:
+            frame->step = 0;
+            break;
 	}
 
 	/* copy the image data from the hold buffer to the frame (unnecessary extra buf?) */

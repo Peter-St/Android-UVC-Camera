@@ -1890,55 +1890,6 @@ void isoc_transfer_completion_handler_stream(struct libusb_transfer *the_transfe
         }
 }
 
-/*
-void cb_FiveFrames(uvc_frame_t *frame, void *ptr) {
-
-    LOGD("CallbackFunction called");
-    LOGD("actual len = %d   /// len = %d", frame->actual_bytes, frame->data_bytes);
-    LOGD("width = %d   /// height = %d", frame->width, frame->height);
-    uvc_frame_t *bgr;
-    uvc_error_t ret;
-
-    if (sendReceivedDataToJava != NULL) sendReceivedDataToJava(frame->data, frame->actual_bytes) ;
-
-    if(runningStream == false) uvc_stop_streaming(uvcDeviceHandle_global);
-}
-
-void cb_OneFrame(uvc_frame_t *frame, void *ptr) {
-
-    LOGD("CallbackFunction called");
-    LOGD("actual len = %d   /// len = %d", frame->actual_bytes, frame->data_bytes);
-    LOGD("width = %d   /// height = %d", frame->width, frame->height);
-
-    //if (sendReceivedDataToJava != NULL) sendReceivedDataToJava(frame->data, frame->actual_bytes) ;
-
-    uvc_stop_streaming(uvcDeviceHandle_global);
-}
-*/
-/*
-
-void getFramesOverLibUVC(int yuvFrameIsZero, int stream, int whichTestrun){
-    uvc_error_t ret;
-    probeCommitControl_UVC(bmHint, camFormatIndex, camFrameIndex,camFrameInterval);
-    probeCommitControl_cleanup();
-    uvc_stream_handle_t *strmh;
-    LOGD("uvc_stream_open_ctrl");
-    initialize_global_UVC_CTL();
-    ret = uvc_stream_open_ctrl(uvcDeviceHandle_global, &strmh, &global_UVC_ctrl);
-    if (UNLIKELY(ret != UVC_SUCCESS))
-        LOGD("return = %d", ret);
-    runningStream = true;
-    LOGD("uvc_stream_start_random");
-    uvc_error_t err = uvc_stream_start_random(strmh, whichTestrun == 1 ? cb_OneFrame : cb_FiveFrames, 12345, 0, 0, activeUrbs, packetsPerRequest, camStreamingAltSetting, maxPacketSize );
-    if (err == 0) LOGD("0 return");
-    else {
-        LOGD("return = %d", err);
-        uvc_perror(result, "failed start_streaming");
-    }
-    LOGD("getFramesOverLibUVC complete");
-}
-
-*/
 
 void initialize_global_UVC_CTL() {
     global_UVC_ctrl->bmHint = SW_TO_SHORT(streamControl);
@@ -2724,7 +2675,26 @@ void cb_jni_stream_Surface(struct libusb_transfer *the_transfer) {
 
 void cb_stream_UVC(uvc_frame_t *frame, void *ptr) {
 
-    if (frame->frame_format == UVC_FRAME_FORMAT_YUYV) {
+    if (strcmp(frameFormat, "UYVY")) {
+        uvc_error_t ret;
+        uvc_frame_t *rgbx;
+        frame->step = frame->width * 2;
+        rgbx = uvc_allocate_frame(imageWidth * imageHeight * 4);
+        if (!rgbx) {
+            printf("unable to allocate rgbx frame!");
+            return;
+        }
+        // Do the RGBX conversion
+        LOGD("FrameFormat = %d", frame->frame_format);
+        LOGD("Starting converting the UYVY Frame");
+        ret = uvc_uyvy2rgbx(frame, rgbx);
+        //ret = uvc_uyvy2rgbx_new(frame->data, frame->data_bytes, frame->width, frame->height, rgbx);
+        if (ret == 0) LOGD("Sucess");
+        else LOGE("Failed to convert UYVY FRAME");
+        //uvc_uyvy2rgbx(frame, rgbx);
+        copyToSurface(rgbx, &mCaptureWindow);
+        //uvc_free_frame(rgb);
+    } else if (frame->frame_format == UVC_FRAME_FORMAT_YUYV) {
         uvc_frame_t *rgbx;
         frame->step = frame->width * 2;
         rgbx = uvc_allocate_frame(imageWidth * imageHeight * 4);
@@ -2852,7 +2822,6 @@ uvc_error_t control_TransferUVC(uvc_stream_ctrl_t *ctrl) {
 JNIEXPORT int JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniStreamOverSurfaceUVC
         (JNIEnv *env, jobject obj) {
     LOGD("\nJniOverSurfaceUVC\n");
-
     uvc_error_t err;
     uvc_stream_ctrl_t ctrl ;
     memset(&ctrl, 0, sizeof(uvc_stream_ctrl_t));
