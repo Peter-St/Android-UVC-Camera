@@ -288,35 +288,6 @@ void uvc_perror(uvc_error_t err, const char *msg) {
     }
 }
 
-/** @brief Free a frame structure
- * @ingroup frame
- *
- * @param frame Frame to destroy
- */
-void uvc_free_frame(uvc_frame_t *frame) {
-    if ((frame->data_bytes > 0) && frame->library_owns_data)
-        free(frame->data);
-
-    free(frame);
-}
-
-/** @internal */
-uvc_error_t uvc_ensure_frame_size(uvc_frame_t *frame, size_t need_bytes) {
-    if LIKELY(frame->library_owns_data) {
-        if UNLIKELY(!frame->data || frame->data_bytes != need_bytes) {
-            frame->actual_bytes = frame->data_bytes = need_bytes;	// XXX
-            frame->data = realloc(frame->data, frame->data_bytes);
-        }
-        if (UNLIKELY(!frame->data || !need_bytes))
-            return UVC_ERROR_NO_MEM;
-        return UVC_SUCCESS;
-    } else {
-        if (UNLIKELY(!frame->data || frame->data_bytes < need_bytes))
-            return UVC_ERROR_NO_MEM;
-        return UVC_SUCCESS;
-    }
-}
-
 /** @brief Convert a frame from YUYV to RGBX8888
  * @ingroup frame
  * @param ini YUYV frame
@@ -374,283 +345,6 @@ uvc_error_t uvc_yuyv2rgbx_new(uvc_frame_t *out) {
     return UVC_SUCCESS;
 }
 
-/** @brief Convert a frame from UYVY to RGBX8888
- * @ingroup frame
- * @param ini UYVY frame
- * @param out RGBX8888 frame
- */
-
-uvc_error_t uvc_uyvy2rgbx_new(unsigned char* data, int data_bytes, int width, int height, uvc_frame_t *out) {
-    out->width = width;
-    out->height = height;
-    out->frame_format = UVC_FRAME_FORMAT_RGBX;
-    out->step = width * PIXEL_RGBX;
-    out->sequence = 0;
-    gettimeofday(&out->capture_time, NULL);
-    uint8_t *pyuv = data;
-    const uint8_t *pyuv_end = pyuv + data_bytes - PIXEL8_UYVY;
-    uint8_t *prgbx = out->data;
-    const uint8_t *prgbx_end = prgbx + out->data_bytes - PIXEL8_RGBX;
-    // UYVY => RGBX8888
-#if USE_STRIDE
-    if ((imageWidth * 3/2) && out->step && ((imageWidth * 3/2) != out->step)) {
-		const int hh = height < out->height ? height : out->height;
-		const int ww = width < out->width ? width : out->width;
-		int h, w;
-		for (h = 0; h < hh; h++) {
-			w = 0;
-			pyuv = data + (imageWidth * 3/2) * h;
-			prgbx = out->data + out->step * h;
-			for (; (prgbx <= prgbx_end) && (pyuv <= pyuv_end) && (w < ww) ;) {
-				IUYVY2RGBX_8(pyuv, prgbx, 0, 0);
-
-				prgbx += PIXEL8_RGBX;
-				pyuv += PIXEL8_UYVY;
-				w += 8;
-			}
-		}
-	} else {
-		// compressed format? XXX if only one of the frame in / out has step, this may lead to crash...
-		for (; (prgbx <= prgbx_end) && (pyuv <= pyuv_end) ;) {
-			IUYVY2RGBX_8(pyuv, prgbx, 0, 0);
-
-			prgbx += PIXEL8_RGBX;
-			pyuv += PIXEL8_UYVY;
-		}
-	}
-#else
-    for (; (prgbx <= prgbx_end) && (pyuv <= pyuv_end) ;) {
-        IUYVY2RGBX_8(pyuv, prgbx, 0, 0);
-        prgbx += PIXEL8_RGBX;
-        pyuv += PIXEL8_UYVY;
-    }
-#endif
-    return UVC_SUCCESS;
-}
-
-/** @brief Convert a frame from YUYV to RGBX8888
- * @ingroup frame
- * @param ini YUYV frame
- * @param out RGBX8888 frame
- */
-uvc_error_t uvc_yuyv2_rgbx(unsigned char* data, int data_bytes, int width, int height, uvc_frame_t *out) {
-    out->width = width;
-    out->height = height;
-    out->frame_format = UVC_FRAME_FORMAT_RGBX;
-    out->step = width * PIXEL_RGBX;
-    out->sequence = 0;
-    gettimeofday(&out->capture_time, NULL);
-    uint8_t *pyuv = data;
-    const uint8_t *pyuv_end = pyuv + data_bytes - PIXEL8_YUYV;
-    uint8_t *prgbx = out->data;
-    const uint8_t *prgbx_end = prgbx + out->data_bytes - PIXEL8_RGBX;
-
-    // YUYV => RGBX8888
-#if USE_STRIDE
-    if ((imageWidth * 3/2) && out->step && ((imageWidth * 3/2) != out->step)) {
-		const int hh = height < out->height ? height : out->height;
-		const int ww = width < out->width ? width : out->width;
-		int h, w;
-		for (h = 0; h < hh; h++) {
-			w = 0;
-			pyuv = data + (imageWidth * 3/2) * h;
-			prgbx = out->data + out->step * h;
-			for (; (prgbx <= prgbx_end) && (pyuv <= pyuv_end) && (w < ww) ;) {
-				IYUYV2RGBX_8(pyuv, prgbx, 0, 0);
-
-				prgbx += PIXEL8_RGBX;
-				pyuv += PIXEL8_YUYV;
-				w += 8;
-			}
-		}
-	} else {
-		// compressed format? XXX if only one of the frame in / out has step, this may lead to crash...
-		for (; (prgbx <= prgbx_end) && (pyuv <= pyuv_end) ;) {
-			IYUYV2RGBX_8(pyuv, prgbx, 0, 0);
-
-			prgbx += PIXEL8_RGBX;
-			pyuv += PIXEL8_YUYV;
-		}
-	}
-#else
-    for (; (prgbx <= prgbx_end) && (pyuv <= pyuv_end) ;) {
-        IYUYV2RGBX_8(pyuv, prgbx, 0, 0);
-
-        prgbx += PIXEL8_RGBX;
-        pyuv += PIXEL8_YUYV;
-    }
-#endif
-    return UVC_SUCCESS;
-}
-
-
-/** @brief Convert a frame from UYVY to RGB888
- * @ingroup frame
- * @param ini UYVY frame
- * @param out RGB888 frame
- */
-
-uvc_error_t uvc_uyvy2rgb_new(unsigned char* data, int data_bytes, int width, int height, uvc_frame_t *out) {
-    out->width = width;
-    out->height = height;
-    out->frame_format = UVC_FRAME_FORMAT_RGB;
-    out->step = width * PIXEL_RGB;
-    out->sequence = 0;
-    gettimeofday(&out->capture_time, NULL);
-
-    uint8_t *pyuv = data;
-    const uint8_t *pyuv_end = pyuv + data_bytes - PIXEL8_UYVY;
-    uint8_t *prgb = out->data;
-    const uint8_t *prgb_end = prgb + out->data_bytes - PIXEL8_RGB;
-
-    // UYVY => RGB888
-#if USE_STRIDE
-    if ((imageWidth * 3/2) && out->step && ((imageWidth * 3/2) != out->step)) {
-		const int hh = height < out->height ? height : out->height;
-		const int ww = width < out->width ? width : out->width;
-		int h, w;
-		for (h = 0; h < hh; h++) {
-			w = 0;
-			pyuv = data + (imageWidth * 3/2) * h;
-			prgb = out->data + out->step * h;
-			for (; (prgb <= prgb_end) && (pyuv <= pyuv_end) && (w < ww) ;) {
-				IUYVY2RGB_8(pyuv, prgb, 0, 0);
-
-				prgb += PIXEL8_RGB;
-				pyuv += PIXEL8_UYVY;
-				w += 8;
-			}
-		}
-	} else {
-		// compressed format? XXX if only one of the frame in / out has step, this may lead to crash...
-		for (; (prgb <= prgb_end) && (pyuv <= pyuv_end) ;) {
-			IUYVY2RGB_8(pyuv, prgb, 0, 0);
-
-			prgb += PIXEL8_RGB;
-			pyuv += PIXEL8_UYVY;
-		}
-	}
-#else
-    for (; (prgb <= prgb_end) && (pyuv <= pyuv_end) ;) {
-        IUYVY2RGB_8(pyuv, prgb, 0, 0);
-        prgb += PIXEL8_RGB;
-        pyuv += PIXEL8_UYVY;
-    }
-#endif
-    return UVC_SUCCESS;
-}
-
-/** @brief Convert a frame from YUYV to RGB888
- * @ingroup frame
- *
- * @param in YUYV frame
- * @param out RGB888 frame
- */
-
-uvc_error_t uvc_yuyv2rgb_new(unsigned char* data, int data_bytes, int width, int height, uvc_frame_t *out) {
-    out->width = width;
-    out->height = height;
-    out->frame_format = UVC_FRAME_FORMAT_RGB;
-    out->step = width * PIXEL_RGB;
-    out->sequence = 0;
-    gettimeofday(&out->capture_time, NULL);
-    uint8_t *pyuv = data;
-    const uint8_t *pyuv_end = pyuv + data_bytes - PIXEL8_YUYV;
-    uint8_t *prgb = out->data;
-    const uint8_t *prgb_end = prgb + out->data_bytes - PIXEL8_RGB;
-#if USE_STRIDE
-    if ((imageWidth * 3/2) && out->step && ((imageWidth * 3/2) != out->step)) {
-		const int hh = height < out->height ? height : out->height;
-		const int ww = width < out->width ? width : out->width;
-		int h, w;
-		for (h = 0; h < hh; h++) {
-			w = 0;
-			pyuv = data + (imageWidth * 3/2) * h;
-			prgb = out->data + out->step * h;
-			for (; (prgb <= prgb_end) && (pyuv <= pyuv_end) && (w < ww) ;) {
-				IYUYV2RGB_8(pyuv, prgb, 0, 0);
-
-				prgb += PIXEL8_RGB;
-				pyuv += PIXEL8_YUYV;
-				w += 8;
-			}
-		}
-	} else {
-		// compressed format? XXX if only one of the frame in / out has step, this may lead to crash...
-		for (; (prgb <= prgb_end) && (pyuv <= pyuv_end) ;) {
-			IYUYV2RGB_8(pyuv, prgb, 0, 0);
-
-			prgb += PIXEL8_RGB;
-			pyuv += PIXEL8_YUYV;
-		}
-	}
-#else
-    // YUYV => RGB888
-    for (; (prgb <= prgb_end) && (pyuv <= pyuv_end) ;) {
-        IYUYV2RGB_8(pyuv, prgb, 0, 0);
-
-        prgb += PIXEL8_RGB;
-        pyuv += PIXEL8_YUYV;
-    }
-#endif
-    return UVC_SUCCESS;
-}
-
-/** @brief Convert a frame from RGB888 to RGBX8888
- * @ingroup frame
- * @param ini RGB888 frame
- * @param out RGBX8888 frame
- */
-
-uvc_error_t uvc_rgb2rgbx_new(unsigned char* data, int data_bytes, int width, int height, uvc_frame_t *out) {
-    out->width = width;
-    out->height = height;
-    out->frame_format = UVC_FRAME_FORMAT_RGBX;
-    if (out->library_owns_data)
-        out->step = width * PIXEL_RGBX;
-    out->sequence = 0;
-    gettimeofday(&out->capture_time, NULL);
-    uint8_t *prgb = data;
-    const uint8_t *prgb_end = prgb + data_bytes - PIXEL8_RGB;
-    uint8_t *prgbx = out->data;
-    const uint8_t *prgbx_end = prgbx + out->data_bytes - PIXEL8_RGBX;
-    // RGB888 to RGBX8888
-#if USE_STRIDE
-    if (width * PIXEL_RGB && out->step && (width * PIXEL_RGB != out->step)) {
-		const int hh = height < out->height ? height : out->height;
-		const int ww = width < out->width ? width : out->width;
-		int h, w;
-		for (h = 0; h < hh; h++) {
-			w = 0;
-			prgb = data + width * PIXEL_RGB * h;
-			prgbx = out->data + out->step * h;
-			for (; (prgbx <= prgbx_end) && (prgb <= prgb_end) && (w < ww) ;) {
-				RGB2RGBX_8(prgb, prgbx, 0, 0);
-
-				prgb += PIXEL8_RGB;
-				prgbx += PIXEL8_RGBX;
-				w += 8;
-			}
-		}
-	} else {
-		// compressed format? XXX if only one of the frame in / out has step, this may lead to crash...
-		for (; (prgbx <= prgbx_end) && (prgb <= prgb_end) ;) {
-			RGB2RGBX_8(prgb, prgbx, 0, 0);
-
-			prgb += PIXEL8_RGB;
-			prgbx += PIXEL8_RGBX;
-		}
-	}
-#else
-    for (; (prgbx <= prgbx_end) && (prgb <= prgb_end) ;) {
-        RGB2RGBX_8(prgb, prgbx, 0, 0);
-
-        prgb += PIXEL8_RGB;
-        prgbx += PIXEL8_RGBX;
-    }
-#endif
-    return UVC_SUCCESS;
-}
 
 /** @brief Convert a frame from MJPEG to RGB8888
  * @ingroup frame
@@ -700,48 +394,12 @@ unsigned char* uvc_mjpeg2rgb_new(int* rgblength_ptr) {
     return rgb_buffer;
 }
 
-
-/** @brief Allocate a frame structure
- * @ingroup frame
- *
- * @param data_bytes Number of bytes to allocate, or zero
- * @return New frame, or NULL on error
- */
-uvc_frame_t *uvc_allocate_frame(size_t data_bytes) {
-    uvc_frame_t *frame = malloc(sizeof(*frame));	// FIXME using buffer pool is better performance(5-30%) than directory use malloc everytime.
-
-    if (UNLIKELY(!frame))
-        return NULL;
-
-#ifndef __ANDROID__
-    // XXX in many case, it is not neccesary to clear because all fields are set before use
-	// therefore we remove this to improve performace, but be care not to forget to set fields before use
-	memset(frame, 0, sizeof(*frame));	// bzero(frame, sizeof(*frame)); // bzero is deprecated
-#endif
-//	frame->library_owns_data = 1;	// XXX moved to lower
-
-    if (LIKELY(data_bytes > 0)) {
-        frame->library_owns_data = 1;
-        frame->actual_bytes = frame->data_bytes = data_bytes;	// XXX
-        frame->data = malloc(data_bytes);
-
-        if (UNLIKELY(!frame->data)) {
-            free(frame);
-            return NULL ;
-        }
-    }
-
-    return frame;
-}
-
-
 /** @brief Duplicate a frame, preserving color format
  * @ingroup frame
  *
  * @param in Original frame
  * @param out Duplicate frame
  */
-
 uvc_error_t uvc_duplicate_frame_new(uvc_frame_t *out) {
 
     out->width = imageWidth;
@@ -2774,128 +2432,9 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniPrepair
 }
 
 
-/** @internal
- * @brief Populate the fields of a frame to be handed to user code
- * must be called with stream cb lock held!
- */
-void _uvc_populate_frame(uvc_stream_handle_t *strmh) {
-    size_t alloc_size = videoFrameData[whichVideoFrameDate]->FrameBufferSize;
-    uvc_frame_t *frame = &strmh->frame;
-    //uvc_frame_desc_t *frame_desc;
-
-    /** @todo this stuff that hits the main config cache should really happen
-     * in start() so that only one thread hits these data. all of this stuff
-     * is going to be reopen_on_change anyway
-     */
-    if (strcmp(frameFormat, "MJPEG") == 0) frame->frame_format = UVC_FRAME_FORMAT_MJPEG;
-    else if (strcmp(frameFormat, "YUY2") == 0) frame->frame_format = UVC_FRAME_FORMAT_YUYV;
-
-
-    frame->width = imageWidth;
-    frame->height = imageHeight;
-    // XXX set actual_bytes to zero when erro bits is on
-    frame->actual_bytes = LIKELY(!strmh->hold_bfh_err) ? strmh->hold_bytes : 0;
-
-    switch (frame->frame_format) {
-        case UVC_FRAME_FORMAT_YUYV:
-            frame->step = frame->width * 2;
-            break;
-        case UVC_FRAME_FORMAT_MJPEG:
-            frame->step = 0;
-            break;
-        default:
-            frame->step = 0;
-            break;
-    }
-    LOGD ("realloc");
-    /* copy the image data from the hold buffer to the frame (unnecessary extra buf?) */
-    if (UNLIKELY(frame->data_bytes < strmh->hold_bytes)) {
-        frame->data = realloc(frame->data, strmh->hold_bytes);	// TODO add error handling when failed realloc
-        frame->data_bytes = strmh->hold_bytes;
-    }
-
-    memcpy(frame->data, videoFrameData[whichVideoFrameDate]->videoframe, strmh->hold_bytes/*frame->data_bytes*/);	// XXX
-
-    /** @todo set the frame time */
-}
-
-
-/** Poll for a frame
- * @ingroup streaming
- *
- * @param devh UVC device
- * @param[out] frame Location to store pointer to captured frame (NULL on error)
- * @param timeout_us >0: Wait at most N microseconds; 0: Wait indefinitely; -1: return immediately
- */
-uvc_error_t uvc_stream_get_frame(uvc_stream_handle_t *strmh,
-                                 uvc_frame_t **frame, int32_t timeout_us) {
-    time_t add_secs;
-    time_t add_nsecs;
-    struct timespec ts;
-    struct timeval tv;
-
-    if (UNLIKELY(!strmh->running))
-        return UVC_ERROR_INVALID_PARAM;
-
-    //if (UNLIKELY(strmh->user_cb))
-    //    return UVC_ERROR_CALLBACK_EXISTS;
-
-    pthread_mutex_lock(&strmh->cb_mutex);
-    {
-        if (strmh->last_polled_seq < strmh->hold_seq) {
-            _uvc_populate_frame(strmh);
-            *frame = &strmh->frame;
-            strmh->last_polled_seq = strmh->hold_seq;
-        } else if (timeout_us != -1) {
-            if (!timeout_us) {
-                pthread_cond_wait(&strmh->cb_cond, &strmh->cb_mutex);
-            } else {
-                add_secs = timeout_us / 1000000;
-                add_nsecs = (timeout_us % 1000000) * 1000;
-                ts.tv_sec = 0;
-                ts.tv_nsec = 0;
-
-#if _POSIX_TIMERS > 0
-                clock_gettime(CLOCK_REALTIME, &ts);
-#else
-                gettimeofday(&tv, NULL);
-				ts.tv_sec = tv.tv_sec;
-				ts.tv_nsec = tv.tv_usec * 1000;
-#endif
-
-                ts.tv_sec += add_secs;
-                ts.tv_nsec += add_nsecs;
-
-                pthread_cond_timedwait(&strmh->cb_cond, &strmh->cb_mutex, &ts);
-            }
-
-            if (LIKELY(strmh->last_polled_seq < strmh->hold_seq)) {
-                _uvc_populate_frame(strmh);
-                *frame = &strmh->frame;
-                strmh->last_polled_seq = strmh->hold_seq;
-            } else {
-                *frame = NULL;
-            }
-        } else {
-            *frame = NULL;
-        }
-    }
-    pthread_mutex_unlock(&strmh->cb_mutex);
-    return UVC_SUCCESS;
-}
-
 void eof_cb_jni_stream_Surface(uvc_stream_handle_t *strmh) {
-
-
-
-
     ueberschreitungDerUebertragungslaenge = 0;
     //_uvc_swap_buffers(strmh);
-
-
-
-
-
     if (frameUeberspringen == 0) {
         ++totalFrame;
         if (runningStream == false) stopStreaming();
@@ -2910,7 +2449,6 @@ void eof_cb_jni_stream_Surface(uvc_stream_handle_t *strmh) {
                 unsigned char *rgb_buffer;
                 int row_stride, width, height, pixel_size;
                 unsigned long jpg_size = *jpglength_ptr;
-
                 /*
                 //LOGD("jpg length jpglength_ptr = %d", *jpglength_ptr);
                 struct jpeg_decompress_struct cinfo;
@@ -3108,7 +2646,6 @@ void eof_cb_jni_stream_Surface(uvc_stream_handle_t *strmh) {
         LOGD("Länge des Frames (Übersprungener Frame) = %d\n", total);
         frameUeberspringen = 0;
     }
-
     total = 0;
 }
 
@@ -3188,18 +2725,18 @@ void cb_jni_stream_Surface(struct libusb_transfer *the_transfer) {
 void cb_stream_UVC(uvc_frame_t *frame, void *ptr) {
 
     if (frame->frame_format == UVC_FRAME_FORMAT_YUYV) {
-        uvc_frame_t *rgb;
+        uvc_frame_t *rgbx;
         frame->step = frame->width * 2;
-        rgb = uvc_allocate_frame(imageWidth * imageHeight * 4);
-        if (!rgb) {
-            printf("unable to allocate rgb frame!");
+        rgbx = uvc_allocate_frame(imageWidth * imageHeight * 4);
+        if (!rgbx) {
+            printf("unable to allocate rgbx frame!");
             return;
         }
-        // Do the RGB conversion
-        uvc_yuyv2rgbx(frame, rgb);
+        // Do the RGBX conversion
+        uvc_yuyv2rgbx(frame, rgbx);
 
-        copyToSurface(rgb, &mCaptureWindow);
-        //uvc_free_frame(rgb);
+        copyToSurface(rgbx, &mCaptureWindow);
+        //uvc_free_frame(rgbx);
     } else if (frame->frame_format == UVC_FRAME_FORMAT_MJPEG) {
 
         JNIEnv * jenv;
@@ -3217,27 +2754,33 @@ void cb_stream_UVC(uvc_frame_t *frame, void *ptr) {
         /*
 
         frame->step = 0;
-        rgb = uvc_allocate_frame(imageWidth * imageHeight * 4);
-        if (!rgb) {
-            printf("unable to allocate rgb frame!");
+        rgbx = uvc_allocate_frame(imageWidth * imageHeight * 4);
+        if (!rgbx) {
+            printf("unable to allocate rgbx frame!");
             return;
         }
-        // Do the RGB conversion
-        uvc_mjpeg2rgbx(frame, rgb);
-        copyToSurface(rgb, &mCaptureWindow);
-        //uvc_free_frame(rgb);
+        // Do the RGBX conversion
+        uvc_mjpeg2rgbx(frame, rgbx);
+        copyToSurface(rgbx, &mCaptureWindow);
+        //uvc_free_frame(rgbx);
         */
     } else if (frame->frame_format == UVC_FRAME_FORMAT_UYVY)  {
-        uvc_frame_t *rgb;
+        uvc_error_t ret;
+        uvc_frame_t *rgbx;
         frame->step = frame->width * 2;
-        rgb = uvc_allocate_frame(imageWidth * imageHeight * 4);
-        if (!rgb) {
-            printf("unable to allocate rgb frame!");
+        rgbx = uvc_allocate_frame(imageWidth * imageHeight * 4);
+        if (!rgbx) {
+            printf("unable to allocate rgbx frame!");
             return;
         }
-        // Do the RGB conversion
-        uvc_uyvy2rgbx(frame, rgb);
-        copyToSurface(rgb, &mCaptureWindow);
+        // Do the RGBX conversion
+
+        LOGD("Starting converting the UYVY Frame");
+        ret = uvc_uyvy2rgbx_new(frame->data, frame->data_bytes, frame->width, frame->height, rgbx);
+        if (ret == 0) LOGD("Sucess");
+        else LOGE("Failed to convert UYVY FRAME");
+        //uvc_uyvy2rgbx(frame, rgbx);
+        copyToSurface(rgbx, &mCaptureWindow);
         //uvc_free_frame(rgb);
     } else  {
         LOGE("FrameFormat not supported!!!");
@@ -3427,8 +2970,6 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniStreamO
             libusb_handle_events(uvcContext_global->usb_ctx);
         }
 */
-
-        //if (uvc_stream_get_frame(strmh, frame, 2000) != UVC_SUCCESS) LOGD("Faild to get the frame");
 
 
 

@@ -1393,3 +1393,283 @@ uvc_error_t uvc_any2iyuv420SP(uvc_frame_t *in, uvc_frame_t *out) {
 	}
 	return result;
 }
+
+
+
+/** @brief Convert a frame from UYVY to RGBX8888
+ * @ingroup frame
+ * @param ini UYVY frame
+ * @param out RGBX8888 frame
+ */
+
+uvc_error_t uvc_uyvy2rgbx_new(unsigned char* data, int data_bytes, int width, int height, uvc_frame_t *out) {
+	out->width = width;
+	out->height = height;
+	out->frame_format = UVC_FRAME_FORMAT_RGBX;
+	out->step = width * PIXEL_RGBX;
+	out->sequence = 0;
+	gettimeofday(&out->capture_time, NULL);
+	uint8_t *pyuv = data;
+	const uint8_t *pyuv_end = pyuv + data_bytes - PIXEL8_UYVY;
+	uint8_t *prgbx = out->data;
+	const uint8_t *prgbx_end = prgbx + out->data_bytes - PIXEL8_RGBX;
+	// UYVY => RGBX8888
+#if USE_STRIDE
+	if ((width * 3/2) && out->step && ((width * 3/2) != out->step)) {
+		const int hh = height < out->height ? height : out->height;
+		const int ww = width < out->width ? width : out->width;
+		int h, w;
+		for (h = 0; h < hh; h++) {
+			w = 0;
+			pyuv = data + (width * 3/2) * h;
+			prgbx = out->data + out->step * h;
+			for (; (prgbx <= prgbx_end) && (pyuv <= pyuv_end) && (w < ww) ;) {
+				IUYVY2RGBX_8(pyuv, prgbx, 0, 0);
+
+				prgbx += PIXEL8_RGBX;
+				pyuv += PIXEL8_UYVY;
+				w += 8;
+			}
+		}
+	} else {
+		// compressed format? XXX if only one of the frame in / out has step, this may lead to crash...
+		for (; (prgbx <= prgbx_end) && (pyuv <= pyuv_end) ;) {
+			IUYVY2RGBX_8(pyuv, prgbx, 0, 0);
+
+			prgbx += PIXEL8_RGBX;
+			pyuv += PIXEL8_UYVY;
+		}
+	}
+#else
+	for (; (prgbx <= prgbx_end) && (pyuv <= pyuv_end) ;) {
+        IUYVY2RGBX_8(pyuv, prgbx, 0, 0);
+        prgbx += PIXEL8_RGBX;
+        pyuv += PIXEL8_UYVY;
+    }
+#endif
+	return UVC_SUCCESS;
+}
+
+/** @brief Convert a frame from YUYV to RGBX8888
+ * @ingroup frame
+ * @param ini YUYV frame
+ * @param out RGBX8888 frame
+ */
+uvc_error_t uvc_yuyv2_rgbx(unsigned char* data, int data_bytes, int width, int height, uvc_frame_t *out) {
+	out->width = width;
+	out->height = height;
+	out->frame_format = UVC_FRAME_FORMAT_RGBX;
+	out->step = width * PIXEL_RGBX;
+	out->sequence = 0;
+	gettimeofday(&out->capture_time, NULL);
+	uint8_t *pyuv = data;
+	const uint8_t *pyuv_end = pyuv + data_bytes - PIXEL8_YUYV;
+	uint8_t *prgbx = out->data;
+	const uint8_t *prgbx_end = prgbx + out->data_bytes - PIXEL8_RGBX;
+
+	// YUYV => RGBX8888
+#if USE_STRIDE
+	if ((width * 3/2) && out->step && ((width * 3/2) != out->step)) {
+		const int hh = height < out->height ? height : out->height;
+		const int ww = width < out->width ? width : out->width;
+		int h, w;
+		for (h = 0; h < hh; h++) {
+			w = 0;
+			pyuv = data + (width * 3/2) * h;
+			prgbx = out->data + out->step * h;
+			for (; (prgbx <= prgbx_end) && (pyuv <= pyuv_end) && (w < ww) ;) {
+				IYUYV2RGBX_8(pyuv, prgbx, 0, 0);
+
+				prgbx += PIXEL8_RGBX;
+				pyuv += PIXEL8_YUYV;
+				w += 8;
+			}
+		}
+	} else {
+		// compressed format? XXX if only one of the frame in / out has step, this may lead to crash...
+		for (; (prgbx <= prgbx_end) && (pyuv <= pyuv_end) ;) {
+			IYUYV2RGBX_8(pyuv, prgbx, 0, 0);
+
+			prgbx += PIXEL8_RGBX;
+			pyuv += PIXEL8_YUYV;
+		}
+	}
+#else
+	for (; (prgbx <= prgbx_end) && (pyuv <= pyuv_end) ;) {
+        IYUYV2RGBX_8(pyuv, prgbx, 0, 0);
+
+        prgbx += PIXEL8_RGBX;
+        pyuv += PIXEL8_YUYV;
+    }
+#endif
+	return UVC_SUCCESS;
+}
+
+
+/** @brief Convert a frame from UYVY to RGB888
+ * @ingroup frame
+ * @param ini UYVY frame
+ * @param out RGB888 frame
+ */
+
+uvc_error_t uvc_uyvy2rgb_new(unsigned char* data, int data_bytes, int width, int height, uvc_frame_t *out) {
+	out->width = width;
+	out->height = height;
+	out->frame_format = UVC_FRAME_FORMAT_RGB;
+	out->step = width * PIXEL_RGB;
+	out->sequence = 0;
+	gettimeofday(&out->capture_time, NULL);
+
+	uint8_t *pyuv = data;
+	const uint8_t *pyuv_end = pyuv + data_bytes - PIXEL8_UYVY;
+	uint8_t *prgb = out->data;
+	const uint8_t *prgb_end = prgb + out->data_bytes - PIXEL8_RGB;
+
+	// UYVY => RGB888
+#if USE_STRIDE
+	if ((width * 3/2) && out->step && ((width * 3/2) != out->step)) {
+		const int hh = height < out->height ? height : out->height;
+		const int ww = width < out->width ? width : out->width;
+		int h, w;
+		for (h = 0; h < hh; h++) {
+			w = 0;
+			pyuv = data + (width * 3/2) * h;
+			prgb = out->data + out->step * h;
+			for (; (prgb <= prgb_end) && (pyuv <= pyuv_end) && (w < ww) ;) {
+				IUYVY2RGB_8(pyuv, prgb, 0, 0);
+
+				prgb += PIXEL8_RGB;
+				pyuv += PIXEL8_UYVY;
+				w += 8;
+			}
+		}
+	} else {
+		// compressed format? XXX if only one of the frame in / out has step, this may lead to crash...
+		for (; (prgb <= prgb_end) && (pyuv <= pyuv_end) ;) {
+			IUYVY2RGB_8(pyuv, prgb, 0, 0);
+
+			prgb += PIXEL8_RGB;
+			pyuv += PIXEL8_UYVY;
+		}
+	}
+#else
+	for (; (prgb <= prgb_end) && (pyuv <= pyuv_end) ;) {
+        IUYVY2RGB_8(pyuv, prgb, 0, 0);
+        prgb += PIXEL8_RGB;
+        pyuv += PIXEL8_UYVY;
+    }
+#endif
+	return UVC_SUCCESS;
+}
+
+/** @brief Convert a frame from YUYV to RGB888
+ * @ingroup frame
+ *
+ * @param in YUYV frame
+ * @param out RGB888 frame
+ */
+
+uvc_error_t uvc_yuyv2rgb_new(unsigned char* data, int data_bytes, int width, int height, uvc_frame_t *out) {
+	out->width = width;
+	out->height = height;
+	out->frame_format = UVC_FRAME_FORMAT_RGB;
+	out->step = width * PIXEL_RGB;
+	out->sequence = 0;
+	gettimeofday(&out->capture_time, NULL);
+	uint8_t *pyuv = data;
+	const uint8_t *pyuv_end = pyuv + data_bytes - PIXEL8_YUYV;
+	uint8_t *prgb = out->data;
+	const uint8_t *prgb_end = prgb + out->data_bytes - PIXEL8_RGB;
+#if USE_STRIDE
+	if ((width * 3/2) && out->step && ((width * 3/2) != out->step)) {
+		const int hh = height < out->height ? height : out->height;
+		const int ww = width < out->width ? width : out->width;
+		int h, w;
+		for (h = 0; h < hh; h++) {
+			w = 0;
+			pyuv = data + (width * 3/2) * h;
+			prgb = out->data + out->step * h;
+			for (; (prgb <= prgb_end) && (pyuv <= pyuv_end) && (w < ww) ;) {
+				IYUYV2RGB_8(pyuv, prgb, 0, 0);
+
+				prgb += PIXEL8_RGB;
+				pyuv += PIXEL8_YUYV;
+				w += 8;
+			}
+		}
+	} else {
+		// compressed format? XXX if only one of the frame in / out has step, this may lead to crash...
+		for (; (prgb <= prgb_end) && (pyuv <= pyuv_end) ;) {
+			IYUYV2RGB_8(pyuv, prgb, 0, 0);
+
+			prgb += PIXEL8_RGB;
+			pyuv += PIXEL8_YUYV;
+		}
+	}
+#else
+	// YUYV => RGB888
+    for (; (prgb <= prgb_end) && (pyuv <= pyuv_end) ;) {
+        IYUYV2RGB_8(pyuv, prgb, 0, 0);
+
+        prgb += PIXEL8_RGB;
+        pyuv += PIXEL8_YUYV;
+    }
+#endif
+	return UVC_SUCCESS;
+}
+
+/** @brief Convert a frame from RGB888 to RGBX8888
+ * @ingroup frame
+ * @param ini RGB888 frame
+ * @param out RGBX8888 frame
+ */
+
+uvc_error_t uvc_rgb2rgbx_new(unsigned char* data, int data_bytes, int width, int height, uvc_frame_t *out) {
+	out->width = width;
+	out->height = height;
+	out->frame_format = UVC_FRAME_FORMAT_RGBX;
+	if (out->library_owns_data)
+		out->step = width * PIXEL_RGBX;
+	out->sequence = 0;
+	gettimeofday(&out->capture_time, NULL);
+	uint8_t *prgb = data;
+	const uint8_t *prgb_end = prgb + data_bytes - PIXEL8_RGB;
+	uint8_t *prgbx = out->data;
+	const uint8_t *prgbx_end = prgbx + out->data_bytes - PIXEL8_RGBX;
+	// RGB888 to RGBX8888
+#if USE_STRIDE
+	if (width * PIXEL_RGB && out->step && (width * PIXEL_RGB != out->step)) {
+		const int hh = height < out->height ? height : out->height;
+		const int ww = width < out->width ? width : out->width;
+		int h, w;
+		for (h = 0; h < hh; h++) {
+			w = 0;
+			prgb = data + width * PIXEL_RGB * h;
+			prgbx = out->data + out->step * h;
+			for (; (prgbx <= prgbx_end) && (prgb <= prgb_end) && (w < ww) ;) {
+				RGB2RGBX_8(prgb, prgbx, 0, 0);
+
+				prgb += PIXEL8_RGB;
+				prgbx += PIXEL8_RGBX;
+				w += 8;
+			}
+		}
+	} else {
+		// compressed format? XXX if only one of the frame in / out has step, this may lead to crash...
+		for (; (prgbx <= prgbx_end) && (prgb <= prgb_end) ;) {
+			RGB2RGBX_8(prgb, prgbx, 0, 0);
+
+			prgb += PIXEL8_RGB;
+			prgbx += PIXEL8_RGBX;
+		}
+	}
+#else
+	for (; (prgbx <= prgbx_end) && (prgb <= prgb_end) ;) {
+        RGB2RGBX_8(prgb, prgbx, 0, 0);
+
+        prgb += PIXEL8_RGB;
+        prgbx += PIXEL8_RGBX;
+    }
+#endif
+	return UVC_SUCCESS;
+}

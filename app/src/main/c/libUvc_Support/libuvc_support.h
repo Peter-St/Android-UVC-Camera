@@ -50,6 +50,8 @@ This Repository is provided "as is", without warranties of any kind.
 //#include "libuvc/include/libuvc/libuvc.h"
 //#include "libuvc/include/libuvc/libuvc_internal.h"
 
+#include "libuvc.h"
+
 ///////////////// LibUvc ////////////////////////////////
 
 extern int initLibUsb() ;
