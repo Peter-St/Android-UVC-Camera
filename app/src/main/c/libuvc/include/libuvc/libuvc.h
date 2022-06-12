@@ -615,7 +615,7 @@ uvc_error_t uvc_start_iso_streaming(uvc_device_handle_t *devh,
 void uvc_stop_streaming(uvc_device_handle_t *devh);
 
 uvc_error_t uvc_stream_open_ctrl(uvc_device_handle_t *devh,
-		uvc_stream_handle_t **strmh, uvc_stream_ctrl_t *ctrl);
+		uvc_stream_handle_t **strmh, uvc_stream_ctrl_t *ctrl, size_t stream_size);
 uvc_error_t uvc_stream_ctrl(uvc_stream_handle_t *strmh,
 		uvc_stream_ctrl_t *ctrl);
 uvc_error_t uvc_stream_start(uvc_stream_handle_t *strmh,

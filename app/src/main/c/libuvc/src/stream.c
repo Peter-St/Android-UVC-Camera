@@ -957,6 +957,7 @@ static inline void _uvc_process_payload_iso(uvc_stream_handle_t *strmh, struct l
 			// from "if (pkt->actual_length - header_len > 0)"
 			if (LIKELY(pkt->actual_length > header_len)) {
 				const size_t odd_bytes = pkt->actual_length - header_len;
+				if (!(strmh->got_bytes + odd_bytes < strmh->size_buf))	LOGDEB("strmh->got_bytes + odd_bytes = %d", strmh->got_bytes + odd_bytes);
 				assert(strmh->got_bytes + odd_bytes < strmh->size_buf);
 				assert(strmh->outbuf);
 				assert(pktbuf);
@@ -1261,7 +1262,7 @@ uvc_error_t uvc_start_streaming_bandwidth(uvc_device_handle_t *devh,
 	uvc_error_t ret;
 	uvc_stream_handle_t *strmh;
 
-	ret = uvc_stream_open_ctrl(devh, &strmh, ctrl);
+	ret = uvc_stream_open_ctrl(devh, &strmh, ctrl, 0);
 	if (UNLIKELY(ret != UVC_SUCCESS))
 		return ret;
 
@@ -1324,29 +1325,25 @@ static uvc_streaming_interface_t *_uvc_get_stream_if(uvc_device_handle_t *devh,
  * @param devh UVC device
  * @param ctrl Control block, processed using {uvc_probe_stream_ctrl} or
  *             {uvc_get_stream_ctrl_format_size}
+ * @param frame_size Allocate the exact size of the frame for the streaming buffers
+ *             if 0 for auto value
  */
 uvc_error_t uvc_stream_open_ctrl(uvc_device_handle_t *devh,
-		uvc_stream_handle_t **strmhp, uvc_stream_ctrl_t *ctrl) {
+		uvc_stream_handle_t **strmhp, uvc_stream_ctrl_t *ctrl, size_t frame_size) {
 	/* Chosen frame and format descriptors */
-
-
-
 	uvc_stream_handle_t *strmh = NULL;
 	uvc_streaming_interface_t *stream_if;
 	uvc_error_t ret;
-
     UVC_ENTER();
 	if (UNLIKELY(_uvc_get_stream_by_interface(devh, ctrl->bInterfaceNumber) != NULL)) {
 		ret = UVC_ERROR_BUSY; /* Stream is already opened */
 		goto fail;
 	}
-
 	stream_if = _uvc_get_stream_if(devh, ctrl->bInterfaceNumber);
 	if (UNLIKELY(!stream_if)) {
 		ret = UVC_ERROR_INVALID_PARAM;
 		goto fail;
 	}
-
 	LOGDEB("StreamHandle Calloc");
 
 	strmh = calloc(1, sizeof(*strmh));
@@ -1375,11 +1372,15 @@ uvc_error_t uvc_stream_open_ctrl(uvc_device_handle_t *devh,
 
 	// Set up the streaming status and data space
 	strmh->running = 0;
-	/** @todo take only what we need */
-	strmh->outbuf = malloc(LIBUVC_XFER_BUF_SIZE);
-	strmh->holdbuf = malloc(LIBUVC_XFER_BUF_SIZE);
-	strmh->size_buf = LIBUVC_XFER_BUF_SIZE;	// xxx for boundary check
-
+	if (frame_size != 0) {
+        strmh->outbuf = malloc(frame_size);
+        strmh->holdbuf = malloc(frame_size);
+        strmh->size_buf = frame_size;	// xxx for boundary check
+    } else {
+        strmh->outbuf = malloc(LIBUVC_XFER_BUF_SIZE);
+        strmh->holdbuf = malloc(LIBUVC_XFER_BUF_SIZE);
+        strmh->size_buf = LIBUVC_XFER_BUF_SIZE;	// xxx for boundary check
+    }
 	pthread_mutex_init(&strmh->cb_mutex, NULL);
 	pthread_cond_init(&strmh->cb_cond, NULL);
 
