@@ -40,9 +40,7 @@ public interface JNA_I_LibUsb extends Library {
                                       int camFrameInde, int camFrameInterva, int imageWidt, int imageHeigh, int camStreamingEndpoint, int camStreamingInterfaceNumber,
                                       String frameFormat, int numberOfAutoFrames, int bcdUVC_int, int lowAndroid);
 
-    public int initStreamingParms(int FD);
-
-    public void startAutoDetection();
+    public int initStreamingParms(Pointer uvc_camera, int FD);
 
     public interface autoStreamComplete extends Callback {
         boolean callback();
@@ -50,22 +48,7 @@ public interface JNA_I_LibUsb extends Library {
 
     public void setAutoStreamComplete(autoStreamComplete AutoStreamComplete);
 
-    @FieldOrder({"spacketCnt", "spacket0Cnt", "spacket12Cnt", "spacketDataCnt", "spacketHdr8Ccnt", "spacketErrorCnt", "sframeCnt", "sframeLen", "requestCnt", "sframeLenArray"})
-    public static class Libusb_Auto_Values extends Structure {
-        public static class ByValue extends Libusb_Auto_Values implements Structure.ByValue {
-        }
 
-        public int spacketCnt;
-        public int spacket0Cnt;
-        public int spacket12Cnt;
-        public int spacketDataCnt;
-        public int spacketHdr8Ccnt;
-        public int spacketErrorCnt;
-        public int sframeCnt;
-        public int sframeLen;
-        public int requestCnt;
-        public int[] sframeLenArray = new int[5];
-    }
 
     public Libusb_Auto_Values.ByValue get_autotransferStruct();
 
@@ -86,13 +69,6 @@ public interface JNA_I_LibUsb extends Library {
     public void stopStreaming();
 
     public void stopJavaVM();
-
-    public void native_uvc_unref_device();
-
-    public int preInitDevice(int FD);
-
-    public Pointer probeCommitControl(int bmHint, int camFormatInde,
-                                      int camFrameInde, int camFrameInterva, int FD);
 
     //public void probeCommitControl_cleanup();
 
@@ -130,7 +106,7 @@ public interface JNA_I_LibUsb extends Library {
     public void stopVideoCaptureLongClick();
 
     // move to Native Methods:
-    public int fetchTheCamStreamingEndpointAdress(int FD);
+    public int fetchTheCamStreamingEndpointAdress(Pointer uvc_camera, int FD);
 
     // Frame Conversation:
     public Pointer convertUYVYtoJPEG(Pointer UYVY_frame_array, IntByReference jpgLength, int UYVYframeLength, int imageWidth, int imageHeight);
@@ -144,10 +120,10 @@ public interface JNA_I_LibUsb extends Library {
 
     // LibUsb Methods
     public int initLibUsb();
-    public uvc_device_info.ByReference listDeviceUvc(int fd);
+    public uvc_device_info.ByReference listDeviceUvc(Pointer uvc_camera, int fd);
     public void automaticDetection();
 
-
+    // c++ Methods
 
 
 
@@ -221,7 +197,36 @@ public interface JNA_I_LibUsb extends Library {
     ///////////////////  UVC Structures
 
 
+    //Global Uvc_Camera Struct
+    @FieldOrder({"preview_pointer", "uvc_context", "uvc_device_handle", "uvc_device", "uvc_ctrl"  })
+    public static class uvc_camera extends Structure {
+        public static class ByReference extends uvc_camera implements Structure.ByReference{}
 
+        public long preview_pointer;
+
+        public Pointer uvc_context;
+        public Pointer uvc_device_handle;
+        public Pointer uvc_device;
+        public Pointer uvc_ctrl;
+
+    }
+
+    @FieldOrder({"spacketCnt", "spacket0Cnt", "spacket12Cnt", "spacketDataCnt", "spacketHdr8Ccnt", "spacketErrorCnt", "sframeCnt", "sframeLen", "requestCnt", "sframeLenArray"})
+    public static class Libusb_Auto_Values extends Structure {
+        public static class ByValue extends Libusb_Auto_Values implements Structure.ByValue {
+        }
+
+        public int spacketCnt;
+        public int spacket0Cnt;
+        public int spacket12Cnt;
+        public int spacketDataCnt;
+        public int spacketHdr8Ccnt;
+        public int spacketErrorCnt;
+        public int sframeCnt;
+        public int sframeLen;
+        public int requestCnt;
+        public int[] sframeLenArray = new int[5];
+    }
 
 
     @FieldOrder({"config", "ctrl_if", "stream_ifs"})

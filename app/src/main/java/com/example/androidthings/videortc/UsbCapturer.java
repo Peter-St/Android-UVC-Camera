@@ -42,8 +42,13 @@ import humer.UvcCamera.UsbIso64.usbdevice_fs_util;
 
 import static java.lang.Integer.parseInt;
 
+import com.sun.jna.Pointer;
+
 
 public class UsbCapturer implements VideoCapturer {
+
+    // Native UVC Camera
+    private long mNativePtr;
 
     private static String saveFilePathFolder = "UVC_Camera/yuvImage";
     private int value = 0;
@@ -246,7 +251,7 @@ public class UsbCapturer implements VideoCapturer {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                JNA_I_LibUsb.INSTANCE.probeCommitControl(1, camFormatIndex, camFrameIndex,  camFrameInterval, fd);
+                //JNA_I_LibUsb.INSTANCE.probeCommitControl(1, camFormatIndex, camFrameIndex,  camFrameInterval, fd);
                 //JNA_I_LibUsb.INSTANCE.probeCommitControl_cleanup();
                 JniWebRtcJavaMethods();
 
@@ -383,7 +388,7 @@ public class UsbCapturer implements VideoCapturer {
             camDeviceConnection = usbManager.openDevice(camDevice);
             int FD = camDeviceConnection.getFileDescriptor();
             if(camStreamingEndpointAdress == 0) {
-                camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
+                //camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
             }
             int bcdUVC_int = 0;
             if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
@@ -392,7 +397,7 @@ public class UsbCapturer implements VideoCapturer {
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR1) lowAndroid = 1;
             JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                     camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1, videoformat, 0, bcdUVC_int, lowAndroid);
-            JNA_I_LibUsb.INSTANCE.initStreamingParms(FD);
+            JNA_I_LibUsb.INSTANCE.initStreamingParms(new Pointer(mNativePtr), FD);
             return;
         }
         // (For transfer buffer sizes > 196608 the kernel file drivers/usb/core/devio.c must be patched.)

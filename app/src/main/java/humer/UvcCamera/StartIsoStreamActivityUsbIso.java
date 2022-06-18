@@ -1604,48 +1604,27 @@ public class StartIsoStreamActivityUsbIso extends Activity {
     }
 
     private void openCameraDevice(boolean init) throws Exception {
-        if (moveToNative) {
-            camDeviceConnection = usbManager.openDevice(camDevice);
-            int FD = camDeviceConnection.getFileDescriptor();
-            if(camStreamingEndpointAdress == 0) {
-                camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
-                //mService.libusb_wrapped = true;
-                //mService.libusb_InterfacesClaimed = true;
+        // (For transfer buffer sizes > 196608 the kernel file drivers/usb/core/devio.c must be patched.)
+        camControlInterface = getVideoControlInterface(camDevice);
+        camStreamingInterface = getVideoStreamingInterface(camDevice);
+        if (camStreamingInterface.getEndpointCount() < 1) {
+            throw new Exception("Streaming interface has no endpoint.");
+        }
+        camStreamingEndpoint = camStreamingInterface.getEndpoint(0);
+        bulkMode = camStreamingEndpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK;
+        camDeviceConnection = usbManager.openDevice(camDevice);
+        if (camDeviceConnection == null) {
+            log("Failed to open the device");
+            throw new Exception("Unable to open camera device connection.");
+        }
+        if (!LIBUSB) {
+            if (!camDeviceConnection.claimInterface(camControlInterface, true)) {
+                log("Failed to claim camControlInterface");
+                throw new Exception("Unable to claim camera control interface.");
             }
-            int bcdUVC_int = 0;
-            if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
-            bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
-            int lowAndroid = 0;
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                lowAndroid = 1;
-            }
-            JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                    camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1, videoformat, 0, bcdUVC_int, lowAndroid);
-            //mService.native_values_set=true;
-            JNA_I_LibUsb.INSTANCE.initStreamingParms(FD);
-        } else {
-            // (For transfer buffer sizes > 196608 the kernel file drivers/usb/core/devio.c must be patched.)
-            camControlInterface = getVideoControlInterface(camDevice);
-            camStreamingInterface = getVideoStreamingInterface(camDevice);
-            if (camStreamingInterface.getEndpointCount() < 1) {
-                throw new Exception("Streaming interface has no endpoint.");
-            }
-            camStreamingEndpoint = camStreamingInterface.getEndpoint(0);
-            bulkMode = camStreamingEndpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK;
-            camDeviceConnection = usbManager.openDevice(camDevice);
-            if (camDeviceConnection == null) {
-                log("Failed to open the device");
-                throw new Exception("Unable to open camera device connection.");
-            }
-            if (!LIBUSB) {
-                if (!camDeviceConnection.claimInterface(camControlInterface, true)) {
-                    log("Failed to claim camControlInterface");
-                    throw new Exception("Unable to claim camera control interface.");
-                }
-                if (!camDeviceConnection.claimInterface(camStreamingInterface, true)) {
-                    log("Failed to claim camStreamingInterface");
-                    throw new Exception("Unable to claim camera streaming interface.");
-                }
+            if (!camDeviceConnection.claimInterface(camStreamingInterface, true)) {
+                log("Failed to claim camStreamingInterface");
+                throw new Exception("Unable to claim camera streaming interface.");
             }
         }
     }

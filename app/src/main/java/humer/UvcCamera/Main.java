@@ -43,6 +43,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Surface;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -54,6 +55,8 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.freeapps.hosamazzam.androidchangelanguage.MyContextWrapper;
+import com.sun.jna.Pointer;
+import com.sun.jna.Structure;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -65,6 +68,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+import humer.UvcCamera.JNA_I_LibUsb.JNA_I_LibUsb;
 import noman.zoomtextview.ZoomTextView;
 
 public class Main extends AppCompatActivity {
@@ -80,6 +84,12 @@ public class Main extends AppCompatActivity {
         System.loadLibrary("uvc");
         isLoaded = true;
     }
+
+    // JNI METHODS
+    public native long nativeCreate( long camera_pointer);
+
+    // Native UVC Camera
+    private long mNativePtr;
 
     public static int       camStreamingAltSetting;
     public static int       camFormatIndex;
@@ -485,6 +495,23 @@ public class Main extends AppCompatActivity {
     }
 
     public void setUpTheUsbDevice(View view){
+        // if LIBUSB allocate the UVC Camera Pointer:
+        if (LIBUSB && mNativePtr == 0) {
+            mNativePtr = nativeCreate(mNativePtr);
+            log("mNativePtr = " + mNativePtr);
+/*
+            JNA_I_LibUsb.uvc_camera.ByReference uvcCamera =  new  Pointer(mNativePtr);
+            uvcCamera.preview_pointer = 0;
+            uvcCamera.read();
+            uvc_camera.preview_pointer = 500;
+            readNativeStruct(mNativePtr);
+            JNA_I_LibUsb.INSTANCE.read_a_value(new Pointer(mNativePtr));
+            uvc_camera.preview_pointer = 600;
+            readNativeStruct(mNativePtr);
+            JNA_I_LibUsb.INSTANCE.read_a_value(new Pointer(mNativePtr));
+ */
+        }
+
         // load the libs if needed
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -515,6 +542,7 @@ public class Main extends AppCompatActivity {
                     bundle.putBoolean("libUsb", LIBUSB);
                     bundle.putBoolean("moveToNative", moveToNative);
                     bundle.putBoolean("bulkMode", bulkMode);
+                    bundle.putLong("mNativePtr", mNativePtr);
                     intent.putExtra("bun",bundle);
                     super.onResume();
                     startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
@@ -542,6 +570,7 @@ public class Main extends AppCompatActivity {
                     bundle.putBoolean("libUsb", LIBUSB);
                     bundle.putBoolean("moveToNative", moveToNative);
                     bundle.putBoolean("bulkMode", bulkMode);
+                    bundle.putLong("mNativePtr", mNativePtr);
                     intent.putExtra("bun",bundle);
                     super.onResume();
                     startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
@@ -574,6 +603,7 @@ public class Main extends AppCompatActivity {
                 bundle.putBoolean("libUsb", LIBUSB);
                 bundle.putBoolean("moveToNative", moveToNative);
                 bundle.putBoolean("bulkMode", bulkMode);
+                bundle.putLong("mNativePtr", mNativePtr);
                 intent.putExtra("bun",bundle);
                 super.onResume();
                 startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
@@ -601,6 +631,7 @@ public class Main extends AppCompatActivity {
                 bundle.putBoolean("libUsb", LIBUSB);
                 bundle.putBoolean("moveToNative", moveToNative);
                 bundle.putBoolean("bulkMode", bulkMode);
+                bundle.putLong("mNativePtr", mNativePtr);
                 intent.putExtra("bun",bundle);
                 super.onResume();
                 startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
@@ -632,6 +663,7 @@ public class Main extends AppCompatActivity {
                 bundle.putBoolean("libUsb", LIBUSB);
                 bundle.putBoolean("moveToNative", moveToNative);
                 bundle.putBoolean("bulkMode", bulkMode);
+                bundle.putLong("mNativePtr", mNativePtr);
                 intent.putExtra("bun",bundle);
                 super.onResume();
                 startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
@@ -659,6 +691,7 @@ public class Main extends AppCompatActivity {
                 bundle.putBoolean("libUsb", LIBUSB);
                 bundle.putBoolean("moveToNative", moveToNative);
                 bundle.putBoolean("bulkMode", bulkMode);
+                bundle.putLong("mNativePtr", mNativePtr);
                 intent.putExtra("bun",bundle);
                 super.onResume();
                 startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
@@ -685,6 +718,21 @@ public class Main extends AppCompatActivity {
     }
 
     public void isoStream(View view){
+        if (LIBUSB && mNativePtr == 0) {
+            mNativePtr = nativeCreate(mNativePtr);
+            log("mNativePtr = " + mNativePtr);
+/*
+            JNA_I_LibUsb.uvc_camera.ByReference uvcCamera =  new  Pointer(mNativePtr);
+            uvcCamera.preview_pointer = 0;
+            uvcCamera.read();
+            uvc_camera.preview_pointer = 500;
+            readNativeStruct(mNativePtr);
+            JNA_I_LibUsb.INSTANCE.read_a_value(new Pointer(mNativePtr));
+            uvc_camera.preview_pointer = 600;
+            readNativeStruct(mNativePtr);
+            JNA_I_LibUsb.INSTANCE.read_a_value(new Pointer(mNativePtr));
+ */
+        }
         if (showStoragePermissionRead() && showStoragePermissionWrite()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 if(!showCameraPermissionCamera()) return;
@@ -722,6 +770,7 @@ public class Main extends AppCompatActivity {
                     bundle.putBoolean("libUsb", LIBUSB);
                     bundle.putBoolean("moveToNative", moveToNative);
                     bundle.putBoolean("bulkMode", bulkMode);
+                    bundle.putLong("mNativePtr", mNativePtr);
                     intent.putExtra("bun",bundle);
                     startActivityForResult(intent, ActivityStartIsoStreamRequestCode);
                 } else {
@@ -746,6 +795,7 @@ public class Main extends AppCompatActivity {
                     bundle.putBoolean("libUsb", LIBUSB);
                     bundle.putBoolean("moveToNative", moveToNative);
                     bundle.putBoolean("bulkMode", bulkMode);
+                    bundle.putLong("mNativePtr", mNativePtr);
                     intent.putExtra("bun",bundle);
                     startActivityForResult(intent, ActivityStartIsoStreamRequestCode);
                 }
@@ -783,6 +833,7 @@ public class Main extends AppCompatActivity {
                     bundle.putBoolean("libUsb", LIBUSB);
                     bundle.putBoolean("moveToNative", moveToNative);
                     bundle.putBoolean("bulkMode", bulkMode);
+                    bundle.putLong("mNativePtr", mNativePtr);
                     intent.putExtra("bun",bundle);
                     startActivityForResult(intent, ActivityStartIsoStreamRequestCode);
                 } else {
@@ -807,6 +858,7 @@ public class Main extends AppCompatActivity {
                     bundle.putBoolean("libUsb", LIBUSB);
                     bundle.putBoolean("moveToNative", moveToNative);
                     bundle.putBoolean("bulkMode", bulkMode);
+                    bundle.putLong("mNativePtr", mNativePtr);
                     intent.putExtra("bun",bundle);
                     startActivityForResult(intent, ActivityStartIsoStreamRequestCode);
                 }

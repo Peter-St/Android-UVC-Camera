@@ -1131,7 +1131,7 @@ public class SetUpTheUsbDeviceUsbIso extends Activity {
     }
 
     public void exitLibUsb () {
-        JNA_I_LibUsb.INSTANCE.native_uvc_unref_device();
+        //JNA_I_LibUsb.INSTANCE.native_uvc_unref_device();
         l1ibusbAutoRunning = false;
     }
 
@@ -1992,261 +1992,61 @@ public class SetUpTheUsbDeviceUsbIso extends Activity {
                 if ( a >= 10) break;
             }
         }
-        if(libUsb) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if(!libusb_is_initialized) {
-                        try {
-                            if (camDeviceConnection == null) {
-                                log("camDeviceConnection == null");
-                                findCam();
-                                log("openCameraDevice(true)");
-                                openCameraDevice(true);
-                            }
-                            if (fd == 0) fd = camDeviceConnection.getFileDescriptor();
-                            if(productID == 0) productID = camDevice.getProductId();
-                            if(vendorID == 0) vendorID = camDevice.getVendorId();
-                            if(adress == null)  adress = camDevice.getDeviceName();
-                            if (moveToNative) {
-                                if(camStreamingEndpointAdress == 0) {
-                                    camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
-                                    //mService.libusb_wrapped = true;
-                                    //mService.libusb_InterfacesClaimed = true;
-                                }
-                            } else if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
-                            if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
-                            int bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
-                            log("JNA_I_LibUsb.INSTANCE.set_the_native_Values");
-                            if (moveToNative) {
-                                if(camStreamingEndpointAdress == 0) {
-                                    //mService.libusb_wrapped = true;
-                                    //mService.libusb_InterfacesClaimed = true;
-                                    camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
-                                }
-                            } else if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
-                            int framesReceive = 1;
-                            if (fiveFrames) framesReceive = 5;
-                            int lowAndroid = 0;
-                            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                                lowAndroid = 1;
-                            }
-                            if (moveToNative) JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                                    camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1, videoformat, framesReceive, bcdUVC_int, lowAndroid);
-                            else JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                                    camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, framesReceive, bcdUVC_int, lowAndroid);
-                            //mService.native_values_set = true;
-                            libusb_is_initialized = true;
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    boolean one = false, two = false, three = false, four = false;
-                    int rc = -1;
 
-                    try {
-                        log("libusb_openCam(true)");
-                        rc = libusb_openCam(true);
-                        if (rc < 0) {
-                            tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                            if (rc == -6) tv.setText("Libusb failure!\nERROR:\n" + rc + "\nUVC_ERROR_BUSY" );
-                            else tv.setText("Libusb failure!\nERROR:\n" + rc );
-                            tv.setTextColor(Color.RED);
-                            return ;
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    if (camDeviceIsClosed) {
-                        try {
-                            if (!moveToNative) openCam(true);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        camDeviceIsClosed = false;
-                    }
-                    if (camDeviceConnection == null) {
-                        log("2 camDeviceConnection == null 2");
-                        if (moveToNative) return;
-                        try {
-                            findCam();
-                            openCameraDevice(true);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    log("2 camDeviceConnection == null 2");
-                    Pointer ctlValues = JNA_I_LibUsb.INSTANCE.probeCommitControl(1, camFormatIndex, camFrameIndex,  camFrameInterval, camDeviceConnection.getFileDescriptor());
-                    camera_is_initialized_over_libusb = true;
-                    //mService.libusb_wrapped = true;
-                    //mService.libusb_InterfacesClaimed = true;
-                    //mService.altSettingControl();
-                    //mService.ctl_to_camera_sent = true;
-                    if (ctlValues == null) {
-                        //JNA_I_LibUsb.INSTANCE.probeCommitControl_cleanup();
-                        //mService.ctl_for_camera_sucessful = false;
-                        tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                        tv.setTextColor(Color.RED);
-                        tv.setText("The Control Transfers to the Camera failed!\n\nSolutions: Try to connect the camera without LibUsb\n\n" );
-                        return ;
-                    }
-                    byte[] buf = new byte[26];
-                    buf = ctlValues.getByteArray(4, 26);
-                    if(isEmpty(buf)) one = true;
-                    log("1st Values:\n" + (Arrays.toString(buf)));
-                    initStreamingParms = dumpStreamingParms(buf);
-                    initStreamingParmsIntArray = getStreamingParmsArray(buf);
-                    buf = ctlValues.getByteArray(51, 26);
-                    if(isEmpty(buf)) two = true;
-                    log("2nd Values:\n" + (Arrays.toString(buf)));
-                    probedStreamingParms = dumpStreamingParms(buf);
-                    probedStreamingParmsIntArray =  getStreamingParmsArray(buf);
-                    buf = ctlValues.getByteArray(99, 26);
-                    if(isEmpty(buf)) three = true;
-                    log("3rd Values:\n" + (Arrays.toString(buf)));
-                    finalStreamingParms_first = dumpStreamingParms(buf);
-                    finalStreamingParmsIntArray_first = getStreamingParmsArray(buf);
-                    buf = ctlValues.getByteArray(147, 26);
-                    if(isEmpty(buf)) four = true;
-                    log("4th Values:\n" + (Arrays.toString(buf)));
-                    finalStreamingParms = dumpStreamingParms(buf);
-                    finalStreamingParmsIntArray = getStreamingParmsArray(buf);
-                    if (compareStreamingParmsValues()) {
-                        camIsOpen = true;
-                        //mService.ctl_for_camera_sucessful = true;
-                    } else {
-                        //mService.ctl_for_camera_sucessful = false;
-                        camIsOpen = false;
-                    }
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(initStreamingParmsResult + "\n\nThe Control Transfers to the Camera has following Results:\n\n" );
-                    if (one) sb.append("FAILED - The first Probe Controltransfer for sending the Values to the Camera: \n" + initStreamingParms + "");
-                    else sb.append("The first Probe Controltransfer for sending the Values to the Camera: \n" + initStreamingParms + "" );
-                    if (two) sb.append("\n\nFAILED - The second Probe Controltransfer for receiving the values from the camera:\n" + probedStreamingParms + "");
-                    else sb.append("\n\nThe second Probe Controltransfer for receiving the values from the camera:\n" + probedStreamingParms + "");
-                    if (three) sb.append("\n\nFAILED - The third Controltransfer for sending the final commit Values to the Camera: \n" + finalStreamingParms_first);
-                    else sb.append("\n\nThe third Controltransfer for sending the final commit Values to the Camera: \n" + finalStreamingParms_first );
-                    if (four) sb.append( "\n\nFAILED - The Last Commit Controltransfer for receiving the final Camera Values:\n" + finalStreamingParms);
-                    else sb.append( "\n\nThe Last Commit Controltransfer for receiving the final Camera Values:\n" + finalStreamingParms);
-                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                    tv.setText(sb.toString());
-                    tv.setTextColor(Color.BLACK);
-                    //JNA_I_LibUsb.INSTANCE.probeCommitControl_cleanup();
-                    log("Control probeCommitControl End");
-
-                }
-            });
-        } else {
-            if(libusb_is_initialized) {
-                JNA_I_LibUsb.INSTANCE.stopStreaming();
-                //mService.streamOnPause = true;
-                JNA_I_LibUsb.INSTANCE.closeLibUsb();
-                //mService.altSettingControl();
-                //mService.libusb_InterfacesClaimed = false;
-                //JNA_I_LibUsb.INSTANCE.native_uvc_unref_device();
-                try {
-                    findCam();
-                    openCam(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                libusb_is_initialized = false;
-            }
-            closeCameraDevice();
+        if(libusb_is_initialized) {
+            JNA_I_LibUsb.INSTANCE.stopStreaming();
+            //mService.streamOnPause = true;
+            JNA_I_LibUsb.INSTANCE.closeLibUsb();
+            //mService.altSettingControl();
+            //mService.libusb_InterfacesClaimed = false;
+            //JNA_I_LibUsb.INSTANCE.native_uvc_unref_device();
             try {
+                findCam();
                 openCam(true);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if (camIsOpen) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                        if (thorthCTLfailed == false) tv.setText(initStreamingParmsResult + "\n\nThe Control Transfers to the Camera has following Results:\n\n" +
-                                "The first Probe Controltransfer for sending the Values to the Camera: \n" + initStreamingParms + "" +
-                                "\n\nThe second Probe Controltransfer for receiving the values from the camera:\n" + probedStreamingParms + "" +
-                                "\n\nThe Last Commit Controltransfer for receiving the final Camera Values from the Camera: \n" + finalStreamingParms);
-                        else tv.setText(initStreamingParmsResult + "\n\nThe Control Transfers to the Camera has following Results:\n\n" +
-                                "The first Probe Controltransfer for sending the Values to the Camera: \n" + initStreamingParms + "" +
-                                "\n\nThe second Probe Controltransfer for receiving the values from the camera:\n" + probedStreamingParms + "" +
-                                "\n\nThe third Controltransfer for sending the final commit Values to the Camera: \n" + finalStreamingParms_first +
-                                "\n\nThe Last Commit Controltransfer for receiving the final Camera Values from the Camera failed");
-                        tv.setTextColor(Color.BLACK);
-                    }
-                });
-            } else {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                        tv.setText("Failed to initialise the camera\n\n" + initStreamingParmsResult + "\n\nThe Control Transfers to the Camera has following Results:\n\n" +
-                                "The first Controltransfer for sending the Values to the Camera: \n" + initStreamingParms +
-                                "\n\nThe second Controltransfer for probing the values with the camera:\n" + probedStreamingParms +
-                                "\n\nThe third Controltransfer for sending the final commit Values to the Camera: \n" + finalStreamingParms_first +
-                                "\n\nThe Last Controltransfer for receiving the final Camera Values from the Camera: \n" + finalStreamingParms +
-                                "\n\nErrorlog:\n" + controlErrorlog
-                        );
-                        tv.setTextColor(darker(Color.RED, 50));
-                    }
-                });
-            }
+            libusb_is_initialized = false;
         }
-    }
-
-    private int libusb_openCam(boolean init)  {
-        libusb_openCameraDevice();
-        if (init) {
-            // Libusb Camera initialisation
-            // -1 on error
-            // 0 onSucess
-            int ret = libusb_initCamera();
-            if (ret < 0) log("Libusb Camera Initialisation failed");
-            else if (ret == 0) log("Libusb Camera already initialized");
-            else log("Libusb Camera Initialisation sucessful");
-            return ret;
+        closeCameraDevice();
+        try {
+            openCam(true);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        log("Camera opened sucessfully");
-        return -1;
-    }
-
-    private int libusb_initCamera() {
-        if (!camera_is_initialized_over_libusb) {
-            camera_is_initialized_over_libusb = true;
-            /*
-            mService.libusb_wrapped = true;
-            mService.libusb_InterfacesClaimed = true;
-            mService.altSettingControl();
-            mService.ctl_to_camera_sent = true;
-             */
-            return JNA_I_LibUsb.INSTANCE.initStreamingParms(camDeviceConnection.getFileDescriptor());
+        if (camIsOpen) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
+                    if (thorthCTLfailed == false) tv.setText(initStreamingParmsResult + "\n\nThe Control Transfers to the Camera has following Results:\n\n" +
+                            "The first Probe Controltransfer for sending the Values to the Camera: \n" + initStreamingParms + "" +
+                            "\n\nThe second Probe Controltransfer for receiving the values from the camera:\n" + probedStreamingParms + "" +
+                            "\n\nThe Last Commit Controltransfer for receiving the final Camera Values from the Camera: \n" + finalStreamingParms);
+                    else tv.setText(initStreamingParmsResult + "\n\nThe Control Transfers to the Camera has following Results:\n\n" +
+                            "The first Probe Controltransfer for sending the Values to the Camera: \n" + initStreamingParms + "" +
+                            "\n\nThe second Probe Controltransfer for receiving the values from the camera:\n" + probedStreamingParms + "" +
+                            "\n\nThe third Controltransfer for sending the final commit Values to the Camera: \n" + finalStreamingParms_first +
+                            "\n\nThe Last Commit Controltransfer for receiving the final Camera Values from the Camera failed");
+                    tv.setTextColor(Color.BLACK);
+                }
+            });
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tv = (ZoomTextView) findViewById(R.id.textDarstellung);
+                    tv.setText("Failed to initialise the camera\n\n" + initStreamingParmsResult + "\n\nThe Control Transfers to the Camera has following Results:\n\n" +
+                            "The first Controltransfer for sending the Values to the Camera: \n" + initStreamingParms +
+                            "\n\nThe second Controltransfer for probing the values with the camera:\n" + probedStreamingParms +
+                            "\n\nThe third Controltransfer for sending the final commit Values to the Camera: \n" + finalStreamingParms_first +
+                            "\n\nThe Last Controltransfer for receiving the final Camera Values from the Camera: \n" + finalStreamingParms +
+                            "\n\nErrorlog:\n" + controlErrorlog
+                    );
+                    tv.setTextColor(darker(Color.RED, 50));
+                }
+            });
         }
-        return 0;
-    }
-
-    private void libusb_openCameraDevice() {
-        fd = camDeviceConnection.getFileDescriptor();
-        if (moveToNative) {
-            if(camStreamingEndpointAdress == 0) {
-                camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
-                //mService.libusb_wrapped = true;
-                //mService.libusb_InterfacesClaimed = true;
-            }
-        } else if(camStreamingEndpointAdress == 0)  camStreamingEndpointAdress = camStreamingEndpoint.getAddress();
-        int framesReceive = 1;
-        if (fiveFrames) framesReceive = 5;
-        int bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
-        int lowAndroid = 0;
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            lowAndroid = 1;
-        }
-        if (moveToNative) JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1, videoformat, framesReceive, bcdUVC_int, lowAndroid);
-        else JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, framesReceive, bcdUVC_int, lowAndroid);
-        //mService.native_values_set=true;
-        libusb_is_initialized = true;
-        camDeviceIsClosed = false;
     }
 
     //////////////////////////////////  General Methods    //////////////////////////////////

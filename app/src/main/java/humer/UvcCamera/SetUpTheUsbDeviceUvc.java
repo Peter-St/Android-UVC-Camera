@@ -77,6 +77,10 @@ import static java.lang.Integer.parseInt;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class SetUpTheUsbDeviceUvc extends Activity {
+
+    // Native UVC Camera
+    private long mNativePtr;
+
     // USB codes:
     private static final String ACTION_USB_PERMISSION = "humer.uvc_camera.USB_PERMISSION";
     private static final String DEFAULT_USBFS = "/dev/bus/usb";
@@ -168,8 +172,6 @@ public class SetUpTheUsbDeviceUvc extends Activity {
     private boolean videoProbeCommitTransferDone;
 
     private enum Options {searchTheCamera, testrun, listdevice, showTestRunMenu, setUpWithUvcSettings}
-
-    ;
 
     //Buttons & Views
     public Button testrun;
@@ -862,7 +864,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
         if (camDevice == null) return;
         if (camDeviceConnection == null) camDeviceConnection = usbManager.openDevice(usbDevice);
         // Get the Device Info
-        final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info = JNA_I_LibUsb.INSTANCE.listDeviceUvc(camDeviceConnection.getFileDescriptor());
+        final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info = JNA_I_LibUsb.INSTANCE.listDeviceUvc(new Pointer(mNativePtr), camDeviceConnection.getFileDescriptor());
         if (uvc_device_info != null) {
             log ("DeviceInfo obtained !");
             StringBuilder streamInterfaceEntries = new StringBuilder();
@@ -1051,11 +1053,6 @@ public class SetUpTheUsbDeviceUvc extends Activity {
         l1ibusbAutoRunning = false;
     }
 
-    public void exitLibUsb() {
-        JNA_I_LibUsb.INSTANCE.native_uvc_unref_device();
-        l1ibusbAutoRunning = false;
-    }
-
     private void openCameraDevice(boolean init) throws Exception {
         log("open Camera Device Method ;\n");
         if (moveToNative) {
@@ -1177,7 +1174,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                         // Set up from UVC manually
                         if (convertedMaxPacketSize == null) listDevice(camDevice);
                         log("running stf.setUvcSettingsMethod");
-                        final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info = JNA_I_LibUsb.INSTANCE.listDeviceUvc(camDeviceConnection.getFileDescriptor());
+                        final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info = JNA_I_LibUsb.INSTANCE.listDeviceUvc(new Pointer(mNativePtr), camDeviceConnection.getFileDescriptor());
                         stf.setUpWithUvcValues_libusb(uvc_device_info, convertedMaxPacketSize, false);
                         alertDialog.dismiss();
                     }
@@ -1188,7 +1185,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                         progress = "1% done";
                         if (automaticStart) {
                             // Automatic UVC Detection
-                            final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info = JNA_I_LibUsb.INSTANCE.listDeviceUvc(camDeviceConnection.getFileDescriptor());
+                            final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info = JNA_I_LibUsb.INSTANCE.listDeviceUvc(new Pointer(mNativePtr), camDeviceConnection.getFileDescriptor());
                             stf.setUpWithUvcValues_libusb(uvc_device_info, convertedMaxPacketSize, true);
                             if (bcdUVC_short == 0) listDevice(camDevice);
                             bcdUVC = new byte[2];
@@ -1673,7 +1670,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
             mService.altSettingControl();
             mService.ctl_to_camera_sent = true;
              */
-            return JNA_I_LibUsb.INSTANCE.initStreamingParms(camDeviceConnection.getFileDescriptor());
+            return JNA_I_LibUsb.INSTANCE.initStreamingParms(new Pointer(mNativePtr), camDeviceConnection.getFileDescriptor());
         }
         return 0;
     }
@@ -1682,7 +1679,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
         fd = camDeviceConnection.getFileDescriptor();
         if (moveToNative) {
             if (camStreamingEndpointAdress == 0) {
-                camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
+                camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(new Pointer(mNativePtr), camDeviceConnection.getFileDescriptor());
                 //mService.libusb_wrapped = true;
                 //mService.libusb_InterfacesClaimed = true;
             }
@@ -1758,6 +1755,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
             bStillCaptureMethod = bundle.getByte("bStillCaptureMethod", (byte) 0);
             libUsb = bundle.getBoolean("libUsb");
             moveToNative = bundle.getBoolean("moveToNative");
+            mNativePtr = bundle.getLong("mNativePtr");
         } else {
             stf.restoreValuesFromFile();
             mPermissionIntent = null;

@@ -68,6 +68,8 @@ import humer.UvcCamera.UVC_Descriptor.UVC_Descriptor;
 
 public class SaveToFile  {
 
+    // Native UVC Camera
+    private long mNativePtr;
     public static int       sALT_SETTING;
     public static int       smaxPacketSize ;
     public static int       scamFormatIndex ;   // MJPEG // YUV // bFormatIndex: 1 = uncompressed
@@ -641,6 +643,7 @@ public class SaveToFile  {
             bulkMode = setUpTheUsbDeviceUvc.bulkMode;
 
         } else if (libUsb_autoDetect != null) {
+            mNativePtr = libUsb_autoDetect.mNativePtr;
             sALT_SETTING = libUsb_autoDetect.camStreamingAltSetting;
             svideoformat = libUsb_autoDetect.videoformat;
             scamFormatIndex = libUsb_autoDetect.camFormatIndex;
@@ -759,6 +762,7 @@ public class SaveToFile  {
             setUpTheUsbDeviceUvc.bulkMode = bulkMode;
 
         } else if (libUsb_autoDetect != null) {
+            libUsb_autoDetect.mNativePtr = mNativePtr;
             libUsb_autoDetect.camStreamingAltSetting = sALT_SETTING;
             libUsb_autoDetect.videoformat = svideoformat;
             libUsb_autoDetect.camFormatIndex = scamFormatIndex;

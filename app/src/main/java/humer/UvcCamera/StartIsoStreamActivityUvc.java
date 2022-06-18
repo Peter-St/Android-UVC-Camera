@@ -95,6 +95,9 @@ import static java.lang.Integer.parseInt;
 
 public class StartIsoStreamActivityUvc extends Activity {
 
+    // Native UVC Camera
+    private long mNativePtr;
+
     private static final String ACTION_USB_PERMISSION = "humer.uvc_camera.USB_PERMISSION";
     // USB codes:
 // Request types (bmRequestType):
@@ -192,7 +195,6 @@ public class StartIsoStreamActivityUvc extends Activity {
     // Other Classes
     private MJPEGGenerator generator;
     private BitmapToVideoEncoder bitmapToVideoEncoder;
-    private volatile IsochronousStreamLibUsb runningStreamLibUsb;
     private SeekBar simpleSeekBar;
     private Button defaultButton;
     private Switch switchAuto;
@@ -232,7 +234,6 @@ public class StartIsoStreamActivityUvc extends Activity {
 
     // JNI METHODS
     public native void JniIsoStreamActivitySurface(final Surface surface, int a, int b);
-    public native void JniIsoStreamActivity(int a, int b);
     public native void JniSetSurfaceView(final Surface surface);
     public native void JniSetSurfaceYuv(final Surface surface);
        // Bitmap Method
@@ -240,8 +241,7 @@ public class StartIsoStreamActivityUvc extends Activity {
     public native void YUY2pixeltobmp(byte[] uyvy_data, Bitmap bitmap, int im_width, int im_height);
     public native void UYVYpixeltobmp(byte[] uyvy_data, Bitmap bitmap, int im_width, int im_height);
 
-    public native void JniPrepairStreamOverSurface();
-    public native void JniStreamOverSurface();
+    //public native void JniStreamOverSurface();
     public native void JniPrepairStreamOverSurfaceUVC();
     public native int JniStreamOverSurfaceUVC();
 
@@ -861,7 +861,6 @@ public class StartIsoStreamActivityUvc extends Activity {
             mUVCCameraView.setVisibility(View.GONE);
             mUVCCameraView.setVisibility(View.INVISIBLE);
         }
-        //JNA_I_LibUsb.INSTANCE.native_uvc_unref_device();
     }
 /*
     public void restartIntent() {
@@ -1515,8 +1514,8 @@ public class StartIsoStreamActivityUvc extends Activity {
                 JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                         camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1,
                         videoformat,0, bcdUVC_int, lowAndroid);
-
-                JNA_I_LibUsb.INSTANCE.listDeviceUvc(camDeviceConnection.getFileDescriptor());
+                log("mNativePtr = " + mNativePtr);
+                JNA_I_LibUsb.INSTANCE.listDeviceUvc(new Pointer(mNativePtr), camDeviceConnection.getFileDescriptor());
 
                 log("Compare Video Format");
                 if (videoformat.equals("MJPEG")) {
@@ -1721,7 +1720,7 @@ public class StartIsoStreamActivityUvc extends Activity {
             camDeviceConnection = usbManager.openDevice(camDevice);
             int FD = camDeviceConnection.getFileDescriptor();
             if(camStreamingEndpointAdress == 0) {
-                camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
+                camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(new Pointer(mNativePtr), camDeviceConnection.getFileDescriptor());
                 //mService.libusb_wrapped = true;
                 //mService.libusb_InterfacesClaimed = true;
             }
@@ -1735,7 +1734,7 @@ public class StartIsoStreamActivityUvc extends Activity {
             JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                     camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1, videoformat, 0, bcdUVC_int, lowAndroid);
             //mService.native_values_set=true;
-            JNA_I_LibUsb.INSTANCE.initStreamingParms(FD);
+            JNA_I_LibUsb.INSTANCE.initStreamingParms(new Pointer(mNativePtr), FD);
         } else {
             // (For transfer buffer sizes > 196608 the kernel file drivers/usb/core/devio.c must be patched.)
             camControlInterface = getVideoControlInterface(camDevice);
@@ -2724,30 +2723,6 @@ public class StartIsoStreamActivityUvc extends Activity {
             (byte) 0xd9, (byte) 0xda, (byte) 0xe2, (byte) 0xe3, (byte) 0xe4, (byte) 0xe5, (byte) 0xe6, (byte) 0xe7, (byte) 0xe8, (byte) 0xe9,
             (byte) 0xea, (byte) 0xf2, (byte) 0xf3, (byte) 0xf4, (byte) 0xf5, (byte) 0xf6, (byte) 0xf7, (byte) 0xf8, (byte) 0xf9, (byte) 0xfa};
 
-    public class IsochronousStreamLibUsb extends Thread {
-        private Activity activity;
-        private boolean reapTheLastFrames;
-        private int lastReapedFrames = 0;
-        private boolean write = false;
-        private int framecnt = 0;
-        ExecutorService mExecutorThread = Executors.newSingleThreadExecutor();
-        public IsochronousStreamLibUsb(Context mContext) {
-            setPriority(Thread.MAX_PRIORITY);
-            activity = (Activity) mContext;
-        }
-        public void run() {
-            try {
-                mExecutorThread.execute(new Runnable() { public void run() {                 JniIsoStreamActivity( 1, 1);
-                }});
-
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            log("OK");
-            runningStreamLibUsb = null;
-        }
-    }
 
     private boolean checkFrameSize(int size) {
         if(size < 10000) return true;
@@ -2803,6 +2778,7 @@ public class StartIsoStreamActivityUvc extends Activity {
         LIBUSB = bundle.getBoolean("libUsb" );
         moveToNative = bundle.getBoolean("moveToNative" );
         bulkMode = bundle.getBoolean("bulkMode" );
+        mNativePtr = bundle.getLong("mNativePtr");
     }
 
     private int round(double d){

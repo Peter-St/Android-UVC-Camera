@@ -26,6 +26,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
+import com.sun.jna.Pointer;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,6 +41,9 @@ import humer.UvcCamera.SaveToFile;
 import humer.UvcCamera.UVC_Descriptor.UVC_Descriptor;
 
 public class LibUsb_AutoDetect extends AppCompatActivity {
+
+    // Native UVC Camera
+    public long mNativePtr;
 
     // Camera Values
     public static int       camStreamingAltSetting;
@@ -227,30 +232,8 @@ public class LibUsb_AutoDetect extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if (rc == 0) startLibusbAutoTransfer();
+            if (rc == 0) ;//startLibusbAutoTransfer();
         }
-    }
-
-    private void startLibusbAutoTransfer() {
-        JNA_I_LibUsb.INSTANCE.setAutoStreamComplete(new JNA_I_LibUsb.autoStreamComplete() {
-            public boolean callback() {
-                log("AutoCompleteMethod");
-                final JNA_I_LibUsb.Libusb_Auto_Values.ByValue autoDetectValues = JNA_I_LibUsb.INSTANCE.get_autotransferStruct();
-                spacketCnt = autoDetectValues.spacketCnt;
-                spacket0Cnt = autoDetectValues.spacket0Cnt;
-                spacket12Cnt = autoDetectValues.spacket12Cnt;
-                spacketDataCnt = autoDetectValues.spacketDataCnt;
-                spacketHdr8Ccnt = autoDetectValues.spacketHdr8Ccnt;
-                spacketErrorCnt = autoDetectValues.spacketErrorCnt;
-                sframeCnt = autoDetectValues.sframeCnt;
-                sframeLen = autoDetectValues.sframeLen;
-                srequestCnt = autoDetectValues.requestCnt;
-                sframeLenArray = autoDetectValues.sframeLenArray;
-                writeTheValues();
-                return false;
-            }
-        });
-        JNA_I_LibUsb.INSTANCE.startAutoDetection();
     }
 
     private void fetchTheValues(){
@@ -309,7 +292,7 @@ public class LibUsb_AutoDetect extends AppCompatActivity {
     private int libusb_initCamera() {
         if (!camera_is_initialized_over_libusb) {
             camera_is_initialized_over_libusb = true;
-            return JNA_I_LibUsb.INSTANCE.initStreamingParms(camDeviceConnection.getFileDescriptor());
+            return JNA_I_LibUsb.INSTANCE.initStreamingParms(new Pointer(mNativePtr), camDeviceConnection.getFileDescriptor());
         }
         return 1;
     }

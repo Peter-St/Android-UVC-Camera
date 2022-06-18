@@ -83,7 +83,7 @@ android {
 */
     externalNativeBuild {
         cmake {
-            path "src/main/c/libUvc_Support/CMakeLists.txt"
+            path "src/main/cpp/libUvc_Support/CMakeLists.txt"
             version "3.10.2"
         }
     }
