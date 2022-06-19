@@ -41,6 +41,7 @@
 #include "utilbase.h"
 #include "UVCPreview.h"
 #include "libuvc_internal.h"
+#include "../uvc_support.h"
 
 #define	LOCAL_DEBUG 0
 #define MAX_FRAME 4
@@ -192,7 +193,7 @@ int UVCPreview::setPreviewSize(int width, int height, int min_fps, int max_fps, 
 
 int UVCPreview::setPreviewSize_random(int width, int height, int min_fps, int max_fps, float bandwidth,
 									  int prev_activeUrbs, int prev_packetsPerRequest, int prev_altset, int prev_maxPacketSize,
-									  int camFormatInde, int camFrameInde, int camFrameInterva) {
+									  int camFormatInde, int camFrameInde, int camFrameInterva, const char* frameForma, int imageWidth, int imageHeight) {
     ENTER();
 
     int result = 0;
@@ -203,6 +204,9 @@ int UVCPreview::setPreviewSize_random(int width, int height, int min_fps, int ma
 	camFormatIndex = camFormatInde;
 	camFrameIndex = camFrameInde;
 	camFrameInterval = camFrameInterva;
+	frameFormat = frameForma;
+	frameWidth = imageWidth;
+	frameHeight = imageHeight;
 
 	requestWidth = width;
 	requestHeight = height;
@@ -210,25 +214,6 @@ int UVCPreview::setPreviewSize_random(int width, int height, int min_fps, int ma
 	requestMaxFps = max_fps;
 	requestMode = 0;
 	requestBandwidth = bandwidth;
-
-	uvc_stream_ctrl_t ctrl;
-	memset(&ctrl, 0, sizeof(uvc_stream_ctrl_t));
-
-	ctrl.bInterfaceNumber = mDeviceHandle->info->stream_ifs->bInterfaceNumber;
-	ctrl.bmHint = 1;
-	ctrl.bFormatIndex = camFormatIndex;
-	ctrl.bFrameIndex = camFrameIndex;
-	ctrl.dwFrameInterval = camFrameInterval;
-	LOGD("control_TransferUVC");
-	result = control_TransferUVC(&ctrl, mDeviceHandle);
-	if (UNLIKELY(result)) {
-		LOGE("control_TransferUVC failed!!\ncontrol_TransferUVC:err=%d", result);
-		return -1;
-	} else	LOGDEB("control_TransferUVC = UVC_SUCCESS");
-
-	if(ctrl.bInterfaceNumber < 0) return -1;
-
-
 
     RETURN(result, int);
 }
@@ -379,6 +364,7 @@ int UVCPreview::startPreview() {
 		pthread_mutex_lock(&preview_mutex);
 		{
 			if (LIKELY(mPreviewWindow)) {
+				LOGD("preview_thread_func");
 				result = pthread_create(&preview_thread, NULL, preview_thread_func, (void *)this);
 			}
 		}
@@ -395,6 +381,7 @@ int UVCPreview::startPreview() {
 	}
 	RETURN(result, int);
 }
+
 
 int UVCPreview::stopPreview() {
 	ENTER();
@@ -508,7 +495,9 @@ void *UVCPreview::preview_thread_func(void *vptr_args) {
 	UVCPreview *preview = reinterpret_cast<UVCPreview *>(vptr_args);
 	if (LIKELY(preview)) {
 		uvc_stream_ctrl_t ctrl;
-		result = preview->prepare_preview(&ctrl);
+		memset(&ctrl, 0, sizeof(uvc_stream_ctrl_t));
+		uvc_stream_handle_t strmh;
+		result = preview->prepare_preview(&ctrl, preview);
 		if (LIKELY(!result)) {
 			preview->do_preview(&ctrl);
 		}
@@ -517,24 +506,60 @@ void *UVCPreview::preview_thread_func(void *vptr_args) {
 	pthread_exit(NULL);
 }
 
-int UVCPreview::prepare_preview(uvc_stream_ctrl_t *ctrl) {
+int UVCPreview::prepare_preview(uvc_stream_ctrl_t *ctrl, UVCPreview *preview) {
 	uvc_error_t result;
 
 	ENTER();
+	ctrl->bInterfaceNumber = preview->mDeviceHandle->info->stream_ifs->bInterfaceNumber;
+	ctrl->bmHint = 1;
+	ctrl->bFormatIndex = camFormatIndex;
+	ctrl->bFrameIndex = camFrameIndex;
+	ctrl->dwFrameInterval = camFrameInterval;
+
+
+
+	result = control_TransferUVC(ctrl, preview->mDeviceHandle);
+	if (UNLIKELY(result)) {
+		LOGE("control_TransferUVC failed!!\ncontrol_TransferUVC:err=%d", result);
+		return -1;
+	} else	LOGDEB("control_TransferUVC = UVC_SUCCESS");
+
+	if(ctrl->bInterfaceNumber < 0) return -1;
+
+	LOGD("ctrl.bmHint = %d, ctrl.bFormatIndex = %d, ctrl.dwMaxPayloadTransferSize = %d", ctrl->bmHint, ctrl->bFormatIndex, ctrl->dwMaxPayloadTransferSize);
+	int overload_buffer_value = packetsPerRequest*activeUrbs*maxPacketSize;
+	size_t frame_size;
+	if (strcmp(frameFormat, "MJPEG") == 0) {
+		requestMode = 1;
+		frame_size = preview->frameWidth * preview->frameHeight * 3 + overload_buffer_value;
+	} else if (strcmp(frameFormat, "YUY2") == 0 ||   strcmp(frameFormat, "UYVY") == 0  ) {
+		requestMode = 0;
+		frame_size = preview->frameWidth * preview->frameHeight  * 2 + overload_buffer_value;
+	} else if (strcmp(frameFormat, "NV21") == 0) {
+		frame_size = preview->frameWidth * preview->frameHeight * 3 / 2 + overload_buffer_value;
+	} else {
+		frame_size = preview->frameWidth * preview->frameHeight * 2 + overload_buffer_value;
+	}
+
+
+
+	/*
 	result = uvc_get_stream_ctrl_format_size_fps(mDeviceHandle, ctrl,
 		!requestMode ? UVC_FRAME_FORMAT_YUYV : UVC_FRAME_FORMAT_MJPEG,
 		requestWidth, requestHeight, requestMinFps, requestMaxFps
 	);
+	*/
 	if (LIKELY(!result)) {
 #if LOCAL_DEBUG
 		uvc_print_stream_ctrl(ctrl, stderr);
 #endif
-		uvc_frame_desc_t *frame_desc;
-		result = uvc_get_frame_desc(mDeviceHandle, ctrl, &frame_desc);
+		//uvc_frame_desc_t *frame_desc;
+		//result = uvc_get_frame_desc(mDeviceHandle, ctrl, &frame_desc);
 		if (LIKELY(!result)) {
-			frameWidth = frame_desc->wWidth;
-			frameHeight = frame_desc->wHeight;
-			LOGI("frameSize=(%d,%d)@%s", frameWidth, frameHeight, (!requestMode ? "YUYV" : "MJPEG"));
+			//frameWidth = frame_desc->wWidth;
+			//frameHeight = frame_desc->wHeight;
+
+			LOGDEB("frameSize=(%d,%d)@%s", frameWidth, frameHeight, (!requestMode ? "YUYV" : "MJPEG"));
 			pthread_mutex_lock(&preview_mutex);
 			if (LIKELY(mPreviewWindow)) {
 				ANativeWindow_setBuffersGeometry(mPreviewWindow,
@@ -556,11 +581,33 @@ int UVCPreview::prepare_preview(uvc_stream_ctrl_t *ctrl) {
 
 void UVCPreview::do_preview(uvc_stream_ctrl_t *ctrl) {
 	ENTER();
-
+	uvc_error_t result;
 	uvc_frame_t *frame = NULL;
 	uvc_frame_t *frame_mjpeg = NULL;
-	uvc_error_t result = uvc_start_streaming_bandwidth(
-		mDeviceHandle, ctrl, uvc_preview_frame_callback, (void *)this, requestBandwidth, 0);
+	int overload_buffer_value = packetsPerRequest*activeUrbs*maxPacketSize;
+	size_t frame_size;
+	if (strcmp(frameFormat, "MJPEG") == 0) {
+		requestMode = 1;
+		frame_size = frameWidth * frameHeight * 3 + overload_buffer_value;
+	} else if (strcmp(frameFormat, "YUY2") == 0 ||   strcmp(frameFormat, "UYVY") == 0  ) {
+		requestMode = 0;
+		frame_size = frameWidth * frameHeight  * 2 + overload_buffer_value;
+	} else if (strcmp(frameFormat, "NV21") == 0) {
+		frame_size = frameWidth * frameHeight * 3 / 2 + overload_buffer_value;
+	} else {
+		frame_size = frameWidth * frameHeight * 2 + overload_buffer_value;
+	}
+	uvc_stream_handle_t *strmh;
+	result = uvc_stream_open_ctrl(mDeviceHandle, &strmh, ctrl, frame_size);
+	if (UNLIKELY(result != UVC_SUCCESS)) {
+		LOGE("uvc_stream_open_ctrl failed !!; return = %d", result);
+		return;
+	}
+
+
+	result = uvc_stream_start_random(strmh, uvc_preview_frame_callback, (void *)this, 0, 0, activeUrbs, packetsPerRequest, camStreamingAltSetting, maxPacketSize );
+
+	//uvc_error_t result = uvc_start_streaming_bandwidth(		mDeviceHandle, ctrl, uvc_preview_frame_callback, (void *)this, requestBandwidth, 0);
 
 	if (LIKELY(!result)) {
 		clearPreviewFrame();
@@ -924,9 +971,9 @@ void UVCPreview::do_capture_callback(JNIEnv *env, uvc_frame_t *frame) {
 }
 
 
-long create_UVCPreview(uvc_device_handle_t *devh) {
+long create_UVCPreview(uvc_device_handle_t *devh, long preview_pointer) {
     UVCPreview *uvcPreview = new UVCPreview(devh);
-    //set_uvc_preview_pointer(reinterpret_cast<long>(uvcPreview));
+	preview_pointer = reinterpret_cast<long>(uvcPreview);
     return reinterpret_cast<long>(uvcPreview);
 }
 
@@ -939,11 +986,11 @@ int set_preview_size(long preview_pointer, int width, int height, int min_fps, i
 
 int set_preview_size_random(long preview_pointer, int width, int height, int min_fps, int max_fps, float bandwidth,
 							int activeUrbs, int packetsPerRequest, int altset, int maxPacketSize,
-							int camFormatInde, int camFrameInde, int camFrameInterva) {
+							int camFormatInde, int camFrameInde, int camFrameInterva, const char* frameForma, int imageWidth, int imageHeight ) {
     int result = EXIT_FAILURE;
     UVCPreview *camera = reinterpret_cast<UVCPreview *>(preview_pointer);
     if (camera) result = camera->setPreviewSize_random(width, height, min_fps, max_fps, bandwidth, activeUrbs, packetsPerRequest,
-													   altset, maxPacketSize, camFormatInde, camFrameInde, camFrameInterva);
+													   altset, maxPacketSize, camFormatInde, camFrameInde, camFrameInterva, frameForma, imageWidth, imageHeight );
     return result;
 }
 

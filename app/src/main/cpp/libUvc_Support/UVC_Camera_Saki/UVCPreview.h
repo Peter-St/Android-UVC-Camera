@@ -31,7 +31,6 @@
 #include <pthread.h>
 #include <android/native_window.h>
 #include "objectarray.h"
-#include "libuvc.h"
 #include "../uvc_support.h"
 
 
@@ -41,11 +40,11 @@ extern "C"
 #endif
 
 
-extern long create_UVCPreview(uvc_device_handle_t *devh);
+extern long create_UVCPreview(uvc_device_handle_t *devh, long preview_pointer);
 extern int set_preview_size(long preview_pointer, int width, int height, int min_fps, int max_fps, int mode, float bandwidth);
 extern int set_preview_size_random(long preview_pointer, int width, int height, int min_fps, int max_fps, float bandwidth,
 								   int activeUrbs, int packetsPerRequest, int altset, int maxPacketSize,
-								   int camFormatInde, int camFrameInde, int camFrameInterva);
+								   int camFormatInde, int camFrameInde, int camFrameInterva, const char* frameForma, int imageWidth, int imageHeight);
 extern int set_preview_display(long preview_pointer, ANativeWindow *preview_window);
 extern int startPreview(long preview_pointer);
 extern int stopPreview(long preview_pointer);
@@ -96,6 +95,7 @@ private:
 	int camFormatIndex;
 	int camFrameIndex;
 	int camFrameInterval;
+	const char* frameFormat;
 
 	uvc_device_handle_t *mDeviceHandle;
 	ANativeWindow *mPreviewWindow;
@@ -138,7 +138,7 @@ private:
 	uvc_frame_t *waitPreviewFrame();
 	void clearPreviewFrame();
 	static void *preview_thread_func(void *vptr_args);
-	int prepare_preview(uvc_stream_ctrl_t *ctrl);
+	int prepare_preview(uvc_stream_ctrl_t *ctrl, UVCPreview *preview);
 	void do_preview(uvc_stream_ctrl_t *ctrl);
 	uvc_frame_t *draw_preview_one(uvc_frame_t *frame, ANativeWindow **window, convFunc_t func, int pixelBytes);
 //
@@ -159,10 +159,11 @@ public:
 	int setPreviewSize(int width, int height, int min_fps, int max_fps, int mode, float bandwidth = 1.0f);
 	int setPreviewSize_random(int width, int height, int min_fps, int max_fps, float bandwidth,
 							  int prev_activeUrbs, int prev_packetsPerRequest, int prev_altset, int prev_maxPacketSize,
-							  int camFormatInde, int camFrameInde, int camFrameInterva );
+							  int camFormatInde, int camFrameInde, int camFrameInterva, const char* frameFormat, int imageWidth, int imageHeight);
 	int setPreviewDisplay(ANativeWindow *preview_window);
 	int setFrameCallback(JNIEnv *env, jobject frame_callback_obj, int pixel_format);
 	int startPreview();
+    int startPreviewRandom();
 	int stopPreview();
 	inline const bool isCapturing() const;
 	int setCaptureDisplay(ANativeWindow *capture_window);

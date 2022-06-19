@@ -63,27 +63,32 @@ typedef struct uvc_camera {
 	uvc_context_t *camera_context;
 	uvc_device_handle_t *camera_deviceHandle;
 	uvc_device_t *camera_device;
-	uvc_stream_ctrl_t *camera_uvc_ctrl;
+
+	int fd;
+	int packetsPerRequest;
+	int maxPacketSize;
+	int activeUrbs;
+	int camStreamingAltSetting;
+	int camFormatIndex;
+	int camFrameIndex;
+	int camFrameInterval;
+	int bmHint;
+	int imageWidth;
+	int imageHeight;
+	int camStreamingEndpoint;
+	int camStreamingInterfaceNum;
+	const char* frameFormat;
+	const char *mUsbFs;
+	int productID;
+	int vendorID;
+	int busnum;
+	int devaddr;
+	bool low_Android;
 
 
-
-
-
-	/*
-	uint16_t bmHint;
-	uint8_t bFormatIndex;
-	uint8_t bFrameIndex;
-	uint32_t dwFrameInterval;
-	uint16_t wKeyFrameRate;
-	uint16_t wPFrameRate;
-	uint16_t wCompQuality;
-	uint16_t wCompWindowSize;
-	uint16_t wDelay;
-	uint32_t dwMaxVideoFrameSize;
-	uint32_t dwMaxPayloadTransferSize;
-	uint64_t bmLayoutPerStream;
-	uint8_t bInterfaceNumber;
-	*/
+	int bcdUVC;
+	bool initialized;
+	uint8_t numberOfAutoFrames;
 } uvc_camera_t;
 
 ///////////////// LibUvc ////////////////////////////////
@@ -91,15 +96,13 @@ typedef struct uvc_camera {
 extern struct uvc_device_info * listDeviceUvc(uvc_camera_t *uvc_camera, int fd) ;
 extern void probeCommitControlUVC();
 
-extern struct uvc_stream_ctrl probeSetCur_TransferUVC();
-extern struct uvc_stream_ctrl probeGetCur_TransferUVC(struct uvc_stream_ctrl ctrl);
-extern struct uvc_stream_ctrl CommitSetCur_TransferUVC(struct uvc_stream_ctrl ctrl);
-extern struct uvc_stream_ctrl CommitGetCur_TransferUVC(struct uvc_stream_ctrl ctrl);
-
-extern void getOneFrameUVC(struct uvc_stream_ctrl ctrl);
+extern struct uvc_stream_ctrl probeSetCur_TransferUVC(uvc_camera_t *uvc_camera);
+extern struct uvc_stream_ctrl probeGetCur_TransferUVC(uvc_camera_t *uvc_camera, struct uvc_stream_ctrl ctrl);
+extern struct uvc_stream_ctrl CommitSetCur_TransferUVC(uvc_camera_t *uvc_camera, struct uvc_stream_ctrl ctrl);
+extern struct uvc_stream_ctrl CommitGetCur_TransferUVC(uvc_camera_t *uvc_camera, struct uvc_stream_ctrl ctrl);
 
 //////////////// Auto Detect Methods ////////////////////
-extern void automaticDetection();
+extern void automaticDetection(uvc_camera_t *uvc_camera);
 
 struct AutotransferStruct; /* Forward declaration */
 typedef struct AutotransferStruct {
@@ -138,17 +141,17 @@ extern ManualTestFrameStruct get_ManualTestFrameStruct();
 //////////////// Global Methods ////////////////////
 
 //   Camera Initialization Methods
-extern int set_the_native_Values (int FD, int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
+extern int set_the_native_Values (uvc_camera_t *uvc_camera, int FD, int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
                  int camFrameInde, int camFrameInterva, int imageWidt, int imageHeigh, int camStreamingEndpointAdress, int camStreamingInterfaceNumber,
                  const char* frameformat, int numberOfAutoFrame, int bcdUVC_int, int lowAndroid);
 extern int initStreamingParms(uvc_camera_t *uvc_camera, int FD);
 extern void stopStreaming();
 extern void stopJavaVM();
-extern void closeLibUsb();
 //extern unsigned char * probeCommitControl();
 
 // Camera Set up Methods
-extern void getFramesOverLibUsb5sec(struct uvc_stream_ctrl ctrl);
+extern void getOneFrameUVC(uvc_camera_t *uvc_camera, struct uvc_stream_ctrl ctrl);
+extern void getFramesOverLibUsb5sec(uvc_camera_t *uvc_camera, struct uvc_stream_ctrl ctrl);
 extern void getFramesOverLibUVC();
 extern int awaitFrame () ;
 extern void probeCommitControl_cleanup();
@@ -211,14 +214,12 @@ extern unsigned char* convertUYVYtoJPEG (unsigned char* UYVY_frame_array, int* j
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_frameToBitmap( JNIEnv* env, jobject thiz, jobject bitmap);
 
 
-
+extern int JniStreamOverSurfaceUVC (uvc_camera_t* cam_pointer);
 
 ///////////////   Stream over JNI and native Surface View
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniStreamOverSurface
 		(JNIEnv *, jobject);
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniPrepairStreamOverSurfaceUVC
-        (JNIEnv *, jobject);
-JNIEXPORT int JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniStreamOverSurfaceUVC
         (JNIEnv *, jobject);
 
 ////////    SetUpTheDevice

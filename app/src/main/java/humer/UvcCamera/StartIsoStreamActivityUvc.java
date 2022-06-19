@@ -233,17 +233,15 @@ public class StartIsoStreamActivityUvc extends Activity {
     private static final String DEFAULT_USBFS = "/dev/bus/usb";
 
     // JNI METHODS
-    public native void JniIsoStreamActivitySurface(final Surface surface, int a, int b);
+    public native int JniIsoStreamActivitySurface(long camer_pointer, final Surface surface);
     public native void JniSetSurfaceView(final Surface surface);
     public native void JniSetSurfaceYuv(final Surface surface);
        // Bitmap Method
-    public native void frameToBitmap(Bitmap bitmap);
     public native void YUY2pixeltobmp(byte[] uyvy_data, Bitmap bitmap, int im_width, int im_height);
     public native void UYVYpixeltobmp(byte[] uyvy_data, Bitmap bitmap, int im_width, int im_height);
 
     //public native void JniStreamOverSurface();
     public native void JniPrepairStreamOverSurfaceUVC();
-    public native int JniStreamOverSurfaceUVC();
 
 
     //public native void JniProbeCommitControl(int bmHint,int camFormatIndex,int camFrameIndex,int  camFrameInterval);
@@ -1428,8 +1426,6 @@ public class StartIsoStreamActivityUvc extends Activity {
             if(libusb_is_initialized) {
                 JNA_I_LibUsb.INSTANCE.stopStreaming();
             }
-            //I_LibUsb.INSTANCE.closeLibUsb();
-            //I_LibUsb.INSTANCE.exit();
             camDevice = null;
             Intent resultIntent = new Intent();
             if (exit == true) resultIntent.putExtra("closeProgram", true);
@@ -1511,7 +1507,7 @@ public class StartIsoStreamActivityUvc extends Activity {
                 int bcdUVC_int = 0;
                 //mService.libusb_wrapped = true;
                 //mService.libusb_InterfacesClaimed = true;
-                JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                JNA_I_LibUsb.INSTANCE.set_the_native_Values(new Pointer(mNativePtr), fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                         camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1,
                         videoformat,0, bcdUVC_int, lowAndroid);
                 log("mNativePtr = " + mNativePtr);
@@ -1543,7 +1539,7 @@ public class StartIsoStreamActivityUvc extends Activity {
                     mUVCCameraView.setVisibility(View.INVISIBLE);
                     JniPrepairStreamOverSurfaceUVC();
                     int result = -1;
-                    result = JniStreamOverSurfaceUVC();
+                    result = JNA_I_LibUsb.INSTANCE.JniStreamOverSurfaceUVC(new Pointer(mNativePtr));
                     if (result == 0) {
                         ((Button) findViewById(R.id.startStream)).setEnabled(false);
                         stopStreamButton.getBackground().setAlpha(180);  // 25% transparent
@@ -1562,6 +1558,10 @@ public class StartIsoStreamActivityUvc extends Activity {
                     log("stream started (MJPEG) ... ");
 
                 } else if (videoformat.equals("YUY2")) {
+
+
+
+                    /*
                     ////////////////////////////////    YUV
                     // Steam Over SurfaceView
                     // fastest Method
@@ -1575,7 +1575,19 @@ public class StartIsoStreamActivityUvc extends Activity {
                     log("Start the stream ..");
 
                     int result = -1;
-                    result = JniStreamOverSurfaceUVC();
+                    result = JNA_I_LibUsb.INSTANCE.JniStreamOverSurfaceUVC(new Pointer(mNativePtr));
+
+
+                    */
+
+
+                    int result = -1;
+                    mPreviewSurface = mUVCCameraView.getHolder().getSurface();
+                    result = JniIsoStreamActivitySurface(mNativePtr, mPreviewSurface );
+
+
+
+
                     if (result == 0) {
                         ((Button) findViewById(R.id.startStream)).setEnabled(false);
                         stopStreamButton.getBackground().setAlpha(180);  // 25% transparent
@@ -1593,6 +1605,12 @@ public class StartIsoStreamActivityUvc extends Activity {
 
                     libusb_is_initialized = true;
                     log("stream started (YUY2) ... ");
+
+
+
+
+
+
                 } else if (videoformat.equals("UYVY")) {
                     ////////////////////////////////    UYVY
                     // Steam Over SurfaceView
@@ -1606,7 +1624,7 @@ public class StartIsoStreamActivityUvc extends Activity {
                     //JniPrepairStreamOverSurfaceUVC();
                     log("Start the stream ..");
                     int result = -1;
-                    result = JniStreamOverSurfaceUVC();
+                    result = JNA_I_LibUsb.INSTANCE.JniStreamOverSurfaceUVC(new Pointer(mNativePtr));
                     if (result == 0) {
                         ((Button) findViewById(R.id.startStream)).setEnabled(false);
                         stopStreamButton.getBackground().setAlpha(180);  // 25% transparent
@@ -1731,7 +1749,7 @@ public class StartIsoStreamActivityUvc extends Activity {
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 lowAndroid = 1;
             }
-            JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+            JNA_I_LibUsb.INSTANCE.set_the_native_Values(new Pointer(mNativePtr), fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                     camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1, videoformat, 0, bcdUVC_int, lowAndroid);
             //mService.native_values_set=true;
             JNA_I_LibUsb.INSTANCE.initStreamingParms(new Pointer(mNativePtr), FD);

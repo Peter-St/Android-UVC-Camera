@@ -246,7 +246,7 @@ public class UsbCapturer implements VideoCapturer {
                     int bcdUVC_int = 0;
                     int lowAndroid = 0;
                     if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR1) lowAndroid = 1;
-                    JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                    JNA_I_LibUsb.INSTANCE.set_the_native_Values(new Pointer(mNativePtr), fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                             camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, 0, bcdUVC_int, lowAndroid);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -395,7 +395,7 @@ public class UsbCapturer implements VideoCapturer {
             //camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(camDeviceConnection.getFileDescriptor());
             int lowAndroid = 0;
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR1) lowAndroid = 1;
-            JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+            JNA_I_LibUsb.INSTANCE.set_the_native_Values(new Pointer(mNativePtr), fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                     camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1, videoformat, 0, bcdUVC_int, lowAndroid);
             JNA_I_LibUsb.INSTANCE.initStreamingParms(new Pointer(mNativePtr), FD);
             return;

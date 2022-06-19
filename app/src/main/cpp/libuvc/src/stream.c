@@ -228,7 +228,7 @@ uvc_error_t uvc_query_stream_ctrl(uvc_device_handle_t *devh,
 	err = libusb_control_transfer(devh->usb_devh,
 			req == UVC_SET_CUR ? 0x21 : 0xA1, req,
 			probe ? (UVC_VS_PROBE_CONTROL << 8) : (UVC_VS_COMMIT_CONTROL << 8),
-			ctrl->bInterfaceNumber, buf, len, 0);
+			devh->info->stream_ifs->bInterfaceNumber, buf, len, 0);
 	if (err <= 0) LOGDEB("Control Transfer failed");
 	if (err == len) LOGDEB("Control Transfer Sucessful");
 	if (UNLIKELY(err <= 0)) {
@@ -393,11 +393,24 @@ static uvc_frame_desc_t *_uvc_find_frame_desc_stream_if(
 	uvc_format_desc_t *format = NULL;
 	uvc_frame_desc_t *frame = NULL;
 
+	LOGDEB("stream_if->format_descs");
+	if (stream_if->format_descs == NULL) LOGDEB("stream_if->format_descs == NULL");
+	else LOGDEB("stream_if->format_descs == EXISTS");
+
+	LOGDEB("stream_if->bEndpointAddress = %d", stream_if->bEndpointAddress);
+
+
+
 	DL_FOREACH(stream_if->format_descs, format)
 	{
+		LOGDEB("format->frame_descs");
 		if (format->bFormatIndex == format_id) {
+
+
 			DL_FOREACH(format->frame_descs, frame)
 			{
+				LOGDEB("frame->bFrameIndex = %d", frame->bFrameIndex);
+
 				if (frame->bFrameIndex == frame_id)
 					return frame;
 			}
@@ -1994,15 +2007,22 @@ uvc_error_t uvc_stream_start_random(uvc_stream_handle_t *strmh, uvc_frame_callba
     size_t total_transfer_size;
     struct libusb_transfer *transfer;
     int transfer_id;
+	LOGDEB("&strmh->cur_ctrl;");
 
-    ctrl = &strmh->cur_ctrl;
 
-    UVC_ENTER();
+	ctrl = &strmh->cur_ctrl;
 
-    if (UNLIKELY(strmh->running)) {
+	LOGDEB("after &strmh->cur_ctrl;");
+
+	UVC_ENTER();
+	LOGDEB("UVC_ENTER");
+
+
+	if (UNLIKELY(strmh->running)) {
         UVC_EXIT(UVC_ERROR_BUSY);
         return UVC_ERROR_BUSY;
     }
+	LOGDEB("Set streamhandle");
 
     strmh->running = 1;
     strmh->seq = 0;
@@ -2010,14 +2030,18 @@ uvc_error_t uvc_stream_start_random(uvc_stream_handle_t *strmh, uvc_frame_callba
     strmh->pts = 0;
     strmh->last_scr = 0;
     strmh->bfh_err = 0;	// XXX
-    frame_desc = uvc_find_frame_desc_stream(strmh, ctrl->bFormatIndex, ctrl->bFrameIndex);
+	LOGDEB("uvc_find_frame_desc_stream");
+
+	frame_desc = uvc_find_frame_desc_stream(strmh, ctrl->bFormatIndex, ctrl->bFrameIndex);
     if (UNLIKELY(!frame_desc)) {
         ret = UVC_ERROR_INVALID_PARAM;
         LOGERR("UVC_ERROR_INVALID_PARAM");
         goto fail;
     }
     format_desc = frame_desc->parent;
-    strmh->frame_format = uvc_frame_format_for_guid(format_desc->guidFormat);
+	LOGDEB("uvc_frame_format_for_guid");
+
+	strmh->frame_format = uvc_frame_format_for_guid(format_desc->guidFormat);
     if (UNLIKELY(strmh->frame_format == UVC_FRAME_FORMAT_UNKNOWN)) {
         ret = UVC_ERROR_NOT_SUPPORTED;
         LOGE("unlnown frame format");
@@ -2102,7 +2126,7 @@ uvc_error_t uvc_stream_start_random(uvc_stream_handle_t *strmh, uvc_frame_callba
             if (endpoint_bytes_per_packet == maxPacketSize) {
                 LOGDEB ("Altsetting found");
                 break;
-            } else {LOGD ("alt_idx = %d   //   endpoint_byte = %d", alt_idx, endpoint_bytes_per_packet)}
+            } else {LOGDEB ("alt_idx = %d   //   endpoint_byte = %d", alt_idx, endpoint_bytes_per_packet);}
 
 
             /*
@@ -2135,12 +2159,12 @@ uvc_error_t uvc_stream_start_random(uvc_stream_handle_t *strmh, uvc_frame_callba
 
         LOGD("alt_ndx complet");
         if (UNLIKELY(!endpoint_bytes_per_packet)) {
-            LOGE("endpoint_bytes_per_packet is zero");
+            LOGERR("endpoint_bytes_per_packet is zero");
             ret = UVC_ERROR_INVALID_MODE;
             goto fail;
         }
         if (UNLIKELY(!total_transfer_size)) {
-            LOGE("total_transfer_size is zero");
+			LOGERR("total_transfer_size is zero");
             ret = UVC_ERROR_INVALID_MODE;
             goto fail;
         }
@@ -2154,6 +2178,7 @@ uvc_error_t uvc_stream_start_random(uvc_stream_handle_t *strmh, uvc_frame_callba
 
         /* Select the altsetting */
         MARK("Select the altsetting");
+		LOGDEB ("libusb_set_interface_alt_setting");
         ret = libusb_set_interface_alt_setting(strmh->devh->usb_devh,
                                                altsetting->bInterfaceNumber, altsetting->bAlternateSetting);
         if (UNLIKELY(ret != UVC_SUCCESS)) {
@@ -2198,10 +2223,14 @@ uvc_error_t uvc_stream_start_random(uvc_stream_handle_t *strmh, uvc_frame_callba
      * with the contents of each frame.
      */
     MARK("create callback thread");
-    if LIKELY(cb) {
+	LOGDEB ("pthread_create");
+
+	if LIKELY(cb) {
         pthread_create(&strmh->cb_thread, NULL, _uvc_user_caller, (void*) strmh);
     }
-    MARK("submit transfers");
+	LOGDEB ("submit transfers");
+
+	MARK("submit transfers");
     for (transfer_id = 0; transfer_id < LIBUVC_NUM_TRANSFER_ACTIVE_URBS; transfer_id++) {
         ret = libusb_submit_transfer(strmh->transfers[transfer_id]);
         if (UNLIKELY(ret != UVC_SUCCESS)) {

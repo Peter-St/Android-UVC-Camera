@@ -1048,11 +1048,6 @@ public class SetUpTheUsbDeviceUvc extends Activity {
         l1ibusbAutoRunning = false;
     }
 
-    public void closeLibUsb() {
-        JNA_I_LibUsb.INSTANCE.closeLibUsb();
-        l1ibusbAutoRunning = false;
-    }
-
     private void openCameraDevice(boolean init) throws Exception {
         log("open Camera Device Method ;\n");
         if (moveToNative) {
@@ -1199,7 +1194,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                                 lowAndroid = 1;
                             }
-                            JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                            JNA_I_LibUsb.INSTANCE.set_the_native_Values(new Pointer(mNativePtr), fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                                     camFrameIndex, camFrameInterval, imageWidth, imageHeight, camStreamingEndpointAdress, 1, videoformat, framesReceive, bcdUVC_int, lowAndroid);
                             JNA_I_LibUsb.INSTANCE.setCallbackAuto(new JNA_I_LibUsb.eventCallbackAuto() {
                                 public boolean callback(JNA_I_LibUsb.auto_detect_struct.ByReference auto_values) {
@@ -1218,7 +1213,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                                     return true;
                                 }
                             });
-                            JNA_I_LibUsb.INSTANCE.automaticDetection();
+                            JNA_I_LibUsb.INSTANCE.automaticDetection(new Pointer(mNativePtr));
                             try {
                                 Thread.sleep(300);
                             } catch (InterruptedException e) {
@@ -1427,7 +1422,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
             }
         });
         log("getOneFrameUVC - native call");
-        JNA_I_LibUsb.INSTANCE.getOneFrameUVC(ControlValues);
+        JNA_I_LibUsb.INSTANCE.getOneFrameUVC(new Pointer(mNativePtr), ControlValues);
         //log("getOneFrameUVC - stopStreaming");
         //JNA_I_LibUsb.INSTANCE.stopStreaming();
         log("getOneFrameUVC - complete (JavaMsg)");
@@ -1475,7 +1470,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                                     return true;
                                 }
                             });
-                            JNA_I_LibUsb.INSTANCE.getFramesOverLibUsb5sec(ControlValues);
+                            JNA_I_LibUsb.INSTANCE.getFramesOverLibUsb5sec(new Pointer(mNativePtr), ControlValues);
                                     //mService.altSettingControl();
                             started = true;
                         }
@@ -1567,10 +1562,10 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                     lowAndroid = 1;
                 }
                 if (moveToNative)
-                    JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                    JNA_I_LibUsb.INSTANCE.set_the_native_Values(new Pointer(mNativePtr), fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                             camFrameIndex, camFrameInterval, imageWidth, imageHeight, camStreamingEndpointAdress, 1, videoformat, framesReceive, bcdUVC_int, lowAndroid);
                 else
-                    JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                    JNA_I_LibUsb.INSTANCE.set_the_native_Values(new Pointer(mNativePtr), fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                             camFrameIndex, camFrameInterval, imageWidth, imageHeight, camStreamingEndpointAdress, 1, videoformat, framesReceive, bcdUVC_int, lowAndroid);
                 //mService.native_values_set = true;
                 libusb_is_initialized = true;
@@ -1582,16 +1577,16 @@ public class SetUpTheUsbDeviceUvc extends Activity {
         camIsOpen = false;
         initStreamingParmsResult = "Camera Controltransfer Failed \n\n";
         log("Starting with the Control Transfers");
-        JNA_I_LibUsb.uvc_stream_ctrl.ByValue probeSet = JNA_I_LibUsb.INSTANCE.probeSetCur_TransferUVC();
+        JNA_I_LibUsb.uvc_stream_ctrl.ByValue probeSet = JNA_I_LibUsb.INSTANCE.probeSetCur_TransferUVC(new Pointer(mNativePtr));
         if (probeSet.bInterfaceNumber < 0) one = probeSet.bInterfaceNumber;
         else { one = 0;
             initStreamingParms = dumpStreamingParmsStructure(probeSet);
-            JNA_I_LibUsb.uvc_stream_ctrl.ByValue probeGet = JNA_I_LibUsb.INSTANCE.probeGetCur_TransferUVC(probeSet);
+            JNA_I_LibUsb.uvc_stream_ctrl.ByValue probeGet = JNA_I_LibUsb.INSTANCE.probeGetCur_TransferUVC(new Pointer(mNativePtr), probeSet);
             if (probeGet.bInterfaceNumber < 0) two = probeGet.bInterfaceNumber;
             else {
                 two = 0;
                 probedStreamingParms = dumpStreamingParmsStructure(probeGet);
-                JNA_I_LibUsb.uvc_stream_ctrl.ByValue commitSet = JNA_I_LibUsb.INSTANCE.CommitSetCur_TransferUVC(probeGet);
+                JNA_I_LibUsb.uvc_stream_ctrl.ByValue commitSet = JNA_I_LibUsb.INSTANCE.CommitSetCur_TransferUVC(new Pointer(mNativePtr), probeGet);
                 if (commitSet.bInterfaceNumber < 0) three = commitSet.bInterfaceNumber;
                 else {
                     three = 0;
@@ -1599,7 +1594,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                     ControlValues = commitSet;
                     initStreamingParmsResult = "Camera Controltransfer Sucessful !\n\nThe returned Values from the Camera Controltransfer fits to your entered Values\nYou can proceed starting a test run!";
                     finalStreamingParms_first = dumpStreamingParmsStructure(commitSet);
-                    JNA_I_LibUsb.uvc_stream_ctrl.ByValue commitGet = JNA_I_LibUsb.INSTANCE.CommitGetCur_TransferUVC(commitSet);
+                    JNA_I_LibUsb.uvc_stream_ctrl.ByValue commitGet = JNA_I_LibUsb.INSTANCE.CommitGetCur_TransferUVC(new Pointer(mNativePtr), commitSet);
                     if (commitGet.bInterfaceNumber < 0) four = commitGet.bInterfaceNumber;
                     else {
                         four = 0;
@@ -1693,10 +1688,10 @@ public class SetUpTheUsbDeviceUvc extends Activity {
             lowAndroid = 1;
         }
         if (moveToNative)
-            JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+            JNA_I_LibUsb.INSTANCE.set_the_native_Values(new Pointer(mNativePtr), fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                     camFrameIndex, camFrameInterval, imageWidth, imageHeight, camStreamingEndpointAdress, 1, videoformat, framesReceive, bcdUVC_int, lowAndroid);
         else
-            JNA_I_LibUsb.INSTANCE.set_the_native_Values(fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+            JNA_I_LibUsb.INSTANCE.set_the_native_Values(new Pointer(mNativePtr), fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
                     camFrameIndex, camFrameInterval, imageWidth, imageHeight, camStreamingEndpointAdress, camStreamingInterface.getId(), videoformat, framesReceive, bcdUVC_int, lowAndroid);
         //mService.native_values_set=true;
         libusb_is_initialized = true;

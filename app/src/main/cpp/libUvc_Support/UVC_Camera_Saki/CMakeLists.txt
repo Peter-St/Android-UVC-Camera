@@ -72,17 +72,12 @@ target_link_libraries(
 
 )
 
-
-
 set (LIBUVC_DIR ../../libuvc)
 add_subdirectory (${LIBUVC_DIR} ./uvc)
 include_directories (${LIBUVC_DIR}/include/libuvc)
+include_directories (${LIBUVC_DIR}/include)
 target_link_libraries(uvc_preview uvc)
 
-set (LIBUVCSUPPORT_DIR ..)
-#add_subdirectory (${LIBUVCSUPPORT_DIR} ./uvc_support)
-include_directories (${LIBUVCSUPPORT_DIR})
-#target_link_libraries( uvc_preview ${LIBUVCSUPPORT_DIR} )
 
 
 

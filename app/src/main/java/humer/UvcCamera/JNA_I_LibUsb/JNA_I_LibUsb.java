@@ -36,7 +36,7 @@ public interface JNA_I_LibUsb extends Library {
 
     public static final JNA_I_LibUsb INSTANCE = Native.load("Uvc_Support", JNA_I_LibUsb.class);
 
-    public void set_the_native_Values(int FD, int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
+    public void set_the_native_Values(Pointer uvc_camera, int FD, int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
                                       int camFrameInde, int camFrameInterva, int imageWidt, int imageHeigh, int camStreamingEndpoint, int camStreamingInterfaceNumber,
                                       String frameFormat, int numberOfAutoFrames, int bcdUVC_int, int lowAndroid);
 
@@ -74,16 +74,16 @@ public interface JNA_I_LibUsb extends Library {
 
     public void probeCommitControlUVC();
 
-    public uvc_stream_ctrl.ByValue probeSetCur_TransferUVC();
-    public uvc_stream_ctrl.ByValue probeGetCur_TransferUVC(uvc_stream_ctrl.ByValue ctrl);
-    public uvc_stream_ctrl.ByValue CommitSetCur_TransferUVC(uvc_stream_ctrl.ByValue ctrl);
-    public uvc_stream_ctrl.ByValue CommitGetCur_TransferUVC(uvc_stream_ctrl.ByValue ctrl);
+    public uvc_stream_ctrl.ByValue probeSetCur_TransferUVC(Pointer uvc_camera);
+    public uvc_stream_ctrl.ByValue probeGetCur_TransferUVC(Pointer uvc_camera, uvc_stream_ctrl.ByValue ctrl);
+    public uvc_stream_ctrl.ByValue CommitSetCur_TransferUVC(Pointer uvc_camera, uvc_stream_ctrl.ByValue ctrl);
+    public uvc_stream_ctrl.ByValue CommitGetCur_TransferUVC(Pointer uvc_camera, uvc_stream_ctrl.ByValue ctrl);
 
-    public void getOneFrameUVC(uvc_stream_ctrl.ByValue ctrl);
+    public void getOneFrameUVC(Pointer uvcCamera, uvc_stream_ctrl.ByValue ctrl);
 
-    public void getFramesOverLibUsb5sec(uvc_stream_ctrl.ByValue ctrl);
+    public void getFramesOverLibUsb5sec(Pointer uvc_camera, uvc_stream_ctrl.ByValue ctrl);
 
-    public void getFramesOverLibUVC(int yuvFrameIsZero, int stream, int whichTestrun);
+    public void getFramesOverLibUVC(Pointer uvc_camera, int yuvFrameIsZero, int stream, int whichTestrun);
 
     public void setRotation(int rot, int horizontalFlip, int verticalFlip);
 
@@ -93,6 +93,8 @@ public interface JNA_I_LibUsb extends Library {
     public void lunchTheStream_WebRtc_Service();
 
     // Stream Activity
+    public int JniStreamOverSurfaceUVC (Pointer uvc_camera);
+
     public void setImageCapture();
 
     public void startVideoCapture();
@@ -121,7 +123,7 @@ public interface JNA_I_LibUsb extends Library {
     // LibUsb Methods
     public int initLibUsb();
     public uvc_device_info.ByReference listDeviceUvc(Pointer uvc_camera, int fd);
-    public void automaticDetection();
+    public void automaticDetection(Pointer uvc_camera);
 
     // c++ Methods
 
