@@ -294,6 +294,11 @@ struct uvc_stream_handle {
   uint8_t *transfer_bufs[LIBUVC_NUM_TRANSFER_BUFS];
   struct uvc_frame frame;
   enum uvc_frame_format frame_format;
+  // added by Peter St.
+  uint8_t random;                             // if true, random values are used.
+  uint8_t activeUrbs;                         // Value of the Active Urbs
+  struct libusb_transfer **transfers_random;  // random array for the active Urbs
+  uint8_t **transfer_bufs_random;             // random array for the transfer buffers
 };
 
 /** Handle on an open UVC device

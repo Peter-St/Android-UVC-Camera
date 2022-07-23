@@ -191,12 +191,9 @@ extern void stopVideoCaptureLongClick() ;
 extern void read_a_value(uvc_camera_t *cam);
 extern uvc_camera_t* write_a_value(uvc_camera_t* cam_pointer) ;
 
-
-
-
-
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniIsoStreamActivity
         (JNIEnv *, jobject, jint, jint);
+
 // Streaming Method
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniSetSurfaceView
         (JNIEnv *, jobject, jobject);

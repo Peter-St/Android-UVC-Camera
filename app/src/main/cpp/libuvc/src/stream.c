@@ -732,26 +732,52 @@ static void _uvc_delete_transfer(struct libusb_transfer *transfer) {
 	if (UNLIKELY(!strmh)) EXIT();		// XXX
 	int i;
 
-	pthread_mutex_lock(&strmh->cb_mutex);	// XXX crash while calling uvc_stop_streaming
-	{
-		// Mark transfer as deleted.
-		for (i = 0; i < LIBUVC_NUM_TRANSFER_ACTIVE_URBS; i++) {
-			if (strmh->transfers[i] == transfer) {
-				libusb_cancel_transfer(strmh->transfers[i]);	// XXX 20141112追加
-				UVC_DEBUG("Freeing transfer %d (%p)", i, transfer);
-				free(transfer->buffer);
-				libusb_free_transfer(transfer);
-				strmh->transfers[i] = NULL;
-				break;
+	if (strmh->random) {
+		pthread_mutex_lock(&strmh->cb_mutex);	// XXX crash while calling uvc_stop_streaming
+		{
+			// Mark transfer as deleted.
+			for (i = 0; i < strmh->activeUrbs; i++) {
+				if (strmh->transfers_random[i] == transfer) {
+					libusb_cancel_transfer(strmh->transfers_random[i]);	// XXX 20141112追加
+					UVC_DEBUG("Freeing transfer %d (%p)", i, transfer);
+					free(transfer->buffer);
+					libusb_free_transfer(transfer);
+					strmh->transfers_random[i] = NULL;
+					break;
+				}
 			}
-		}
-		if (UNLIKELY(i == LIBUVC_NUM_TRANSFER_ACTIVE_URBS)) {
-			UVC_DEBUG("transfer %p not found; not freeing!", transfer);
-		}
+			if (UNLIKELY(i == strmh->activeUrbs)) {
+				UVC_DEBUG("transfer %p not found; not freeing!", transfer);
+			}
 
-		pthread_cond_broadcast(&strmh->cb_cond);
+			pthread_cond_broadcast(&strmh->cb_cond);
+		}
+		pthread_mutex_unlock(&strmh->cb_mutex);
+	} else {
+		pthread_mutex_lock(&strmh->cb_mutex);	// XXX crash while calling uvc_stop_streaming
+		{
+			// Mark transfer as deleted.
+			for (i = 0; i < LIBUVC_NUM_TRANSFER_ACTIVE_URBS; i++) {
+				if (strmh->transfers[i] == transfer) {
+					libusb_cancel_transfer(strmh->transfers[i]);	// XXX 20141112追加
+					UVC_DEBUG("Freeing transfer %d (%p)", i, transfer);
+					free(transfer->buffer);
+					libusb_free_transfer(transfer);
+					strmh->transfers[i] = NULL;
+					break;
+				}
+			}
+			if (UNLIKELY(i == LIBUVC_NUM_TRANSFER_ACTIVE_URBS)) {
+				UVC_DEBUG("transfer %p not found; not freeing!", transfer);
+			}
+
+			pthread_cond_broadcast(&strmh->cb_cond);
+		}
+		pthread_mutex_unlock(&strmh->cb_mutex);
 	}
-	pthread_mutex_unlock(&strmh->cb_mutex);
+
+
+
 	EXIT();
 }
 
@@ -1993,8 +2019,13 @@ uvc_error_t uvc_stream_start_automatic_detection(uvc_stream_handle_t *strmh,
 uvc_error_t uvc_stream_start_random(uvc_stream_handle_t *strmh, uvc_frame_callback_t *cb, void *user_ptr, float bandwidth_factor, uint8_t flags,
         int activeUrbs, int packetsPerRequest, int altset, int maxPacketSize) {
     /* USB interface we'll be using */
-    if (activeUrbs > 16) activeUrbs = 16;
-    LIBUVC_NUM_TRANSFER_ACTIVE_URBS = activeUrbs;
+
+
+    //if (activeUrbs > 16) activeUrbs = 16;
+    //LIBUVC_NUM_TRANSFER_ACTIVE_URBS = activeUrbs;
+
+
+
     LOGDEB("uvc_stream_start_random");
     const struct libusb_interface *interface;
     int interface_id;
@@ -2030,6 +2061,8 @@ uvc_error_t uvc_stream_start_random(uvc_stream_handle_t *strmh, uvc_frame_callba
     strmh->pts = 0;
     strmh->last_scr = 0;
     strmh->bfh_err = 0;	// XXX
+	strmh->random = 1;
+	strmh->activeUrbs = activeUrbs;
 	LOGDEB("uvc_find_frame_desc_stream");
 
 	frame_desc = uvc_find_frame_desc_stream(strmh, ctrl->bFormatIndex, ctrl->bFrameIndex);
@@ -2047,6 +2080,8 @@ uvc_error_t uvc_stream_start_random(uvc_stream_handle_t *strmh, uvc_frame_callba
         LOGE("unlnown frame format");
         goto fail;
     } else LOGDEB ("Frameformat detected by uvc Lib\nFrameformat = %d\n", strmh->frame_format);
+
+
     const uint32_t dwMaxVideoFrameSize = ctrl->dwMaxVideoFrameSize <= frame_desc->dwMaxVideoFrameBufferSize
                                          ? ctrl->dwMaxVideoFrameSize : frame_desc->dwMaxVideoFrameBufferSize;
 
@@ -2188,37 +2223,45 @@ uvc_error_t uvc_stream_start_random(uvc_stream_handle_t *strmh, uvc_frame_callba
 
         /* Set up the transfers */
         MARK("Set up the transfers");
-        for (transfer_id = 0; transfer_id < LIBUVC_NUM_TRANSFER_ACTIVE_URBS; ++transfer_id) {
-            transfer = libusb_alloc_transfer(packets_per_transfer);
-            strmh->transfers[transfer_id] = transfer;
-            strmh->transfer_bufs[transfer_id] = malloc(total_transfer_size);
 
-            libusb_fill_iso_transfer(transfer, strmh->devh->usb_devh,
-                                     format_desc->parent->bEndpointAddress,
-                                     strmh->transfer_bufs[transfer_id], total_transfer_size,
-                                     packets_per_transfer, _uvc_stream_callback,
-                                     (void*) strmh, 5000);
+		strmh->transfers_random  = malloc(activeUrbs * sizeof(struct libusb_transfer *));
+		strmh->transfer_bufs_random = malloc(activeUrbs * sizeof(uint8_t *));
 
-            libusb_set_iso_packet_lengths(transfer, endpoint_bytes_per_packet);
-        }
+		for (transfer_id = 0; transfer_id < activeUrbs; ++transfer_id) {
+			transfer = libusb_alloc_transfer(packets_per_transfer);
+			strmh->transfers_random[transfer_id] = transfer;  // Point to the struct.
+			strmh->transfer_bufs_random[transfer_id] = malloc(total_transfer_size);
+			//strmh->transfers[transfer_id] = transfer;
+			//strmh->transfer_bufs[transfer_id] = malloc(total_transfer_size);
+
+			libusb_fill_iso_transfer(transfer, strmh->devh->usb_devh,
+									 format_desc->parent->bEndpointAddress,
+									 strmh->transfer_bufs_random[transfer_id], total_transfer_size,
+									 packets_per_transfer, _uvc_stream_callback,
+									 (void*) strmh, 5000);
+
+			libusb_set_iso_packet_lengths(transfer, endpoint_bytes_per_packet);
+		}
     } else {
         MARK("bulk transfer mode");
         /** prepare for bulk transfer */
-        for (transfer_id = 0; transfer_id < LIBUVC_NUM_TRANSFER_ACTIVE_URBS; ++transfer_id) {
-            transfer = libusb_alloc_transfer(0);
-            strmh->transfers[transfer_id] = transfer;
-            strmh->transfer_bufs[transfer_id] = malloc(strmh->cur_ctrl.dwMaxPayloadTransferSize);
-            libusb_fill_bulk_transfer(transfer, strmh->devh->usb_devh,
-                                      format_desc->parent->bEndpointAddress,
-                                      strmh->transfer_bufs[transfer_id],
-                                      strmh->cur_ctrl.dwMaxPayloadTransferSize, _uvc_stream_callback,
-                                      (void *)strmh, 5000);
-        }
+		strmh->transfers_random  = malloc(activeUrbs * sizeof(struct libusb_transfer *));
+		strmh->transfer_bufs_random = malloc(activeUrbs * sizeof(uint8_t *));
+		for (transfer_id = 0; transfer_id < activeUrbs; ++transfer_id) {
+			transfer = libusb_alloc_transfer(0);
+			strmh->transfers_random[transfer_id] = transfer;  // Point to the struct.
+			strmh->transfer_bufs_random[transfer_id] = malloc(strmh->cur_ctrl.dwMaxPayloadTransferSize);
+			//strmh->transfers[transfer_id] = transfer;
+			//strmh->transfer_bufs[transfer_id] = malloc(strmh->cur_ctrl.dwMaxPayloadTransferSize);
+			libusb_fill_bulk_transfer(transfer, strmh->devh->usb_devh,
+									  format_desc->parent->bEndpointAddress,
+									  strmh->transfer_bufs_random[transfer_id],
+									  strmh->cur_ctrl.dwMaxPayloadTransferSize, _uvc_stream_callback,
+									  (void *)strmh, 5000);
+		}
     }
-
     strmh->user_cb = cb;
     strmh->user_ptr = user_ptr;
-
     /* If the user wants it, set up a thread that calls the user's function
      * with the contents of each frame.
      */
@@ -2231,8 +2274,8 @@ uvc_error_t uvc_stream_start_random(uvc_stream_handle_t *strmh, uvc_frame_callba
 	LOGDEB ("submit transfers");
 
 	MARK("submit transfers");
-    for (transfer_id = 0; transfer_id < LIBUVC_NUM_TRANSFER_ACTIVE_URBS; transfer_id++) {
-        ret = libusb_submit_transfer(strmh->transfers[transfer_id]);
+    for (transfer_id = 0; transfer_id < activeUrbs; transfer_id++) {
+        ret = libusb_submit_transfer(strmh->transfers_random[transfer_id]);
         if (UNLIKELY(ret != UVC_SUCCESS)) {
             UVC_DEBUG("libusb_submit_transfer failed");
             break;
@@ -2457,37 +2500,71 @@ uvc_error_t uvc_stream_stop(uvc_stream_handle_t *strmh) {
 	}
 
 	strmh->running = 0;
-	pthread_mutex_lock(&strmh->cb_mutex);
-	{
-		for (i = 0; i < LIBUVC_NUM_TRANSFER_ACTIVE_URBS; i++) {
-			if (strmh->transfers[i]) {
-				int res = libusb_cancel_transfer(strmh->transfers[i]);
-				if ((res < 0) && (res != LIBUSB_ERROR_NOT_FOUND)) {
-					LOGDEB("libusb_cancel_transfer failed");
-					// XXX originally freed buffers and transfer here
-					// but this could lead to crash in _uvc_callback
-					// therefore we comment out these lines
-					// and free these objects in _uvc_iso_callback when strmh->running is false
+	if (strmh->random) {
+		pthread_mutex_lock(&strmh->cb_mutex);
+		{
+			for (i = 0; i < strmh->activeUrbs; i++) {
+				if (strmh->transfers_random[i]) {
+					int res = libusb_cancel_transfer(strmh->transfers_random[i]);
+					if ((res < 0) && (res != LIBUSB_ERROR_NOT_FOUND)) {
+						LOGDEB("libusb_cancel_transfer failed");
+						// XXX originally freed buffers and transfer here
+						// but this could lead to crash in _uvc_callback
+						// therefore we comment out these lines
+						// and free these objects in _uvc_iso_callback when strmh->running is false
 /*					free(strmh->transfers[i]->buffer);
 					libusb_free_transfer(strmh->transfers[i]);
 					strmh->transfers[i] = NULL; */
-				} else LOGDEB("libusb_cancel_transfer sucessful");
+					} else LOGDEB("libusb_cancel_transfer sucessful");
+				}
 			}
-		}
-		/* Wait for transfers to complete/cancel */
-		for (; 1 ;) {
-			for (i = 0; i < LIBUVC_NUM_TRANSFER_ACTIVE_URBS; i++) {
-				if (strmh->transfers[i] != NULL)
+			/* Wait for transfers to complete/cancel */
+			for (; 1 ;) {
+				for (i = 0; i < strmh->activeUrbs; i++) {
+					if (strmh->transfers_random[i] != NULL)
+						break;
+				}
+				if (i == strmh->activeUrbs)
 					break;
+				pthread_cond_wait(&strmh->cb_cond, &strmh->cb_mutex);
 			}
-			if (i == LIBUVC_NUM_TRANSFER_ACTIVE_URBS)
-				break;
-			pthread_cond_wait(&strmh->cb_cond, &strmh->cb_mutex);
+			// Kick the user thread awake
+			pthread_cond_broadcast(&strmh->cb_cond);
 		}
-		// Kick the user thread awake
-		pthread_cond_broadcast(&strmh->cb_cond);
+		pthread_mutex_unlock(&strmh->cb_mutex);
+	} else {
+		pthread_mutex_lock(&strmh->cb_mutex);
+		{
+			for (i = 0; i < LIBUVC_NUM_TRANSFER_ACTIVE_URBS; i++) {
+				if (strmh->transfers[i]) {
+					int res = libusb_cancel_transfer(strmh->transfers[i]);
+					if ((res < 0) && (res != LIBUSB_ERROR_NOT_FOUND)) {
+						LOGDEB("libusb_cancel_transfer failed");
+						// XXX originally freed buffers and transfer here
+						// but this could lead to crash in _uvc_callback
+						// therefore we comment out these lines
+						// and free these objects in _uvc_iso_callback when strmh->running is false
+/*					free(strmh->transfers[i]->buffer);
+					libusb_free_transfer(strmh->transfers[i]);
+					strmh->transfers[i] = NULL; */
+					} else LOGDEB("libusb_cancel_transfer sucessful");
+				}
+			}
+			/* Wait for transfers to complete/cancel */
+			for (; 1 ;) {
+				for (i = 0; i < LIBUVC_NUM_TRANSFER_ACTIVE_URBS; i++) {
+					if (strmh->transfers[i] != NULL)
+						break;
+				}
+				if (i == LIBUVC_NUM_TRANSFER_ACTIVE_URBS)
+					break;
+				pthread_cond_wait(&strmh->cb_cond, &strmh->cb_mutex);
+			}
+			// Kick the user thread awake
+			pthread_cond_broadcast(&strmh->cb_cond);
+		}
+		pthread_mutex_unlock(&strmh->cb_mutex);
 	}
-	pthread_mutex_unlock(&strmh->cb_mutex);
 
 	/** @todo stop the actual stream, camera side? */
 

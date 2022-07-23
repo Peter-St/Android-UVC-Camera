@@ -233,7 +233,9 @@ public class StartIsoStreamActivityUvc extends Activity {
     private static final String DEFAULT_USBFS = "/dev/bus/usb";
 
     // JNI METHODS
-    public native int JniIsoStreamActivitySurface(long camer_pointer, final Surface surface);
+    public native int PreviewPrepareStream(long camer_pointer, final Surface surface);
+    public native int PreviewStartStream(long camer_pointer);
+    public native int PreviewStopStream(long camer_pointer);
     public native void JniSetSurfaceView(final Surface surface);
     public native void JniSetSurfaceYuv(final Surface surface);
        // Bitmap Method
@@ -1515,6 +1517,12 @@ public class StartIsoStreamActivityUvc extends Activity {
 
                 log("Compare Video Format");
                 if (videoformat.equals("MJPEG")) {
+
+
+
+
+
+
                     ////////////////////////////////    MJPEG
                     JNA_I_LibUsb.INSTANCE.setCallback(new JNA_I_LibUsb.eventCallback(){
                         public boolean callback(Pointer videoFrame, int frameSize) {
@@ -1560,51 +1568,30 @@ public class StartIsoStreamActivityUvc extends Activity {
                 } else if (videoformat.equals("YUY2")) {
 
 
-
-                    /*
-                    ////////////////////////////////    YUV
-                    // Steam Over SurfaceView
-                    // fastest Method
-                    if (!libusb_is_initialized) {
-                        mPreviewSurface = mUVCCameraView.getHolder().getSurface();
-                        log("JniSetSurfaceView");
-                        JniSetSurfaceView(mPreviewSurface);
-                    }
-                    //log("prepair for streaming ..");
-                    //JniPrepairStreamOverSurfaceUVC();
-                    log("Start the stream ..");
-
-                    int result = -1;
-                    result = JNA_I_LibUsb.INSTANCE.JniStreamOverSurfaceUVC(new Pointer(mNativePtr));
-
-
-                    */
-
-
                     int result = -1;
                     mPreviewSurface = mUVCCameraView.getHolder().getSurface();
-                    result = JniIsoStreamActivitySurface(mNativePtr, mPreviewSurface );
-
-
-
-
+                    result = PreviewPrepareStream(mNativePtr, mPreviewSurface );
                     if (result == 0) {
-                        ((Button) findViewById(R.id.startStream)).setEnabled(false);
-                        stopStreamButton.getBackground().setAlpha(180);  // 25% transparent
-                        stopStreamButton.setEnabled(true);
-                        startStream.getBackground().setAlpha(20);  // 95% transparent
-                        photoButton.setEnabled(true);
-                        photoButton.setBackgroundResource(R.drawable.bg_button_bildaufnahme);
-                        videoButton.setEnabled(true);
-                        videoButton.setAlpha(1); // 100% transparent
-                        stopKamera = false;
-                    } else {
-                        displayMessage("Stream failed;  Result = " + result);
-                        log ("Stream failed;  Result = " + result);
-                    }
+                        result = PreviewStartStream(mNativePtr);
+                        if (result == 0) {
+                            ((Button) findViewById(R.id.startStream)).setEnabled(false);
+                            stopStreamButton.getBackground().setAlpha(180);  // 25% transparent
+                            stopStreamButton.setEnabled(true);
+                            startStream.getBackground().setAlpha(20);  // 95% transparent
+                            photoButton.setEnabled(true);
+                            photoButton.setBackgroundResource(R.drawable.bg_button_bildaufnahme);
+                            videoButton.setEnabled(true);
+                            videoButton.setAlpha(1); // 100% transparent
+                            stopKamera = false;
+                            libusb_is_initialized = true;
+                            log("stream started (YUY2) ... ");
+                        } else {
+                            displayMessage("Stream failed;  Result = " + result);
+                            log ("Stream failed;  Result = " + result);
+                        }
+                    } else displayMessage("Stream failed;  Result = " + result);
 
-                    libusb_is_initialized = true;
-                    log("stream started (YUY2) ... ");
+
 
 
 
@@ -1836,7 +1823,14 @@ public class StartIsoStreamActivityUvc extends Activity {
         videoButton.setAlpha(0); // 100% transparent
         stopKamera = true;
         if (LIBUSB) {
-            JNA_I_LibUsb.INSTANCE.stopStreaming();
+            int result = -1;
+
+
+            if (mNativePtr != 0) result = PreviewStopStream(mNativePtr) ;
+            else JNA_I_LibUsb.INSTANCE.stopStreaming();
+
+
+
             //mService.streamOnPause = true;
             //mService.streamCanBeResumed = true;
         } else {
