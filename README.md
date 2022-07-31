@@ -43,7 +43,7 @@ License
 
 
 
-Since Android 9 Google Usb Devices needs several other permissions to run and at least the SdkVersion 30 to run sucessfully
+Since Android 9 Usb Cameras on Android needs several other permissions and at least the SdkVersion 30 to run sucessfully
 --> https://issuetracker.google.com/issues/145082934
 
 
