@@ -15,8 +15,6 @@ This is a Android Studio Project. It connects to a usb camera from your Android 
 The app connects to USB Cameras via variable, different input values for the camera driver creation.
 In most cases you won't need to set up your own camera driver, because other apps may do this for you automatically, but for some Android devices it could help to watch videos from Usb Cameras.
 
-- LibUsb Support Added: LibUsb raises the performance of the standard Usb Device Driver.
-
 (Some OTG cabels doesn't work -->  I'll found one which is an extern powered more Port USB-C OTG cable and doesn't work ...)
 (An non working OTG cable doesn't show the right interfaces and endpoints of you camera: --> When you click on 'List Up The Camera' Button)
 
@@ -45,8 +43,10 @@ License
 
 
 
-Since Android 9 Google made a mistake granting the Usb Permissions for Usb Cameras, so this app may not works on Android 9 + Devices
+Since Android 9 Google Usb Devices needs several other permissions to run and at least the SdkVersion 30 to run sucessfully
 --> https://issuetracker.google.com/issues/145082934
+
+
 
 Explaination:
 Before you start with entering the Camera values, your Android device have to detect the Camera:
