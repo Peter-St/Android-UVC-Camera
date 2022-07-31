@@ -123,10 +123,10 @@ target_link_libraries(uvc usb1.0)
 
 
 
-set (JPG_DIR ../libjpeg-cmake)
-add_subdirectory (${JPG_DIR} ./libjpeg-cmake)
+set (JPG9_DIR ../libjpeg-version-9/libjpeg9)
+add_subdirectory (${JPG9_DIR} ./jpeg9)
 # (uvc PUBLIC ${JPG_DIR}/simd)
-target_link_libraries(uvc libjpeg)
+target_link_libraries(uvc jpeg9)
 
 
 #set (JPG_DIR ../libjpeg)

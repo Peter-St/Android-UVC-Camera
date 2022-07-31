@@ -656,18 +656,11 @@ void UVCPreview::do_preview(uvc_stream_ctrl_t *ctrl) {
 			for ( ; LIKELY(isRunning()) ; ) {
 				frame_mjpeg = waitPreviewFrame();
 				if (LIKELY(frame_mjpeg)) {
-                    //LOGD("frame_mjpeg->width = %d", frame_mjpeg->width);
-                    //LOGD("frame_mjpeg->height = %d", frame_mjpeg->height);
-					frame = get_frame(frame_mjpeg->width * frame_mjpeg->height * 4);
-                    //LOGD("frame->width = %d", frame->width);
-                    //LOGD("frame->height = %d", frame->height);
+					frame = get_frame(frame_mjpeg->width * frame_mjpeg->height * 2);
 					if (!test) {
-                        LOGD("uvc_mjpeg2yuyv");
-						result = uvc_mjpeg2rgbx(frame_mjpeg, frame);   // MJPEG => yuyv
-                        LOGD("recycle_frame");
+                        result = uvc_mjpeg2yuyv(frame_mjpeg, frame);
 						recycle_frame(frame_mjpeg);
 						if (LIKELY(!result)) {
-                            LOGD("draw_preview_one");
 							frame = draw_preview_one(frame, &mPreviewWindow, uvc_any2rgbx, 4);
 							addCaptureFrame(frame);
 						} else {
@@ -677,9 +670,6 @@ void UVCPreview::do_preview(uvc_stream_ctrl_t *ctrl) {
 						LOGD("addCaptureFrame ");
 						addCaptureFrame(frame);
 					}
-
-
-
 				}
 			}
 		} else {

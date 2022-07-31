@@ -41,7 +41,8 @@
  */
 #include "libuvc/libuvc.h"
 #include "libuvc/libuvc_internal.h"
-#include "../../libjpeg-cmake/jpeglib.h"
+#include "../../libjpeg-version-9/libjpeg9/jpeglib.h"
+//#include "../../libjpeg-turbo/jpeglib.h"
 //#include <jpeglib.h>
 #include <setjmp.h>
 #include "libyuv.h"
