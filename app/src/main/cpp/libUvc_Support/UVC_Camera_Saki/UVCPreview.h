@@ -44,10 +44,14 @@ extern long create_UVCPreview(uvc_device_handle_t *devh, long preview_pointer);
 extern int set_preview_size(long preview_pointer, int width, int height, int min_fps, int max_fps, int mode, float bandwidth);
 extern int set_preview_size_random(long preview_pointer, int width, int height, int min_fps, int max_fps, float bandwidth,
 								   int activeUrbs, int packetsPerRequest, int altset, int maxPacketSize,
-								   int camFormatInde, int camFrameInde, int camFrameInterva, const char* frameForma, int imageWidth, int imageHeight);
+								   int camFormatInde, int camFrameInde, int camFrameInterva, const char* frameForma,
+								   int imageWidth, int imageHeight, int test);
 extern int set_preview_display(long preview_pointer, ANativeWindow *preview_window);
 extern int startPreview(long preview_pointer);
 extern int stopPreview(long preview_pointer);
+extern int setFrameCallback(long preview_pointer, JNIEnv *env, jobject frame_callback_obj, int pixel_format);
+
+extern int setJavaVM(long preview_pointer, JNIEnv *env, jobject obj);
 
 
 
@@ -96,6 +100,8 @@ private:
 	int camFrameIndex;
 	int camFrameInterval;
 	const char* frameFormat;
+	int test;
+
 
 	uvc_device_handle_t *mDeviceHandle;
 	ANativeWindow *mPreviewWindow;
@@ -159,12 +165,13 @@ public:
 	int setPreviewSize(int width, int height, int min_fps, int max_fps, int mode, float bandwidth = 1.0f);
 	int setPreviewSize_random(int width, int height, int min_fps, int max_fps, float bandwidth,
 							  int prev_activeUrbs, int prev_packetsPerRequest, int prev_altset, int prev_maxPacketSize,
-							  int camFormatInde, int camFrameInde, int camFrameInterva, const char* frameFormat, int imageWidth, int imageHeight);
+							  int camFormatInde, int camFrameInde, int camFrameInterva, const char* frameFormat,
+							  int imageWidth, int imageHeight, int test);
 	int setPreviewDisplay(ANativeWindow *preview_window);
 	int setFrameCallback(JNIEnv *env, jobject frame_callback_obj, int pixel_format);
 	int startPreview();
-    int startPreviewRandom();
 	int stopPreview();
+	int setJavaVM(JNIEnv *env, jobject obj);
 	inline const bool isCapturing() const;
 	int setCaptureDisplay(ANativeWindow *capture_window);
 };

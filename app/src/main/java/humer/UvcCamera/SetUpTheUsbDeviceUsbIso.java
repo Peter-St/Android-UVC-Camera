@@ -75,8 +75,6 @@ import java.util.concurrent.CountDownLatch;
 
 import humer.UvcCamera.AutomaticDetection.Jna_AutoDetect;
 import humer.UvcCamera.AutomaticDetection.Jna_AutoDetect_Handler;
-import humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect;
-import humer.UvcCamera.JNA_I_LibUsb.JNA_I_LibUsb;
 import humer.UvcCamera.UVC_Descriptor.UVC_Descriptor;
 import humer.UvcCamera.UsbIso64.USBIso;
 import humer.UvcCamera.UsbIso64.usbdevice_fs_util;
@@ -254,14 +252,11 @@ public class SetUpTheUsbDeviceUsbIso extends Activity {
     private static int busnum;
     private static int devaddr;
     private volatile boolean libusb_is_initialized;
-    private volatile boolean camera_is_initialized_over_libusb;
     private boolean camDeviceIsClosed = false;
 
     // Log to File
     private String logString;
 
-    // LibUsbService
-    //private LibUsbManagerService mService;
     //private boolean mBound = false;
 
     public Handler buttonHandler = null;
@@ -326,62 +321,18 @@ public class SetUpTheUsbDeviceUsbIso extends Activity {
         }
     };
 
-    //BroadCastReceiver to let the MainActivity know that there's message has been recevied
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            try {
-                handleMessage(intent);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    };
-
-    //The Values that comes from the LibUsb Manager Service
-    private void handleMessage(Intent msg) throws Exception {
-        Bundle data = msg.getExtras();
-        log("handleMessage");
-        displayMessage("handleMessage called");
-        String message = msg.getExtras().getString("message"); // Contains "Hello World!"
-        log("message called");
-    }
-/*
-    private ServiceConnection mConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            LibUsbManagerService.MyBinder binder = (LibUsbManagerService.MyBinder) service;
-            mService = binder.getService();
-            mBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
-        }
-    };
- */
 
     @Override
     protected void onStart() {
         super.onStart();
         Log.v("STATE", "onStart() is called");
-        /*
-        // Bind to Service
-        if (!mBound) {
-            Intent intent = new Intent(this, LibUsbManagerService.class);
-            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        }
-        */
+
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         try {
-            unregisterReceiver(mMessageReceiver);
             unregisterReceiver(mUsbDeviceReceiver);
             unregisterReceiver(mUsbReceiver);
         } catch (Exception e) {
@@ -396,9 +347,7 @@ public class SetUpTheUsbDeviceUsbIso extends Activity {
         View v = getLayoutInflater().inflate(R.layout.set_up_the_device_layout_main, null);
         setContentView(v);
         logString = new String();
-        // receive LibUsb Status
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
-                new IntentFilter("REQUEST_PROCESSED"));
+
         usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         fetchTheValues();
         stf = new SaveToFile(this, this, v);
@@ -730,8 +679,6 @@ public class SetUpTheUsbDeviceUsbIso extends Activity {
     }
 
     public void setUpWithUvcSettings(View view) {
-
-        //if (bulkMode) libUsb = false;
 
         log("setUpWithUvcSettings pressed;\n");
         if (camDevice == null) {
@@ -1120,21 +1067,6 @@ public class SetUpTheUsbDeviceUsbIso extends Activity {
         }
     }
 
-    public void stopLibUsbStreaming () {
-        JNA_I_LibUsb.INSTANCE.stopStreaming();
-        l1ibusbAutoRunning = false;
-    }
-
-    public void closeLibUsb () {
-        JNA_I_LibUsb.INSTANCE.closeLibUsb();
-        l1ibusbAutoRunning = false;
-    }
-
-    public void exitLibUsb () {
-        //JNA_I_LibUsb.INSTANCE.native_uvc_unref_device();
-        l1ibusbAutoRunning = false;
-    }
-
     private void openCameraDevice(boolean init) throws Exception {
         log("open Camera Device Method ;\n");
         if (moveToNative) {
@@ -1147,7 +1079,7 @@ public class SetUpTheUsbDeviceUsbIso extends Activity {
             } else {
                 camIsOpen = true;
                 log ("camDeviceConnection established!");
-                if (!init) moveToNativeSetUpTheValues();
+                if (!init) ; //moveToNativeSetUpTheValues();
             }
             return;
         }
@@ -1195,18 +1127,18 @@ public class SetUpTheUsbDeviceUsbIso extends Activity {
             log("Failed to open the device - Retry");
             throw new Exception("Unable to open camera device connection.");
         }
-        if (!libUsb) {
-            if (!camDeviceConnection.claimInterface(camControlInterface, true)) {
-                log("Failed to claim camControlInterface");
-                displayMessage("Unable to claim camera control interface.");
-                throw new Exception("Unable to claim camera control interface.");
-            }
-            if (!camDeviceConnection.claimInterface(camStreamingInterface, true)) {
-                log("Failed to claim camStreamingInterface");
-                displayMessage("Unable to claim camera streaming interface.");
-                throw new Exception("Unable to claim camera streaming interface.");
-            }
+
+        if (!camDeviceConnection.claimInterface(camControlInterface, true)) {
+            log("Failed to claim camControlInterface");
+            displayMessage("Unable to claim camera control interface.");
+            throw new Exception("Unable to claim camera control interface.");
         }
+        if (!camDeviceConnection.claimInterface(camStreamingInterface, true)) {
+            log("Failed to claim camStreamingInterface");
+            displayMessage("Unable to claim camera streaming interface.");
+            throw new Exception("Unable to claim camera streaming interface.");
+        }
+
         //if (bulkMode) return;
         if (!init) {
             log("getting the raw descriptors");
@@ -1271,42 +1203,13 @@ public class SetUpTheUsbDeviceUsbIso extends Activity {
                         activeUrbs = 1;
                         closeCameraDevice();
                         doneTransfers = 0;
-                        if (libUsb) {
-                            startLibUsbAutoDetection();
-                        } else {
-                            startJnaAutoDetection();
-                        }
+
+                        startJnaAutoDetection();
+
                     }
                 }
             });
         }
-    }
-
-    private void moveToNativeSetUpTheValues () {
-
-        byte[] a = camDeviceConnection.getRawDescriptors();
-        ByteBuffer uvcData = ByteBuffer.wrap(a);
-        uvc_descriptor = new UVC_Descriptor(uvcData);
-        CFAlertDialog alertDialog;
-        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
-        LayoutInflater li = LayoutInflater.from(this);
-        View setup_auto_manual_view = li.inflate(R.layout.set_up_the_device_move_to_native, null);
-        builder.setHeaderView(setup_auto_manual_view);
-        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
-        libUsb = true;
-        alertDialog = builder.show();
-        CFPushButton manual = setup_auto_manual_view.findViewById(R.id.native_Only_Manual) ;
-        manual.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Set up from UVC manually
-                if (uvc_descriptor.phraseUvcData() == 0) {
-                    if (convertedMaxPacketSize == null) listDevice(camDevice);
-                    stf.setUpWithUvcValues(uvc_descriptor, convertedMaxPacketSize, false);
-                }
-                alertDialog.dismiss();
-            }
-        });
     }
 
     private final String getUSBFSName(final UsbDevice ctrlBlock) {
@@ -1877,15 +1780,6 @@ public class SetUpTheUsbDeviceUsbIso extends Activity {
                 if ( a >= 10) break;
             }
         }
-        if(libusb_is_initialized) {
-            try {
-                findCam();
-                openCam(true);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            libusb_is_initialized = false;
-        }
         try {
             openCam(true);
         } catch (Exception e) {
@@ -1937,19 +1831,6 @@ public class SetUpTheUsbDeviceUsbIso extends Activity {
                 if ( a >= 10) break;
             }
         }
-
-            if(libusb_is_initialized) {
-                JNA_I_LibUsb.INSTANCE.stopStreaming();
-                JNA_I_LibUsb.INSTANCE.closeLibUsb();
-                //JNA_I_LibUsb.INSTANCE.native_uvc_unref_device();
-                try {
-                    findCam();
-                    openCam(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                libusb_is_initialized = false;
-            }
             closeCameraDevice();
             try {
                 openCam(true);
@@ -1993,21 +1874,6 @@ public class SetUpTheUsbDeviceUsbIso extends Activity {
             }
         }
 
-        if(libusb_is_initialized) {
-            JNA_I_LibUsb.INSTANCE.stopStreaming();
-            //mService.streamOnPause = true;
-            JNA_I_LibUsb.INSTANCE.closeLibUsb();
-            //mService.altSettingControl();
-            //mService.libusb_InterfacesClaimed = false;
-            //JNA_I_LibUsb.INSTANCE.native_uvc_unref_device();
-            try {
-                findCam();
-                openCam(true);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            libusb_is_initialized = false;
-        }
         closeCameraDevice();
         try {
             openCam(true);
@@ -2136,11 +2002,6 @@ public class SetUpTheUsbDeviceUsbIso extends Activity {
             if (camControlInterface != null)           camDeviceConnection.releaseInterface(camControlInterface);
             if (camStreamingInterface != null)         camDeviceConnection.releaseInterface(camStreamingInterface);
             camDeviceConnection.close();
-        }
-        if (libUsb) {
-            if (libusb_is_initialized) {
-                JNA_I_LibUsb.INSTANCE.stopStreaming();
-            }
         }
         //if(mService != null) mService.streamCanBeResumed = false;
         finish();
@@ -2284,36 +2145,6 @@ public class SetUpTheUsbDeviceUsbIso extends Activity {
                     break;
             }
         }
-    }
-
-    private void startLibUsbAutoDetection() {
-        saveLastValues();
-        Intent intent = new Intent(getApplicationContext(), LibUsb_AutoDetect.class);
-        Bundle bundle=new Bundle();
-        bundle.putBoolean("edit", true);
-        bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
-        bundle.putString("videoformat",videoformat);
-        bundle.putInt("camFormatIndex",camFormatIndex);
-        bundle.putInt("imageWidth",imageWidth);
-        bundle.putInt("imageHeight",imageHeight);
-        bundle.putInt("camFrameIndex",camFrameIndex);
-        bundle.putInt("camFrameInterval",camFrameInterval);
-        bundle.putInt("packetsPerRequest",packetsPerRequest);
-        bundle.putInt("maxPacketSize",maxPacketSize);
-        bundle.putInt("activeUrbs",activeUrbs);
-        bundle.putString("deviceName",deviceName);
-        bundle.putByte("bUnitID",bUnitID);
-        bundle.putByte("bTerminalID",bTerminalID);
-        bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
-        bundle.putByteArray("bNumControlUnit", bNumControlUnit);
-        bundle.putByteArray("bcdUVC", bcdUVC);
-        bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
-        bundle.putBoolean("libUsb", libUsb);
-        bundle.putBoolean("moveToNative", moveToNative);
-        bundle.putBoolean("fiveFrames", fiveFrames);
-        bundle.putString("progress",progress);
-        intent.putExtra("bun",bundle);
-        startActivityForResult(intent, ActivityLibUsbAutoDetectRequestCode);
     }
 
     private void saveLastValues() {

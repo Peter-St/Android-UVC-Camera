@@ -11,12 +11,215 @@
   <component name="ChangeListManager">
     <list default="true" id="21e59184-7af9-4d66-8ffd-372a084f4c40" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mapping.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/mapping.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/UVC_Camera_Saki/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/UVC_Camera_Saki/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/UVC_Camera_Saki/UVCPreview.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/UVC_Camera_Saki/UVCPreview.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/UVC_Camera_Saki/UVCPreview.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/UVC_Camera_Saki/UVCPreview.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/libuvc_support.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/libuvc_support.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/uvc_support.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/uvc_support.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/uvc_support.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/uvc_support.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libuvc/include/libuvc/libuvc_internal.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/cpp/libuvc/include/libuvc/libuvc_internal.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libuvc/src/stream.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/cpp/libuvc/src/stream.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/.travis.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/CMakeLists.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/Makefile.am" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/Makefile.in" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/README" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/aclocal.m4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/ansi2knr.1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/ansi2knr.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/cderror.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/cdjpeg.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/cdjpeg.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/change.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/cjpeg.1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/cjpeg.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/ckconfig.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/cmake/dist.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/coderules.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/config.guess" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/config.sub" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/configure" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/configure.ac" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/depcomp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/dist.info" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/djpeg.1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/djpeg.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/example.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/filelist.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/install-sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/install.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jaricom.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jcapimin.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jcapistd.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jcarith.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jccoefct.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jccolor.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jcdctmgr.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jchuff.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jcinit.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jcmainct.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jcmarker.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jcmaster.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jcomapi.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jconfig.bcc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jconfig.cfg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jconfig.dj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jconfig.h.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jconfig.mac" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jconfig.manx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jconfig.mc6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jconfig.sas" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jconfig.st" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jconfig.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jconfig.vc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jconfig.vms" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jconfig.wat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jcparam.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jcprepct.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jcsample.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jctrans.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jdapimin.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jdapistd.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jdarith.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jdatadst.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jdatasrc.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jdcoefct.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jdcolor.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jdct.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jddctmgr.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jdhuff.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jdinput.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jdmainct.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jdmarker.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jdmaster.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jdmerge.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jdpostct.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jdsample.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jdtrans.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jerror.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jerror.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jfdctflt.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jfdctfst.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jfdctint.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jidctflt.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jidctfst.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jidctint.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jinclude.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jmemansi.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jmemdos.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jmemdosa.asm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jmemmac.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jmemmgr.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jmemname.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jmemnobs.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jmemsys.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jmorecfg.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jpeg_test.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jpegint.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jpeglib.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jpegtran.1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jpegtran.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jquant1.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jquant2.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jutils.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/jversion.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/libjpeg.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/libjpeg.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/ltmain.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makcjpeg.st" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makdjpeg.st" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makeadsw.vc6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makeasln.v10" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makecdep.vc6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makecdsp.vc6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makecfil.v10" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makecmak.vc6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makecvcx.v10" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makeddep.vc6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makeddsp.vc6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makedfil.v10" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makedmak.vc6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makedvcx.v10" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makefile.ansi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makefile.bcc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makefile.dj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makefile.manx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makefile.mc6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makefile.mms" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makefile.sas" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makefile.unix" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makefile.vc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makefile.vms" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makefile.wat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makejdep.vc6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makejdsp.vc6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makejdsw.vc6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makejfil.v10" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makejmak.vc6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makejsln.v10" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makejvcx.v10" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makeproj.mac" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makerdep.vc6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makerdsp.vc6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makerfil.v10" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makermak.vc6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makervcx.v10" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/maketdep.vc6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/maketdsp.vc6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/maketfil.v10" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/maketmak.vc6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/maketvcx.v10" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makewdep.vc6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makewdsp.vc6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makewfil.v10" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makewmak.vc6" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makewvcx.v10" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makljpeg.st" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/maktjpeg.st" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/makvms.opt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/missing" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/rdbmp.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/rdcolmap.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/rdgif.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/rdjpgcom.1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/rdjpgcom.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/rdppm.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/rdrle.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/rdswitch.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/rdtarga.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/structure.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/testimg.bmp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/testimg.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/testimg.ppm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/testimgp.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/testorig.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/testprog.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/transupp.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/transupp.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/usage.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/wizard.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/wrbmp.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/wrgif.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/wrjpgcom.1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/wrjpgcom.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/wrppm.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/wrrle.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libjpeg/wrtarga.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libuvc/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/cpp/libuvc/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libuvc/include/libuvc/libuvc.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/cpp/libuvc/include/libuvc/libuvc.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libuvc/src/frame-mjpeg.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/cpp/libuvc/src/frame-mjpeg.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/videortc/UsbCapturer.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/videortc/UsbCapturer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/videortc/WebRtcService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/videortc/WebRtcService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/JNA_I_LibUsb/JNA_I_LibUsb.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/JNA_I_LibUsb/JNA_I_LibUsb.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDeviceUsbIso.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDeviceUsbIso.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDeviceUvc.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDeviceUvc.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivityUsbIso.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivityUsbIso.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivityUvc.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivityUvc.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -24,7 +227,7 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[192.168.50.8:5555]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[192.168.10.184:5555]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -47,6 +250,12 @@
       </state>
     </system>
   </component>
+  <component name="GenerateSignedApkSettings">
+    <option name="EXPORT_PRIVATE_KEY" value="false" />
+    <option name="KEY_STORE_PATH" value="$PROJECT_DIR$/../Build_APK_Key/my.keystore" />
+    <option name="KEY_ALIAS" value="app" />
+    <option name="REMEMBER_PASSWORDS" value="true" />
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -57,11 +266,20 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="BundleExportedModule" value="Android-UVC-Camera.app" />
+    <property name="ExportApk.ApkPath" value="$PROJECT_DIR$/app" />
+    <property name="ExportApk.BuildVariants" value="release" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
     <property name="cidr.known.project.marker" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Build_APK_Key/my.keystore" />
     <property name="settings.editor.selected.configurable" value="experimental" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="humer.UvcCamera" />
+    </key>
   </component>
   <component name="RunManager">
     <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">

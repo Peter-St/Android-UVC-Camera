@@ -1421,33 +1421,21 @@ public class StartIsoStreamActivityUsbIso extends Activity {
     }
 
     public void beenden(boolean exit) {
-        if (LIBUSB) {
-            if(libusb_is_initialized) {
-                JNA_I_LibUsb.INSTANCE.stopStreaming();
-            }
-            //I_LibUsb.INSTANCE.closeLibUsb();
-            //I_LibUsb.INSTANCE.exit();
-            camDevice = null;
-            Intent resultIntent = new Intent();
-            if (exit == true) resultIntent.putExtra("closeProgram", true);
-            setResult(Activity.RESULT_OK, resultIntent);
-            //mService.streamCanBeResumed = false;
-            finish();
-        } else {
-            if (camIsOpen) {
-                closeCameraDevice();
-            }
-            else if (camDeviceConnection != null) {
-                camDeviceConnection.releaseInterface(camControlInterface);
-                camDeviceConnection.releaseInterface(camStreamingInterface);
-                camDeviceConnection.close();
-            }
-            Intent resultIntent = new Intent();
-            if (exit == true) resultIntent.putExtra("closeProgram", true);
-            setResult(Activity.RESULT_OK, resultIntent);
-            //mService.streamCanBeResumed = false;
-            finish();
+
+        if (camIsOpen) {
+            closeCameraDevice();
         }
+        else if (camDeviceConnection != null) {
+            camDeviceConnection.releaseInterface(camControlInterface);
+            camDeviceConnection.releaseInterface(camStreamingInterface);
+            camDeviceConnection.close();
+        }
+        Intent resultIntent = new Intent();
+        if (exit == true) resultIntent.putExtra("closeProgram", true);
+        setResult(Activity.RESULT_OK, resultIntent);
+        //mService.streamCanBeResumed = false;
+        finish();
+
     }
 
     // Start the Stream
@@ -1684,27 +1672,23 @@ public class StartIsoStreamActivityUsbIso extends Activity {
         videoButton.setEnabled(false);
         videoButton.setAlpha(0); // 100% transparent
         stopKamera = true;
-        if (LIBUSB) {
-            JNA_I_LibUsb.INSTANCE.stopStreaming();
-            //mService.streamOnPause = true;
-            //mService.streamCanBeResumed = true;
-        } else {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            try {
-                enableStreaming(false);
-            } catch (Exception e) {
-                msg = "Plz unplug the camera and replug again, or reboot the device";
-                displayMessage("Plz unplug the camera and replug again, or reboot the device");
-                e.printStackTrace();
-            }
-            displayMessage("Stopped ");
-            log("Stopped");
-            runningStream = null;
+
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+        try {
+            enableStreaming(false);
+        } catch (Exception e) {
+            msg = "Plz unplug the camera and replug again, or reboot the device";
+            displayMessage("Plz unplug the camera and replug again, or reboot the device");
+            e.printStackTrace();
+        }
+        displayMessage("Stopped ");
+        log("Stopped");
+        runningStream = null;
+
     }
 
     private int flipToInt (boolean value) {

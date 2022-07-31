@@ -49,6 +49,7 @@ find_library( # Sets the name of the path variable.
               # you want CMake to locate.
               log )
 
+
 # Specifies libraries CMake should link to your target library. You
 # can link multiple libraries, such as libraries you define in this
 # build script, prebuilt third-party libraries, or system libraries.
@@ -59,11 +60,13 @@ find_library( # Sets the name of the path variable.
 #include_directories (${LIBUVC_DIR}/include/libuvc)
 #target_link_libraries(uvc_preview uvc)
 
+target_compile_options(uvc_preview PRIVATE -DANDROID_NDK -DLOG_NDEBUG)
 
 target_link_libraries(
         # Specifies the target library.
         uvc_preview
-
+        #-ljvm
+        -ldl
         -ljnigraphics
         -landroid
         # Links the target library to the log library

@@ -78,7 +78,7 @@ public class Main extends AppCompatActivity {
     static {
         System.loadLibrary("usb1.0");
         //System.loadLibrary("yuv");
-        System.loadLibrary("jpeg");
+        System.loadLibrary("libjpeg");
         //System.loadLibrary("jpeg-turbo");
         System.loadLibrary("Uvc_Support");
         System.loadLibrary("uvc");
@@ -90,6 +90,8 @@ public class Main extends AppCompatActivity {
 
     // Native UVC Camera
     private long mNativePtr;
+    private int connected_to_camera;
+
 
     public static int       camStreamingAltSetting;
     public static int       camFormatIndex;
@@ -385,6 +387,7 @@ public class Main extends AppCompatActivity {
             tv.setTextColor(Color.BLACK);
         }
         if (requestCode == ActivityStartIsoStreamRequestCode && resultCode == RESULT_OK && data != null) {
+            connected_to_camera = data.getIntExtra("connected_to_camera", 0);
             boolean exit = data.getBooleanExtra("closeProgram", false);
             if (exit == true) finish();
         }
@@ -543,6 +546,7 @@ public class Main extends AppCompatActivity {
                     bundle.putBoolean("moveToNative", moveToNative);
                     bundle.putBoolean("bulkMode", bulkMode);
                     bundle.putLong("mNativePtr", mNativePtr);
+                    bundle.putInt("connected_to_camera", connected_to_camera);
                     intent.putExtra("bun",bundle);
                     super.onResume();
                     startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
@@ -571,6 +575,7 @@ public class Main extends AppCompatActivity {
                     bundle.putBoolean("moveToNative", moveToNative);
                     bundle.putBoolean("bulkMode", bulkMode);
                     bundle.putLong("mNativePtr", mNativePtr);
+                    bundle.putInt("connected_to_camera", connected_to_camera);
                     intent.putExtra("bun",bundle);
                     super.onResume();
                     startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
@@ -604,6 +609,7 @@ public class Main extends AppCompatActivity {
                 bundle.putBoolean("moveToNative", moveToNative);
                 bundle.putBoolean("bulkMode", bulkMode);
                 bundle.putLong("mNativePtr", mNativePtr);
+                bundle.putInt("connected_to_camera", connected_to_camera);
                 intent.putExtra("bun",bundle);
                 super.onResume();
                 startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
@@ -632,6 +638,7 @@ public class Main extends AppCompatActivity {
                 bundle.putBoolean("moveToNative", moveToNative);
                 bundle.putBoolean("bulkMode", bulkMode);
                 bundle.putLong("mNativePtr", mNativePtr);
+                bundle.putInt("connected_to_camera", connected_to_camera);
                 intent.putExtra("bun",bundle);
                 super.onResume();
                 startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
@@ -664,6 +671,7 @@ public class Main extends AppCompatActivity {
                 bundle.putBoolean("moveToNative", moveToNative);
                 bundle.putBoolean("bulkMode", bulkMode);
                 bundle.putLong("mNativePtr", mNativePtr);
+                bundle.putInt("connected_to_camera", connected_to_camera);
                 intent.putExtra("bun",bundle);
                 super.onResume();
                 startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
@@ -692,6 +700,7 @@ public class Main extends AppCompatActivity {
                 bundle.putBoolean("moveToNative", moveToNative);
                 bundle.putBoolean("bulkMode", bulkMode);
                 bundle.putLong("mNativePtr", mNativePtr);
+                bundle.putInt("connected_to_camera", connected_to_camera);
                 intent.putExtra("bun",bundle);
                 super.onResume();
                 startActivityForResult(intent, ActivitySetUpTheUsbDeviceRequestCode);
@@ -771,6 +780,7 @@ public class Main extends AppCompatActivity {
                     bundle.putBoolean("moveToNative", moveToNative);
                     bundle.putBoolean("bulkMode", bulkMode);
                     bundle.putLong("mNativePtr", mNativePtr);
+                    bundle.putInt("connected_to_camera", connected_to_camera);
                     intent.putExtra("bun",bundle);
                     startActivityForResult(intent, ActivityStartIsoStreamRequestCode);
                 } else {
@@ -796,6 +806,7 @@ public class Main extends AppCompatActivity {
                     bundle.putBoolean("moveToNative", moveToNative);
                     bundle.putBoolean("bulkMode", bulkMode);
                     bundle.putLong("mNativePtr", mNativePtr);
+                    bundle.putInt("connected_to_camera", connected_to_camera);
                     intent.putExtra("bun",bundle);
                     startActivityForResult(intent, ActivityStartIsoStreamRequestCode);
                 }
@@ -834,6 +845,7 @@ public class Main extends AppCompatActivity {
                     bundle.putBoolean("moveToNative", moveToNative);
                     bundle.putBoolean("bulkMode", bulkMode);
                     bundle.putLong("mNativePtr", mNativePtr);
+                    bundle.putInt("connected_to_camera", connected_to_camera);
                     intent.putExtra("bun",bundle);
                     startActivityForResult(intent, ActivityStartIsoStreamRequestCode);
                 } else {
@@ -859,6 +871,7 @@ public class Main extends AppCompatActivity {
                     bundle.putBoolean("moveToNative", moveToNative);
                     bundle.putBoolean("bulkMode", bulkMode);
                     bundle.putLong("mNativePtr", mNativePtr);
+                    bundle.putInt("connected_to_camera", connected_to_camera);
                     intent.putExtra("bun",bundle);
                     startActivityForResult(intent, ActivityStartIsoStreamRequestCode);
                 }

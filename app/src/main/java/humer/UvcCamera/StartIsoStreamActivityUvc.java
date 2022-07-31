@@ -97,6 +97,7 @@ public class StartIsoStreamActivityUvc extends Activity {
 
     // Native UVC Camera
     private long mNativePtr;
+    private int connected_to_camera;
 
     private static final String ACTION_USB_PERMISSION = "humer.uvc_camera.USB_PERMISSION";
     // USB codes:
@@ -236,8 +237,6 @@ public class StartIsoStreamActivityUvc extends Activity {
     public native int PreviewPrepareStream(long camer_pointer, final Surface surface);
     public native int PreviewStartStream(long camer_pointer);
     public native int PreviewStopStream(long camer_pointer);
-    public native void JniSetSurfaceView(final Surface surface);
-    public native void JniSetSurfaceYuv(final Surface surface);
        // Bitmap Method
     public native void YUY2pixeltobmp(byte[] uyvy_data, Bitmap bitmap, int im_width, int im_height);
     public native void UYVYpixeltobmp(byte[] uyvy_data, Bitmap bitmap, int im_width, int im_height);
@@ -304,7 +303,10 @@ public class StartIsoStreamActivityUvc extends Activity {
         beenden(false);
     }
 
-
+    @Override
+    public void onBackPressed() {
+        beenden(false);
+    }
 
     public static StartIsoStreamActivityUvc getInstance() {
         if (instance == null) {
@@ -464,6 +466,8 @@ public class StartIsoStreamActivityUvc extends Activity {
         videoButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
+                    return;
+                    /*
                     // Button Checked // Short Click
                     log("long click return; longclick = " + longclickVideoRecord);
 
@@ -566,6 +570,7 @@ public class StartIsoStreamActivityUvc extends Activity {
                         }
                     }
                 } else {
+                    return;
                     // Button not checked // Long Click
                     if (longclickVideoRecord) {
                         longclickVideoRecord = false;
@@ -676,9 +681,12 @@ public class StartIsoStreamActivityUvc extends Activity {
                             pauseCamera = false;
                             generator = null;
                         }
+
+                     */
                     }
                     // Button not checked // Short Click
                     else {
+                        /*
                         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
                             pauseCamera = true;
                             try {
@@ -763,7 +771,13 @@ public class StartIsoStreamActivityUvc extends Activity {
                             }
                             pauseCamera = false;
                             generator = null;
-                        } } } }});
+                        }
+
+                }
+ */
+            }
+        }
+    });
         videoButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -862,13 +876,465 @@ public class StartIsoStreamActivityUvc extends Activity {
             mUVCCameraView.setVisibility(View.INVISIBLE);
         }
     }
-/*
-    public void restartIntent() {
-        Intent intent = new Intent(this, StartIsoStreamService.class);
-        intent.putExtra(StartIsoStreamService.ACCESS_LIBUSB, "Resume");
-        startService(intent);
+
+    private void startWebRTC() {
+        if (camDevice == null) {
+            try {
+                findCam();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (!usbManager.hasPermission(camDevice)) {
+            usbManager.requestPermission(camDevice, mPermissionIntent);
+            return;
+        }
+        /*
+        //if (runningStream != null) stopTheCameraStreamClickEvent(null);
+        Intent intent = new Intent(this, WebRtc_MainActivity.class);
+        Bundle bundle=new Bundle();
+        bundle.putBoolean("edit", true);
+        bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
+        bundle.putString("videoformat",videoformat);
+        bundle.putInt("camFormatIndex",camFormatIndex);
+        bundle.putInt("imageWidth",imageWidth);
+        bundle.putInt("imageHeight",imageHeight);
+        bundle.putInt("camFrameIndex",camFrameIndex);
+        bundle.putInt("camFrameInterval",camFrameInterval);
+        bundle.putInt("packetsPerRequest",packetsPerRequest);
+        bundle.putInt("maxPacketSize",maxPacketSize);
+        bundle.putInt("activeUrbs",activeUrbs);
+        bundle.putByte("bUnitID",bUnitID);
+        bundle.putByte("bTerminalID",bTerminalID);
+        bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
+        bundle.putByteArray("bNumControlUnit", bNumControlUnit);
+        bundle.putByteArray("bcdUVC", bcdUVC);
+        bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
+        bundle.putBoolean("LIBUSB", LIBUSB);
+        bundle.putBoolean("moveToNative", moveToNative);
+        bundle.putBoolean("bulkMode", bulkMode);
+        intent.putExtra("bun",bundle);
+        startActivity(intent);
+        StartIsoStreamActivityUvc.this.finish();
+        */
     }
-*/
+
+    public void returnToConfigScreen() {
+        stopKamera = true;
+        //runningStream = null;
+        //imageView = (ImageView) findViewById(R.id.imageView);
+        onBackPressed();
+    }
+
+    public void beenden(boolean exit) {
+        if (LIBUSB) {
+            if(libusb_is_initialized) {
+                JNA_I_LibUsb.INSTANCE.stopStreaming(new Pointer(mNativePtr));
+            }
+            camDevice = null;
+            Intent resultIntent = new Intent();
+            if (exit == true) {
+                resultIntent.putExtra("closeProgram", true);
+                resultIntent.putExtra("connected_to_camera", connected_to_camera);
+
+            }
+            setResult(Activity.RESULT_OK, resultIntent);
+            //mService.streamCanBeResumed = false;
+            finish();
+        }
+    }
+
+    private void findCam() throws Exception {
+        camDevice = findCameraDevice();
+        if (camDevice == null) {
+            camDevice = checkDeviceVideoClass();
+            if (camDevice == null)  throw new Exception("No USB camera device found.");
+        }
+        if (!usbManager.hasPermission(camDevice)) {
+            log("Asking for Permissions");
+            usbManager.requestPermission(camDevice, mPermissionIntent);
+        } else usbManager.requestPermission (camDevice, mPermissionIntent);
+    }
+
+    private UsbDevice checkDeviceVideoClass() {
+        HashMap<String, UsbDevice> deviceList = usbManager.getDeviceList();
+        log("USB devices count = " + deviceList.size());
+        for (UsbDevice usbDevice : deviceList.values()) {
+            log("USB device \"" + usbDevice.getDeviceName() + "\": " + usbDevice);
+            if (usbDevice.getDeviceClass() == 14 && usbDevice.getDeviceSubclass() == 2) {
+                moveToNative = true;
+                return usbDevice;
+            } else if (usbDevice.getDeviceClass() == 239 && usbDevice.getDeviceSubclass() == 2) {
+                moveToNative = true;
+                return usbDevice;
+            }
+            if (checkDeviceHasVideoControlInterface(usbDevice)) {
+                return usbDevice;
+            }
+        }
+        return null;
+    }
+
+    private UsbDevice findCameraDevice() {
+        HashMap<String, UsbDevice> deviceList = usbManager.getDeviceList();
+        log("USB devices count = " + deviceList.size());
+        for (UsbDevice usbDevice : deviceList.values()) {
+            if(moveToNative) {
+                if (checkDeviceHasVideoControlInterface(usbDevice)) {
+                    return usbDevice;
+                }
+            } else {
+                log("USB device \"" + usbDevice.getDeviceName() + "\": " + usbDevice);
+                if (checkDeviceHasVideoStreamingInterface(usbDevice)) {
+                    return usbDevice;
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean checkDeviceHasVideoStreamingInterface(UsbDevice usbDevice) {
+        return getVideoStreamingInterface(usbDevice) != null;
+    }
+
+    private boolean checkDeviceHasVideoControlInterface(UsbDevice usbDevice) {
+        return getVideoControlInterface(usbDevice) != null;
+    }
+
+    private UsbInterface getVideoControlInterface(UsbDevice usbDevice) {
+        return findInterface(usbDevice, UsbConstants.USB_CLASS_VIDEO, SC_VIDEOCONTROL, false);
+    }
+
+    private UsbInterface getVideoStreamingInterface(UsbDevice usbDevice) {
+        return findInterface(usbDevice, UsbConstants.USB_CLASS_VIDEO, SC_VIDEOSTREAMING, true);
+    }
+
+    private UsbInterface findInterface(UsbDevice usbDevice, int interfaceClass, int interfaceSubclass, boolean withEndpoint) {
+        int interfaces = usbDevice.getInterfaceCount();
+        for (int i = 0; i < interfaces; i++) {
+            UsbInterface usbInterface = usbDevice.getInterface(i);
+            if (usbInterface.getInterfaceClass() == interfaceClass && usbInterface.getInterfaceSubclass() == interfaceSubclass && (!withEndpoint || usbInterface.getEndpointCount() > 0)) {
+                return usbInterface;
+            }
+        }
+        return null;
+    }
+
+    private void openCam(boolean init) throws Exception {
+        openCameraDevice(init);
+        if (init) {
+            initCamera();
+            camIsOpen = true;
+        }
+        log("Camera opened sucessfully");
+    }
+
+    private void openCameraDevice(boolean init) throws Exception {
+        if (moveToNative) {
+            camDeviceConnection = usbManager.openDevice(camDevice);
+            int FD = camDeviceConnection.getFileDescriptor();
+            if(camStreamingEndpointAdress == 0) {
+                camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(new Pointer(mNativePtr), camDeviceConnection.getFileDescriptor());
+                //mService.libusb_wrapped = true;
+                //mService.libusb_InterfacesClaimed = true;
+            }
+            int bcdUVC_int = 0;
+            if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
+            bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
+            int lowAndroid = 0;
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                lowAndroid = 1;
+            }
+            JNA_I_LibUsb.INSTANCE.set_the_native_Values(new Pointer(mNativePtr), fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                    camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1, videoformat, 0, bcdUVC_int, lowAndroid);
+            //mService.native_values_set=true;
+            JNA_I_LibUsb.INSTANCE.initStreamingParms(new Pointer(mNativePtr), FD);
+        } else {
+            // (For transfer buffer sizes > 196608 the kernel file drivers/usb/core/devio.c must be patched.)
+            camControlInterface = getVideoControlInterface(camDevice);
+            camStreamingInterface = getVideoStreamingInterface(camDevice);
+            if (camStreamingInterface.getEndpointCount() < 1) {
+                throw new Exception("Streaming interface has no endpoint.");
+            }
+            camStreamingEndpoint = camStreamingInterface.getEndpoint(0);
+            bulkMode = camStreamingEndpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK;
+            camDeviceConnection = usbManager.openDevice(camDevice);
+            if (camDeviceConnection == null) {
+                log("Failed to open the device");
+                throw new Exception("Unable to open camera device connection.");
+            }
+            if (!LIBUSB) {
+                if (!camDeviceConnection.claimInterface(camControlInterface, true)) {
+                    log("Failed to claim camControlInterface");
+                    throw new Exception("Unable to claim camera control interface.");
+                }
+                if (!camDeviceConnection.claimInterface(camStreamingInterface, true)) {
+                    log("Failed to claim camStreamingInterface");
+                    throw new Exception("Unable to claim camera streaming interface.");
+                }
+            }
+        }
+    }
+
+    public void closeCameraDevice() {
+
+        if (moveToNative) {
+            camDeviceConnection = null;
+        }
+        else if (camDeviceConnection != null) {
+            camDeviceConnection.releaseInterface(camControlInterface);
+            camDeviceConnection.releaseInterface(camStreamingInterface);
+            camDeviceConnection.close();
+            camDeviceConnection = null;
+        }
+        //runningStream = null;
+    }
+
+    private void initCamera() throws Exception {
+        try {
+            getVideoControlErrorCode();  // to reset previous error states
+        } catch (Exception e) {
+            log("Warning: getVideoControlErrorCode() failed: " + e);
+        }   // ignore error, some cameras do not support the request
+        try {
+            enableStreaming(false);
+        } catch (Exception e) {
+            //displayErrorMessage(e);
+            displayMessage("Warning: enable the Stream failed:\nPlease unplug and replug the camera, or reboot the device");
+            log("Warning: enableStreaming(false) failed: " + e);
+        }
+        try {
+            // to reset previous error states
+            getVideoStreamErrorCode();
+        } catch (Exception e) {
+            log("Warning: getVideoStreamErrorCode() failed: " + e);
+        }   // ignore error, some cameras do not support the request
+        //initStreamingParms();
+        //initBrightnessParms();
+    }
+
+    private void BildaufnahmeButtonClickEvent() {
+        imageCapture = true;
+        if (LIBUSB) JNA_I_LibUsb.INSTANCE.setImageCapture();
+        displayMessage("Image saved");
+    }
+
+    //////////////////// Buttons  ///////////////
+    //////////////////// BEGIN   ////////////////
+
+    // Start the Stream
+    public void isoStream(MenuItem Item) {
+        if (camDevice == null) {
+            if(moveToNative) {
+                try {
+                    findCam();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            displayMessage("No Camera connected\nPlease connect a camera");
+            return;
+        }
+        else {
+            if (LIBUSB) {
+                if (connected_to_camera == 1) {
+                    log("connected_to_camera == 1");
+                    log("Skipping opening the camera and setting the native values");
+                } else {
+                    if (!libusb_is_initialized) {
+                        try {
+                            if (camDeviceConnection == null) {
+                                findCam();
+                                openCameraDevice(true);
+                            }
+                            if (fd == 0) fd = camDeviceConnection.getFileDescriptor();
+                            if(productID == 0) productID = camDevice.getProductId();
+                            if(vendorID == 0) vendorID = camDevice.getVendorId();
+                            if(adress == null)  adress = camDevice.getDeviceName();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    int lowAndroid = 0;
+                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                        lowAndroid = 1;
+                    }
+                    int bcdUVC_int = 0;
+
+                    JNA_I_LibUsb.INSTANCE.set_the_native_Values(new Pointer(mNativePtr), fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                            camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1,
+                            videoformat,0, bcdUVC_int, lowAndroid);
+                    log("mNativePtr = " + mNativePtr);
+                    // Importand Method for keeping the reference Save !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    JNA_I_LibUsb.INSTANCE.listDeviceUvc(new Pointer(mNativePtr), camDeviceConnection.getFileDescriptor());
+                }
+
+
+                log("Compare Video Format");
+                if (videoformat.equals("MJPEG")) {
+                    ////////////////////////////////    MJPEG
+
+
+
+
+                    int result = -1;
+                    mPreviewSurface = mUVCCameraView.getHolder().getSurface();
+                    result = PreviewPrepareStream(mNativePtr, mPreviewSurface );
+                    if (result == 0) {
+                        result = PreviewStartStream(mNativePtr);
+                        if (result == 0) {
+                            ((Button) findViewById(R.id.startStream)).setEnabled(false);
+                            stopStreamButton.getBackground().setAlpha(180);  // 25% transparent
+                            stopStreamButton.setEnabled(true);
+                            startStream.getBackground().setAlpha(20);  // 95% transparent
+                            photoButton.setEnabled(true);
+                            photoButton.setBackgroundResource(R.drawable.bg_button_bildaufnahme);
+                            videoButton.setEnabled(true);
+                            videoButton.setAlpha(1); // 100% transparent
+                            stopKamera = false;
+                            libusb_is_initialized = true;
+                            log("stream started (MJPEG) ... ");
+                        } else {
+                            displayMessage("Stream failed;  Result = " + result);
+                            log ("Stream failed;  Result = " + result);
+                        }
+                    } else displayMessage("Stream failed;  Result = " + result);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    /*
+
+                    JNA_I_LibUsb.INSTANCE.setCallback(new JNA_I_LibUsb.eventCallback(){
+                        public boolean callback(Pointer videoFrame, int frameSize) {
+                            log("frame received. Framelength = " + frameSize);
+                            try {
+                                processReceivedMJpegVideoFrameKamera(videoFrame.getByteArray(0, frameSize));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            return true;
+                        }
+                    });
+
+
+                    if (!libusb_is_initialized) {
+                        //mPreviewSurface = mUVCCameraView.getHolder().getSurface();
+                        //JniSetSurfaceView(mPreviewSurface);
+                    }
+                    //if (!libusb_is_initialized) JniSetSurfaceView(null);
+                    mUVCCameraView = (SurfaceView) findViewById(R.id.surfaceView);
+                    mUVCCameraView.setVisibility(View.GONE);
+                    mUVCCameraView.setVisibility(View.INVISIBLE);
+                    JniPrepairStreamOverSurfaceUVC();
+                    int result = -1;
+                    //result = JNA_I_LibUsb.INSTANCE.JniStreamOverSurfaceUVC(new Pointer(mNativePtr));
+                    if (result == 0) {
+                        ((Button) findViewById(R.id.startStream)).setEnabled(false);
+                        stopStreamButton.getBackground().setAlpha(180);  // 25% transparent
+                        stopStreamButton.setEnabled(true);
+                        startStream.getBackground().setAlpha(20);  // 95% transparent
+                        photoButton.setEnabled(true);
+                        photoButton.setBackgroundResource(R.drawable.bg_button_bildaufnahme);
+                        videoButton.setEnabled(true);
+                        videoButton.setAlpha(1); // 100% transparent
+                        stopKamera = false;
+                    } else {
+                        displayMessage("Stream failed;  Result = " + result);
+                        log ("Stream failed;  Result = " + result);
+                    }
+                     */
+
+                    libusb_is_initialized = true;
+                    log("stream started (MJPEG) ... ");
+
+                } else if (videoformat.equals("YUY2")) {
+
+
+                    int result = -1;
+                    mPreviewSurface = mUVCCameraView.getHolder().getSurface();
+                    result = PreviewPrepareStream(mNativePtr, mPreviewSurface );
+                    if (result == 0) {
+                        result = PreviewStartStream(mNativePtr);
+                        if (result == 0) {
+                            ((Button) findViewById(R.id.startStream)).setEnabled(false);
+                            stopStreamButton.getBackground().setAlpha(180);  // 25% transparent
+                            stopStreamButton.setEnabled(true);
+                            startStream.getBackground().setAlpha(20);  // 95% transparent
+                            photoButton.setEnabled(true);
+                            photoButton.setBackgroundResource(R.drawable.bg_button_bildaufnahme);
+                            videoButton.setEnabled(true);
+                            videoButton.setAlpha(1); // 100% transparent
+                            stopKamera = false;
+                            libusb_is_initialized = true;
+                            log("stream started (YUY2) ... ");
+                        } else {
+                            displayMessage("Stream failed;  Result = " + result);
+                            log ("Stream failed;  Result = " + result);
+                        }
+                    } else displayMessage("Stream failed;  Result = " + result);
+
+
+
+
+
+
+
+
+
+
+                } else if (videoformat.equals("UYVY")) {
+                    ////////////////////////////////    UYVY
+                    // Steam Over SurfaceView
+                    // fastest Method
+                    if (!libusb_is_initialized) {
+                        mPreviewSurface = mUVCCameraView.getHolder().getSurface();
+                        log("JniSetSurfaceView");
+                        //JniSetSurfaceView(mNativePtr, mPreviewSurface);
+                    }
+                    //log("prepair for streaming ..");
+                    //JniPrepairStreamOverSurfaceUVC();
+                    log("Start the stream ..");
+                    int result = -1;
+                    //result = JNA_I_LibUsb.INSTANCE.JniStreamOverSurfaceUVC(new Pointer(mNativePtr));
+                    if (result == 0) {
+                        ((Button) findViewById(R.id.startStream)).setEnabled(false);
+                        stopStreamButton.getBackground().setAlpha(180);  // 25% transparent
+                        stopStreamButton.setEnabled(true);
+                        startStream.getBackground().setAlpha(20);  // 95% transparent
+                        photoButton.setEnabled(true);
+                        photoButton.setBackgroundResource(R.drawable.bg_button_bildaufnahme);
+                        videoButton.setEnabled(true);
+                        videoButton.setAlpha(1); // 100% transparent
+                        stopKamera = false;
+                    } else {
+                        displayMessage("Stream failed;  Result = " + result);
+                        log ("Stream failed;  Result = " + result);
+                    }
+                    libusb_is_initialized = true;
+                    log("stream started (UYVY) ... ");
+                } else displayMessage("CAMERA FORMAT NOT SUPPORTED");
+            } else {
+                displayMessage("LIBUSB NOT SET ;-(");
+            }
+        }
+    }
+
     public void selectUnitTerminal(View v) {
         PopupMenu popup = new PopupMenu(this, v);
         popup.inflate(R.menu.iso_stream_select_terminal_unit);
@@ -1376,442 +1842,6 @@ public class StartIsoStreamActivityUvc extends Activity {
         popup.show();
     }
 
-    private void startWebRTC() {
-        if (camDevice == null) {
-            try {
-                findCam();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (!usbManager.hasPermission(camDevice)) {
-            usbManager.requestPermission(camDevice, mPermissionIntent);
-            return;
-        }
-        //if (runningStream != null) stopTheCameraStreamClickEvent(null);
-        Intent intent = new Intent(this, WebRtc_MainActivity.class);
-        Bundle bundle=new Bundle();
-        bundle.putBoolean("edit", true);
-        bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
-        bundle.putString("videoformat",videoformat);
-        bundle.putInt("camFormatIndex",camFormatIndex);
-        bundle.putInt("imageWidth",imageWidth);
-        bundle.putInt("imageHeight",imageHeight);
-        bundle.putInt("camFrameIndex",camFrameIndex);
-        bundle.putInt("camFrameInterval",camFrameInterval);
-        bundle.putInt("packetsPerRequest",packetsPerRequest);
-        bundle.putInt("maxPacketSize",maxPacketSize);
-        bundle.putInt("activeUrbs",activeUrbs);
-        bundle.putByte("bUnitID",bUnitID);
-        bundle.putByte("bTerminalID",bTerminalID);
-        bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
-        bundle.putByteArray("bNumControlUnit", bNumControlUnit);
-        bundle.putByteArray("bcdUVC", bcdUVC);
-        bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
-        bundle.putBoolean("LIBUSB", LIBUSB);
-        bundle.putBoolean("moveToNative", moveToNative);
-        bundle.putBoolean("bulkMode", bulkMode);
-        intent.putExtra("bun",bundle);
-        startActivity(intent);
-        StartIsoStreamActivityUvc.this.finish();
-    }
-
-    public void returnToConfigScreen() {
-        stopKamera = true;
-        //runningStream = null;
-        //imageView = (ImageView) findViewById(R.id.imageView);
-        onBackPressed();
-    }
-
-    public void beenden(boolean exit) {
-        if (LIBUSB) {
-            if(libusb_is_initialized) {
-                JNA_I_LibUsb.INSTANCE.stopStreaming();
-            }
-            camDevice = null;
-            Intent resultIntent = new Intent();
-            if (exit == true) resultIntent.putExtra("closeProgram", true);
-            setResult(Activity.RESULT_OK, resultIntent);
-            //mService.streamCanBeResumed = false;
-            finish();
-        } else {
-            if (camIsOpen) {
-                closeCameraDevice();
-            }
-            else if (camDeviceConnection != null) {
-                camDeviceConnection.releaseInterface(camControlInterface);
-                camDeviceConnection.releaseInterface(camStreamingInterface);
-                camDeviceConnection.close();
-            }
-            Intent resultIntent = new Intent();
-            if (exit == true) resultIntent.putExtra("closeProgram", true);
-            setResult(Activity.RESULT_OK, resultIntent);
-            //mService.streamCanBeResumed = false;
-            finish();
-        }
-    }
-/*
-    public void showAllServiceStats() {
-        log("mService.libusb_wrapped = " + mService.libusb_wrapped + "\n" +
-                "mService.native_values_set = " + mService.native_values_set + "\n\n" +
-                "mService.libusb_InterfacesClaimed = " + mService.libusb_InterfacesClaimed + "\n" +
-                "mService.altsettingControl = " + mService.altsettingControl + "\n" +
-                "mService.altsettingStream = " + mService.altsettingStream + "\n\n" +
-                "mService.ctl_to_camera_sent = " + mService.ctl_to_camera_sent + "\n" +
-                "mService.ctl_for_camera_sucessful = " + mService.ctl_for_camera_sucessful + "\n\n" +
-                "mService.streamPerformed = " + mService.streamPerformed + "\n" +
-                "mService.streamOnPause = " + mService.streamOnPause + "\n" +
-                "mService.streamClosed = " + mService.streamClosed + "\n\n" +
-                "mService.jnaCallbackSet = " + mService.jnaCallbackSet + "\n\n" +
-                "mService.libusb_closed = " + mService.libusb_closed + "\n" +
-                "mService.libusb_exited = " + mService.libusb_exited + "\n\n" +
-                "mService.valuesChangedButNotInit = " + mService.valuesChangedButNotInit + "\n" +
-                "mService.streamCanBePerformed = " + mService.streamCanBePerformed + "\n" +
-                "mService.streamCanBeResumed = " + mService.streamCanBeResumed + "\n" +
-                "mService.jniMethodsAndConstantsSet = " + mService.jniMethodsAndConstantsSet + "\n" +
-                "");
-    }
-*/
-    // Start the Stream
-    public void isoStream(MenuItem Item) {
-        if (camDevice == null) {
-            if(moveToNative) {
-                try {
-                    findCam();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            displayMessage("No Camera connected\nPlease connect a camera");
-            return;
-        }
-        else {
-            if (LIBUSB) {
-                //showAllServiceStats();
-                if (!libusb_is_initialized) {
-                    try {
-                        if (camDeviceConnection == null) {
-                            findCam();
-                            openCameraDevice(true);
-                        }
-                        if (fd == 0) fd = camDeviceConnection.getFileDescriptor();
-                        if(productID == 0) productID = camDevice.getProductId();
-                        if(vendorID == 0) vendorID = camDevice.getVendorId();
-                        if(adress == null)  adress = camDevice.getDeviceName();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                int lowAndroid = 0;
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                    lowAndroid = 1;
-                }
-                int bcdUVC_int = 0;
-                //mService.libusb_wrapped = true;
-                //mService.libusb_InterfacesClaimed = true;
-                JNA_I_LibUsb.INSTANCE.set_the_native_Values(new Pointer(mNativePtr), fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                        camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1,
-                        videoformat,0, bcdUVC_int, lowAndroid);
-                log("mNativePtr = " + mNativePtr);
-                JNA_I_LibUsb.INSTANCE.listDeviceUvc(new Pointer(mNativePtr), camDeviceConnection.getFileDescriptor());
-
-                log("Compare Video Format");
-                if (videoformat.equals("MJPEG")) {
-
-
-
-
-
-
-                    ////////////////////////////////    MJPEG
-                    JNA_I_LibUsb.INSTANCE.setCallback(new JNA_I_LibUsb.eventCallback(){
-                        public boolean callback(Pointer videoFrame, int frameSize) {
-                            log("frame received. Framelength = " + frameSize);
-                            try {
-                                processReceivedMJpegVideoFrameKamera(videoFrame.getByteArray(0, frameSize));
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            return true;
-                        }
-                    });
-
-
-                    if (!libusb_is_initialized) {
-                        //mPreviewSurface = mUVCCameraView.getHolder().getSurface();
-                        //JniSetSurfaceView(mPreviewSurface);
-                    }
-                    //if (!libusb_is_initialized) JniSetSurfaceView(null);
-                    mUVCCameraView = (SurfaceView) findViewById(R.id.surfaceView);
-                    mUVCCameraView.setVisibility(View.GONE);
-                    mUVCCameraView.setVisibility(View.INVISIBLE);
-                    JniPrepairStreamOverSurfaceUVC();
-                    int result = -1;
-                    result = JNA_I_LibUsb.INSTANCE.JniStreamOverSurfaceUVC(new Pointer(mNativePtr));
-                    if (result == 0) {
-                        ((Button) findViewById(R.id.startStream)).setEnabled(false);
-                        stopStreamButton.getBackground().setAlpha(180);  // 25% transparent
-                        stopStreamButton.setEnabled(true);
-                        startStream.getBackground().setAlpha(20);  // 95% transparent
-                        photoButton.setEnabled(true);
-                        photoButton.setBackgroundResource(R.drawable.bg_button_bildaufnahme);
-                        videoButton.setEnabled(true);
-                        videoButton.setAlpha(1); // 100% transparent
-                        stopKamera = false;
-                    } else {
-                        displayMessage("Stream failed;  Result = " + result);
-                        log ("Stream failed;  Result = " + result);
-                    }
-                    libusb_is_initialized = true;
-                    log("stream started (MJPEG) ... ");
-
-                } else if (videoformat.equals("YUY2")) {
-
-
-                    int result = -1;
-                    mPreviewSurface = mUVCCameraView.getHolder().getSurface();
-                    result = PreviewPrepareStream(mNativePtr, mPreviewSurface );
-                    if (result == 0) {
-                        result = PreviewStartStream(mNativePtr);
-                        if (result == 0) {
-                            ((Button) findViewById(R.id.startStream)).setEnabled(false);
-                            stopStreamButton.getBackground().setAlpha(180);  // 25% transparent
-                            stopStreamButton.setEnabled(true);
-                            startStream.getBackground().setAlpha(20);  // 95% transparent
-                            photoButton.setEnabled(true);
-                            photoButton.setBackgroundResource(R.drawable.bg_button_bildaufnahme);
-                            videoButton.setEnabled(true);
-                            videoButton.setAlpha(1); // 100% transparent
-                            stopKamera = false;
-                            libusb_is_initialized = true;
-                            log("stream started (YUY2) ... ");
-                        } else {
-                            displayMessage("Stream failed;  Result = " + result);
-                            log ("Stream failed;  Result = " + result);
-                        }
-                    } else displayMessage("Stream failed;  Result = " + result);
-
-
-
-
-
-
-
-
-                } else if (videoformat.equals("UYVY")) {
-                    ////////////////////////////////    UYVY
-                    // Steam Over SurfaceView
-                    // fastest Method
-                    if (!libusb_is_initialized) {
-                        mPreviewSurface = mUVCCameraView.getHolder().getSurface();
-                        log("JniSetSurfaceView");
-                        JniSetSurfaceView(mPreviewSurface);
-                    }
-                    //log("prepair for streaming ..");
-                    //JniPrepairStreamOverSurfaceUVC();
-                    log("Start the stream ..");
-                    int result = -1;
-                    result = JNA_I_LibUsb.INSTANCE.JniStreamOverSurfaceUVC(new Pointer(mNativePtr));
-                    if (result == 0) {
-                        ((Button) findViewById(R.id.startStream)).setEnabled(false);
-                        stopStreamButton.getBackground().setAlpha(180);  // 25% transparent
-                        stopStreamButton.setEnabled(true);
-                        startStream.getBackground().setAlpha(20);  // 95% transparent
-                        photoButton.setEnabled(true);
-                        photoButton.setBackgroundResource(R.drawable.bg_button_bildaufnahme);
-                        videoButton.setEnabled(true);
-                        videoButton.setAlpha(1); // 100% transparent
-                        stopKamera = false;
-                    } else {
-                        displayMessage("Stream failed;  Result = " + result);
-                        log ("Stream failed;  Result = " + result);
-                    }
-                    libusb_is_initialized = true;
-                    log("stream started (UYVY) ... ");
-                } else displayMessage("CAMERA FORMAT NOT SUPPORTED");
-            } else {
-                displayMessage("LIBUSB NOT SET ;-(");
-            }
-        }
-    }
-
-    private void findCam() throws Exception {
-        camDevice = findCameraDevice();
-        if (camDevice == null) {
-            camDevice = checkDeviceVideoClass();
-            if (camDevice == null)  throw new Exception("No USB camera device found.");
-        }
-        if (!usbManager.hasPermission(camDevice)) {
-            log("Asking for Permissions");
-            usbManager.requestPermission(camDevice, mPermissionIntent);
-        } else usbManager.requestPermission (camDevice, mPermissionIntent);
-    }
-
-    private UsbDevice checkDeviceVideoClass() {
-        HashMap<String, UsbDevice> deviceList = usbManager.getDeviceList();
-        log("USB devices count = " + deviceList.size());
-        for (UsbDevice usbDevice : deviceList.values()) {
-            log("USB device \"" + usbDevice.getDeviceName() + "\": " + usbDevice);
-            if (usbDevice.getDeviceClass() == 14 && usbDevice.getDeviceSubclass() == 2) {
-                moveToNative = true;
-                return usbDevice;
-            } else if (usbDevice.getDeviceClass() == 239 && usbDevice.getDeviceSubclass() == 2) {
-                moveToNative = true;
-                return usbDevice;
-            }
-            if (checkDeviceHasVideoControlInterface(usbDevice)) {
-                return usbDevice;
-            }
-        }
-        return null;
-    }
-
-    private UsbDevice findCameraDevice() {
-        HashMap<String, UsbDevice> deviceList = usbManager.getDeviceList();
-        log("USB devices count = " + deviceList.size());
-        for (UsbDevice usbDevice : deviceList.values()) {
-            if(moveToNative) {
-                if (checkDeviceHasVideoControlInterface(usbDevice)) {
-                    return usbDevice;
-                }
-            } else {
-                log("USB device \"" + usbDevice.getDeviceName() + "\": " + usbDevice);
-                if (checkDeviceHasVideoStreamingInterface(usbDevice)) {
-                    return usbDevice;
-                }
-            }
-        }
-        return null;
-    }
-
-    private boolean checkDeviceHasVideoStreamingInterface(UsbDevice usbDevice) {
-        return getVideoStreamingInterface(usbDevice) != null;
-    }
-
-    private boolean checkDeviceHasVideoControlInterface(UsbDevice usbDevice) {
-        return getVideoControlInterface(usbDevice) != null;
-    }
-
-    private UsbInterface getVideoControlInterface(UsbDevice usbDevice) {
-        return findInterface(usbDevice, UsbConstants.USB_CLASS_VIDEO, SC_VIDEOCONTROL, false);
-    }
-
-    private UsbInterface getVideoStreamingInterface(UsbDevice usbDevice) {
-        return findInterface(usbDevice, UsbConstants.USB_CLASS_VIDEO, SC_VIDEOSTREAMING, true);
-    }
-
-    private UsbInterface findInterface(UsbDevice usbDevice, int interfaceClass, int interfaceSubclass, boolean withEndpoint) {
-        int interfaces = usbDevice.getInterfaceCount();
-        for (int i = 0; i < interfaces; i++) {
-            UsbInterface usbInterface = usbDevice.getInterface(i);
-            if (usbInterface.getInterfaceClass() == interfaceClass && usbInterface.getInterfaceSubclass() == interfaceSubclass && (!withEndpoint || usbInterface.getEndpointCount() > 0)) {
-                return usbInterface;
-            }
-        }
-        return null;
-    }
-
-    private void openCam(boolean init) throws Exception {
-        openCameraDevice(init);
-        if (init) {
-            initCamera();
-            camIsOpen = true;
-        }
-        log("Camera opened sucessfully");
-    }
-
-    private void openCameraDevice(boolean init) throws Exception {
-        if (moveToNative) {
-            camDeviceConnection = usbManager.openDevice(camDevice);
-            int FD = camDeviceConnection.getFileDescriptor();
-            if(camStreamingEndpointAdress == 0) {
-                camStreamingEndpointAdress = JNA_I_LibUsb.INSTANCE.fetchTheCamStreamingEndpointAdress(new Pointer(mNativePtr), camDeviceConnection.getFileDescriptor());
-                //mService.libusb_wrapped = true;
-                //mService.libusb_InterfacesClaimed = true;
-            }
-            int bcdUVC_int = 0;
-            if(mUsbFs==null) mUsbFs =  getUSBFSName(camDevice);
-            bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
-            int lowAndroid = 0;
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                lowAndroid = 1;
-            }
-            JNA_I_LibUsb.INSTANCE.set_the_native_Values(new Pointer(mNativePtr), fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                    camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1, videoformat, 0, bcdUVC_int, lowAndroid);
-            //mService.native_values_set=true;
-            JNA_I_LibUsb.INSTANCE.initStreamingParms(new Pointer(mNativePtr), FD);
-        } else {
-            // (For transfer buffer sizes > 196608 the kernel file drivers/usb/core/devio.c must be patched.)
-            camControlInterface = getVideoControlInterface(camDevice);
-            camStreamingInterface = getVideoStreamingInterface(camDevice);
-            if (camStreamingInterface.getEndpointCount() < 1) {
-                throw new Exception("Streaming interface has no endpoint.");
-            }
-            camStreamingEndpoint = camStreamingInterface.getEndpoint(0);
-            bulkMode = camStreamingEndpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK;
-            camDeviceConnection = usbManager.openDevice(camDevice);
-            if (camDeviceConnection == null) {
-                log("Failed to open the device");
-                throw new Exception("Unable to open camera device connection.");
-            }
-            if (!LIBUSB) {
-                if (!camDeviceConnection.claimInterface(camControlInterface, true)) {
-                    log("Failed to claim camControlInterface");
-                    throw new Exception("Unable to claim camera control interface.");
-                }
-                if (!camDeviceConnection.claimInterface(camStreamingInterface, true)) {
-                    log("Failed to claim camStreamingInterface");
-                    throw new Exception("Unable to claim camera streaming interface.");
-                }
-            }
-        }
-    }
-
-    public void closeCameraDevice() {
-
-        if (moveToNative) {
-            camDeviceConnection = null;
-        }
-        else if (camDeviceConnection != null) {
-            camDeviceConnection.releaseInterface(camControlInterface);
-            camDeviceConnection.releaseInterface(camStreamingInterface);
-            camDeviceConnection.close();
-            camDeviceConnection = null;
-        }
-        //runningStream = null;
-    }
-
-    private void initCamera() throws Exception {
-        try {
-            getVideoControlErrorCode();  // to reset previous error states
-        } catch (Exception e) {
-            log("Warning: getVideoControlErrorCode() failed: " + e);
-        }   // ignore error, some cameras do not support the request
-        try {
-            enableStreaming(false);
-        } catch (Exception e) {
-            //displayErrorMessage(e);
-            displayMessage("Warning: enable the Stream failed:\nPlease unplug and replug the camera, or reboot the device");
-            log("Warning: enableStreaming(false) failed: " + e);
-        }
-        try {
-            // to reset previous error states
-            getVideoStreamErrorCode();
-        } catch (Exception e) {
-            log("Warning: getVideoStreamErrorCode() failed: " + e);
-        }   // ignore error, some cameras do not support the request
-        //initStreamingParms();
-        //initBrightnessParms();
-    }
-
-    private void BildaufnahmeButtonClickEvent() {
-        imageCapture = true;
-        if (LIBUSB) JNA_I_LibUsb.INSTANCE.setImageCapture();
-        displayMessage("Image saved");
-    }
-
-    //////////////////// Buttons  ///////////////
-
     public void stopTheCameraStreamClickEvent(View view) {
         startStream.getBackground().setAlpha(180);  // 25% transparent
         startStream.setEnabled(true);
@@ -1827,7 +1857,7 @@ public class StartIsoStreamActivityUvc extends Activity {
 
 
             if (mNativePtr != 0) result = PreviewStopStream(mNativePtr) ;
-            else JNA_I_LibUsb.INSTANCE.stopStreaming();
+            else JNA_I_LibUsb.INSTANCE.stopStreaming(new Pointer(mNativePtr));
 
 
 
@@ -1880,6 +1910,9 @@ public class StartIsoStreamActivityUvc extends Activity {
         else verticalFlip = false;
         if (LIBUSB) JNA_I_LibUsb.INSTANCE.setRotation(rotate, flipToInt(horizontalFlip), flipToInt(verticalFlip));
     }
+
+    //////////////////// END Buttons  ///////////////
+    //////////////////// END   ////////////////
 
     private void writeBytesToFile(String fileName, byte[] data) throws IOException {
         FileOutputStream fileOutputStream = null;
@@ -2791,6 +2824,7 @@ public class StartIsoStreamActivityUvc extends Activity {
         moveToNative = bundle.getBoolean("moveToNative" );
         bulkMode = bundle.getBoolean("bulkMode" );
         mNativePtr = bundle.getLong("mNativePtr");
+        connected_to_camera = bundle.getInt("connected_to_camera", 0);
     }
 
     private int round(double d){

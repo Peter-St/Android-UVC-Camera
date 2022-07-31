@@ -36,7 +36,7 @@ public class WebRtcService extends IntentService {
 
         String fileName = intent.getStringExtra(ENABLE_STREAM);
         if (fileName.equals("ENABLE_STREAM")) {
-            JNA_I_LibUsb.INSTANCE.lunchTheStream_WebRtc_Service();
+            //JNA_I_LibUsb.INSTANCE.lunchTheStream_WebRtc_Service();
             result = Activity.RESULT_OK;
             return;
         }

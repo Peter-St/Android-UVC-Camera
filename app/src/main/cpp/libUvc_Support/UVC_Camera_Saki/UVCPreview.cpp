@@ -48,6 +48,8 @@
 #define PREVIEW_PIXEL_BYTES 4	// RGBA/RGBX
 #define FRAME_POOL_SZ MAX_FRAME + 2
 
+JavaVM* g_VM;
+
 UVCPreview::UVCPreview(uvc_device_handle_t *devh)
 :	mPreviewWindow(NULL),
 	mCaptureWindow(NULL),
@@ -193,7 +195,8 @@ int UVCPreview::setPreviewSize(int width, int height, int min_fps, int max_fps, 
 
 int UVCPreview::setPreviewSize_random(int width, int height, int min_fps, int max_fps, float bandwidth,
 									  int prev_activeUrbs, int prev_packetsPerRequest, int prev_altset, int prev_maxPacketSize,
-									  int camFormatInde, int camFrameInde, int camFrameInterva, const char* frameForma, int imageWidth, int imageHeight) {
+									  int camFormatInde, int camFrameInde, int camFrameInterva, const char* frameForma,
+									  int imageWidth, int imageHeight, int tes) {
     ENTER();
 
     int result = 0;
@@ -207,6 +210,7 @@ int UVCPreview::setPreviewSize_random(int width, int height, int min_fps, int ma
 	frameFormat = frameForma;
 	frameWidth = imageWidth;
 	frameHeight = imageHeight;
+	test = tes;
 
 	requestWidth = width;
 	requestHeight = height;
@@ -258,8 +262,9 @@ int UVCPreview::setFrameCallback(JNIEnv *env, jobject frame_callback_obj, int pi
 				// get method IDs of Java object for callback
 				jclass clazz = env->GetObjectClass(frame_callback_obj);
 				if (LIKELY(clazz)) {
+					LOGD("Calling Callback");
 					iframecallback_fields.onFrame = env->GetMethodID(clazz,
-						"onFrame",	"(Ljava/nio/ByteBuffer;)V");
+						"onFrame",	"([B)V");
 				} else {
 					LOGW("failed to get object class");
 				}
@@ -271,9 +276,23 @@ int UVCPreview::setFrameCallback(JNIEnv *env, jobject frame_callback_obj, int pi
 				}
 			}
 		}
-		if (frame_callback_obj) {
-			mPixelFormat = pixel_format;
-			callbackPixelFormatChanged();
+		if (!test) if (frame_callback_obj) {
+				mPixelFormat = pixel_format;
+				callbackPixelFormatChanged();
+			} else {
+
+				if (strcmp(frameFormat, "MJPEG") == 0) {
+					pixel_format = 3;
+				} else if (strcmp(frameFormat, "YUY2") == 0 ||   strcmp(frameFormat, "UYVY") == 0  ) {
+					pixel_format = 1;
+
+				} else if (strcmp(frameFormat, "NV21") == 0) {
+					pixel_format = 5;
+				} else {
+					pixel_format = 0;
+				}
+				mPixelFormat = pixel_format;
+				callbackPixelFormatChanged();
 		}
 	}
 	pthread_mutex_unlock(&capture_mutex);
@@ -357,16 +376,29 @@ void UVCPreview::clearDisplay() {
 
 int UVCPreview::startPreview() {
 	ENTER();
-
+	LOGD("startPreview");
+	LOGD("test = %d", test);
 	int result = EXIT_FAILURE;
 	if (!isRunning()) {
 		mIsRunning = true;
 		pthread_mutex_lock(&preview_mutex);
 		{
-			if (LIKELY(mPreviewWindow)) {
-				LOGD("preview_thread_func");
+			LOGD("check test");
+
+			if (!test) {
+				// Stream Mode
+				if (LIKELY(mPreviewWindow)) {
+					LOGD("preview_thread_func");
+					result = pthread_create(&preview_thread, NULL, preview_thread_func, (void *)this);
+					LOGD("preview_thread_func result = %d", result);
+				}
+			} else {
+				// Test Mode
+				LOGD("preview_thread Test Mode");
+
 				result = pthread_create(&preview_thread, NULL, preview_thread_func, (void *)this);
 			}
+
 		}
 		pthread_mutex_unlock(&preview_mutex);
 		if (UNLIKELY(result != EXIT_SUCCESS)) {
@@ -374,14 +406,16 @@ int UVCPreview::startPreview() {
 			mIsRunning = false;
 			pthread_mutex_lock(&preview_mutex);
 			{
+				LOGD("pthread_cond_signal");
 				pthread_cond_signal(&preview_sync);
 			}
 			pthread_mutex_unlock(&preview_mutex);
 		}
 	}
+	LOGD("startPreview finished");
+
 	RETURN(result, int);
 }
-
 
 int UVCPreview::stopPreview() {
 	ENTER();
@@ -497,8 +531,13 @@ void *UVCPreview::preview_thread_func(void *vptr_args) {
 		uvc_stream_ctrl_t ctrl;
 		memset(&ctrl, 0, sizeof(uvc_stream_ctrl_t));
 		uvc_stream_handle_t strmh;
+		LOGD("prepare_preview(&ctrl, preview)");
+
 		result = preview->prepare_preview(&ctrl, preview);
+		LOGD("prepare_preview returned %d", result);
+
 		if (LIKELY(!result)) {
+			LOGD("do_preview(&ctrl)");
 			preview->do_preview(&ctrl);
 		}
 	}
@@ -508,16 +547,19 @@ void *UVCPreview::preview_thread_func(void *vptr_args) {
 
 int UVCPreview::prepare_preview(uvc_stream_ctrl_t *ctrl, UVCPreview *preview) {
 	uvc_error_t result;
+	LOGD("prepare_preview");
 
 	ENTER();
+	LOGD("ctrl->bInterfaceNumber");
+
 	ctrl->bInterfaceNumber = preview->mDeviceHandle->info->stream_ifs->bInterfaceNumber;
+	LOGD("bmHint");
 	ctrl->bmHint = 1;
 	ctrl->bFormatIndex = camFormatIndex;
 	ctrl->bFrameIndex = camFrameIndex;
 	ctrl->dwFrameInterval = camFrameInterval;
 
-
-
+	LOGD("control_TransferUVC");
 	result = control_TransferUVC(ctrl, preview->mDeviceHandle);
 	if (UNLIKELY(result)) {
 		LOGE("control_TransferUVC failed!!\ncontrol_TransferUVC:err=%d", result);
@@ -540,15 +582,6 @@ int UVCPreview::prepare_preview(uvc_stream_ctrl_t *ctrl, UVCPreview *preview) {
 	} else {
 		frame_size = preview->frameWidth * preview->frameHeight * 2 + overload_buffer_value;
 	}
-
-
-
-	/*
-	result = uvc_get_stream_ctrl_format_size_fps(mDeviceHandle, ctrl,
-		!requestMode ? UVC_FRAME_FORMAT_YUYV : UVC_FRAME_FORMAT_MJPEG,
-		requestWidth, requestHeight, requestMinFps, requestMaxFps
-	);
-	*/
 	if (LIKELY(!result)) {
 #if LOCAL_DEBUG
 		uvc_print_stream_ctrl(ctrl, stderr);
@@ -558,13 +591,14 @@ int UVCPreview::prepare_preview(uvc_stream_ctrl_t *ctrl, UVCPreview *preview) {
 		if (LIKELY(!result)) {
 			//frameWidth = frame_desc->wWidth;
 			//frameHeight = frame_desc->wHeight;
-
-			LOGDEB("frameSize=(%d,%d)@%s", frameWidth, frameHeight, (!requestMode ? "YUYV" : "MJPEG"));
-			pthread_mutex_lock(&preview_mutex);
-			if (LIKELY(mPreviewWindow)) {
-				ANativeWindow_setBuffersGeometry(mPreviewWindow,
-					frameWidth, frameHeight, previewFormat);
-			}
+			if (!test) {
+				LOGDEB("frameSize=(%d,%d)@%s", frameWidth, frameHeight, (!requestMode ? "YUYV" : "MJPEG"));
+				pthread_mutex_lock(&preview_mutex);
+				if (LIKELY(mPreviewWindow)) {
+					ANativeWindow_setBuffersGeometry(mPreviewWindow,
+													 frameWidth, frameHeight, previewFormat);
+				}
+			} else LOGD("Skipping ANativeWindow_setBuffersGeometry");
 			pthread_mutex_unlock(&preview_mutex);
 		} else {
 			frameWidth = requestWidth;
@@ -611,6 +645,7 @@ void UVCPreview::do_preview(uvc_stream_ctrl_t *ctrl) {
 
 	if (LIKELY(!result)) {
 		clearPreviewFrame();
+		LOGD("running capture Thread");
 		pthread_create(&capture_thread, NULL, capture_thread_func, (void *)this);
 
 #if LOCAL_DEBUG
@@ -621,25 +656,46 @@ void UVCPreview::do_preview(uvc_stream_ctrl_t *ctrl) {
 			for ( ; LIKELY(isRunning()) ; ) {
 				frame_mjpeg = waitPreviewFrame();
 				if (LIKELY(frame_mjpeg)) {
-					frame = get_frame(frame_mjpeg->width * frame_mjpeg->height * 2);
-					result = uvc_mjpeg2yuyv(frame_mjpeg, frame);   // MJPEG => yuyv
-					recycle_frame(frame_mjpeg);
-					if (LIKELY(!result)) {
-						frame = draw_preview_one(frame, &mPreviewWindow, uvc_any2rgbx, 4);
-						addCaptureFrame(frame);
+                    //LOGD("frame_mjpeg->width = %d", frame_mjpeg->width);
+                    //LOGD("frame_mjpeg->height = %d", frame_mjpeg->height);
+					frame = get_frame(frame_mjpeg->width * frame_mjpeg->height * 4);
+                    //LOGD("frame->width = %d", frame->width);
+                    //LOGD("frame->height = %d", frame->height);
+					if (!test) {
+                        LOGD("uvc_mjpeg2yuyv");
+						result = uvc_mjpeg2rgbx(frame_mjpeg, frame);   // MJPEG => yuyv
+                        LOGD("recycle_frame");
+						recycle_frame(frame_mjpeg);
+						if (LIKELY(!result)) {
+                            LOGD("draw_preview_one");
+							frame = draw_preview_one(frame, &mPreviewWindow, uvc_any2rgbx, 4);
+							addCaptureFrame(frame);
+						} else {
+							recycle_frame(frame);
+						}
 					} else {
-						recycle_frame(frame);
+						LOGD("addCaptureFrame ");
+						addCaptureFrame(frame);
 					}
+
+
+
 				}
 			}
 		} else {
 			// yuvyv mode
 			for ( ; LIKELY(isRunning()) ; ) {
 				frame = waitPreviewFrame();
-				if (LIKELY(frame)) {
-					frame = draw_preview_one(frame, &mPreviewWindow, uvc_any2rgbx, 4);
+				if (!test) {
+					if (LIKELY(frame)) {
+						frame = draw_preview_one(frame, &mPreviewWindow, uvc_any2rgbx, 4);
+						addCaptureFrame(frame);
+					}
+				} else {
+					LOGD("addCaptureFrame ");
 					addCaptureFrame(frame);
 				}
+
 			}
 		}
 		pthread_cond_signal(&capture_sync);
@@ -847,17 +903,37 @@ void *UVCPreview::capture_thread_func(void *vptr_args) {
 	ENTER();
 	UVCPreview *preview = reinterpret_cast<UVCPreview *>(vptr_args);
 	if (LIKELY(preview)) {
-        // uncomment JavaVM
-        /*
-		JavaVM *vm = getVM();
-		JNIEnv *env;
+
+
+		//JavaVM* g_VM;
+		//g_env->GetJavaVM(&jvm);
+		//JavaVM *vm = getVM();
+		//JNIEnv *env;
+		//g_env->GetJavaVM(&g_VM);
+
+		LOGD("javaVM");
+
+
+		// uncomment JavaVM
+		//JavaVM* jvm;
+		//g_env->GetJavaVM(&jvm);
+		//JavaVM *vm = getVM();
+		//
+
 		// attach to JavaVM
-		vm->AttachCurrentThread(&env, NULL);
+
+		LOGD("AttachCurrentThread");
+		JNIEnv *env;
+		g_VM->AttachCurrentThread(&env, NULL);
+		LOGD("do_capture(env)");
 		preview->do_capture(env);	// never return until finish previewing
 		// detach from JavaVM
-		vm->DetachCurrentThread();
+		g_VM->DetachCurrentThread();
+		LOGD("DetachCurrentThread() complete");
+
+
 		MARK("DetachCurrentThread");
-        */
+
 	}
 	PRE_EXIT();
 	pthread_exit(NULL);
@@ -886,7 +962,7 @@ void UVCPreview::do_capture(JNIEnv *env) {
 
 void UVCPreview::do_capture_idle_loop(JNIEnv *env) {
 	ENTER();
-	
+	LOGD("do_capture_idle_loop");
 	for (; isRunning() && isCapturing() ;) {
 		do_capture_callback(env, waitCaptureFrame());
 	}
@@ -959,15 +1035,38 @@ void UVCPreview::do_capture_callback(JNIEnv *env, uvc_frame_t *frame) {
 					goto SKIP;
 				}
 			}
-			jobject buf = env->NewDirectByteBuffer(callback_frame->data, callbackPixelBytes);
-			env->CallVoidMethod(mFrameCallbackObj, iframecallback_fields.onFrame, buf);
+			jbyteArray retArray = env->NewByteArray(callbackPixelBytes);
+			if(env->GetArrayLength( retArray) != callbackPixelBytes)
+			{
+				env->DeleteLocalRef( retArray);
+				retArray = env->NewByteArray( callbackPixelBytes);
+			}
+			env->SetByteArrayRegion(retArray, 0, callbackPixelBytes, (jbyte*) callback_frame->data);
+			env->CallVoidMethod(mFrameCallbackObj, iframecallback_fields.onFrame, retArray);
 			env->ExceptionClear();
-			env->DeleteLocalRef(buf);
+			env->DeleteLocalRef(retArray);
 		}
  SKIP:
 		recycle_frame(callback_frame);
 	}
 	EXIT();
+}
+
+
+/**
+* set JavaVM
+ */
+int UVCPreview::setJavaVM(JNIEnv *env, jobject obj) {
+	ENTER();
+
+
+
+
+	//g_obj = env->NewGlobalRef(obj);
+	//env->GetJavaVM(&g_jvm);
+	//g_env = env;
+	return UVC_SUCCESS;
+
 }
 
 
@@ -986,11 +1085,13 @@ int set_preview_size(long preview_pointer, int width, int height, int min_fps, i
 
 int set_preview_size_random(long preview_pointer, int width, int height, int min_fps, int max_fps, float bandwidth,
 							int activeUrbs, int packetsPerRequest, int altset, int maxPacketSize,
-							int camFormatInde, int camFrameInde, int camFrameInterva, const char* frameForma, int imageWidth, int imageHeight ) {
+							int camFormatInde, int camFrameInde, int camFrameInterva, const char* frameForma,
+							int imageWidth, int imageHeight, int test ) {
     int result = EXIT_FAILURE;
     UVCPreview *camera = reinterpret_cast<UVCPreview *>(preview_pointer);
     if (camera) result = camera->setPreviewSize_random(width, height, min_fps, max_fps, bandwidth, activeUrbs, packetsPerRequest,
-													   altset, maxPacketSize, camFormatInde, camFrameInde, camFrameInterva, frameForma, imageWidth, imageHeight );
+													   altset, maxPacketSize, camFormatInde, camFrameInde, camFrameInterva, frameForma,
+													   imageWidth, imageHeight, test );
     return result;
 }
 
@@ -1001,10 +1102,21 @@ int set_preview_display(long preview_pointer, ANativeWindow *preview_window) {
     return result;
 }
 
+int setFrameCallback(long preview_pointer, JNIEnv *env, jobject frame_callback_obj, int pixel_format) {
+	int result = EXIT_FAILURE;
+	UVCPreview *camera = reinterpret_cast<UVCPreview *>(preview_pointer);
+	LOGD("camera->setFrameCallback");
+	if (camera) result = camera->setFrameCallback(env, frame_callback_obj, pixel_format);
+	return result;
+}
+
 int startPreview(long preview_pointer) {
 	int result = EXIT_FAILURE;
 	UVCPreview *camera = reinterpret_cast<UVCPreview *>(preview_pointer);
+
+
 	if (camera) result = camera->startPreview();
+
 	return result;
 }
 
@@ -1015,6 +1127,16 @@ int stopPreview(long preview_pointer) {
 	return result;
 }
 
+int setJavaVM(long preview_pointer, JNIEnv *env, jobject obj) {
+	ENTER();
 
+	int result = EXIT_FAILURE;
+	UVCPreview *camera = reinterpret_cast<UVCPreview *>(preview_pointer);
+	if (camera) {
+		env->GetJavaVM(& g_VM);
+		result = UVC_SUCCESS;
+	}
 
+	return result;
+}
 

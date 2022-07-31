@@ -42,6 +42,9 @@ find_library( # Sets the name of the path variable.
               # you want CMake to locate.
               log )
 
+
+
+
 # Specifies libraries CMake should link to your target library. You
 # can link multiple libraries, such as libraries you define in this
 # build script, prebuilt third-party libraries, or system libraries.
@@ -49,6 +52,8 @@ find_library( # Sets the name of the path variable.
 target_link_libraries(
         # Specifies the target library.
         Uvc_Support
+        #${JNI_LIBRARIES}
+        #-ljvm
         # Links the target library to the log library
         # included in the NDK.
         ${log-lib}
@@ -73,6 +78,7 @@ target_link_libraries(Uvc_Support yuv)
 set (LIBPREVIEW_DIR UVC_Camera_Saki)
 add_subdirectory (${LIBPREVIEW_DIR} ./preview)
 target_link_libraries(Uvc_Support uvc_preview)
+
 
 
 #set (LIBJPEG_DIR ../jpeg)

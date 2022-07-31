@@ -256,15 +256,9 @@ public class UsbCapturer implements VideoCapturer {
                 JniWebRtcJavaMethods();
 
 
-                JNA_I_LibUsb.INSTANCE.prepairTheStream_WebRtc_Service();
-                JNA_I_LibUsb.INSTANCE.lunchTheStream_WebRtc_Service();
 
-                /*
-                Intent intent = new Intent(callActivity.getApplicationContext(), WebRtcService.class);
-                intent.putExtra(WebRtcService.INIT, "INIT");
-                intent.putExtra(WebRtcService.ENABLE_STREAM, "ENABLE_STREAM");
-                callActivity.startService(intent);
-                */
+                JNA_I_LibUsb.INSTANCE.prepairTheStream_WebRtc_Service();
+                //JNA_I_LibUsb.INSTANCE.lunchTheStream_WebRtc_Service();
 
 
                 log("service for WebRtc started ... waiting for intent");
@@ -1146,7 +1140,7 @@ public class UsbCapturer implements VideoCapturer {
     public void stopTheCameraStream() {
         stopKamera = true;
         if (LIBUSB) {
-            JNA_I_LibUsb.INSTANCE.stopStreaming();
+            JNA_I_LibUsb.INSTANCE.stopStreaming(new Pointer(mNativePtr));
         } else {
             try {
                 Thread.sleep(100);

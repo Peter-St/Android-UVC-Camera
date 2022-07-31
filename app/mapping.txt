@@ -1,7 +1,7 @@
 # compiler: R8
 # compiler_version: 3.1.66
 # min_api: 15
-# pg_map_id: c9e188d
+# pg_map_id: 64e3db3
 # common_typos_disable
 # {"id":"com.android.tools.r8.mapping","version":"1.0"}
 android.arch.core.internal.FastSafeIterableMap -> a.a:
@@ -53,25 +53,23 @@ android.arch.lifecycle.ReflectiveGenericLifecycleObserver$$ExternalSyntheticOutl
       # {"id":"com.android.tools.r8.synthesized"}
     java.lang.String android.support.constraint.solver.widgets.ConstraintWidget$$InternalSyntheticOutline$88$3377e20755c45357f2ed9c5119fe0a20e43c9c9389a8ccef6a98ccc0981931a1$0.m(java.lang.StringBuilder,int,java.lang.String) -> d
       # {"id":"com.android.tools.r8.synthesized"}
-    java.lang.String humer.UvcCamera.StartIsoStreamActivityUsbIso$6$$InternalSyntheticOutline$88$03d893c6bdb55519c06dc53f45df3424ccc3afcbdd2f06835d0cf8868bc64fda$0.m(java.lang.StringBuilder,java.lang.String) -> e
+    java.lang.String android.support.constraint.solver.ArrayRow$$InternalSyntheticOutline$88$1cbf31f4d6599ee490305390565767a71988e72043fcefa523e812485f4fff1c$0.m(java.lang.StringBuilder,java.lang.String,java.lang.String) -> e
       # {"id":"com.android.tools.r8.synthesized"}
-    java.lang.String android.support.constraint.solver.ArrayRow$$InternalSyntheticOutline$88$1cbf31f4d6599ee490305390565767a71988e72043fcefa523e812485f4fff1c$0.m(java.lang.StringBuilder,java.lang.String,java.lang.String) -> f
+    java.lang.String humer.UvcCamera.StartIsoStreamActivityUsbIso$$InternalSyntheticOutline$88$8162b911a787a2e1d052c866b79fc7cd0f20649dfd575f1f27aed9d2c32e7766$0.m(java.text.SimpleDateFormat,java.util.Date,java.lang.StringBuilder,java.lang.String) -> f
       # {"id":"com.android.tools.r8.synthesized"}
-    java.lang.String humer.UvcCamera.StartIsoStreamActivityUsbIso$$InternalSyntheticOutline$88$8162b911a787a2e1d052c866b79fc7cd0f20649dfd575f1f27aed9d2c32e7766$0.m(java.text.SimpleDateFormat,java.util.Date,java.lang.StringBuilder,java.lang.String) -> g
+    java.lang.StringBuilder android.arch.lifecycle.ReflectiveGenericLifecycleObserver$$InternalSyntheticOutline$88$38ee733480a3159f2d4ca7ab62bca935ae8d7a35486e43e648122f4eff457ef2$0.m(java.lang.String) -> g
       # {"id":"com.android.tools.r8.synthesized"}
-    java.lang.StringBuilder android.arch.lifecycle.ReflectiveGenericLifecycleObserver$$InternalSyntheticOutline$88$38ee733480a3159f2d4ca7ab62bca935ae8d7a35486e43e648122f4eff457ef2$0.m(java.lang.String) -> h
+    java.lang.StringBuilder android.support.v7.widget.SuggestionsAdapter$$InternalSyntheticOutline$88$3f7b0b9a9418f5bd4f91f3d5ff22d19a0fd94a8ca0bc8f7ca0cec80b644a6997$0.m(java.lang.String,int,java.lang.String) -> h
       # {"id":"com.android.tools.r8.synthesized"}
-    java.lang.StringBuilder android.support.v7.widget.SuggestionsAdapter$$InternalSyntheticOutline$88$3f7b0b9a9418f5bd4f91f3d5ff22d19a0fd94a8ca0bc8f7ca0cec80b644a6997$0.m(java.lang.String,int,java.lang.String) -> i
+    java.lang.StringBuilder com.example.androidthings.videortc.UsbCapturer$$InternalSyntheticOutline$88$5f40eb23f982788e8d16c1e514c1addd3edf937bff05c92e7c729a4cc916f9cd$0.m(java.lang.StringBuilder,int,java.lang.StringBuilder,java.lang.String) -> i
       # {"id":"com.android.tools.r8.synthesized"}
-    java.lang.StringBuilder com.example.androidthings.videortc.UsbCapturer$$InternalSyntheticOutline$88$5f40eb23f982788e8d16c1e514c1addd3edf937bff05c92e7c729a4cc916f9cd$0.m(java.lang.StringBuilder,int,java.lang.StringBuilder,java.lang.String) -> j
+    void com.sample.timelapse.MJPEGGenerator$AVIIndex$$InternalSyntheticOutline$88$15b23cd3d33ee351d90315772785940fe9650a57b2fbde48ceffab1bd0e6013e$0.m(int,java.io.ByteArrayOutputStream) -> j
       # {"id":"com.android.tools.r8.synthesized"}
-    void com.sample.timelapse.MJPEGGenerator$AVIIndex$$InternalSyntheticOutline$88$15b23cd3d33ee351d90315772785940fe9650a57b2fbde48ceffab1bd0e6013e$0.m(int,java.io.ByteArrayOutputStream) -> k
+    void humer.UvcCamera.StartIsoStreamActivityUsbIso$$InternalSyntheticOutline$88$b049930034a3b427362cf267640cfc1aa07c91380c706340f309e71aeaf4b854$0.m(android.widget.PopupMenu,int,boolean) -> k
       # {"id":"com.android.tools.r8.synthesized"}
-    void humer.UvcCamera.StartIsoStreamActivityUsbIso$$InternalSyntheticOutline$88$b049930034a3b427362cf267640cfc1aa07c91380c706340f309e71aeaf4b854$0.m(android.widget.PopupMenu,int,boolean) -> l
+    void humer.UvcCamera.SaveToFile$12$$InternalSyntheticOutline$88$cc5d8c7b1108a3036f34ee24de85711744b98766873ea5850d7cdcbcac1b40b0$0.m(java.lang.StringBuilder,int,java.io.PrintStream) -> l
       # {"id":"com.android.tools.r8.synthesized"}
-    void humer.UvcCamera.SaveToFile$12$$InternalSyntheticOutline$88$cc5d8c7b1108a3036f34ee24de85711744b98766873ea5850d7cdcbcac1b40b0$0.m(java.lang.StringBuilder,int,java.io.PrintStream) -> m
-      # {"id":"com.android.tools.r8.synthesized"}
-    java.lang.String android.support.constraint.solver.widgets.analyzer.DependencyNode$Type$EnumUnboxingLocalUtility.stringValueOf(int) -> n
+    java.lang.String android.support.constraint.solver.widgets.analyzer.DependencyNode$Type$EnumUnboxingLocalUtility.stringValueOf(int) -> m
       # {"id":"com.android.tools.r8.synthesized"}
 android.arch.lifecycle.ReflectiveGenericLifecycleObserver$CallbackInfo -> android.arch.lifecycle.ReflectiveGenericLifecycleObserver$a:
     java.util.Map mEventToHandlers -> a
@@ -6729,8 +6727,7 @@ android.support.v4.content.LocalBroadcastManager -> m.b:
     java.util.ArrayList mPendingBroadcasts -> d
     java.util.HashMap mActions -> c
     android.support.v4.content.LocalBroadcastManager getInstance(android.content.Context) -> a
-    void registerReceiver(android.content.BroadcastReceiver,android.content.IntentFilter) -> b
-    boolean sendBroadcast(android.content.Intent) -> c
+    boolean sendBroadcast(android.content.Intent) -> b
 android.support.v4.content.LocalBroadcastManager$1 -> m.b$a:
     android.support.v4.content.LocalBroadcastManager this$0 -> a
     1:1:void android.support.v4.content.LocalBroadcastManager.executePendingBroadcasts():0:0 -> handleMessage
@@ -17418,55 +17415,6 @@ humer.UvcCamera.SaveToFile$5 -> humer.UvcCamera.SaveToFile$5:
     1:1:void onClick(android.view.View):0 -> onClick
     2:2:void onClick(android.view.View):0:0 -> onClick
 humer.UvcCamera.SetUpTheUsbDeviceUsbIso -> humer.UvcCamera.SetUpTheUsbDeviceUsbIso:
-    1:1:void com.crowdfire.cfalertdialog.CFAlertDialog$Builder.<init>(android.content.Context):0:0 -> moveToNativeSetUpTheValues
-    1:1:void moveToNativeSetUpTheValues():0 -> moveToNativeSetUpTheValues
-    2:2:android.content.Context com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$902(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,android.content.Context):0:0 -> moveToNativeSetUpTheValues
-    2:2:void com.crowdfire.cfalertdialog.CFAlertDialog$Builder.<init>(android.content.Context):0 -> moveToNativeSetUpTheValues
-    2:2:void moveToNativeSetUpTheValues():0 -> moveToNativeSetUpTheValues
-    3:3:void moveToNativeSetUpTheValues():0:0 -> moveToNativeSetUpTheValues
-    4:4:android.view.View com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$2202(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,android.view.View):0:0 -> moveToNativeSetUpTheValues
-    4:4:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setHeaderView(android.view.View):0 -> moveToNativeSetUpTheValues
-    4:4:void moveToNativeSetUpTheValues():0 -> moveToNativeSetUpTheValues
-    5:5:int com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$2302(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,int):0:0 -> moveToNativeSetUpTheValues
-    5:5:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setHeaderView(android.view.View):0 -> moveToNativeSetUpTheValues
-    5:5:void moveToNativeSetUpTheValues():0 -> moveToNativeSetUpTheValues
-    6:6:com.crowdfire.cfalertdialog.CFAlertDialog$CFAlertStyle com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$2602(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,com.crowdfire.cfalertdialog.CFAlertDialog$CFAlertStyle):0:0 -> moveToNativeSetUpTheValues
-    6:6:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setDialogStyle(com.crowdfire.cfalertdialog.CFAlertDialog$CFAlertStyle):0 -> moveToNativeSetUpTheValues
-    6:6:void moveToNativeSetUpTheValues():0 -> moveToNativeSetUpTheValues
-    7:7:void moveToNativeSetUpTheValues():0:0 -> moveToNativeSetUpTheValues
-    8:8:int com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$4200(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> moveToNativeSetUpTheValues
-    8:8:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> moveToNativeSetUpTheValues
-    8:8:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> moveToNativeSetUpTheValues
-    8:8:void moveToNativeSetUpTheValues():0 -> moveToNativeSetUpTheValues
-    9:9:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0:0 -> moveToNativeSetUpTheValues
-    9:9:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> moveToNativeSetUpTheValues
-    9:9:void moveToNativeSetUpTheValues():0 -> moveToNativeSetUpTheValues
-    10:10:android.content.Context com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$900(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> moveToNativeSetUpTheValues
-    10:10:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> moveToNativeSetUpTheValues
-    10:10:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> moveToNativeSetUpTheValues
-    10:10:void moveToNativeSetUpTheValues():0 -> moveToNativeSetUpTheValues
-    11:11:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0:0 -> moveToNativeSetUpTheValues
-    11:11:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> moveToNativeSetUpTheValues
-    11:11:void moveToNativeSetUpTheValues():0 -> moveToNativeSetUpTheValues
-    12:12:android.content.Context com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$900(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> moveToNativeSetUpTheValues
-    12:12:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> moveToNativeSetUpTheValues
-    12:12:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> moveToNativeSetUpTheValues
-    12:12:void moveToNativeSetUpTheValues():0 -> moveToNativeSetUpTheValues
-    13:13:int com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$4200(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> moveToNativeSetUpTheValues
-    13:13:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> moveToNativeSetUpTheValues
-    13:13:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> moveToNativeSetUpTheValues
-    13:13:void moveToNativeSetUpTheValues():0 -> moveToNativeSetUpTheValues
-    14:14:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0:0 -> moveToNativeSetUpTheValues
-    14:14:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> moveToNativeSetUpTheValues
-    14:14:void moveToNativeSetUpTheValues():0 -> moveToNativeSetUpTheValues
-    15:15:void com.crowdfire.cfalertdialog.CFAlertDialog.setDialogParams(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> moveToNativeSetUpTheValues
-    15:15:void com.crowdfire.cfalertdialog.CFAlertDialog.access$4600(com.crowdfire.cfalertdialog.CFAlertDialog,com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0 -> moveToNativeSetUpTheValues
-    15:15:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> moveToNativeSetUpTheValues
-    15:15:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> moveToNativeSetUpTheValues
-    15:15:void moveToNativeSetUpTheValues():0 -> moveToNativeSetUpTheValues
-    16:16:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0:0 -> moveToNativeSetUpTheValues
-    16:16:void moveToNativeSetUpTheValues():0 -> moveToNativeSetUpTheValues
-    17:17:void moveToNativeSetUpTheValues():0:0 -> moveToNativeSetUpTheValues
     1:1:void com.crowdfire.cfalertdialog.CFAlertDialog$Builder.<init>(android.content.Context):0:0 -> openCameraDevice
     1:1:void openCameraDevice(boolean):0 -> openCameraDevice
     2:2:android.content.Context com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$902(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,android.content.Context):0:0 -> openCameraDevice
@@ -17565,6 +17513,11 @@ humer.UvcCamera.SetUpTheUsbDeviceUvc -> humer.UvcCamera.SetUpTheUsbDeviceUvc:
     16:16:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0:0 -> moveToNativeSetUpTheValues
     16:16:void moveToNativeSetUpTheValues():0 -> moveToNativeSetUpTheValues
     17:17:void moveToNativeSetUpTheValues():0:0 -> moveToNativeSetUpTheValues
+    1:1:void android.support.v4.content.LocalBroadcastManager.registerReceiver(android.content.BroadcastReceiver,android.content.IntentFilter):0:0 -> onCreate
+    1:1:void onCreate(android.os.Bundle):0 -> onCreate
+    2:2:void onCreate(android.os.Bundle):0:0 -> onCreate
+    3:3:void android.support.v4.content.LocalBroadcastManager.registerReceiver(android.content.BroadcastReceiver,android.content.IntentFilter):0:0 -> onCreate
+    3:3:void onCreate(android.os.Bundle):0 -> onCreate
     1:1:void com.crowdfire.cfalertdialog.CFAlertDialog$Builder.<init>(android.content.Context):0:0 -> openCameraDevice
     1:1:void openCameraDevice(boolean):0 -> openCameraDevice
     2:2:android.content.Context com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$902(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,android.content.Context):0:0 -> openCameraDevice

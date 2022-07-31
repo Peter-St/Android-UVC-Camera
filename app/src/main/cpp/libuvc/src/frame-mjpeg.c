@@ -41,8 +41,10 @@
  */
 #include "libuvc/libuvc.h"
 #include "libuvc/libuvc_internal.h"
-#include <jpeglib.h>
+#include "../../libjpeg-cmake/jpeglib.h"
+//#include <jpeglib.h>
 #include <setjmp.h>
+#include "libyuv.h"
 
 extern uvc_error_t uvc_ensure_frame_size(uvc_frame_t *frame, size_t need_bytes);
 
@@ -490,17 +492,22 @@ uvc_error_t uvc_mjpeg2yuyv(uvc_frame_t *in, uvc_frame_t *out) {
 	struct error_mgr jerr;
 	dinfo.err = jpeg_std_error(&jerr.super);
 	jerr.super.error_exit = _error_exit;
-
+	LOGDEB("setjmp");
 	if (setjmp(jerr.jmp)) {
 		goto fail;
 	}
-
+	LOGDEB("jpeg_create_decompress");
 	jpeg_create_decompress(&dinfo);
+	LOGDEB("jpeg_mem_src");
 	jpeg_mem_src(&dinfo, in->data, in->actual_bytes/*in->data_bytes*/);	// XXX
+
+	LOGDEB("jpeg_read_header");
 	jpeg_read_header(&dinfo, TRUE);
 
 	if (dinfo.dc_huff_tbl_ptrs[0] == NULL) {
 		/* This frame is missing the Huffman tables: fill in the standard ones */
+		LOGDEB("insert_huff_tables");
+
 		insert_huff_tables(&dinfo);
 	}
 
@@ -508,6 +515,8 @@ uvc_error_t uvc_mjpeg2yuyv(uvc_frame_t *in, uvc_frame_t *out) {
 	dinfo.dct_method = JDCT_IFAST;
 
 	// start decompressor
+	LOGDEB("jpeg_start_decompress");
+
 	jpeg_start_decompress(&dinfo);
 
 	// these dinfo.xxx valiables are only valid after jpeg_start_decompress
@@ -540,8 +549,11 @@ uvc_error_t uvc_mjpeg2yuyv(uvc_frame_t *in, uvc_frame_t *out) {
 		}
 		out->actual_bytes = in->width * in->height * 2;	// XXX
 	}
+	LOGDEB("jpeg_finish_decompress");
 
 	jpeg_finish_decompress(&dinfo);
+	LOGDEB("jpeg_destroy_decompress");
+
 	jpeg_destroy_decompress(&dinfo);
 	return lines_read == out->height ? UVC_SUCCESS : UVC_ERROR_OTHER;
 
@@ -549,4 +561,19 @@ fail:
 	jpeg_destroy_decompress(&dinfo);
 	return lines_read == out->height ? UVC_SUCCESS : UVC_ERROR_OTHER+1;
 }
+
+
+//MJPGToARGB
+uvc_error_t uvc_mjpeg2argb(uvc_frame_t *frame_mjpeg, uvc_frame_t *frame) {
+
+
+
+
+
+
+
+
+}
+
+
 

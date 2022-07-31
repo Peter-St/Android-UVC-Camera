@@ -122,10 +122,17 @@ target_include_directories(uvc PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/os")
 target_link_libraries(uvc usb1.0)
 
 
-set (JPG_DIR ../libjpeg)
-add_subdirectory (${JPG_DIR} ./jpeg)
-include_directories (uvc PUBLIC ${JPG_DIR})
-target_link_libraries(uvc jpeg)
+
+set (JPG_DIR ../libjpeg-cmake)
+add_subdirectory (${JPG_DIR} ./libjpeg-cmake)
+# (uvc PUBLIC ${JPG_DIR}/simd)
+target_link_libraries(uvc libjpeg)
+
+
+#set (JPG_DIR ../libjpeg)
+#add_subdirectory (${JPG_DIR} ./jpeg)
+#include_directories (uvc PUBLIC ${JPG_DIR})
+#target_link_libraries(uvc jpeg)
 
 #set(JPEG_INCLUDE_DIR ${JPG_DIR})
 #  if(JPEG_INCLUDE_DIR)

@@ -36,7 +36,7 @@ public interface JNA_I_LibUsb extends Library {
 
     public static final JNA_I_LibUsb INSTANCE = Native.load("Uvc_Support", JNA_I_LibUsb.class);
 
-    public void set_the_native_Values(Pointer uvc_camera, int FD, int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
+    public int set_the_native_Values(Pointer uvc_camera, int FD, int packetsPerReques, int maxPacketSiz, int activeUrb, int camStreamingAltSettin, int camFormatInde,
                                       int camFrameInde, int camFrameInterva, int imageWidt, int imageHeigh, int camStreamingEndpoint, int camStreamingInterfaceNumber,
                                       String frameFormat, int numberOfAutoFrames, int bcdUVC_int, int lowAndroid);
 
@@ -66,7 +66,7 @@ public interface JNA_I_LibUsb extends Library {
     }
     public void setCallbackAuto(eventCallbackAuto evnHnd);
 
-    public void stopStreaming();
+    public void stopStreaming(Pointer uvc_camera);
 
     public void stopJavaVM();
 
@@ -89,11 +89,6 @@ public interface JNA_I_LibUsb extends Library {
 
     // WebRtc Methods
     public void prepairTheStream_WebRtc_Service();
-
-    public void lunchTheStream_WebRtc_Service();
-
-    // Stream Activity
-    public int JniStreamOverSurfaceUVC (Pointer uvc_camera);
 
     public void setImageCapture();
 

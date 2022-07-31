@@ -55,7 +55,6 @@ This Repository is provided "as is", without warranties of any kind.
 
 typedef struct uvc_camera {
 
-
 	// UVC Preview
 	long preview_pointer;
 
@@ -84,11 +83,18 @@ typedef struct uvc_camera {
 	int busnum;
 	int devaddr;
 	bool low_Android;
+    int streamEndPointAdressOverNative;
+    int valuesSet;
 
 
 	int bcdUVC;
 	bool initialized;
 	uint8_t numberOfAutoFrames;
+
+    volatile bool runningStream;
+    volatile bool auto_values_collected;
+
+
 } uvc_camera_t;
 
 ///////////////// LibUvc ////////////////////////////////
@@ -145,7 +151,7 @@ extern int set_the_native_Values (uvc_camera_t *uvc_camera, int FD, int packetsP
                  int camFrameInde, int camFrameInterva, int imageWidt, int imageHeigh, int camStreamingEndpointAdress, int camStreamingInterfaceNumber,
                  const char* frameformat, int numberOfAutoFrame, int bcdUVC_int, int lowAndroid);
 extern int initStreamingParms(uvc_camera_t *uvc_camera, int FD);
-extern void stopStreaming();
+extern void stopStreaming(uvc_camera_t *uvc_camera);
 extern void stopJavaVM();
 //extern unsigned char * probeCommitControl();
 
@@ -195,10 +201,6 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniIsoStre
         (JNIEnv *, jobject, jint, jint);
 
 // Streaming Method
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniSetSurfaceView
-        (JNIEnv *, jobject, jobject);
-JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniSetSurfaceYuv
-        (JNIEnv *, jobject, jobject);
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_PictureVideoSave
         (JNIEnv* env, jobject thiz, jobject bitmap);
 
@@ -209,9 +211,6 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_UYVYpixelt
 extern unsigned char* convertUYVYtoJPEG (unsigned char* UYVY_frame_array, int* jpgLength, int UYVYframeLength, int imageWidth, int imageHeight);
         // get Bitmap
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_frameToBitmap( JNIEnv* env, jobject thiz, jobject bitmap);
-
-
-extern int JniStreamOverSurfaceUVC (uvc_camera_t* cam_pointer);
 
 ///////////////   Stream over JNI and native Surface View
 JNIEXPORT void JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_JniStreamOverSurface
@@ -224,7 +223,6 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_SetUpTheUsbDeviceUvc_JniIsoStreamAct
         (JNIEnv *, jobject, jobject, jint, jint);
 
 ////////// WebRTC
-extern void lunchTheStream_WebRtc_Service();
 JNIEXPORT void JNICALL Java_com_example_androidthings_videortc_UsbCapturer_JniWebRtcJavaMethods
         (JNIEnv *, jobject);
 

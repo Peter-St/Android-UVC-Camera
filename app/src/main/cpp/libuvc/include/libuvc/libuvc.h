@@ -829,6 +829,8 @@ uvc_error_t uvc_mjpeg2bgr(uvc_frame_t *in, uvc_frame_t *out);		// XXX
 uvc_error_t uvc_mjpeg2rgb565(uvc_frame_t *in, uvc_frame_t *out);	// XXX
 uvc_error_t uvc_mjpeg2rgbx(uvc_frame_t *in, uvc_frame_t *out);		// XXX
 uvc_error_t uvc_mjpeg2yuyv(uvc_frame_t *in, uvc_frame_t *out);		// XXX
+uvc_error_t uvc_mjpeg2argb(uvc_frame_t *in, uvc_frame_t *out);
+
 #endif
 
 uvc_error_t uvc_yuyv2rgb565(uvc_frame_t *in, uvc_frame_t *out);		// XXX
