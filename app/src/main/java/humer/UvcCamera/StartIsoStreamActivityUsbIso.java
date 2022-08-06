@@ -156,6 +156,7 @@ public class StartIsoStreamActivityUsbIso extends Activity {
     public static boolean   LIBUSB;
     public static boolean   moveToNative;
     public static boolean   bulkMode;
+    public static boolean   isochronous;
 
 
     // Vales for debuging the camera

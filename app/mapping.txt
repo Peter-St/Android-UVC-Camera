@@ -1,7 +1,7 @@
 # compiler: R8
 # compiler_version: 3.1.66
 # min_api: 15
-# pg_map_id: 64e3db3
+# pg_map_id: af63d3a
 # common_typos_disable
 # {"id":"com.android.tools.r8.mapping","version":"1.0"}
 android.arch.core.internal.FastSafeIterableMap -> a.a:
@@ -17566,7 +17566,55 @@ humer.UvcCamera.SetUpTheUsbDeviceUvc -> humer.UvcCamera.SetUpTheUsbDeviceUvc:
     15:15:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0:0 -> openCameraDevice
     15:15:void openCameraDevice(boolean):0 -> openCameraDevice
     16:16:void openCameraDevice(boolean):0:0 -> openCameraDevice
-humer.UvcCamera.SetUpTheUsbDeviceUvc$27$1 -> humer.UvcCamera.SetUpTheUsbDeviceUvc$27$1:
+    17:17:void com.crowdfire.cfalertdialog.CFAlertDialog$Builder.<init>(android.content.Context):0:0 -> openCameraDevice
+    17:17:void openCameraDevice(boolean):0 -> openCameraDevice
+    18:18:android.content.Context com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$902(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,android.content.Context):0:0 -> openCameraDevice
+    18:18:void com.crowdfire.cfalertdialog.CFAlertDialog$Builder.<init>(android.content.Context):0 -> openCameraDevice
+    18:18:void openCameraDevice(boolean):0 -> openCameraDevice
+    19:19:void openCameraDevice(boolean):0:0 -> openCameraDevice
+    20:20:android.view.View com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$2202(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,android.view.View):0:0 -> openCameraDevice
+    20:20:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setHeaderView(android.view.View):0 -> openCameraDevice
+    20:20:void openCameraDevice(boolean):0 -> openCameraDevice
+    21:21:int com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$2302(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,int):0:0 -> openCameraDevice
+    21:21:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setHeaderView(android.view.View):0 -> openCameraDevice
+    21:21:void openCameraDevice(boolean):0 -> openCameraDevice
+    22:22:com.crowdfire.cfalertdialog.CFAlertDialog$CFAlertStyle com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$2602(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,com.crowdfire.cfalertdialog.CFAlertDialog$CFAlertStyle):0:0 -> openCameraDevice
+    22:22:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setDialogStyle(com.crowdfire.cfalertdialog.CFAlertDialog$CFAlertStyle):0 -> openCameraDevice
+    22:22:void openCameraDevice(boolean):0 -> openCameraDevice
+    23:23:int com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$4200(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> openCameraDevice
+    23:23:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> openCameraDevice
+    23:23:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> openCameraDevice
+    23:23:void openCameraDevice(boolean):0 -> openCameraDevice
+    24:24:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0:0 -> openCameraDevice
+    24:24:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> openCameraDevice
+    24:24:void openCameraDevice(boolean):0 -> openCameraDevice
+    25:25:android.content.Context com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$900(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> openCameraDevice
+    25:25:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> openCameraDevice
+    25:25:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> openCameraDevice
+    25:25:void openCameraDevice(boolean):0 -> openCameraDevice
+    26:26:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0:0 -> openCameraDevice
+    26:26:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> openCameraDevice
+    26:26:void openCameraDevice(boolean):0 -> openCameraDevice
+    27:27:android.content.Context com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$900(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> openCameraDevice
+    27:27:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> openCameraDevice
+    27:27:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> openCameraDevice
+    27:27:void openCameraDevice(boolean):0 -> openCameraDevice
+    28:28:int com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$4200(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> openCameraDevice
+    28:28:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> openCameraDevice
+    28:28:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> openCameraDevice
+    28:28:void openCameraDevice(boolean):0 -> openCameraDevice
+    29:29:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0:0 -> openCameraDevice
+    29:29:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> openCameraDevice
+    29:29:void openCameraDevice(boolean):0 -> openCameraDevice
+    30:30:void com.crowdfire.cfalertdialog.CFAlertDialog.setDialogParams(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> openCameraDevice
+    30:30:void com.crowdfire.cfalertdialog.CFAlertDialog.access$4600(com.crowdfire.cfalertdialog.CFAlertDialog,com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0 -> openCameraDevice
+    30:30:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> openCameraDevice
+    30:30:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> openCameraDevice
+    30:30:void openCameraDevice(boolean):0 -> openCameraDevice
+    31:31:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0:0 -> openCameraDevice
+    31:31:void openCameraDevice(boolean):0 -> openCameraDevice
+    32:32:void openCameraDevice(boolean):0:0 -> openCameraDevice
+humer.UvcCamera.SetUpTheUsbDeviceUvc$30$1 -> humer.UvcCamera.SetUpTheUsbDeviceUvc$30$1:
     1:1:void com.tomer.fadingtextview.FadingTextView.setTimeout(long,java.util.concurrent.TimeUnit):0:0 -> run
     1:1:void run():0 -> run
     2:2:void run():0:0 -> run

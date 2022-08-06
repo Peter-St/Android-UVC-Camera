@@ -747,7 +747,7 @@ public class Main extends AppCompatActivity {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 if(!showCameraPermissionCamera()) return;
             }
-            if (camFormatIndex == 0 || camFrameIndex == 0 ||camFrameInterval == 0 ||packetsPerRequest == 0 ||maxPacketSize == 0 ||imageWidth == 0 || activeUrbs == 0 ) {
+            if (camFormatIndex == 0 || camFrameIndex == 0 ||camFrameInterval == 0 ||maxPacketSize == 0 ||imageWidth == 0 || activeUrbs == 0 ) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

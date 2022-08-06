@@ -153,6 +153,7 @@ public class SetUpTheUsbDeviceUsbIso extends Activity {
     public static boolean   moveToNative;
     public boolean          transferSucessful;
     public boolean          bulkMode;
+    public static boolean   isochronous;
 
 
 
@@ -539,7 +540,7 @@ public class SetUpTheUsbDeviceUsbIso extends Activity {
                 });
             } else {
                 // This activity implements OnMenuItemClickListener
-                popup.inflate(R.menu.set_up_dev_bulk_menu);
+                popup.inflate(R.menu.set_up_dev_bulk_menu_usbiso);
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {

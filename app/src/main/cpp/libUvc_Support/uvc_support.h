@@ -327,9 +327,12 @@ JNIEXPORT void JNICALL Java_humer_UvcCamera_LibUsb_StartIsoStreamService_JniPrep
 #define FRAME_POOL_SZ MAX_FRAME + 2
 
 #define  LOG_TAG    "From libuvc_support"
-
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+
+#define  LOG_TAG_PREVIEW    "From UVCPreviw"
+#define  LOGD_P(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG_PREVIEW, __VA_ARGS__)
+#define  LOGE_P(...)  __android_log_print(ANDROID_LOG_ERROR, LOG_TAG_PREVIEW, __VA_ARGS__)
 
 #define UVC_STREAM_EOH (1 << 7)
 #define UVC_STREAM_ERR (1 << 6)

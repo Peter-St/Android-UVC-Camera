@@ -11,17 +11,11 @@
         android:title="Bulk Test" >
         <menu>
             <item
-                android:id="@+id/buld_read_1"
-                android:title="Bulk read 1" />
+                android:id="@+id/bulk_read_1_frame"
+                android:title="Bulk read 1 Frame" />
             <item
-                android:id="@+id/buld_read_2"
-                android:title="Bulk read 2" />
-            <item
-                android:id="@+id/buld_read_3"
-                android:title="Bulk read 3" />
-            <item
-                android:id="@+id/buld_read_4"
-                android:title="Bulk read 4" />
+                android:id="@+id/bulk_read_5_sec"
+                android:title="Bulk read 5 sec" />
         </menu>
     </item>
 

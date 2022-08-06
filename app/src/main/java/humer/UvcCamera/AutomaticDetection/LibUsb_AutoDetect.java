@@ -67,6 +67,7 @@ public class LibUsb_AutoDetect extends AppCompatActivity {
     public static boolean   libUsb = true;
     public static boolean   moveToNative;
     public static boolean   bulkMode;
+    public static boolean   isochronous;
 
 
     private volatile boolean running = false;

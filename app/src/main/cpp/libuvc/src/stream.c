@@ -830,7 +830,7 @@ static void _uvc_process_payload(uvc_stream_handle_t *strmh, const uint8_t *payl
 
 		if (UNLIKELY(header_len > payload_len)) {
 			strmh->bfh_err |= UVC_STREAM_ERR;
-			UVC_DEBUG("bogus packet: actual_len=%zd, header_len=%zd\n", payload_len, header_len);
+			LOGDEB("bogus packet: actual_len=%zd, header_len=%zd\n", payload_len, header_len);
 			return;
 		}
 
@@ -850,7 +850,7 @@ static void _uvc_process_payload(uvc_stream_handle_t *strmh, const uint8_t *payl
 
 		if (UNLIKELY(header_info & UVC_STREAM_ERR)) {
 //			strmh->bfh_err |= UVC_STREAM_ERR;
-			UVC_DEBUG("bad packet: error bit set");
+			LOGDEB("bad packet: error bit set");
 			libusb_clear_halt(strmh->devh->usb_devh, strmh->stream_if->bEndpointAddress);
 //			uvc_vc_get_error_code(strmh->devh, &vc_error_code, UVC_GET_CUR);
 			uvc_vs_get_error_code(strmh->devh, &vs_error_code, UVC_GET_CUR);
@@ -861,6 +861,7 @@ static void _uvc_process_payload(uvc_stream_handle_t *strmh, const uint8_t *payl
 			/* The frame ID bit was flipped, but we have image data sitting
 				around from prior transfers. This means the camera didn't send
 				an EOF for the last transfer of the previous frame. */
+			//LOGDEB("header_info & UVC_STREAM_FID\nstrmh->got_bytes = %d", strmh->got_bytes);
 			_uvc_swap_buffers(strmh);
 		}
 
@@ -891,15 +892,21 @@ static void _uvc_process_payload(uvc_stream_handle_t *strmh, const uint8_t *payl
 	}
 
 	if (LIKELY(data_len > 0)) {
-		if (LIKELY(strmh->got_bytes + data_len < strmh->size_buf)) {
+		if (LIKELY(strmh->got_bytes + data_len <= strmh->size_buf)) {
 			memcpy(strmh->outbuf + strmh->got_bytes, payload + header_len, data_len);
 			strmh->got_bytes += data_len;
 		} else {
 			strmh->bfh_err |= UVC_STREAM_ERR;
+			LOGDEB("\nstrmh->got_bytes + data_len = %d\nstrmh->size_buf = %d\nERROR !!!! strmh->got_bytes + data_len < strmh->size_buf\n",
+				   (strmh->got_bytes + data_len), strmh->size_buf);
+			LOGDEB("strmh->got_bytes = %d\ndata_len = %d", strmh->got_bytes, data_len);
+			LOGDEB("strmh->bfh_err |= UVC_STREAM_ERR\nstrmh->bfh_err = %d", strmh->bfh_err);
+
 		}
 
 		if (header_info & UVC_STREAM_EOF/*(1 << 1)*/) {
 			// The EOF bit is set, so publish the complete frame
+			//LOGDEB("UVC_STREAM_EOF\nstrmh->got_bytes = %d", strmh->got_bytes);
 			_uvc_swap_buffers(strmh);
 		}
 	}
@@ -2328,12 +2335,10 @@ static void *_uvc_user_caller(void *arg) {
 			for (; strmh->running && (last_seq == strmh->hold_seq) ;) {
 				pthread_cond_wait(&strmh->cb_cond, &strmh->cb_mutex);
 			}
-
 			if (UNLIKELY(!strmh->running)) {
 				pthread_mutex_unlock(&strmh->cb_mutex);
 				break;
 			}
-
 			last_seq = strmh->hold_seq;
 			if (LIKELY(!strmh->hold_bfh_err))	// XXX
 				_uvc_populate_frame(strmh);

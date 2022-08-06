@@ -250,6 +250,7 @@ uvc_error_t uvc_get_device_with_fd(uvc_context_t *ctx, uvc_device_t **device,
 
     struct libusb_device *usb_dev = libusb_get_device(internal_devh->usb_devh);
 
+
     if (LIKELY(usb_dev)) {
         *device = malloc(sizeof(uvc_device_t/* *device */));
         (*device)->ctx = ctx;

@@ -202,11 +202,11 @@
 
 #endif
 
-#define		ENTER()				LOGD("begin")
-#define		RETURN(code,type)	{type RESULT = code; LOGD("end (%d)", (int)RESULT); return RESULT;}
-#define		RET(code)			{LOGD("end"); return code;}
-#define		EXIT()				{LOGD("end"); return;}
-#define		PRE_EXIT()			LOGD("end")
+#define		ENTER()				LOGD_P("begin")
+#define		RETURN(code,type)	{type RESULT = code; LOGD_P("end (%d)", (int)RESULT); return RESULT;}
+#define		RET(code)			{LOGD_P("end"); return code;}
+#define		EXIT()				{LOGD_P("end"); return;}
+#define		PRE_EXIT()			LOGD_P("end")
 
 #if defined(__ANDROID__) && (defined(USE_LOGALL) || defined(USE_LOGI)) && !defined(LOG_NDEBUG)
 #define MARK(FMT, ...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "[%s:%d:%s]:" FMT,	\

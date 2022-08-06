@@ -96,6 +96,7 @@ public class SaveToFile  {
     private static boolean  libUsb;
     public static boolean   moveToNative;
     public static boolean  bulkMode;
+    public static boolean isochronous;
 
 
 
@@ -618,6 +619,7 @@ public class SaveToFile  {
             libUsb = setUpTheUsbDeviceUsbIso.libUsb;
             moveToNative = setUpTheUsbDeviceUsbIso.moveToNative;
             bulkMode = setUpTheUsbDeviceUsbIso.bulkMode;
+            isochronous = setUpTheUsbDeviceUsbIso.isochronous;
 
         } else if (setUpTheUsbDeviceUvc != null) {
             sALT_SETTING = setUpTheUsbDeviceUvc.camStreamingAltSetting;
@@ -641,6 +643,7 @@ public class SaveToFile  {
             libUsb = setUpTheUsbDeviceUvc.libUsb;
             moveToNative = setUpTheUsbDeviceUvc.moveToNative;
             bulkMode = setUpTheUsbDeviceUvc.bulkMode;
+            isochronous = setUpTheUsbDeviceUvc.isochronous;
 
         } else if (libUsb_autoDetect != null) {
             mNativePtr = libUsb_autoDetect.mNativePtr;
@@ -665,6 +668,7 @@ public class SaveToFile  {
             libUsb = libUsb_autoDetect.libUsb;
             moveToNative = libUsb_autoDetect.moveToNative;
             bulkMode = libUsb_autoDetect.bulkMode;
+            isochronous = libUsb_autoDetect.isochronous;
 
         } else if (jna_autoDetect != null) {
             sALT_SETTING = jna_autoDetect.camStreamingAltSetting;
@@ -688,6 +692,8 @@ public class SaveToFile  {
             libUsb = jna_autoDetect.libUsb;
             moveToNative = jna_autoDetect.moveToNative;
             bulkMode = jna_autoDetect.bulkMode;
+            isochronous = jna_autoDetect.isochronous;
+
         }
     }
 
@@ -1325,98 +1331,105 @@ public class SaveToFile  {
     }
 
     public void selectPackets(boolean automatic) {
-        if (!automatic) {
-
-            CFAlertDialog alertDialog;
-            CFAlertDialog.Builder builder = new CFAlertDialog.Builder(mContext);
-            LayoutInflater li = LayoutInflater.from(mContext);
-            View stf_select_max_package_layout_view = li.inflate(R.layout.stf_select_max_package_layout, null);
-            builder.setHeaderView(stf_select_max_package_layout_view);
-            builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
-            builder.setTitle("Select your Packets per Request");
-            builder.setMessage("Your current Value = " + spacketsPerRequest);
-            final EditText input = new EditText(mContext);
-            input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
-            builder.setFooterView(input);
-            builder.addButton("Done", Color.parseColor("#FFFFFF"), Color.parseColor("#429ef4"), CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (input.getText().toString().isEmpty() == false) {
-                        spacketsPerRequest = Integer.parseInt(input.getText().toString());
-                        selectUrbs(automatic);
-                        dialog.dismiss();
-                    }
-                    else if (spacketsPerRequest != 0) {
-                        selectUrbs(automatic);
-                        dialog.dismiss();
-                    }
-                    else displayMessage("Select a Number, or type in a Value");
-                }
-            });
-            alertDialog = builder.show();
-            TextView tv = stf_select_max_package_layout_view.findViewById(R.id.textView_setPackets);
-            tv.setText("One Packets has a size of " + smaxPacketSize + " bytes");
-            CFPushButton packetOne = stf_select_max_package_layout_view.findViewById(R.id.one) ;
-            packetOne.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    spacketsPerRequest = 1;
-                    alertDialog.dismiss();
-                    selectUrbs(false);
-                }
-            });
-            CFPushButton packetTwo = stf_select_max_package_layout_view.findViewById(R.id.two) ;
-            packetTwo.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    spacketsPerRequest = 2;
-                    alertDialog.dismiss();
-                    selectUrbs(false);
-                }
-            });
-            CFPushButton packetThree = stf_select_max_package_layout_view.findViewById(R.id.three) ;
-            packetThree.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    spacketsPerRequest = 4;
-                    alertDialog.dismiss();
-                    selectUrbs(false);
-                }
-            });
-            CFPushButton packetFour = stf_select_max_package_layout_view.findViewById(R.id.four) ;
-            packetFour.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    spacketsPerRequest = 8;
-                    alertDialog.dismiss();
-                    selectUrbs(false);
-                }
-            });
-            CFPushButton packetFive = stf_select_max_package_layout_view.findViewById(R.id.five) ;
-            packetFive.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    spacketsPerRequest = 16;
-                    alertDialog.dismiss();
-                    selectUrbs(false);
-                }
-            });
-            CFPushButton packetSix = stf_select_max_package_layout_view.findViewById(R.id.six) ;
-            packetSix.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    spacketsPerRequest = 32;
-                    alertDialog.dismiss();
-                    selectUrbs(false);
-                }
-            });
+        if (bulkMode) {
+            selectUrbs(automatic);
         } else {
-            //if (raisePacketsPerRequest) spacketsPerRequest ++;
-            selectUrbs(true);
+            if (!automatic) {
+
+                CFAlertDialog alertDialog;
+                CFAlertDialog.Builder builder = new CFAlertDialog.Builder(mContext);
+                LayoutInflater li = LayoutInflater.from(mContext);
+                View stf_select_max_package_layout_view = li.inflate(R.layout.stf_select_max_package_layout, null);
+                builder.setHeaderView(stf_select_max_package_layout_view);
+                builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+                builder.setTitle("Select your Packets per Request");
+                builder.setMessage("Your current Value = " + spacketsPerRequest);
+                final EditText input = new EditText(mContext);
+                input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+                builder.setFooterView(input);
+                builder.addButton("Done", Color.parseColor("#FFFFFF"), Color.parseColor("#429ef4"), CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (input.getText().toString().isEmpty() == false) {
+                            spacketsPerRequest = Integer.parseInt(input.getText().toString());
+                            selectUrbs(automatic);
+                            dialog.dismiss();
+                        }
+                        else if (spacketsPerRequest != 0) {
+                            selectUrbs(automatic);
+                            dialog.dismiss();
+                        }
+                        else displayMessage("Select a Number, or type in a Value");
+                    }
+                });
+                alertDialog = builder.show();
+                TextView tv = stf_select_max_package_layout_view.findViewById(R.id.textView_setPackets);
+                tv.setText("One Packets has a size of " + smaxPacketSize + " bytes");
+                CFPushButton packetOne = stf_select_max_package_layout_view.findViewById(R.id.one) ;
+                packetOne.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        spacketsPerRequest = 1;
+                        alertDialog.dismiss();
+                        selectUrbs(false);
+                    }
+                });
+                CFPushButton packetTwo = stf_select_max_package_layout_view.findViewById(R.id.two) ;
+                packetTwo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        spacketsPerRequest = 2;
+                        alertDialog.dismiss();
+                        selectUrbs(false);
+                    }
+                });
+                CFPushButton packetThree = stf_select_max_package_layout_view.findViewById(R.id.three) ;
+                packetThree.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        spacketsPerRequest = 4;
+                        alertDialog.dismiss();
+                        selectUrbs(false);
+                    }
+                });
+                CFPushButton packetFour = stf_select_max_package_layout_view.findViewById(R.id.four) ;
+                packetFour.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        spacketsPerRequest = 8;
+                        alertDialog.dismiss();
+                        selectUrbs(false);
+                    }
+                });
+                CFPushButton packetFive = stf_select_max_package_layout_view.findViewById(R.id.five) ;
+                packetFive.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        spacketsPerRequest = 16;
+                        alertDialog.dismiss();
+                        selectUrbs(false);
+                    }
+                });
+                CFPushButton packetSix = stf_select_max_package_layout_view.findViewById(R.id.six) ;
+                packetSix.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        spacketsPerRequest = 32;
+                        alertDialog.dismiss();
+                        selectUrbs(false);
+                    }
+                });
+            } else {
+                //if (raisePacketsPerRequest) spacketsPerRequest ++;
+                selectUrbs(true);
+            }
         }
     }
 
     public void selectPackets(final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info) {
+        if (bulkMode) {
+            selectUrbs(uvc_device_info);
+        } else {
             CFAlertDialog alertDialog;
             CFAlertDialog.Builder builder = new CFAlertDialog.Builder(mContext);
             LayoutInflater li = LayoutInflater.from(mContext);
@@ -1500,6 +1513,7 @@ public class SaveToFile  {
                     selectUrbs(uvc_device_info);
                 }
             });
+        }
     }
 
     public void selectUrbs(boolean automatic) {

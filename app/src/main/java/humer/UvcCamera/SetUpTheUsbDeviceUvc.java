@@ -121,6 +121,10 @@ public class SetUpTheUsbDeviceUvc extends Activity {
     private static final int VS_STREAM_ERROR_CODE_CONTROL = 0x06;
     private static final int VS_STILL_IMAGE_TRIGGER_CONTROL = 0x05;
 
+    // LIBUSB VALUE
+    private static final int LIBUSB_DT_SS_ENDPOINT_COMPANION = 0x30;
+
+
     // Android USB Classes
     private UsbManager usbManager;
     private UsbDevice camDevice = null;
@@ -155,7 +159,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
     public static boolean moveToNative;
     public boolean transferSucessful;
     public boolean bulkMode;
-    public static boolean isochronous;
+    public boolean isochronous;
 
 
     // Vales for debuging the camera
@@ -531,7 +535,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                 }
             });
             return;
-        } else if (camFormatIndex == 0 || camFrameIndex == 0 || camFrameInterval == 0 || packetsPerRequest == 0 || maxPacketSize == 0 || imageWidth == 0 || activeUrbs == 0) {
+        } else if (camFormatIndex == 0 || camFrameIndex == 0 || camFrameInterval == 0 || maxPacketSize == 0 || imageWidth == 0 || activeUrbs == 0) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -577,29 +581,18 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                             case R.id.videoProbeCommit:
                                 videoProbeCommitTransfer();
                                 return true;
-                            case R.id.buld_read_1:
+                            case R.id.bulk_read_1_frame:
                                 try {
+                                    isoRead1Frame();
                                     //testBulkRead1();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                                 return true;
-                            case R.id.buld_read_2:
+
+                            case R.id.bulk_read_5_sec:
                                 try {
-                                    //testBulkRead2();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                                return true;
-                            case R.id.buld_read_3:
-                                try {
-                                    //testBulkRead3();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                                return true;
-                            case R.id.buld_read_4:
-                                try {
+                                    isoRead5sec();
                                     //testBulkRead4();
                                 } catch (Exception e) {
                                     e.printStackTrace();
@@ -889,12 +882,14 @@ public class SetUpTheUsbDeviceUvc extends Activity {
             // Check if the Device is UVC
             isochronous = (interfaceArray[uvc_device_info.stream_ifs.bInterfaceNumber].num_altsetting > 1);
             if (isochronous) {
+                bulkMode = false;
                 log("VS interface has multiple altsettings --> isochronous transfer supported");
                 streamInterfaceEntries.append("  Isochronous transfer supported\n");
             } else {
+                bulkMode = true;
                 log("VS interface has only one altsetting --> isochronous transfer not supported");
                 streamInterfaceEntries.append(" VS interface has only one altsettings --> isochronous transfer not supported\n");
-                return;
+                //return;
             }
             bcdUVC_short = uvc_device_info.ctrl_if.bcdUVC;
             List<Integer> maxPacketSizeArray = new ArrayList<Integer>();
@@ -909,7 +904,9 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                     if(altsettingArray[altLoop].endpoint != null) {
                         log("Altsetting " + altLoop +  " has a packetSize of: " + returnConvertedValue(altsettingArray[altLoop].endpoint.wMaxPacketSize)  + " \n");
                         streamInterfaceEntries.append("   Altsetting " + altLoop +  " maxPacketSize: " + returnConvertedValue(altsettingArray[altLoop].endpoint.wMaxPacketSize) + " \n");
-                        maxPacketSizeArray.add(returnConvertedValue(altsettingArray[altLoop].endpoint.wMaxPacketSize));
+                        if (!isochronous) {
+                            if(intLoop > 0) maxPacketSizeArray.add(returnConvertedValue(altsettingArray[altLoop].endpoint.wMaxPacketSize));
+                        } else maxPacketSizeArray.add(returnConvertedValue(altsettingArray[altLoop].endpoint.wMaxPacketSize));
                         camStreamingEndpointAdress = altsettingArray[altLoop].endpoint.bEndpointAddress;
                     } else {
                         log("Altsetting has no endpoint");
@@ -1118,10 +1115,115 @@ public class SetUpTheUsbDeviceUvc extends Activity {
         if (!init) {
             if (convertedMaxPacketSize == null) listDevice(camDevice);
             if(!isochronous) {
-                displayMessage("Camera not supported");
+                //displayMessage("Camera not supported");
                 log("No Isochronous Camera");
-            } else {
+                CFAlertDialog alertDialog;
+                CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
+                LayoutInflater li = LayoutInflater.from(this);
+                View setup_auto_manual_view = li.inflate(R.layout.set_up_the_device_manual_automatic, null);
+                builder.setHeaderView(setup_auto_manual_view);
+                builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+                alertDialog = builder.show();
+                CFPushButton automatic = setup_auto_manual_view.findViewById(R.id.automatic);
+                automatic.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //if (convertedMaxPacketSize == null) listDevice(camDevice);
+                        if (!bulkMode) {
+                            //displayMessage("Please select the manual Method");
+                            //return;
+                        }
+                        log("Automatic Button Pressed");
+                        automaticStart = true;
+                        if (convertedMaxPacketSize == null) listDevice(camDevice);
+                        ProgressBar progressBar = findViewById(R.id.progressBar);
+                        progressBar.setVisibility(View.VISIBLE);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tv = (ZoomTextView) findViewById(R.id.textDarstellung);
+                                tv.setText("");
+                                tv.setTextColor(Color.BLACK);
+                            }
+                        });
+                        alertDialog.dismiss();
+                    }
+                });
+                CFPushButton manual = setup_auto_manual_view.findViewById(R.id.manual);
+                manual.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        log("Manual Button Pressed");
+                        // Set up from UVC manually
+                        if (convertedMaxPacketSize == null) listDevice(camDevice);
+                        log("running stf.setUvcSettingsMethod");
+                        final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info = JNA_I_LibUsb.INSTANCE.listDeviceUvc(new Pointer(mNativePtr), camDeviceConnection.getFileDescriptor());
+                        stf.setUpWithUvcValues_libusb(uvc_device_info, convertedMaxPacketSize, false);
+                        alertDialog.dismiss();
+                    }
+                });
+                alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        progress = "1% done";
+                        if (automaticStart) {
+                            // Automatic UVC Detection
+                            final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info = JNA_I_LibUsb.INSTANCE.listDeviceUvc(new Pointer(mNativePtr), camDeviceConnection.getFileDescriptor());
+                            stf.setUpWithUvcValues_libusb(uvc_device_info, convertedMaxPacketSize, true);
+                            if (bcdUVC_short == 0) listDevice(camDevice);
+                            bcdUVC = new byte[2];
+                            bcdUVC[0] = (byte)(bcdUVC_short & 0xff);
+                            bcdUVC[1] = (byte)((bcdUVC_short >> 8) & 0xff);
+                            int bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
+                            if (mUsbFs == null) mUsbFs = getUSBFSName(camDevice);
+                            int framesReceive = 1;
+                            if (fiveFrames) framesReceive = 5;
+                            int lowAndroid = 0;
+                            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                                lowAndroid = 1;
+                            }
+                            JNA_I_LibUsb.INSTANCE.set_the_native_Values(new Pointer(mNativePtr), fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
+                                    camFrameIndex, camFrameInterval, imageWidth, imageHeight, camStreamingEndpointAdress, 1, videoformat, framesReceive, bcdUVC_int, lowAndroid);
+                            JNA_I_LibUsb.INSTANCE.setCallbackAuto(new JNA_I_LibUsb.eventCallbackAuto() {
+                                public boolean callback(JNA_I_LibUsb.auto_detect_struct.ByReference auto_values) {
+                                    activeUrbs = auto_values.activeUrbs.intValue();
+                                    packetsPerRequest = auto_values.packetsPerRequest.intValue();
+                                    camStreamingAltSetting = auto_values.altsetting.intValue();
+                                    maxPacketSize = auto_values.maxPacketSize.intValue();
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            tv = (ZoomTextView) findViewById(R.id.textDarstellung);
+                                            tv.setText("Automatic Transfer Sucessful!");
+                                            tv.setTextColor(Color.BLACK);
+                                        }
+                                    });
+                                    return true;
+                                }
+                            });
+                            JNA_I_LibUsb.INSTANCE.automaticDetection(new Pointer(mNativePtr));
+                            try {
+                                Thread.sleep(300);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            JNA_I_LibUsb.INSTANCE.stopStreaming(new Pointer(mNativePtr));
+                            log("Streaming stopped");
+                            ProgressBar progressBar = findViewById(R.id.progressBar);
+                            progressBar.setVisibility(View.INVISIBLE);
 
+                        }
+                    }
+                });
+
+
+
+
+
+
+
+
+            } else {
 
                 CFAlertDialog alertDialog;
                 CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
@@ -1221,6 +1323,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                         }
                     }
                 });
+
             }
         }
     }
