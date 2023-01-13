@@ -28,7 +28,8 @@
         android:largeHeap="true"
         android:supportsRtl="true"
         >
-        <activity android:name="humer.UvcCamera.Main">
+        <activity android:name="humer.UvcCamera.Main"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"/>
             </intent-filter>
@@ -39,33 +40,38 @@
             </intent-filter>
 
         </activity>
-        <activity android:name="humer.UvcCamera.PrivacyPolicyActivity">
+        <activity android:name="humer.UvcCamera.PrivacyPolicyActivity"
+            android:exported="true">
         </activity>
         <activity android:name="humer.UvcCamera.ReadMeActivity"
             android:exported="true">
         </activity>
-        <activity android:name="humer.UvcCamera.StartIsoStreamActivityUsbIso">
+        <activity android:name="humer.UvcCamera.StartIsoStreamActivityUsbIso"
+            android:exported="true">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
             </intent-filter>
         </activity>
-        <activity android:name="humer.UvcCamera.StartIsoStreamActivityUvc">
+        <activity android:name="humer.UvcCamera.StartIsoStreamActivityUvc"
+            android:exported="true">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
             </intent-filter>
         </activity>
-        <activity android:name="humer.UvcCamera.SetUpTheUsbDeviceUsbIso">
+        <activity android:name="humer.UvcCamera.SetUpTheUsbDeviceUsbIso"
+            android:exported="true">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
             </intent-filter>
         </activity>
-        <activity android:name="humer.UvcCamera.SetUpTheUsbDeviceUvc">
+        <activity android:name="humer.UvcCamera.SetUpTheUsbDeviceUvc"
+            android:exported="true">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
@@ -73,7 +79,8 @@
             </intent-filter>
         </activity>
         <activity android:name="humer.UvcCamera.AutomaticDetection.LibUsb_AutoDetect"
-            android:theme="@style/Theme.Transparent">
+            android:theme="@style/Theme.Transparent"
+            android:exported="true">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
@@ -81,7 +88,9 @@
             </intent-filter>
         </activity>
         <activity android:name="humer.UvcCamera.AutomaticDetection.Jna_AutoDetect"
-            android:theme="@style/Theme.Transparent">
+            android:theme="@style/Theme.Transparent"
+            android:exported="true">
+
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
@@ -95,7 +104,8 @@
             android:label="@string/app_name"
             android:launchMode="singleInstance"
             android:screenOrientation="fullUser"
-            android:theme="@style/CallActivityTheme"/>
+            android:theme="@style/CallActivityTheme"
+            android:exported="true"/>
         <activity android:name="com.example.androidthings.videortc.WebRtc_MainActivity">
         </activity>
 
