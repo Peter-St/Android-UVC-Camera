@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="false">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/aspect_ratio_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Aspect Ratio"
+            android:textSize="20sp"/>
+
+        <RelativeLayout
+            android:layout_below="@+id/aspect_ratio_text"
+            android:id="@+id/aspect_ratio_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_centerHorizontal="true"
+            >
+
+            <ToggleButton
+                android:id="@+id/aspect_ratio_toggle"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@drawable/bg_toggle_aspect_ratio"
+                android:onClick="aspect_ratio"
+                android:textOn=""
+                android:textOff=""
+                android:layout_toRightOf="@id/aspect_ratio_checkBox"
+
+                />
+
+
+            <CheckBox
+                android:id="@+id/aspect_ratio_checkBox"
+                android:layout_centerHorizontal="true"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="-57dp"
+                android:layout_marginLeft="-57dp"
+                android:layout_marginTop="30dp"
+                android:text="Aspect Ratio"
+                android:onClick="aspect_ratio"
+                />
+
+        </RelativeLayout>
+
+
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_marginTop="50px"
+            android:layout_below="@+id/aspect_ratio_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"/>
+
+
+        <TextView
+            android:id="@+id/flip_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/imageView"
+            android:layout_centerHorizontal="true"
+            android:text="Rotation &amp; flip"
+            android:textSize="20sp" />
+
+
+
+        <HorizontalScrollView
+            android:id="@+id/rotation_layout"
+            android:layout_below="@+id/flip_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:id="@+id/ll"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginBottom="100px"
+                >
+                <ImageButton
+                    android:id="@+id/flipLeftButton"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="10px"
+                    android:background="@drawable/bg_button_flip_left"
+                    android:onClick="flipLeft" />
+                <ImageButton
+                    android:id="@+id/flipRightButton"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_alignEnd="@+id/stopKameraknopf"
+                    android:layout_alignRight="@+id/stopKameraknopf"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="30px"
+
+                    android:background="@drawable/bg_button_flip_right"
+                    android:onClick="flipRight" />
+                <ToggleButton
+                    android:id="@+id/flipVerticalButton"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_alignEnd="@+id/stopKameraknopf"
+                    android:layout_alignRight="@+id/stopKameraknopf"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="30px"
+
+                    android:background="@drawable/bg_toggle_button_flip_vertical"
+                    android:onClick="flipVertical"
+                    android:textOn=""
+                    android:textOff="" />
+                <ToggleButton
+                    android:id="@+id/flipHorizontalButton"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="30px"
+
+                    android:background="@drawable/bg_toggle_button_flip_horizontal"
+                    android:onClick="flipHorizontal"
+                    android:textOn=""
+                    android:textOff="" />
+
+            </LinearLayout>
+        </HorizontalScrollView>
+    </RelativeLayout>
+</ScrollView>

@@ -51,23 +51,29 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -77,11 +83,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
-import com.example.androidthings.videortc.WebRtc_MainActivity;
+import com.mingle.sweetpick.CustomDelegate;
+import com.mingle.sweetpick.SweetSheet;
 import com.sample.timelapse.MJPEGGenerator ;
 import com.sun.jna.Pointer;
 
@@ -158,7 +163,6 @@ public class StartIsoStreamActivityUvc extends Activity {
     public static boolean   moveToNative;
     public static boolean   bulkMode;
 
-
     // Vales for debuging the camera
     private boolean imageCapture = false;
     private boolean videorecord = false;
@@ -174,6 +178,8 @@ public class StartIsoStreamActivityUvc extends Activity {
     private int [] convertedMaxPacketSize;
     private boolean lowerResolution;
     public static enum Videoformat {YUV, MJPEG, YUY2, YV12, YUV_422_888, YUV_420_888, NV21, UYVY}
+    private boolean aspect_ratio = false;
+    private boolean surface_scaled = false;
 
     // Buttons & Views
     protected ImageView imageView;
@@ -183,22 +189,24 @@ public class StartIsoStreamActivityUvc extends Activity {
     protected ImageButton photoButton;
     protected ToggleButton videoButton;
     private TextView tv;
-    private Date date;
-    private SimpleDateFormat dateFormat;
-    private File file;
+    private SeekBar simpleSeekBar;
+    private Button defaultButton;
+    private Switch switchAuto;
+    private SweetSheet mSweetSheet;
 
     // Time Values
     int lastPicture = 0; // Current picture counter
     int lastVideo = 0; // Current video file counter
     long startTime;
     long currentTime;
+    private Date date;
+    private SimpleDateFormat dateFormat;
+    private File file;
 
     // Other Classes
     private MJPEGGenerator generator;
     private BitmapToVideoEncoder bitmapToVideoEncoder;
-    private SeekBar simpleSeekBar;
-    private Button defaultButton;
-    private Switch switchAuto;
+
 
     // Camera Configuration Values to adjust Values over Controltransfers
     private boolean focusAutoState;
@@ -305,8 +313,25 @@ public class StartIsoStreamActivityUvc extends Activity {
 
     @Override
     public void onBackPressed() {
-        beenden(false);
+
+        if (mSweetSheet != null) {
+            if (mSweetSheet.isShow() ) {
+                if (mSweetSheet.isShow()) {
+                    mSweetSheet.dismiss();
+                }
+                if (mSweetSheet.isShow()) {
+                    mSweetSheet.dismiss();
+                }
+            } else {
+                beenden(false);
+            }
+        } else {
+            beenden(false);
+        }
+
+
     }
+
 
     public static StartIsoStreamActivityUvc getInstance() {
         if (instance == null) {
@@ -314,6 +339,7 @@ public class StartIsoStreamActivityUvc extends Activity {
         }
         return instance;
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -348,6 +374,8 @@ public class StartIsoStreamActivityUvc extends Activity {
         });//closing the setOnClickListener method
         startStream.getBackground().setAlpha(180);  // 25% transparent
         // Settings Button
+
+        final Activity a = this;
         FabSpeedDial fabSpeedDial = (FabSpeedDial) findViewById(R.id.settingsButton);
         fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
             @Override
@@ -359,59 +387,17 @@ public class StartIsoStreamActivityUvc extends Activity {
                         fabSpeedDial.closeMenu();
                         return false;
                     case R.id.flipImage:
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Runnable myRunnable = new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        ImageButton flip = (ImageButton) findViewById(R.id.flipLeftButton); flip.setEnabled(false); flip.setBackgroundDrawable(null);
-                                        flip = (ImageButton) findViewById(R.id.flipRightButton); flip.setEnabled(false); flip.setBackgroundDrawable(null);
-                                        ToggleButton flip2 = (ToggleButton) findViewById(R.id.flipHorizontalButton); flip2.setEnabled(false); flip2.setBackgroundDrawable(null);
-                                        flip2 = (ToggleButton) findViewById(R.id.flipVerticalButton); flip2.setEnabled(false); flip2.setBackgroundDrawable(null);
-                                    }
-                                };
-                                Handler myHandler = new Handler();
-                                final int TIME_TO_WAIT = 2500;
-                                ImageButton flip = (ImageButton) findViewById(R.id.flipLeftButton); flip.setEnabled(true); flip.setBackgroundResource(R.drawable.bg_button_flip_left);
-                                flip.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        myHandler.removeCallbacks(myRunnable);
-                                        myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
-                                        flipLeft(null);
-                                    }
-                                });
-                                flip = (ImageButton) findViewById(R.id.flipRightButton); flip.setEnabled(true); flip.setBackgroundResource(R.drawable.bg_button_flip_right);
-                                flip.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        myHandler.removeCallbacks(myRunnable);
-                                        myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
-                                        flipRight(null);
-                                    }
-                                });
-                                ToggleButton flip2 = (ToggleButton) findViewById(R.id.flipHorizontalButton); flip2.setEnabled(true); flip2.setBackgroundResource(R.drawable.bg_toggle_button_flip_horizontal);
-                                flip2.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        myHandler.removeCallbacks(myRunnable);
-                                        myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
-                                        flipHorizontal(null);
-                                    }
-                                });
-                                flip2 = (ToggleButton) findViewById(R.id.flipVerticalButton); flip2.setEnabled(true); flip2.setBackgroundResource(R.drawable.bg_toggle_button_flip_vertical);
-                                flip2.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        myHandler.removeCallbacks(myRunnable);
-                                        myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
-                                        flipVertical(null);
-                                    }
-                                });
-                                myHandler.postDelayed(myRunnable, TIME_TO_WAIT);
-                            }
-                        });
+                        setupViewpager();
+                        mSweetSheet.toggle();
+                        ToggleButton aspect_ratio_button = (ToggleButton) findViewById(R.id.aspect_ratio_toggle);
+                        CheckBox aspect_ratio_box = (CheckBox) findViewById(R.id.aspect_ratio_checkBox);
+                        if(aspect_ratio) {
+                            aspect_ratio_button.setChecked(true);
+                            aspect_ratio_box.setChecked(true);
+                        } else {
+                            aspect_ratio_button.setChecked(false);
+                            aspect_ratio_box.setChecked(false);
+                        }
                         return true;
                     case R.id.resolutionFrameInterval:
                         if (LIBUSB) return true;
@@ -865,6 +851,17 @@ public class StartIsoStreamActivityUvc extends Activity {
         flip = (ImageButton) findViewById(R.id.flipRightButton); flip.setEnabled(false); flip.setBackgroundDrawable(null);
         ToggleButton flip2 = (ToggleButton) findViewById(R.id.flipHorizontalButton); flip2.setEnabled(false); flip2.setBackgroundDrawable(null);
         flip2 = (ToggleButton) findViewById(R.id.flipVerticalButton); flip2.setEnabled(false); flip2.setBackgroundDrawable(null);
+
+
+        ImageView aspect_Image = (ImageView) findViewById(R.id.aspect_ratio_image);
+        aspect_Image.setVisibility(View.GONE);
+
+        Switch aspect_Switch = (Switch) findViewById(R.id.aspect_ratio_switch);
+        aspect_Switch.setVisibility(View.GONE);
+
+
+
+
         //LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(StartIsoStreamService.NOTIFICATION));
         if (LIBUSB) {
             mUVCCameraView = (SurfaceView)findViewById(R.id.surfaceView);
@@ -917,6 +914,18 @@ public class StartIsoStreamActivityUvc extends Activity {
         startActivity(intent);
         StartIsoStreamActivityUvc.this.finish();
         */
+    }
+
+    private void setupViewpager() {
+
+        RelativeLayout rl = (RelativeLayout) findViewById(R.id.buttonView);
+        mSweetSheet = new SweetSheet(rl);
+        CustomDelegate customDelegate = new CustomDelegate(true,
+                CustomDelegate.AnimationType.DuangLayoutAnimation);
+        View view = LayoutInflater.from(this).inflate(R.layout.layout_flip_ratio, null, false);
+        customDelegate.setCustomView(view);
+        mSweetSheet.setDelegate(customDelegate);
+
     }
 
     public void returnToConfigScreen() {
@@ -1173,12 +1182,31 @@ public class StartIsoStreamActivityUvc extends Activity {
                 log("Compare Video Format");
                 if (videoformat.equals("MJPEG")) {
                     ////////////////////////////////    MJPEG
-
-
-
-
                     int result = -1;
                     mPreviewSurface = mUVCCameraView.getHolder().getSurface();
+                    if (aspect_ratio) {
+                        DisplayMetrics displaymetrics = new DisplayMetrics();
+                        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+                        int screenWidth = displaymetrics.widthPixels;
+                        int screenHeight = displaymetrics.heightPixels;
+                        log("screenWidth = " + screenWidth );
+                        log("screenHeight = " + screenHeight );
+                        float scale = ((float)1 / (float)imageWidth) * (float)screenWidth ;
+                        int newWidth = Math.round((imageWidth * scale));
+                        int newHeight = Math.round(imageHeight * scale);
+                        if (newHeight > screenHeight) {
+                            scale = ((float)1 / (float)imageHeight) * (float)screenHeight ;
+                            newWidth = Math.round((imageWidth * scale));
+                            newHeight = Math.round(imageHeight * scale);
+                        }
+                        mUVCCameraView.getHolder().setFixedSize(newWidth, newHeight);
+                        surface_scaled = true;
+                    } else if (!aspect_ratio && surface_scaled) {
+                        DisplayMetrics displaymetrics = new DisplayMetrics();
+                        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+                        mUVCCameraView.getHolder().setFixedSize(displaymetrics.widthPixels, displaymetrics.heightPixels);
+                        surface_scaled = false;
+                    }
                     result = PreviewPrepareStream(mNativePtr, mPreviewSurface );
                     if (result == 0) {
                         result = PreviewStartStream(mNativePtr);
@@ -1199,27 +1227,7 @@ public class StartIsoStreamActivityUvc extends Activity {
                             log ("Stream failed;  Result = " + result);
                         }
                     } else displayMessage("Stream failed;  Result = " + result);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     /*
-
                     JNA_I_LibUsb.INSTANCE.setCallback(new JNA_I_LibUsb.eventCallback(){
                         public boolean callback(Pointer videoFrame, int frameSize) {
                             log("frame received. Framelength = " + frameSize);
@@ -1264,10 +1272,33 @@ public class StartIsoStreamActivityUvc extends Activity {
                     log("stream started (MJPEG) ... ");
 
                 } else if (videoformat.equals("YUY2")) {
-
-
                     int result = -1;
+                    //mUVCCameraView.getHolder().setFixedSize(imageHeight,imageWidth);
+                    //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
                     mPreviewSurface = mUVCCameraView.getHolder().getSurface();
+                    if (aspect_ratio) {
+                        DisplayMetrics displaymetrics = new DisplayMetrics();
+                        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+                        int screenWidth = displaymetrics.widthPixels;
+                        int screenHeight = displaymetrics.heightPixels;
+                        log("screenWidth = " + screenWidth );
+                        log("screenHeight = " + screenHeight );
+                        float scale = ((float)1 / (float)imageWidth) * (float)screenWidth ;
+                        int newWidth = Math.round((imageWidth * scale));
+                        int newHeight = Math.round(imageHeight * scale);
+                        if (newHeight > screenHeight) {
+                            scale = ((float)1 / (float)imageHeight) * (float)screenHeight ;
+                            newWidth = Math.round((imageWidth * scale));
+                            newHeight = Math.round(imageHeight * scale);
+                        }
+                        mUVCCameraView.getHolder().setFixedSize(newWidth, newHeight);
+                        surface_scaled = true;
+                    } else if (!aspect_ratio && surface_scaled) {
+                        DisplayMetrics displaymetrics = new DisplayMetrics();
+                        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+                        mUVCCameraView.getHolder().setFixedSize(displaymetrics.widthPixels, displaymetrics.heightPixels);
+                        surface_scaled = false;
+                    }
                     result = PreviewPrepareStream(mNativePtr, mPreviewSurface );
                     if (result == 0) {
                         result = PreviewStartStream(mNativePtr);
@@ -1288,22 +1319,41 @@ public class StartIsoStreamActivityUvc extends Activity {
                             log ("Stream failed;  Result = " + result);
                         }
                     } else displayMessage("Stream failed;  Result = " + result);
-
-
-
-
-
-
-
-
-
-
                 } else if (videoformat.equals("UYVY")) {
                     ////////////////////////////////    UYVY
                     // Steam Over SurfaceView
                     // fastest Method
                     if (!libusb_is_initialized) {
                         mPreviewSurface = mUVCCameraView.getHolder().getSurface();
+                        if (aspect_ratio) {
+                            DisplayMetrics displaymetrics = new DisplayMetrics();
+                            getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+                            int screenWidth = displaymetrics.widthPixels;
+                            int screenHeight = displaymetrics.heightPixels;
+                            log("screenWidth = " + screenWidth );
+                            log("screenHeight = " + screenHeight );
+                            float scale = ((float)1 / (float)imageWidth) * (float)screenWidth ;
+                            int newWidth = Math.round((imageWidth * scale));
+                            int newHeight = Math.round(imageHeight * scale);
+                            if (newHeight > screenHeight) {
+                                scale = ((float)1 / (float)imageHeight) * (float)screenHeight ;
+                                newWidth = Math.round((imageWidth * scale));
+                                newHeight = Math.round(imageHeight * scale);
+                            }
+                            mUVCCameraView.getHolder().setFixedSize(newWidth, newHeight);
+                            surface_scaled = true;
+                        } else if (!aspect_ratio && surface_scaled) {
+                            DisplayMetrics displaymetrics = new DisplayMetrics();
+                            getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+                            mUVCCameraView.getHolder().setFixedSize(displaymetrics.widthPixels, displaymetrics.heightPixels);
+                            surface_scaled = false;
+                        }
+
+
+
+
+
+
                         log("JniSetSurfaceView");
                         //JniSetSurfaceView(mNativePtr, mPreviewSurface);
                     }
@@ -1909,6 +1959,29 @@ public class StartIsoStreamActivityUvc extends Activity {
         if (verticalFlip == false) verticalFlip = true;
         else verticalFlip = false;
         if (LIBUSB) JNA_I_LibUsb.INSTANCE.setRotation(rotate, flipToInt(horizontalFlip), flipToInt(verticalFlip));
+    }
+
+    public void aspect_ratio (View view) {
+        if (aspect_ratio == false) {
+            aspect_ratio = true;
+            log("aspect ratio true");
+        }
+
+        else aspect_ratio = false;
+
+        ToggleButton aspect_ratio_button = (ToggleButton) findViewById(R.id.aspect_ratio_toggle);
+        CheckBox aspect_ratio_box = (CheckBox) findViewById(R.id.aspect_ratio_checkBox);
+        if(aspect_ratio) {
+            aspect_ratio_button.setChecked(true);
+            aspect_ratio_box.setChecked(true);
+        } else {
+            aspect_ratio_button.setChecked(false);
+            aspect_ratio_box.setChecked(false);
+        }
+
+
+
+
     }
 
     //////////////////// END Buttons  ///////////////
@@ -2952,10 +3025,30 @@ public class StartIsoStreamActivityUvc extends Activity {
         @Override
         public void surfaceCreated(final SurfaceHolder holder) {
             log( "surfaceCreated:");
+
+            /*
+            DisplayMetrics displaymetrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+            int screenWidth = displaymetrics.widthPixels;
+            int screenHeight = displaymetrics.heightPixels;
+            log("screenWidth = " + screenWidth );
+            log("screenHeight = " + screenHeight );
+            float scale = ((float)1 / (float)imageWidth) * (float)screenWidth ;
+            int newWidth = Math.round((imageWidth * scale));
+            int newHeight = Math.round(imageHeight * scale);
+            if (newHeight > screenHeight) {
+                scale = ((float)1 / (float)imageHeight) * (float)screenHeight ;
+                newWidth = Math.round((imageWidth * scale));
+                newHeight = Math.round(imageHeight * scale);
+            }
+            mUVCCameraView.getHolder().setFixedSize(newWidth, newHeight);
+
+            */
+
+
             Canvas canvas = mUVCCameraView.getHolder().lockCanvas();
             canvas.drawColor(Color.GRAY, PorterDuff.Mode.SRC);
             mUVCCameraView.getHolder().unlockCanvasAndPost(canvas);
-
         }
 
         @Override

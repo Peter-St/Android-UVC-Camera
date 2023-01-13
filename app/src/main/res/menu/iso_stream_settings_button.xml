@@ -16,7 +16,7 @@
     <item
         android:id="@+id/flipImage"
         android:icon="@drawable/ic_baseline_screen_rotation_24"
-        android:title="Flip Display"
+        android:title="Flip Display / Aspect Ratio"
         app:showAsAction="ifRoom"
         app:touchGuard="false"
         android:orderInCategory="1"

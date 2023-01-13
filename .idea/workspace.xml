@@ -14,22 +14,29 @@
   <component name="ChangeListManager">
     <list default="true" id="21e59184-7af9-4d66-8ffd-372a084f4c40" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/deploymentTargetDropDown.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/UVC_Camera_Saki/UVCPreview.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/UVC_Camera_Saki/UVCPreview.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/UVC_Camera_Saki/utilbase.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/UVC_Camera_Saki/utilbase.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/uvc_support.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/uvc_support.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libuvc/src/device.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/cpp/libuvc/src/device.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libuvc/src/stream.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/cpp/libuvc/src/stream.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/AutomaticDetection/Jna_AutoDetect.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/AutomaticDetection/Jna_AutoDetect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/AutomaticDetection/LibUsb_AutoDetect.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/AutomaticDetection/LibUsb_AutoDetect.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SaveToFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SaveToFile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDeviceUsbIso.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDeviceUsbIso.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDeviceUvc.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDeviceUvc.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivityUsbIso.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivityUsbIso.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/menu/set_up_dev_bulk_menu.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/menu/set_up_dev_bulk_menu.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivityUvc.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivityUvc.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/bg_toggle_button_flip_horizontal.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/drawable/bg_toggle_button_flip_horizontal.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/iso_stream_layout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/iso_stream_layout.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/menu/iso_stream_settings_button.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/menu/iso_stream_settings_button.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-de-rDE/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-de-rDE/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-it-rIT/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-it-rIT/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-ja-rJA/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-ja-rJA/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-ko-rKO/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-ko-rKO/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-pt-rPT/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-pt-rPT/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-ru-rRU/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-ru-rRU/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-th-rTH/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-th-rTH/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-zh-rZH/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-zh-rZH/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/colors.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/colors.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,6 +66,13 @@
       </state>
     </system>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
   <component name="GenerateSignedApkSettings">
     <option name="EXPORT_PRIVATE_KEY" value="false" />
     <option name="KEY_STORE_PATH" value="$PROJECT_DIR$/../Build_APK_Key/my.keystore" />
@@ -68,8 +82,13 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="ProjectId" id="2AdmHRNjuQS0UIN6Gk2Q84GIC6f" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -83,7 +102,7 @@
     <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="cidr.known.project.marker" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Build_APK_Key/my.keystore" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="experimental" />
   </component>
   <component name="RecentsManager">
@@ -93,7 +112,7 @@
   </component>
   <component name="RunManager">
     <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
-      <module name="Android-UVC-Camera.app" />
+      <module name="Android-UVC-Camera.app.main" />
       <option name="DEPLOY" value="true" />
       <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
       <option name="DEPLOY_AS_INSTANT" value="false" />
@@ -101,6 +120,7 @@
       <option name="PM_INSTALL_OPTIONS" value="" />
       <option name="ALL_USERS" value="false" />
       <option name="ALWAYS_INSTALL_WITH_PM" value="false" />
+      <option name="CLEAR_APP_STORAGE" value="false" />
       <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
       <option name="ACTIVITY_EXTRA_FLAGS" value="" />
       <option name="MODE" value="default_activity" />
@@ -140,6 +160,7 @@
         <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Java/Kotlin Method Sample (legacy)" />
         <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
         <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
+        <option name="PROFILING_MODE" value="NOT_SET" />
       </Profilers>
       <option name="DEEP_LINK" value="" />
       <option name="ACTIVITY_CLASS" value="" />
@@ -171,6 +192,5 @@
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
 </project>

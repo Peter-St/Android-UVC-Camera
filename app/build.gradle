@@ -179,6 +179,10 @@ dependencies {
 
     //fading TextView
     implementation 'com.tomer:fadingtextview:2.6'
+
+    // Drop Down Menu
+    implementation 'com.github.zzz40500:AndroidSweetSheet:1.1.0'
+
 }
 
 

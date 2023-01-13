@@ -429,6 +429,7 @@ public class Main extends AppCompatActivity {
     ////////////////   BUTTONS  //////////////////////////////////////////
 
     public void changeTheLanguage(View view){
+        log(" * changeTheLanguage * ");
         if(isLanguageChooserEnabled()) {
             log ("languageChooser is enabled");
             disableLanguageChooser();
@@ -444,6 +445,7 @@ public class Main extends AppCompatActivity {
     }
 
     public void raiseSize(View view){
+        log(" * raiseSize * ");
         final int TIME_TO_WAIT = 2500;
         Button button = findViewById(R.id.raiseSize);
         if (button.isEnabled()) {
@@ -462,6 +464,7 @@ public class Main extends AppCompatActivity {
     }
 
     public void lowerSize(View view){
+        log(" * lowerSize * ");
         final int TIME_TO_WAIT = 2500;
         Button button = findViewById(R.id.raiseSize);
         if (button.isEnabled()) {
@@ -481,6 +484,7 @@ public class Main extends AppCompatActivity {
 
 
     public void viewPrivatePolicy(View view) {
+        log(" * viewPrivatePolicy * ");
         // TODO Auto-generated method stub
         Intent intent = new Intent(getApplicationContext(),
                 PrivacyPolicyActivity.class);
@@ -488,6 +492,7 @@ public class Main extends AppCompatActivity {
     }
 
     public void viewReadme (View view) {
+        log(" * viewReadme * ");
         // TODO Auto-generated method stub
         Intent intent = new Intent(getApplicationContext(),
                 ReadMeActivity.class);
@@ -499,6 +504,7 @@ public class Main extends AppCompatActivity {
     }
 
     public void setUpTheUsbDevice(View view){
+        log(" * setUpTheUsbDevice * ");
         // if LIBUSB allocate the UVC Camera Pointer:
         if (LIBUSB && mNativePtr == 0) {
             mNativePtr = nativeCreate(mNativePtr);
@@ -713,6 +719,7 @@ public class Main extends AppCompatActivity {
     }
 
     public void restoreCameraSettings (View view) {
+        log(" * restoreCameraSettings * ");
         if (showStoragePermissionRead() && showStoragePermissionWrite()) {
             SaveToFile  stf;
             stf = new SaveToFile(this, this);
@@ -728,6 +735,7 @@ public class Main extends AppCompatActivity {
     }
 
     public void isoStream(View view){
+        log(" * IsoStream * ");
         if (LIBUSB && mNativePtr == 0) {
             mNativePtr = nativeCreate(mNativePtr);
             log("mNativePtr = " + mNativePtr);
@@ -886,6 +894,7 @@ public class Main extends AppCompatActivity {
     // Language Buttons Methods
 
     public void changeLang(Context context, String lang) {
+        log(" * changeLang * ");
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString("Language", lang);
@@ -893,6 +902,7 @@ public class Main extends AppCompatActivity {
     }
 
     public void onAmericaLanguageSelected(View view) {
+        log(" * onAmericaLanguageSelected * ");
         Locale currentLanguage = getResources().getConfiguration().locale;;
         if (currentLanguage.getLanguage().equals("en")) {
             disableLanguageChooser();
@@ -907,6 +917,7 @@ public class Main extends AppCompatActivity {
     }
 
     public void onGermanyLanguageSelected(View view) {
+        log(" * onGermanyLanguageSelected * ");
         Locale currentLanguage = getResources().getConfiguration().locale;;
         if (currentLanguage.getLanguage().equals("de")) {
             disableLanguageChooser();

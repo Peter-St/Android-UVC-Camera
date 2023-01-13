@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+
+    <color name="normal_text_color">#666666</color>
+    <color name="highlight_text_color">#888888</color>
+
     <array name="fab_speed_colors">
         <item>@color/green</item>
         <item>@color/Aqua</item>
