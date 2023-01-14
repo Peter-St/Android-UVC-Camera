@@ -87,6 +87,7 @@ import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.mingle.sweetpick.CustomDelegate;
 import com.mingle.sweetpick.SweetSheet;
 import com.sample.timelapse.MJPEGGenerator ;
+import com.serenegiant.usb.IFrameCallback;
 import com.sun.jna.Pointer;
 
 import humer.UvcCamera.JNA_I_LibUsb.JNA_I_LibUsb;
@@ -241,9 +242,11 @@ public class StartIsoStreamActivityUvc extends Activity {
     private static final String DEFAULT_USBFS = "/dev/bus/usb";
 
     // JNI METHODS
-    public native int PreviewPrepareStream(long camer_pointer, final Surface surface);
+    public native int PreviewPrepareStream(long camer_pointer, final Surface surface, final IFrameCallback callback);
     public native int PreviewStartStream(long camer_pointer);
     public native int PreviewStopStream(long camer_pointer);
+    public native int PreviewCapturePicture(long camer_pointer);
+
        // Bitmap Method
     public native void YUY2pixeltobmp(byte[] uyvy_data, Bitmap bitmap, int im_width, int im_height);
     public native void UYVYpixeltobmp(byte[] uyvy_data, Bitmap bitmap, int im_width, int im_height);
@@ -401,9 +404,6 @@ public class StartIsoStreamActivityUvc extends Activity {
                     case R.id.resolutionFrameInterval:
                         if (LIBUSB) return true;
                         changeResolutionFrameInterval(findViewById(R.id.settingsButton));
-                        return false;
-                    case R.id.webRTC:
-                        startWebRTC();
                         return false;
                     case R.id.returnToConfigScreen:
                         returnToConfigScreen();
@@ -869,48 +869,6 @@ public class StartIsoStreamActivityUvc extends Activity {
         }
     }
 
-    private void startWebRTC() {
-        if (camDevice == null) {
-            try {
-                findCam();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (!usbManager.hasPermission(camDevice)) {
-            usbManager.requestPermission(camDevice, mPermissionIntent);
-            return;
-        }
-        /*
-        //if (runningStream != null) stopTheCameraStreamClickEvent(null);
-        Intent intent = new Intent(this, WebRtc_MainActivity.class);
-        Bundle bundle=new Bundle();
-        bundle.putBoolean("edit", true);
-        bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
-        bundle.putString("videoformat",videoformat);
-        bundle.putInt("camFormatIndex",camFormatIndex);
-        bundle.putInt("imageWidth",imageWidth);
-        bundle.putInt("imageHeight",imageHeight);
-        bundle.putInt("camFrameIndex",camFrameIndex);
-        bundle.putInt("camFrameInterval",camFrameInterval);
-        bundle.putInt("packetsPerRequest",packetsPerRequest);
-        bundle.putInt("maxPacketSize",maxPacketSize);
-        bundle.putInt("activeUrbs",activeUrbs);
-        bundle.putByte("bUnitID",bUnitID);
-        bundle.putByte("bTerminalID",bTerminalID);
-        bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
-        bundle.putByteArray("bNumControlUnit", bNumControlUnit);
-        bundle.putByteArray("bcdUVC", bcdUVC);
-        bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
-        bundle.putBoolean("LIBUSB", LIBUSB);
-        bundle.putBoolean("moveToNative", moveToNative);
-        bundle.putBoolean("bulkMode", bulkMode);
-        intent.putExtra("bun",bundle);
-        startActivity(intent);
-        StartIsoStreamActivityUvc.this.finish();
-        */
-    }
-
     private void setupViewpager() {
 
         RelativeLayout rl = (RelativeLayout) findViewById(R.id.buttonView);
@@ -1024,15 +982,6 @@ public class StartIsoStreamActivityUvc extends Activity {
         return null;
     }
 
-    private void openCam(boolean init) throws Exception {
-        openCameraDevice(init);
-        if (init) {
-            initCamera();
-            camIsOpen = true;
-        }
-        log("Camera opened sucessfully");
-    }
-
     private void openCameraDevice(boolean init) throws Exception {
         if (moveToNative) {
             camDeviceConnection = usbManager.openDevice(camDevice);
@@ -1119,7 +1068,7 @@ public class StartIsoStreamActivityUvc extends Activity {
 
     private void BildaufnahmeButtonClickEvent() {
         imageCapture = true;
-        if (LIBUSB) JNA_I_LibUsb.INSTANCE.setImageCapture();
+        if (LIBUSB) PreviewCapturePicture(mNativePtr);
         displayMessage("Image saved");
     }
 
@@ -1171,12 +1120,14 @@ public class StartIsoStreamActivityUvc extends Activity {
                     log("mNativePtr = " + mNativePtr);
                     // Importand Method for keeping the reference Save !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                     JNA_I_LibUsb.INSTANCE.listDeviceUvc(new Pointer(mNativePtr), camDeviceConnection.getFileDescriptor());
+                    connected_to_camera = 1;
                 }
+                log("Comparing Video Format ...");
 
-
-                log("Compare Video Format");
+                ////////////////////////////////    MJPEG   /////////////////////////////
                 if (videoformat.equals("MJPEG")) {
-                    ////////////////////////////////    MJPEG
+                    ////////////////////////////////    MJPEG   /////////////////////////////
+
                     int result = -1;
                     mPreviewSurface = mUVCCameraView.getHolder().getSurface();
                     if (aspect_ratio) {
@@ -1202,7 +1153,21 @@ public class StartIsoStreamActivityUvc extends Activity {
                         mUVCCameraView.getHolder().setFixedSize(displaymetrics.widthPixels, displaymetrics.heightPixels);
                         surface_scaled = false;
                     }
-                    result = PreviewPrepareStream(mNativePtr, mPreviewSurface );
+                    result = PreviewPrepareStream(mNativePtr, mPreviewSurface, new IFrameCallback() {
+                        @Override
+                        public void onFrame(final byte[] frame) {
+                            if (imageCapture || videorecord || videorecordApiJellyBeanNup) {
+                                int ret = -1;
+                                try {
+                                    ret = processReceivedMJpegVideoFrameKamera(frame);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                if (ret == 0) log("image  received Mjpeg");
+                                else log("FAILURE !! \n!!   --> Method returned -1\n!!!!!! ");
+                            }
+                        }
+                    } );
                     if (result == 0) {
                         result = PreviewStartStream(mNativePtr);
                         if (result == 0) {
@@ -1222,51 +1187,14 @@ public class StartIsoStreamActivityUvc extends Activity {
                             log ("Stream failed;  Result = " + result);
                         }
                     } else displayMessage("Stream failed;  Result = " + result);
-                    /*
-                    JNA_I_LibUsb.INSTANCE.setCallback(new JNA_I_LibUsb.eventCallback(){
-                        public boolean callback(Pointer videoFrame, int frameSize) {
-                            log("frame received. Framelength = " + frameSize);
-                            try {
-                                processReceivedMJpegVideoFrameKamera(videoFrame.getByteArray(0, frameSize));
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            return true;
-                        }
-                    });
-
-
-                    if (!libusb_is_initialized) {
-                        //mPreviewSurface = mUVCCameraView.getHolder().getSurface();
-                        //JniSetSurfaceView(mPreviewSurface);
-                    }
-                    //if (!libusb_is_initialized) JniSetSurfaceView(null);
-                    mUVCCameraView = (SurfaceView) findViewById(R.id.surfaceView);
-                    mUVCCameraView.setVisibility(View.GONE);
-                    mUVCCameraView.setVisibility(View.INVISIBLE);
-                    JniPrepairStreamOverSurfaceUVC();
-                    int result = -1;
-                    //result = JNA_I_LibUsb.INSTANCE.JniStreamOverSurfaceUVC(new Pointer(mNativePtr));
-                    if (result == 0) {
-                        ((Button) findViewById(R.id.startStream)).setEnabled(false);
-                        stopStreamButton.getBackground().setAlpha(180);  // 25% transparent
-                        stopStreamButton.setEnabled(true);
-                        startStream.getBackground().setAlpha(20);  // 95% transparent
-                        photoButton.setEnabled(true);
-                        photoButton.setBackgroundResource(R.drawable.bg_button_bildaufnahme);
-                        videoButton.setEnabled(true);
-                        videoButton.setAlpha(1); // 100% transparent
-                        stopKamera = false;
-                    } else {
-                        displayMessage("Stream failed;  Result = " + result);
-                        log ("Stream failed;  Result = " + result);
-                    }
-                     */
 
                     libusb_is_initialized = true;
                     log("stream started (MJPEG) ... ");
 
+                    ////////////////////////////////    YUY2   /////////////////////////////
                 } else if (videoformat.equals("YUY2")) {
+                    ////////////////////////////////    YUY2   /////////////////////////////
+
                     int result = -1;
                     //mUVCCameraView.getHolder().setFixedSize(imageHeight,imageWidth);
                     //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -1294,7 +1222,23 @@ public class StartIsoStreamActivityUvc extends Activity {
                         mUVCCameraView.getHolder().setFixedSize(displaymetrics.widthPixels, displaymetrics.heightPixels);
                         surface_scaled = false;
                     }
-                    result = PreviewPrepareStream(mNativePtr, mPreviewSurface );
+                    result = PreviewPrepareStream(mNativePtr, mPreviewSurface, new IFrameCallback() {
+                        @Override
+                        public void onFrame(final byte[] frame) {
+                            if (imageCapture || videorecord || videorecordApiJellyBeanNup) {
+                                int ret = -1;
+                                log ("Frame Callback:\nFramelength = " + frame.length);
+                                try {
+                                    ret = processReceivedVideoFrameYuv(frame, null);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                if (ret == 0) log("image  received Yuv");
+                                else log("FAILURE !! \n!!   --> Method returned -1\n!!!!!! ");
+                            }
+                        }
+                    }
+                    );
                     if (result == 0) {
                         result = PreviewStartStream(mNativePtr);
                         if (result == 0) {
@@ -1314,8 +1258,11 @@ public class StartIsoStreamActivityUvc extends Activity {
                             log ("Stream failed;  Result = " + result);
                         }
                     } else displayMessage("Stream failed;  Result = " + result);
+
+
+                    ////////////////////////////////    UYVY   /////////////////////////////
                 } else if (videoformat.equals("UYVY")) {
-                    ////////////////////////////////    UYVY
+                    ////////////////////////////////    UYVY   /////////////////////////////
                     // Steam Over SurfaceView
                     // fastest Method
                     if (!libusb_is_initialized) {
@@ -1343,14 +1290,7 @@ public class StartIsoStreamActivityUvc extends Activity {
                             mUVCCameraView.getHolder().setFixedSize(displaymetrics.widthPixels, displaymetrics.heightPixels);
                             surface_scaled = false;
                         }
-
-
-
-
-
-
                         log("JniSetSurfaceView");
-                        //JniSetSurfaceView(mNativePtr, mPreviewSurface);
                     }
                     //log("prepair for streaming ..");
                     //JniPrepairStreamOverSurfaceUVC();
@@ -2006,268 +1946,6 @@ public class StartIsoStreamActivityUvc extends Activity {
         }
     }
 
-    //// JNI METHOD - MJPG FRAME EXPECTED
-    public void pictureVideoCaptureMJPEG (byte[] jpgData) {
-        if (imageCapture) {
-            imageCapture = false;
-            date = new Date() ;
-            dateFormat = new SimpleDateFormat("dd.MM.yyyy___HH_mm_ss") ;
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
-                String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
-                file = new File(rootPath);
-                if (!file.exists()) {
-                    file.mkdirs();
-                }
-                String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getAbsolutePath() ;
-                try {
-                    writeBytesToFile(fileName, jpgData);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                log ("file saved");
-            } else {
-                Context context = getApplicationContext();
-                String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
-                log("fileName = " + fileName);
-                try {
-                    final Bitmap bitmap = BitmapFactory.decodeByteArray(jpgData, 0, jpgData.length);
-                    MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                log ("file saved");
-            }
-        } else if (videorecord) {
-            if (System.currentTimeMillis() - currentTime > 200) {
-                currentTime = System.currentTimeMillis();
-                lastPicture ++;
-                String dirname = "Video";
-
-                Context context = getApplicationContext();
-                File directory = context.getFilesDir();
-
-                File videoFolder = new File(directory, "video");
-                if (!videoFolder.exists()) {
-                    if (!videoFolder.mkdirs()) {
-                        Log.e("TravellerLog :: ", "Problem creating Video folder");
-                    }
-                }
-
-                File recFolder = new File(directory, "rec");
-                if (!recFolder.exists()) {
-                    if (!recFolder.mkdirs()) {
-                        Log.e("TravellerLog :: ", "Problem creating rec folder");
-                    }
-                }
-
-                /*
-                File dir = new File(getExternalFilesDir(null),dirname);
-                if (!dir.exists()) {
-                    dir.mkdirs();
-                }
-
-
-                File sub_dir=new File(dir, "rec");
-                if (!sub_dir.exists()) {
-                    sub_dir.mkdirs();
-                }
-                */
-
-                String fileName = new File(recFolder,lastPicture + ".JPG").getPath() ;
-                try {
-                    writeBytesToFile(fileName, jpgData);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        } else if (videorecordApiJellyBeanNup) {
-            final Bitmap bitmap = BitmapFactory.decodeByteArray(jpgData, 0, jpgData.length);
-            bitmapToVideoEncoder.queueFrame(bitmap);
-        }
-    }
-
-    //// JNI METHOD - YUV FRAME EXPECTED
-    public void pictureVideoCaptureYUV (byte[] yuvData) {
-        if (imageCapture) {
-            YuvImage yuvImage = new YuvImage(yuvData, ImageFormat.YUY2, imageWidth, imageHeight, null);
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            yuvImage.compressToJpeg(new Rect(0, 0, imageWidth, imageHeight), 100, os);
-            byte[] jpegByteArray = os.toByteArray();
-            imageCapture = false;
-            date = new Date() ;
-            dateFormat = new SimpleDateFormat("dd.MM.yyyy___HH_mm_ss") ;
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
-                String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
-                file = new File(rootPath);
-                if (!file.exists()) {
-                    file.mkdirs();
-                }
-                String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getAbsolutePath() ;
-                try {
-                    writeBytesToFile(fileName, jpegByteArray);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                log ("file saved");
-            } else {
-                Context context = getApplicationContext();
-                String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
-                log("fileName = " + fileName);
-                try {
-                    final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
-                    MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                log ("file saved");
-            }
-        } else if (videorecord) {
-            if (System.currentTimeMillis() - currentTime > 200) {
-                currentTime = System.currentTimeMillis();
-                lastPicture ++;
-                String dirname = "Video";
-
-                Context context = getApplicationContext();
-                File directory = context.getFilesDir();
-                File videoFolder = new File(directory, "video");
-                if (!videoFolder.exists()) {
-                    if (!videoFolder.mkdirs()) {
-                        Log.e("TravellerLog :: ", "Problem creating Video folder");
-                    }
-                }
-                File recFolder = new File(directory, "rec");
-                if (!recFolder.exists()) {
-                    if (!recFolder.mkdirs()) {
-                        Log.e("TravellerLog :: ", "Problem creating rec folder");
-                    }
-                }
-
-                File dir = new File(getExternalFilesDir(null),dirname);
-                if (!dir.exists()) {
-                    dir.mkdirs();
-                }
-                File sub_dir=new File(dir, "rec");
-                if (!sub_dir.exists()) {
-                    sub_dir.mkdirs();
-                }
-
-                String fileName = new File(recFolder,lastPicture + ".JPG").getPath() ;
-
-                YuvImage yuvImage = new YuvImage(yuvData, ImageFormat.YUY2, imageWidth, imageHeight, null);
-                ByteArrayOutputStream os = new ByteArrayOutputStream();
-                yuvImage.compressToJpeg(new Rect(0, 0, imageWidth, imageHeight), 100, os);
-                byte[] jpegByteArray = os.toByteArray();
-                try {
-                    writeBytesToFile(fileName, jpegByteArray);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        } else if (videorecordApiJellyBeanNup) {
-            YuvImage yuvImage = new YuvImage(yuvData, ImageFormat.YUY2, imageWidth, imageHeight, null);
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            yuvImage.compressToJpeg(new Rect(0, 0, imageWidth, imageHeight), 100, os);
-            byte[] jpegByteArray = os.toByteArray();
-            final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
-            bitmapToVideoEncoder.queueFrame(bitmap);
-        }
-    }
-
-    //// JNI METHOD - RGB FRAME EXPECTED
-    public void pictureVideoCaptureRGB (byte[] colors) {
-        if (imageCapture) {
-
-            imageCapture = false;
-
-            int nrOfPixels = colors.length / 3; // Three bytes per pixel.
-            int pixels[] = new int[nrOfPixels];
-            for(int i = 0; i < nrOfPixels; i++) {
-                int r = (int)(0xFF & colors[3*i]);
-                int g = (int)(0xFF & colors[3*i+1]);
-                int b = (int)(0xFF & colors[3*i+2]);
-                pixels[i] = Color.rgb(r,g,b);
-            }
-            Bitmap bitmap = Bitmap.createBitmap(pixels, imageWidth, imageHeight,Bitmap.Config.ARGB_8888);
-
-            date = new Date() ;
-            dateFormat = new SimpleDateFormat("dd.MM.yyyy___HH_mm_ss") ;
-
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
-                String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
-                file = new File(rootPath);
-                if (!file.exists()) {
-                    file.mkdirs();
-                }
-                String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getAbsolutePath() ;
-                try {
-                    byte[] jpegByteArray;
-                    ByteArrayOutputStream os = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
-                    jpegByteArray = os.toByteArray();
-                    writeBytesToFile(fileName, jpegByteArray);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                log ("file saved");
-            } else {
-                Context context = getApplicationContext();
-                String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
-                log("fileName = " + fileName);
-                try {
-                    //final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
-                    MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                log ("file saved");
-            }
-        } else if (videorecord) {
-            int nrOfPixels = colors.length / 3; // Three bytes per pixel.
-            int pixels[] = new int[nrOfPixels];
-            for(int i = 0; i < nrOfPixels; i++) {
-                int r = (int)(0xFF & colors[3*i]);
-                int g = (int)(0xFF & colors[3*i+1]);
-                int b = (int)(0xFF & colors[3*i+2]);
-                pixels[i] = Color.rgb(r,g,b);
-            }
-            Bitmap bitmap = Bitmap.createBitmap(pixels, imageWidth, imageHeight,Bitmap.Config.ARGB_8888);
-            if (System.currentTimeMillis() - currentTime > 200) {
-                currentTime = System.currentTimeMillis();
-                lastPicture ++;
-                String dirname = "Video";
-                File dir = new File(getExternalFilesDir(null),dirname);
-                if (!dir.exists()) {
-                    dir.mkdirs();
-                }
-                File sub_dir=new File(dir, "rec");
-                if (!sub_dir.exists()) {
-                    sub_dir.mkdirs();
-                }
-                String fileName = new File(sub_dir,lastPicture + ".JPG").getPath() ;
-                byte[] jpegByteArray;
-                ByteArrayOutputStream os = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
-                jpegByteArray = os.toByteArray();
-                try {
-                    writeBytesToFile(fileName, jpegByteArray);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        } else if (videorecordApiJellyBeanNup) {
-            int nrOfPixels = colors.length / 3; // Three bytes per pixel.
-            int pixels[] = new int[nrOfPixels];
-            for(int i = 0; i < nrOfPixels; i++) {
-                int r = (int)(0xFF & colors[3*i]);
-                int g = (int)(0xFF & colors[3*i+1]);
-                int b = (int)(0xFF & colors[3*i+2]);
-                pixels[i] = Color.rgb(r,g,b);
-            }
-            Bitmap bitmap = Bitmap.createBitmap(pixels, imageWidth, imageHeight,Bitmap.Config.ARGB_8888);
-            bitmapToVideoEncoder.queueFrame(bitmap);
-        }
-    }
-
     public void processReceivedVideoFrameYuvFromJni(byte[] frameData) {
         Videoformat videoFromat;
         if (videoformat.equals("YUV")){
@@ -2287,60 +1965,26 @@ public class StartIsoStreamActivityUvc extends Activity {
             e.printStackTrace();
         }
     }
-
-    private void processReceivedVideoFrameYuv(byte[] frameData, Videoformat videoFromat) throws IOException {
-        if (videoformat == null) {
-            if (videoformat.equals("YUV")){
-                videoFromat = Videoformat.YUV;
-            } else if (videoformat.equals("YUY2")){
-                videoFromat = Videoformat.YUY2;
-            } else if (videoformat.equals("YUY2")){
-                videoFromat = Videoformat.YV12;
-            } else if (videoformat.equals("YUV_420_888")){
-                videoFromat = Videoformat.YUV_420_888;
-            } else if (videoformat.equals("YUV_422_888")){
-                videoFromat = Videoformat.YUV_422_888;
-            } else if (videoformat.equals("UYVY")){
-                videoFromat = Videoformat.UYVY;
-            }
+    private int processReceivedVideoFrameYuv(byte[] frameData, Videoformat videoFromat) throws IOException {
+        int ret = -1;
+        if (videoFromat == null) {
+            if (videoformat.equals("YUV")) videoFromat = Videoformat.YUV;
+            else if (videoformat.equals("YUY2")) videoFromat = Videoformat.YUY2;
+            else if (videoformat.equals("YUY2")) videoFromat = Videoformat.YV12;
+            else if (videoformat.equals("YUV_420_888")) videoFromat = Videoformat.YUV_420_888;
+            else if (videoformat.equals("YUV_422_888")) videoFromat = Videoformat.YUV_422_888;
+            else if (videoformat.equals("UYVY")) videoFromat = Videoformat.UYVY;
         }
         Bitmap bitmap = null;
+        byte[] jpegByteArray = null;
+        YuvImage yuvImage = null;
+
         if (videoFromat == Videoformat.UYVY) {
+            log("converting to UYVY");
             // JNI APPROACH
             bitmap = Bitmap.createBitmap(imageWidth, imageHeight, Bitmap.Config.ARGB_8888);
             UYVYpixeltobmp(frameData, bitmap, imageWidth, imageHeight);
-            // JNA APPROACH:
-            /*
-            Pointer ptr = new Memory(frameData.length);
-            ptr.write(0, frameData, 0, frameData.length);
-
-            //Pointer jpegLength = new Memory(4);
-
-            IntByReference jpgLength = new IntByReference();
-            jpgLength.setValue(-1);
-
-            log("calling convertUYVYtoJPEG java");
-            Pointer p = JNA_I_LibUsb.INSTANCE.convertUYVYtoJPEG(ptr, jpgLength, frameData.length, imageWidth, imageHeight);
-
-            int length = 0;
-            if (jpgLength != null) {
-                length = jpgLength.getValue();
-                log ("jpgLength = " + length);
-            } else {
-                log ("jpgLength == null\nSKIP!!!");
-                return;
-            }
-            if (p != null) {
-                log("data received");
-                jpegByteArray = p.getByteArray(0, length);
-            } else log("no Data received == NULL");
-
-             */
-        } else if (videoFromat == Videoformat.YUY2) {
-            bitmap = Bitmap.createBitmap(imageWidth, imageHeight, Bitmap.Config.ARGB_8888);
-            YUY2pixeltobmp(frameData, bitmap, imageWidth, imageHeight);
         } else {
-            YuvImage yuvImage = null;
             if (videoFromat == Videoformat.YUY2) yuvImage = new YuvImage(frameData, ImageFormat.YUY2, imageWidth, imageHeight, null);
             else if (videoFromat == Videoformat.YV12) yuvImage = new YuvImage(frameData, ImageFormat.YV12, imageWidth, imageHeight, null);
             else if (videoFromat == Videoformat.YUV_420_888) yuvImage = new YuvImage(frameData, ImageFormat.YUV_420_888, imageWidth, imageHeight, null);
@@ -2350,28 +1994,31 @@ public class StartIsoStreamActivityUvc extends Activity {
             else yuvImage = new YuvImage(frameData, ImageFormat.YUY2, imageWidth, imageHeight, null);
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             yuvImage.compressToJpeg(new Rect(0, 0, imageWidth, imageHeight), 100, os);
-            byte[] jpegByteArray;
             jpegByteArray = os.toByteArray();
-            bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O_MR1) bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
         }
-
         if (imageCapture) {
+            log("image_Capture");
             imageCapture = false;
             date = new Date() ;
             dateFormat = new SimpleDateFormat("dd.MM.yyyy___HH_mm_ss") ;
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
+                log("Saving file to Standard App Folder");
                 String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Pictures/";
+                log("rootPath = " + rootPath);
                 file = new File(rootPath);
                 if (!file.exists()) {
                     file.mkdirs();
                 }
                 String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getAbsolutePath() ;
                 try {
-                    byte[] jpegByteArray;
-                    ByteArrayOutputStream os = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
-                    jpegByteArray = os.toByteArray();
+                    //byte[] jpegByteArray;
+                    //ByteArrayOutputStream os = new ByteArrayOutputStream();
+                    //bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                    //jpegByteArray = os.toByteArray();
                     writeBytesToFile(fileName, jpegByteArray);
+                    ret = 0;
+                    log("writeBytesToFile complete");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -2383,27 +2030,13 @@ public class StartIsoStreamActivityUvc extends Activity {
                 try {
                     //final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
                     MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
+                    ret = 0;
+                    log ("MediaStore Save File Complete !!!!");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 log ("file saved");
             }
-            /*
-            imageCapture = false ;
-            date = new Date() ;
-            dateFormat = new SimpleDateFormat("dd.MM.yyyy___HH_mm_ss") ;
-            Context context = getApplicationContext();
-            String dirname = "Pictures";
-            File directory = context.getFilesDir();
-            File dir = new File(directory, dirname);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-            String fileName = new File(dir,  dateFormat.format(date) + ".JPG").getPath() ;
-            log("fileName = " + fileName);
-            writeBytesToFile(fileName, jpegByteArray);
-            log ("file saved");
-             */
         }
         if (saveStillImage) {
 
@@ -2419,11 +2052,8 @@ public class StartIsoStreamActivityUvc extends Activity {
                 }
                 String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getAbsolutePath() ;
                 try {
-                    byte[] jpegByteArray;
-                    ByteArrayOutputStream os = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
-                    jpegByteArray = os.toByteArray();
                     writeBytesToFile(fileName, jpegByteArray);
+                    ret = 0;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -2435,6 +2065,7 @@ public class StartIsoStreamActivityUvc extends Activity {
                 try {
                     //final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
                     MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
+                    ret = 0;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -2456,30 +2087,11 @@ public class StartIsoStreamActivityUvc extends Activity {
                     sub_dir.mkdirs();
                 }
                 String fileName = new File(sub_dir,lastPicture + ".JPG").getPath() ;
-                byte[] jpegByteArray;
-                ByteArrayOutputStream os = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
-                jpegByteArray = os.toByteArray();
                 writeBytesToFile(fileName, jpegByteArray);
+                ret = 0;
             }
         }
-        if (exit == false) {
-            //final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
-            final Bitmap bmp = bitmap;
-
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (horizontalFlip || verticalFlip || rotate != 0) {
-                        imageView.setImageBitmap(flipImage(bmp));
-                    }
-                    else imageView.setImageBitmap(bmp);
-                }
-            });
-            if (videorecordApiJellyBeanNup) {
-                bitmapToVideoEncoder.queueFrame(bitmap);
-            }
-        }
+        return ret;
     }
 
     public Bitmap flipImage(Bitmap src) {
@@ -2492,7 +2104,9 @@ public class StartIsoStreamActivityUvc extends Activity {
         return Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);
     }
 
-    public void processReceivedMJpegVideoFrameKamera(byte[] mjpegFrameData) throws Exception {
+    // returns 0 on sucess
+    public int processReceivedMJpegVideoFrameKamera(byte[] mjpegFrameData) throws Exception {
+        int ret = -1;
         byte[] jpegFrameData = convertMjpegFrameToJpegKamera(mjpegFrameData);
         if (imageCapture) {
             imageCapture = false ;
@@ -2507,6 +2121,7 @@ public class StartIsoStreamActivityUvc extends Activity {
                 String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getAbsolutePath() ;
                 try {
                     writeBytesToFile(fileName, jpegFrameData);
+                    ret = 0;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -2518,6 +2133,7 @@ public class StartIsoStreamActivityUvc extends Activity {
                 try {
                     final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegFrameData, 0, jpegFrameData.length);
                     MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
+                    ret = 0;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -2538,6 +2154,7 @@ public class StartIsoStreamActivityUvc extends Activity {
                 String fileName = new File(rootPath + dateFormat.format(date) + ".jpg").getAbsolutePath() ;
                 try {
                     writeBytesToFile(fileName, jpegFrameData);
+                    ret = 0;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -2549,6 +2166,7 @@ public class StartIsoStreamActivityUvc extends Activity {
                 try {
                     final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegFrameData, 0, jpegFrameData.length);
                     MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
+                    ret = 0;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -2570,6 +2188,7 @@ public class StartIsoStreamActivityUvc extends Activity {
                 }
                 String fileName = new File(sub_dir,lastPicture + ".JPG").getPath() ;
                 writeBytesToFile(fileName, jpegFrameData);
+                ret = 0;
             }
         }
         if (exit == false) {
@@ -2602,6 +2221,7 @@ public class StartIsoStreamActivityUvc extends Activity {
                 }
             }
         }
+        return ret;
     }
 
     // see USB video class standard, USB_Video_Payload_MJPEG_1.5.pdf

@@ -493,16 +493,16 @@ uvc_error_t uvc_mjpeg2yuyv(uvc_frame_t *in, uvc_frame_t *out) {
 	struct error_mgr jerr;
 	dinfo.err = jpeg_std_error(&jerr.super);
 	jerr.super.error_exit = _error_exit;
-	LOGDEB("setjmp");
+	//LOGDEB("setjmp");
 	if (setjmp(jerr.jmp)) {
 		goto fail;
 	}
-	LOGDEB("jpeg_create_decompress");
+	//LOGDEB("jpeg_create_decompress");
 	jpeg_create_decompress(&dinfo);
-	LOGDEB("jpeg_mem_src");
+	//LOGDEB("jpeg_mem_src");
 	jpeg_mem_src(&dinfo, in->data, in->actual_bytes/*in->data_bytes*/);	// XXX
 
-	LOGDEB("jpeg_read_header");
+	//LOGDEB("jpeg_read_header");
 	jpeg_read_header(&dinfo, TRUE);
 
 	if (dinfo.dc_huff_tbl_ptrs[0] == NULL) {
@@ -516,7 +516,7 @@ uvc_error_t uvc_mjpeg2yuyv(uvc_frame_t *in, uvc_frame_t *out) {
 	dinfo.dct_method = JDCT_IFAST;
 
 	// start decompressor
-	LOGDEB("jpeg_start_decompress");
+	//LOGDEB("jpeg_start_decompress");
 
 	jpeg_start_decompress(&dinfo);
 
@@ -550,10 +550,10 @@ uvc_error_t uvc_mjpeg2yuyv(uvc_frame_t *in, uvc_frame_t *out) {
 		}
 		out->actual_bytes = in->width * in->height * 2;	// XXX
 	}
-	LOGDEB("jpeg_finish_decompress");
+	//LOGDEB("jpeg_finish_decompress");
 
 	jpeg_finish_decompress(&dinfo);
-	LOGDEB("jpeg_destroy_decompress");
+	//LOGDEB("jpeg_destroy_decompress");
 
 	jpeg_destroy_decompress(&dinfo);
 	return lines_read == out->height ? UVC_SUCCESS : UVC_ERROR_OTHER;

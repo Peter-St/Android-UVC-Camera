@@ -53,6 +53,8 @@ extern int setFrameCallback(long preview_pointer, JNIEnv *env, jobject frame_cal
 
 extern int setJavaVM(long preview_pointer, JNIEnv *env, jobject obj);
 
+extern int capturePicture(long preview_pointer);
+extern int enableMIsCapturing(long preview_pointer);
 
 
 #ifdef __cplusplus
@@ -83,6 +85,7 @@ typedef uvc_error_t (*convFunc_t)(uvc_frame_t *in, uvc_frame_t *out);
 #define PIXEL_FORMAT_RGBX 3
 #define PIXEL_FORMAT_YUV20SP 4
 #define PIXEL_FORMAT_NV21 5		// YVU420SemiPlanar
+#define PIXEL_FORMAT_MJPEG 6    // Added by Peter St. 14.01.2023
 
 // for callback to Java object
 typedef struct {
@@ -120,6 +123,7 @@ private:
 	size_t previewBytes;
 //
 	volatile bool mIsCapturing;
+	volatile bool mPictureCapturing;
 	ANativeWindow *mCaptureWindow;
 	pthread_t capture_thread;
 	pthread_mutex_t capture_mutex;
@@ -174,6 +178,9 @@ public:
 	int setJavaVM(JNIEnv *env, jobject obj);
 	inline const bool isCapturing() const;
 	int setCaptureDisplay(ANativeWindow *capture_window);
+	// Added by Peter St. 14.01.2023
+	int enable_mIsCapturing();
+	int capture_picture();
 };
 
 

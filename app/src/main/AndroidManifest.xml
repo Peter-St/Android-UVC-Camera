@@ -55,6 +55,7 @@
             </intent-filter>
         </activity>
         <activity android:name="humer.UvcCamera.StartIsoStreamActivityUvc"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="true">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -63,6 +64,7 @@
             </intent-filter>
         </activity>
         <activity android:name="humer.UvcCamera.SetUpTheUsbDeviceUsbIso"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="true">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -106,7 +108,8 @@
             android:screenOrientation="fullUser"
             android:theme="@style/CallActivityTheme"
             android:exported="true"/>
-        <activity android:name="com.example.androidthings.videortc.WebRtc_MainActivity">
+        <activity android:name="com.example.androidthings.videortc.WebRtc_MainActivity"
+            android:exported="true">
         </activity>
 
 

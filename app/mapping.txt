@@ -1,7 +1,7 @@
 # compiler: R8
 # compiler_version: 3.1.66
 # min_api: 15
-# pg_map_id: 2dc2aa1
+# pg_map_id: b46eb8b
 # common_typos_disable
 # {"id":"com.android.tools.r8.mapping","version":"1.0"}
 android.arch.core.internal.FastSafeIterableMap -> a.a:
@@ -47,29 +47,23 @@ android.arch.lifecycle.ReflectiveGenericLifecycleObserver$$ExternalSyntheticOutl
 # {"id":"com.android.tools.r8.synthesized"}
     java.lang.String android.support.v4.graphics.TypefaceCompatUtil$$InternalSyntheticOutline$88$494f51713b3f9c08c7c41f78a26552ef57c203a5a8a578547e69e32e86581887$0.m(java.lang.String,int) -> a
       # {"id":"com.android.tools.r8.synthesized"}
-    java.lang.String com.example.androidthings.videortc.UsbCapturer$$InternalSyntheticOutline$88$cc02b458c06fc5a1a1ca4b2459523702962869c90f91a0c86a4b2e9b0fcc171f$0.m(java.lang.String,int,java.lang.String) -> b
+    java.lang.String android.support.v4.app.Fragment$$InternalSyntheticOutline$88$67a30e9e8f3feeaa959dd2d01d589a1c08107dfe6cb52b3b8fe003d9a37e11a3$0.m(java.lang.String,android.support.v4.app.Fragment,java.lang.String) -> b
       # {"id":"com.android.tools.r8.synthesized"}
-    java.lang.String android.support.v4.app.Fragment$$InternalSyntheticOutline$88$67a30e9e8f3feeaa959dd2d01d589a1c08107dfe6cb52b3b8fe003d9a37e11a3$0.m(java.lang.String,android.support.v4.app.Fragment,java.lang.String) -> c
+    java.lang.String android.support.constraint.solver.ArrayRow$$InternalSyntheticOutline$88$1cbf31f4d6599ee490305390565767a71988e72043fcefa523e812485f4fff1c$0.m(java.lang.StringBuilder,java.lang.String,java.lang.String) -> c
       # {"id":"com.android.tools.r8.synthesized"}
-    java.lang.String android.support.constraint.solver.widgets.ConstraintWidget$$InternalSyntheticOutline$88$3377e20755c45357f2ed9c5119fe0a20e43c9c9389a8ccef6a98ccc0981931a1$0.m(java.lang.StringBuilder,int,java.lang.String) -> d
+    java.lang.StringBuilder android.arch.lifecycle.ReflectiveGenericLifecycleObserver$$InternalSyntheticOutline$88$38ee733480a3159f2d4ca7ab62bca935ae8d7a35486e43e648122f4eff457ef2$0.m(java.lang.String) -> d
       # {"id":"com.android.tools.r8.synthesized"}
-    java.lang.String android.support.constraint.solver.ArrayRow$$InternalSyntheticOutline$88$1cbf31f4d6599ee490305390565767a71988e72043fcefa523e812485f4fff1c$0.m(java.lang.StringBuilder,java.lang.String,java.lang.String) -> e
+    java.lang.StringBuilder android.support.v7.widget.SuggestionsAdapter$$InternalSyntheticOutline$88$3f7b0b9a9418f5bd4f91f3d5ff22d19a0fd94a8ca0bc8f7ca0cec80b644a6997$0.m(java.lang.String,int,java.lang.String) -> e
       # {"id":"com.android.tools.r8.synthesized"}
-    java.lang.String humer.UvcCamera.StartIsoStreamActivityUsbIso$$InternalSyntheticOutline$88$8162b911a787a2e1d052c866b79fc7cd0f20649dfd575f1f27aed9d2c32e7766$0.m(java.text.SimpleDateFormat,java.util.Date,java.lang.StringBuilder,java.lang.String) -> f
+    java.lang.StringBuilder humer.UvcCamera.AutomaticDetection.Jna_AutoDetect$$InternalSyntheticOutline$88$1f10999ff8a2988747b402639a6c179a462909e394d27f002ee92a99914e9dd1$0.m(java.lang.StringBuilder,int,java.lang.StringBuilder,java.lang.String) -> f
       # {"id":"com.android.tools.r8.synthesized"}
-    java.lang.StringBuilder android.arch.lifecycle.ReflectiveGenericLifecycleObserver$$InternalSyntheticOutline$88$38ee733480a3159f2d4ca7ab62bca935ae8d7a35486e43e648122f4eff457ef2$0.m(java.lang.String) -> g
+    void com.sample.timelapse.MJPEGGenerator$AVIIndex$$InternalSyntheticOutline$88$15b23cd3d33ee351d90315772785940fe9650a57b2fbde48ceffab1bd0e6013e$0.m(int,java.io.ByteArrayOutputStream) -> g
       # {"id":"com.android.tools.r8.synthesized"}
-    java.lang.StringBuilder android.support.v7.widget.SuggestionsAdapter$$InternalSyntheticOutline$88$3f7b0b9a9418f5bd4f91f3d5ff22d19a0fd94a8ca0bc8f7ca0cec80b644a6997$0.m(java.lang.String,int,java.lang.String) -> h
+    void humer.UvcCamera.StartIsoStreamActivityUsbIso$$InternalSyntheticOutline$88$b049930034a3b427362cf267640cfc1aa07c91380c706340f309e71aeaf4b854$0.m(android.widget.PopupMenu,int,boolean) -> h
       # {"id":"com.android.tools.r8.synthesized"}
-    java.lang.StringBuilder com.example.androidthings.videortc.UsbCapturer$$InternalSyntheticOutline$88$5f40eb23f982788e8d16c1e514c1addd3edf937bff05c92e7c729a4cc916f9cd$0.m(java.lang.StringBuilder,int,java.lang.StringBuilder,java.lang.String) -> i
+    void humer.UvcCamera.SaveToFile$12$$InternalSyntheticOutline$88$cc5d8c7b1108a3036f34ee24de85711744b98766873ea5850d7cdcbcac1b40b0$0.m(java.lang.StringBuilder,int,java.io.PrintStream) -> i
       # {"id":"com.android.tools.r8.synthesized"}
-    void com.sample.timelapse.MJPEGGenerator$AVIIndex$$InternalSyntheticOutline$88$15b23cd3d33ee351d90315772785940fe9650a57b2fbde48ceffab1bd0e6013e$0.m(int,java.io.ByteArrayOutputStream) -> j
-      # {"id":"com.android.tools.r8.synthesized"}
-    void humer.UvcCamera.StartIsoStreamActivityUsbIso$$InternalSyntheticOutline$88$b049930034a3b427362cf267640cfc1aa07c91380c706340f309e71aeaf4b854$0.m(android.widget.PopupMenu,int,boolean) -> k
-      # {"id":"com.android.tools.r8.synthesized"}
-    void humer.UvcCamera.SaveToFile$12$$InternalSyntheticOutline$88$cc5d8c7b1108a3036f34ee24de85711744b98766873ea5850d7cdcbcac1b40b0$0.m(java.lang.StringBuilder,int,java.io.PrintStream) -> l
-      # {"id":"com.android.tools.r8.synthesized"}
-    java.lang.String android.support.constraint.solver.widgets.analyzer.DependencyNode$Type$EnumUnboxingLocalUtility.stringValueOf(int) -> m
+    java.lang.String android.support.constraint.solver.widgets.analyzer.DependencyNode$Type$EnumUnboxingLocalUtility.stringValueOf(int) -> j
       # {"id":"com.android.tools.r8.synthesized"}
 android.arch.lifecycle.ReflectiveGenericLifecycleObserver$CallbackInfo -> android.arch.lifecycle.ReflectiveGenericLifecycleObserver$a:
     java.util.Map mEventToHandlers -> a
@@ -6532,27 +6526,20 @@ android.support.v4.content.ContextCompat -> m.a:
     android.content.res.ColorStateList getColorStateList(android.content.Context,int) -> c
     android.graphics.drawable.Drawable getDrawable(android.content.Context,int) -> d
 android.support.v4.content.LocalBroadcastManager -> m.b:
-    android.content.Context mAppContext -> a
-    android.os.Handler mHandler -> e
-    java.lang.Object mLock -> f
-    android.support.v4.content.LocalBroadcastManager mInstance -> g
-    java.util.HashMap mReceivers -> b
-    java.util.ArrayList mPendingBroadcasts -> d
-    java.util.HashMap mActions -> c
-    android.support.v4.content.LocalBroadcastManager getInstance(android.content.Context) -> a
-    boolean sendBroadcast(android.content.Intent) -> b
+    java.lang.Object mLock -> d
+    android.support.v4.content.LocalBroadcastManager mInstance -> e
+    java.util.HashMap mActions -> b
+    java.util.HashMap mReceivers -> a
+    java.util.ArrayList mPendingBroadcasts -> c
 android.support.v4.content.LocalBroadcastManager$1 -> m.b$a:
     android.support.v4.content.LocalBroadcastManager this$0 -> a
     1:1:void android.support.v4.content.LocalBroadcastManager.executePendingBroadcasts():0:0 -> handleMessage
     1:1:void android.support.v4.content.LocalBroadcastManager.access$000(android.support.v4.content.LocalBroadcastManager):0 -> handleMessage
     1:1:void handleMessage(android.os.Message):0 -> handleMessage
 android.support.v4.content.LocalBroadcastManager$BroadcastRecord -> m.b$b:
-    android.content.Intent intent -> a
-    java.util.ArrayList receivers -> b
 android.support.v4.content.LocalBroadcastManager$ReceiverRecord -> m.b$c:
     android.content.IntentFilter filter -> a
     android.content.BroadcastReceiver receiver -> b
-    boolean broadcasting -> c
 android.support.v4.content.res.FontResourcesParserCompat -> n.a:
     1:1:android.support.v4.content.res.FontResourcesParserCompat$FamilyResourceEntry android.support.v4.content.res.FontResourcesParserCompat.readFamilies(org.xmlpull.v1.XmlPullParser,android.content.res.Resources):0:0 -> a
     1:1:android.support.v4.content.res.FontResourcesParserCompat$FamilyResourceEntry parse(org.xmlpull.v1.XmlPullParser,android.content.res.Resources):0 -> a
@@ -16539,17 +16526,6 @@ com.crowdfire.cfalertdialog.views.CFPushButton -> com.crowdfire.cfalertdialog.vi
     2:2:void <init>(android.content.Context,android.util.AttributeSet,int):0 -> <init>
     3:3:void initButton(android.content.Context,android.util.AttributeSet,int):0:0 -> <init>
     3:3:void <init>(android.content.Context,android.util.AttributeSet,int):0 -> <init>
-com.example.androidthings.videortc.CallActivity -> com.example.androidthings.videortc.CallActivity:
-    void $r8$lambda$bb2WVyF34Q2Ngd08fFmAxGxNBuo(com.example.androidthings.videortc.CallActivity,android.view.View) -> a
-      # {"id":"com.android.tools.r8.synthesized"}
-com.example.androidthings.videortc.CallActivity$$ExternalSyntheticLambda0 -> com.example.androidthings.videortc.a:
-# {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
-# {"id":"com.android.tools.r8.synthesized"}
-    com.example.androidthings.videortc.CallActivity com.example.androidthings.videortc.CallActivity$$InternalSyntheticLambda$0$38441d88e5c17f3df3f600abb5a2303fa6d9456b18fb391238649fabd565b31a$0.f$0 -> a
-    void com.example.androidthings.videortc.CallActivity$$InternalSyntheticLambda$0$38441d88e5c17f3df3f600abb5a2303fa6d9456b18fb391238649fabd565b31a$0.<init>(com.example.androidthings.videortc.CallActivity) -> <init>
-      # {"id":"com.android.tools.r8.synthesized"}
-    void com.example.androidthings.videortc.CallActivity$$InternalSyntheticLambda$0$38441d88e5c17f3df3f600abb5a2303fa6d9456b18fb391238649fabd565b31a$0.onClick(android.view.View) -> onClick
-      # {"id":"com.android.tools.r8.synthesized"}
 com.mingle.SimpleAnimationListener -> l0.a:
     void onAnimationStart(com.nineoldandroids.animation.Animator) -> b
     void onAnimationRepeat(com.nineoldandroids.animation.Animator) -> c
@@ -18611,11 +18587,16 @@ humer.UvcCamera.SetUpTheUsbDeviceUvc -> humer.UvcCamera.SetUpTheUsbDeviceUvc:
     16:16:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0:0 -> moveToNativeSetUpTheValues
     16:16:void moveToNativeSetUpTheValues():0 -> moveToNativeSetUpTheValues
     17:17:void moveToNativeSetUpTheValues():0:0 -> moveToNativeSetUpTheValues
-    1:1:void android.support.v4.content.LocalBroadcastManager.registerReceiver(android.content.BroadcastReceiver,android.content.IntentFilter):0:0 -> onCreate
+    1:1:android.support.v4.content.LocalBroadcastManager android.support.v4.content.LocalBroadcastManager.getInstance(android.content.Context):0:0 -> onCreate
     1:1:void onCreate(android.os.Bundle):0 -> onCreate
     2:2:void onCreate(android.os.Bundle):0:0 -> onCreate
     3:3:void android.support.v4.content.LocalBroadcastManager.registerReceiver(android.content.BroadcastReceiver,android.content.IntentFilter):0:0 -> onCreate
     3:3:void onCreate(android.os.Bundle):0 -> onCreate
+    4:4:void onCreate(android.os.Bundle):0:0 -> onCreate
+    5:5:void android.support.v4.content.LocalBroadcastManager.registerReceiver(android.content.BroadcastReceiver,android.content.IntentFilter):0:0 -> onCreate
+    5:5:void onCreate(android.os.Bundle):0 -> onCreate
+    6:6:android.support.v4.content.LocalBroadcastManager android.support.v4.content.LocalBroadcastManager.getInstance(android.content.Context):0:0 -> onCreate
+    6:6:void onCreate(android.os.Bundle):0 -> onCreate
     1:1:void com.crowdfire.cfalertdialog.CFAlertDialog$Builder.<init>(android.content.Context):0:0 -> openCameraDevice
     1:1:void openCameraDevice(boolean):0 -> openCameraDevice
     2:2:android.content.Context com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$902(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,android.content.Context):0:0 -> openCameraDevice
@@ -18861,6 +18842,116 @@ humer.UvcCamera.StartIsoStreamActivityUvc -> humer.UvcCamera.StartIsoStreamActiv
     9:9:void com.mingle.sweetpick.SweetSheet.setup():0 -> setupViewpager
     9:9:void com.mingle.sweetpick.SweetSheet.setDelegate(com.mingle.sweetpick.Delegate):0 -> setupViewpager
     9:9:void setupViewpager():0 -> setupViewpager
+humer.UvcCamera.StartIsoStreamActivityUvc$11 -> humer.UvcCamera.StartIsoStreamActivityUvc$11:
+    1:1:void com.crowdfire.cfalertdialog.CFAlertDialog$Builder.<init>(android.content.Context):0:0 -> onMenuItemClick
+    1:1:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    2:2:android.content.Context com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$902(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,android.content.Context):0:0 -> onMenuItemClick
+    2:2:void com.crowdfire.cfalertdialog.CFAlertDialog$Builder.<init>(android.content.Context):0 -> onMenuItemClick
+    2:2:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    3:3:com.crowdfire.cfalertdialog.CFAlertDialog$CFAlertStyle com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$2602(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,com.crowdfire.cfalertdialog.CFAlertDialog$CFAlertStyle):0:0 -> onMenuItemClick
+    3:3:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setDialogStyle(com.crowdfire.cfalertdialog.CFAlertDialog$CFAlertStyle):0 -> onMenuItemClick
+    3:3:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    4:4:java.lang.CharSequence com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$602(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,java.lang.CharSequence):0:0 -> onMenuItemClick
+    4:4:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setTitle(java.lang.CharSequence):0 -> onMenuItemClick
+    4:4:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    5:5:boolean onMenuItemClick(android.view.MenuItem):0:0 -> onMenuItemClick
+    6:6:java.lang.CharSequence com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$702(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,java.lang.CharSequence):0:0 -> onMenuItemClick
+    6:6:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setMessage(java.lang.CharSequence):0 -> onMenuItemClick
+    6:6:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    7:7:boolean onMenuItemClick(android.view.MenuItem):0:0 -> onMenuItemClick
+    8:8:java.lang.String[] com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$1202(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,java.lang.String[]):0:0 -> onMenuItemClick
+    8:8:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setItems(java.lang.String[],android.content.DialogInterface$OnClickListener):0 -> onMenuItemClick
+    8:8:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    9:9:android.content.DialogInterface$OnClickListener com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$1302(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,android.content.DialogInterface$OnClickListener):0:0 -> onMenuItemClick
+    9:9:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setItems(java.lang.String[],android.content.DialogInterface$OnClickListener):0 -> onMenuItemClick
+    9:9:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    10:10:int com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$4200(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> onMenuItemClick
+    10:10:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> onMenuItemClick
+    10:10:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
+    10:10:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    11:11:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0:0 -> onMenuItemClick
+    11:11:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
+    11:11:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    12:12:android.content.Context com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$900(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> onMenuItemClick
+    12:12:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> onMenuItemClick
+    12:12:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
+    12:12:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    13:13:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0:0 -> onMenuItemClick
+    13:13:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
+    13:13:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    14:14:android.content.Context com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$900(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> onMenuItemClick
+    14:14:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> onMenuItemClick
+    14:14:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
+    14:14:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    15:15:int com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$4200(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> onMenuItemClick
+    15:15:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> onMenuItemClick
+    15:15:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
+    15:15:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    16:16:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0:0 -> onMenuItemClick
+    16:16:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
+    16:16:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    17:17:void com.crowdfire.cfalertdialog.CFAlertDialog.setDialogParams(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> onMenuItemClick
+    17:17:void com.crowdfire.cfalertdialog.CFAlertDialog.access$4600(com.crowdfire.cfalertdialog.CFAlertDialog,com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0 -> onMenuItemClick
+    17:17:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> onMenuItemClick
+    17:17:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
+    17:17:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    18:18:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0:0 -> onMenuItemClick
+    18:18:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    19:19:boolean onMenuItemClick(android.view.MenuItem):0:0 -> onMenuItemClick
+    20:20:void com.crowdfire.cfalertdialog.CFAlertDialog$Builder.<init>(android.content.Context):0:0 -> onMenuItemClick
+    20:20:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    21:21:android.content.Context com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$902(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,android.content.Context):0:0 -> onMenuItemClick
+    21:21:void com.crowdfire.cfalertdialog.CFAlertDialog$Builder.<init>(android.content.Context):0 -> onMenuItemClick
+    21:21:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    22:22:com.crowdfire.cfalertdialog.CFAlertDialog$CFAlertStyle com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$2602(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,com.crowdfire.cfalertdialog.CFAlertDialog$CFAlertStyle):0:0 -> onMenuItemClick
+    22:22:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setDialogStyle(com.crowdfire.cfalertdialog.CFAlertDialog$CFAlertStyle):0 -> onMenuItemClick
+    22:22:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    23:23:java.lang.CharSequence com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$602(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,java.lang.CharSequence):0:0 -> onMenuItemClick
+    23:23:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setTitle(java.lang.CharSequence):0 -> onMenuItemClick
+    23:23:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    24:24:boolean onMenuItemClick(android.view.MenuItem):0:0 -> onMenuItemClick
+    25:25:java.lang.CharSequence com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$702(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,java.lang.CharSequence):0:0 -> onMenuItemClick
+    25:25:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setMessage(java.lang.CharSequence):0 -> onMenuItemClick
+    25:25:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    26:26:boolean onMenuItemClick(android.view.MenuItem):0:0 -> onMenuItemClick
+    27:27:java.lang.String[] com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$1202(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,java.lang.String[]):0:0 -> onMenuItemClick
+    27:27:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setItems(java.lang.String[],android.content.DialogInterface$OnClickListener):0 -> onMenuItemClick
+    27:27:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    28:28:android.content.DialogInterface$OnClickListener com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$1302(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,android.content.DialogInterface$OnClickListener):0:0 -> onMenuItemClick
+    28:28:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setItems(java.lang.String[],android.content.DialogInterface$OnClickListener):0 -> onMenuItemClick
+    28:28:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    29:29:int com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$4200(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> onMenuItemClick
+    29:29:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> onMenuItemClick
+    29:29:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
+    29:29:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    30:30:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0:0 -> onMenuItemClick
+    30:30:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
+    30:30:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    31:31:android.content.Context com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$900(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> onMenuItemClick
+    31:31:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> onMenuItemClick
+    31:31:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
+    31:31:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    32:32:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0:0 -> onMenuItemClick
+    32:32:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
+    32:32:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    33:33:android.content.Context com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$900(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> onMenuItemClick
+    33:33:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> onMenuItemClick
+    33:33:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
+    33:33:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    34:34:int com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$4200(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> onMenuItemClick
+    34:34:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> onMenuItemClick
+    34:34:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
+    34:34:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    35:35:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0:0 -> onMenuItemClick
+    35:35:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
+    35:35:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    36:36:void com.crowdfire.cfalertdialog.CFAlertDialog.setDialogParams(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> onMenuItemClick
+    36:36:void com.crowdfire.cfalertdialog.CFAlertDialog.access$4600(com.crowdfire.cfalertdialog.CFAlertDialog,com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0 -> onMenuItemClick
+    36:36:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> onMenuItemClick
+    36:36:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
+    36:36:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
+    37:37:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0:0 -> onMenuItemClick
+    37:37:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
 humer.UvcCamera.StartIsoStreamActivityUvc$3 -> humer.UvcCamera.StartIsoStreamActivityUvc$3:
     1:1:void com.mingle.sweetpick.SweetSheet.toggle():0:0 -> onMenuItemSelected
     1:1:boolean onMenuItemSelected(android.view.MenuItem):0 -> onMenuItemSelected
@@ -19017,116 +19108,6 @@ humer.UvcCamera.StartIsoStreamActivityUvc$3 -> humer.UvcCamera.StartIsoStreamAct
     27:27:void com.mingle.sweetpick.SweetSheet.toggle():0:0 -> onMenuItemSelected
     27:27:boolean onMenuItemSelected(android.view.MenuItem):0 -> onMenuItemSelected
     28:28:boolean onMenuItemSelected(android.view.MenuItem):0:0 -> onMenuItemSelected
-humer.UvcCamera.StartIsoStreamActivityUvc$9 -> humer.UvcCamera.StartIsoStreamActivityUvc$9:
-    1:1:void com.crowdfire.cfalertdialog.CFAlertDialog$Builder.<init>(android.content.Context):0:0 -> onMenuItemClick
-    1:1:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    2:2:android.content.Context com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$902(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,android.content.Context):0:0 -> onMenuItemClick
-    2:2:void com.crowdfire.cfalertdialog.CFAlertDialog$Builder.<init>(android.content.Context):0 -> onMenuItemClick
-    2:2:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    3:3:com.crowdfire.cfalertdialog.CFAlertDialog$CFAlertStyle com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$2602(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,com.crowdfire.cfalertdialog.CFAlertDialog$CFAlertStyle):0:0 -> onMenuItemClick
-    3:3:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setDialogStyle(com.crowdfire.cfalertdialog.CFAlertDialog$CFAlertStyle):0 -> onMenuItemClick
-    3:3:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    4:4:java.lang.CharSequence com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$602(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,java.lang.CharSequence):0:0 -> onMenuItemClick
-    4:4:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setTitle(java.lang.CharSequence):0 -> onMenuItemClick
-    4:4:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    5:5:boolean onMenuItemClick(android.view.MenuItem):0:0 -> onMenuItemClick
-    6:6:java.lang.CharSequence com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$702(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,java.lang.CharSequence):0:0 -> onMenuItemClick
-    6:6:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setMessage(java.lang.CharSequence):0 -> onMenuItemClick
-    6:6:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    7:7:boolean onMenuItemClick(android.view.MenuItem):0:0 -> onMenuItemClick
-    8:8:java.lang.String[] com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$1202(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,java.lang.String[]):0:0 -> onMenuItemClick
-    8:8:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setItems(java.lang.String[],android.content.DialogInterface$OnClickListener):0 -> onMenuItemClick
-    8:8:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    9:9:android.content.DialogInterface$OnClickListener com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$1302(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,android.content.DialogInterface$OnClickListener):0:0 -> onMenuItemClick
-    9:9:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setItems(java.lang.String[],android.content.DialogInterface$OnClickListener):0 -> onMenuItemClick
-    9:9:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    10:10:int com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$4200(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> onMenuItemClick
-    10:10:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> onMenuItemClick
-    10:10:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
-    10:10:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    11:11:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0:0 -> onMenuItemClick
-    11:11:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
-    11:11:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    12:12:android.content.Context com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$900(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> onMenuItemClick
-    12:12:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> onMenuItemClick
-    12:12:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
-    12:12:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    13:13:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0:0 -> onMenuItemClick
-    13:13:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
-    13:13:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    14:14:android.content.Context com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$900(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> onMenuItemClick
-    14:14:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> onMenuItemClick
-    14:14:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
-    14:14:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    15:15:int com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$4200(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> onMenuItemClick
-    15:15:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> onMenuItemClick
-    15:15:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
-    15:15:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    16:16:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0:0 -> onMenuItemClick
-    16:16:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
-    16:16:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    17:17:void com.crowdfire.cfalertdialog.CFAlertDialog.setDialogParams(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> onMenuItemClick
-    17:17:void com.crowdfire.cfalertdialog.CFAlertDialog.access$4600(com.crowdfire.cfalertdialog.CFAlertDialog,com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0 -> onMenuItemClick
-    17:17:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> onMenuItemClick
-    17:17:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
-    17:17:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    18:18:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0:0 -> onMenuItemClick
-    18:18:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    19:19:boolean onMenuItemClick(android.view.MenuItem):0:0 -> onMenuItemClick
-    20:20:void com.crowdfire.cfalertdialog.CFAlertDialog$Builder.<init>(android.content.Context):0:0 -> onMenuItemClick
-    20:20:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    21:21:android.content.Context com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$902(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,android.content.Context):0:0 -> onMenuItemClick
-    21:21:void com.crowdfire.cfalertdialog.CFAlertDialog$Builder.<init>(android.content.Context):0 -> onMenuItemClick
-    21:21:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    22:22:com.crowdfire.cfalertdialog.CFAlertDialog$CFAlertStyle com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$2602(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,com.crowdfire.cfalertdialog.CFAlertDialog$CFAlertStyle):0:0 -> onMenuItemClick
-    22:22:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setDialogStyle(com.crowdfire.cfalertdialog.CFAlertDialog$CFAlertStyle):0 -> onMenuItemClick
-    22:22:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    23:23:java.lang.CharSequence com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$602(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,java.lang.CharSequence):0:0 -> onMenuItemClick
-    23:23:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setTitle(java.lang.CharSequence):0 -> onMenuItemClick
-    23:23:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    24:24:boolean onMenuItemClick(android.view.MenuItem):0:0 -> onMenuItemClick
-    25:25:java.lang.CharSequence com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$702(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,java.lang.CharSequence):0:0 -> onMenuItemClick
-    25:25:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setMessage(java.lang.CharSequence):0 -> onMenuItemClick
-    25:25:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    26:26:boolean onMenuItemClick(android.view.MenuItem):0:0 -> onMenuItemClick
-    27:27:java.lang.String[] com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$1202(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,java.lang.String[]):0:0 -> onMenuItemClick
-    27:27:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setItems(java.lang.String[],android.content.DialogInterface$OnClickListener):0 -> onMenuItemClick
-    27:27:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    28:28:android.content.DialogInterface$OnClickListener com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$1302(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams,android.content.DialogInterface$OnClickListener):0:0 -> onMenuItemClick
-    28:28:com.crowdfire.cfalertdialog.CFAlertDialog$Builder com.crowdfire.cfalertdialog.CFAlertDialog$Builder.setItems(java.lang.String[],android.content.DialogInterface$OnClickListener):0 -> onMenuItemClick
-    28:28:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    29:29:int com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$4200(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> onMenuItemClick
-    29:29:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> onMenuItemClick
-    29:29:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
-    29:29:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    30:30:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0:0 -> onMenuItemClick
-    30:30:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
-    30:30:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    31:31:android.content.Context com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$900(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> onMenuItemClick
-    31:31:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> onMenuItemClick
-    31:31:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
-    31:31:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    32:32:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0:0 -> onMenuItemClick
-    32:32:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
-    32:32:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    33:33:android.content.Context com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$900(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> onMenuItemClick
-    33:33:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> onMenuItemClick
-    33:33:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
-    33:33:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    34:34:int com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams.access$4200(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> onMenuItemClick
-    34:34:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> onMenuItemClick
-    34:34:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
-    34:34:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    35:35:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0:0 -> onMenuItemClick
-    35:35:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
-    35:35:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    36:36:void com.crowdfire.cfalertdialog.CFAlertDialog.setDialogParams(com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0:0 -> onMenuItemClick
-    36:36:void com.crowdfire.cfalertdialog.CFAlertDialog.access$4600(com.crowdfire.cfalertdialog.CFAlertDialog,com.crowdfire.cfalertdialog.CFAlertDialog$DialogParams):0 -> onMenuItemClick
-    36:36:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0 -> onMenuItemClick
-    36:36:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> onMenuItemClick
-    36:36:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
-    37:37:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0:0 -> onMenuItemClick
-    37:37:boolean onMenuItemClick(android.view.MenuItem):0 -> onMenuItemClick
 io.github.yavski.fabspeeddial.FabSpeedDial -> io.github.yavski.fabspeeddial.FabSpeedDial:
     android.content.res.ColorStateList miniFabTitleBackgroundTint -> p
     android.support.design.widget.FloatingActionButton fab -> f
@@ -19830,19 +19811,6 @@ io.reactivex.schedulers.Schedulers$SingleHolder -> l1.a$g:
 io.reactivex.schedulers.Schedulers$SingleTask -> l1.a$h:
     1:1:io.reactivex.Scheduler io.reactivex.schedulers.Schedulers$SingleTask.call():0:0 -> call
     1:1:java.lang.Object call():0 -> call
-m1.AsyncHttpURLConnection$$ExternalSyntheticLambda0 -> m1.a:
-# {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
-# {"id":"com.android.tools.r8.synthesized"}
-    org.appspot.apprtc.util.AsyncHttpURLConnection org.appspot.apprtc.util.AsyncHttpURLConnection$$InternalSyntheticLambda$0$d01214f96cc5712f4249f47f206919c2127394bb299c5200d446c8913e131731$0.f$0 -> b
-    int org.appspot.apprtc.util.AsyncHttpURLConnection$$InternalSyntheticLambda$0$d01214f96cc5712f4249f47f206919c2127394bb299c5200d446c8913e131731$0.$r8$classId -> a
-    1:1:void org.appspot.apprtc.util.AsyncHttpURLConnection$$InternalSyntheticLambda$0$d01214f96cc5712f4249f47f206919c2127394bb299c5200d446c8913e131731$0.<init>(org.appspot.apprtc.util.AsyncHttpURLConnection):0:0 -> <init>
-    1:1:void org.appspot.apprtc.util.AsyncHttpURLConnection$$InternalSyntheticLambda$0$d01214f96cc5712f4249f47f206919c2127394bb299c5200d446c8913e131731$0.$r8$init$synthetic(org.appspot.apprtc.util.AsyncHttpURLConnection):0 -> <init>
-      # {"id":"com.android.tools.r8.synthesized"}
-    void org.appspot.apprtc.util.AsyncHttpURLConnection$$InternalSyntheticLambda$0$d01214f96cc5712f4249f47f206919c2127394bb299c5200d446c8913e131731$0.run$bridge() -> run
-      # {"id":"com.android.tools.r8.synthesized"}
-org.appspot.apprtc.util.AsyncHttpURLConnection -> org.appspot.apprtc.util.AsyncHttpURLConnection:
-    void $r8$lambda$u-HmOg0miseVFRydltJIgRacpdI(org.appspot.apprtc.util.AsyncHttpURLConnection) -> a
-      # {"id":"com.android.tools.r8.synthesized"}
 org.webrtc.Camera1Session$3 -> org.webrtc.Camera1Session$3:
     void $r8$lambda$QCddbSFS3Objs8DO1_42U4rI5Rs(org.webrtc.Camera1Session$3,byte[]) -> a
       # {"id":"com.android.tools.r8.synthesized"}
@@ -19896,6 +19864,16 @@ org.webrtc.EglRenderer -> org.webrtc.EglRenderer:
 org.webrtc.EglRenderer$$ExternalSyntheticLambda0 -> org.webrtc.c:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
+    org.webrtc.EglRenderer org.webrtc.EglRenderer$$InternalSyntheticLambda$0$ed5f13ee401d18f38407debde38b3955c2f5072de94dfeb766c38e830dbcb5b7$0.f$0 -> b
+    int org.webrtc.EglRenderer$$InternalSyntheticLambda$0$ed5f13ee401d18f38407debde38b3955c2f5072de94dfeb766c38e830dbcb5b7$0.$r8$classId -> a
+    1:1:void org.webrtc.EglRenderer$$InternalSyntheticLambda$0$ed5f13ee401d18f38407debde38b3955c2f5072de94dfeb766c38e830dbcb5b7$0.<init>(org.webrtc.EglRenderer):0:0 -> <init>
+    1:1:void org.webrtc.EglRenderer$$InternalSyntheticLambda$0$ed5f13ee401d18f38407debde38b3955c2f5072de94dfeb766c38e830dbcb5b7$0.$r8$init$synthetic(org.webrtc.EglRenderer):0 -> <init>
+      # {"id":"com.android.tools.r8.synthesized"}
+    void org.webrtc.EglRenderer$$InternalSyntheticLambda$0$ed5f13ee401d18f38407debde38b3955c2f5072de94dfeb766c38e830dbcb5b7$0.run$bridge() -> run
+      # {"id":"com.android.tools.r8.synthesized"}
+org.webrtc.EglRenderer$$ExternalSyntheticLambda1 -> org.webrtc.d:
+# {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
+# {"id":"com.android.tools.r8.synthesized"}
     org.webrtc.EglRenderer org.webrtc.EglRenderer$$InternalSyntheticLambda$0$174b12063952cd6bc63914a4f531b20d2c3a3d577fe84b600c5d94909afa3273$0.f$0 -> b
     java.lang.Runnable org.webrtc.EglRenderer$$InternalSyntheticLambda$0$174b12063952cd6bc63914a4f531b20d2c3a3d577fe84b600c5d94909afa3273$0.f$1 -> c
     int org.webrtc.EglRenderer$$InternalSyntheticLambda$0$174b12063952cd6bc63914a4f531b20d2c3a3d577fe84b600c5d94909afa3273$0.$r8$classId -> a
@@ -19904,7 +19882,7 @@ org.webrtc.EglRenderer$$ExternalSyntheticLambda0 -> org.webrtc.c:
       # {"id":"com.android.tools.r8.synthesized"}
     void org.webrtc.EglRenderer$$InternalSyntheticLambda$0$174b12063952cd6bc63914a4f531b20d2c3a3d577fe84b600c5d94909afa3273$0.run$bridge() -> run
       # {"id":"com.android.tools.r8.synthesized"}
-org.webrtc.EglRenderer$$ExternalSyntheticLambda1 -> org.webrtc.d:
+org.webrtc.EglRenderer$$ExternalSyntheticLambda2 -> org.webrtc.e:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
     org.webrtc.EglRenderer org.webrtc.EglRenderer$$InternalSyntheticLambda$0$5dfa91f374dbb458cd44ac9e83d771a683a4ddb476018eeac588e06aa3cd8c15$0.f$0 -> b
@@ -19916,7 +19894,7 @@ org.webrtc.EglRenderer$$ExternalSyntheticLambda1 -> org.webrtc.d:
       # {"id":"com.android.tools.r8.synthesized"}
     void org.webrtc.EglRenderer$$InternalSyntheticLambda$0$5dfa91f374dbb458cd44ac9e83d771a683a4ddb476018eeac588e06aa3cd8c15$0.run$bridge() -> run
       # {"id":"com.android.tools.r8.synthesized"}
-org.webrtc.EglRenderer$$ExternalSyntheticLambda2 -> org.webrtc.e:
+org.webrtc.EglRenderer$$ExternalSyntheticLambda3 -> org.webrtc.f:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
     org.webrtc.EglRenderer org.webrtc.EglRenderer$$InternalSyntheticLambda$0$01b397417618df6f3ab6e118a5671068c9596a260041f79fef96137bf6b04ef4$0.f$0 -> a
@@ -19928,7 +19906,7 @@ org.webrtc.EglRenderer$$ExternalSyntheticLambda2 -> org.webrtc.e:
       # {"id":"com.android.tools.r8.synthesized"}
     void org.webrtc.EglRenderer$$InternalSyntheticLambda$0$01b397417618df6f3ab6e118a5671068c9596a260041f79fef96137bf6b04ef4$0.run() -> run
       # {"id":"com.android.tools.r8.synthesized"}
-org.webrtc.EglRenderer$$ExternalSyntheticLambda3 -> org.webrtc.f:
+org.webrtc.EglRenderer$$ExternalSyntheticLambda4 -> org.webrtc.g:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
     org.webrtc.EglRenderer org.webrtc.EglRenderer$$InternalSyntheticLambda$0$81554b091c50983d66dd893e8ef4b8896d476fcb089d375501340e5fd6099bbf$0.f$0 -> a
@@ -19943,7 +19921,7 @@ org.webrtc.EglRenderer$$ExternalSyntheticLambda3 -> org.webrtc.f:
 org.webrtc.JavaI420Buffer -> org.webrtc.JavaI420Buffer:
     void $r8$lambda$tLdFcnEJPvUgP_4so0PE2olQFIo(java.nio.ByteBuffer) -> a
       # {"id":"com.android.tools.r8.synthesized"}
-org.webrtc.JavaI420Buffer$$ExternalSyntheticLambda0 -> org.webrtc.g:
+org.webrtc.JavaI420Buffer$$ExternalSyntheticLambda0 -> org.webrtc.h:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
     java.nio.ByteBuffer org.webrtc.JavaI420Buffer$$InternalSyntheticLambda$0$0da4a8c0bc6aa1ca704f8e570dcd34506b41958ea91399fc2162ab698fb0cf60$0.f$0 -> b
@@ -19958,7 +19936,7 @@ org.webrtc.SurfaceTextureHelper -> org.webrtc.SurfaceTextureHelper:
       # {"id":"com.android.tools.r8.synthesized"}
     void $r8$lambda$Yc4xDU8Pen8wk4Fn_amOJrvw3bE(org.webrtc.SurfaceTextureHelper,org.webrtc.VideoFrame$I420Buffer[],org.webrtc.VideoFrame$TextureBuffer) -> b
       # {"id":"com.android.tools.r8.synthesized"}
-org.webrtc.SurfaceTextureHelper$$ExternalSyntheticLambda0 -> org.webrtc.h:
+org.webrtc.SurfaceTextureHelper$$ExternalSyntheticLambda0 -> org.webrtc.i:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
     org.webrtc.SurfaceTextureHelper org.webrtc.SurfaceTextureHelper$$InternalSyntheticLambda$0$0e393c566e33794869e7c4fb5289c8623415070431c2fd60c87f11466938c0c2$0.f$0 -> a
@@ -19969,7 +19947,7 @@ org.webrtc.SurfaceTextureHelper$$ExternalSyntheticLambda0 -> org.webrtc.h:
 org.webrtc.SurfaceViewRenderer -> org.webrtc.SurfaceViewRenderer:
     void $r8$lambda$uj7L95NBBBpJVS0clP3By7sJwBs(org.webrtc.SurfaceViewRenderer,int,int) -> a
       # {"id":"com.android.tools.r8.synthesized"}
-org.webrtc.SurfaceViewRenderer$$ExternalSyntheticLambda0 -> org.webrtc.i:
+org.webrtc.SurfaceViewRenderer$$ExternalSyntheticLambda0 -> org.webrtc.j:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
     org.webrtc.SurfaceViewRenderer org.webrtc.SurfaceViewRenderer$$InternalSyntheticLambda$0$4854e10b81aac3e6dbde84ddffb6039642dbc77ca2820e6945e4d46066494579$0.f$0 -> a
@@ -19979,7 +19957,7 @@ org.webrtc.SurfaceViewRenderer$$ExternalSyntheticLambda0 -> org.webrtc.i:
       # {"id":"com.android.tools.r8.synthesized"}
     void org.webrtc.SurfaceViewRenderer$$InternalSyntheticLambda$0$4854e10b81aac3e6dbde84ddffb6039642dbc77ca2820e6945e4d46066494579$0.run() -> run
       # {"id":"com.android.tools.r8.synthesized"}
-org.webrtc.VideoCapturer$CapturerObserver$-CC -> org.webrtc.j:
+org.webrtc.VideoCapturer$CapturerObserver$-CC -> org.webrtc.k:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
     1:1:void $default$onByteBufferFrameCaptured(org.webrtc.VideoCapturer$CapturerObserver,byte[],int,int,int,long):0:0 -> a
@@ -19989,7 +19967,7 @@ org.webrtc.VideoCapturer$CapturerObserver$-CC -> org.webrtc.j:
 org.webrtc.VideoDecoderWrapper -> org.webrtc.VideoDecoderWrapper:
     void $r8$lambda$3uw3mxtBT9cCv2VFxBjPGUCviXM(long,org.webrtc.VideoFrame,java.lang.Integer,java.lang.Integer) -> a
       # {"id":"com.android.tools.r8.synthesized"}
-org.webrtc.VideoDecoderWrapper$$ExternalSyntheticLambda0 -> org.webrtc.k:
+org.webrtc.VideoDecoderWrapper$$ExternalSyntheticLambda0 -> org.webrtc.l:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
     long org.webrtc.VideoDecoderWrapper$$InternalSyntheticLambda$0$386b47d4a63be7a71b7f6550e9f1d3932883f9c5c1bb6880eed48ef8385a3d05$0.f$0 -> a
@@ -20013,7 +19991,7 @@ org.webrtc.VideoRenderer$I420Frame -> org.webrtc.VideoRenderer$I420Frame:
       # {"id":"com.android.tools.r8.synthesized"}
     void $r8$lambda$FX1rcSBMQAsvuhaT1vINAuFs0mM(org.webrtc.VideoRenderer$I420Frame) -> b
       # {"id":"com.android.tools.r8.synthesized"}
-org.webrtc.VideoRenderer$I420Frame$$ExternalSyntheticLambda0 -> org.webrtc.l:
+org.webrtc.VideoRenderer$I420Frame$$ExternalSyntheticLambda0 -> org.webrtc.m:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
     org.webrtc.VideoRenderer$I420Frame org.webrtc.VideoRenderer$I420Frame$$InternalSyntheticLambda$0$04ff6f813966b6118acf7d0b29ccf9415a39b3505c9dd461715fc4372d8040cc$0.f$0 -> b

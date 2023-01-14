@@ -82,7 +82,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
-import com.example.androidthings.videortc.WebRtc_MainActivity;
 import com.sample.timelapse.MJPEGGenerator ;
 
 import humer.UvcCamera.JNA_I_LibUsb.JNA_I_LibUsb;
@@ -402,9 +401,6 @@ public class StartIsoStreamActivityUsbIso extends Activity {
                     case R.id.resolutionFrameInterval:
                         if (LIBUSB) return true;
                         changeResolutionFrameInterval(findViewById(R.id.settingsButton));
-                        return false;
-                    case R.id.webRTC:
-                        startWebRTC();
                         return false;
                     case R.id.returnToConfigScreen:
                         returnToConfigScreen();
@@ -835,10 +831,6 @@ public class StartIsoStreamActivityUsbIso extends Activity {
         mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
         IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
         registerReceiver(mUsbReceiver, filter);
-        ImageButton flip = (ImageButton) findViewById(R.id.flipLeftButton); flip.setEnabled(false); flip.setBackgroundDrawable(null);
-        flip = (ImageButton) findViewById(R.id.flipRightButton); flip.setEnabled(false); flip.setBackgroundDrawable(null);
-        ToggleButton flip2 = (ToggleButton) findViewById(R.id.flipHorizontalButton); flip2.setEnabled(false); flip2.setBackgroundDrawable(null);
-        flip2 = (ToggleButton) findViewById(R.id.flipVerticalButton); flip2.setEnabled(false); flip2.setBackgroundDrawable(null);
         //LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(StartIsoStreamService.NOTIFICATION));
         if (LIBUSB) {
             mUVCCameraView = (SurfaceView)findViewById(R.id.surfaceView);
@@ -1372,46 +1364,6 @@ public class StartIsoStreamActivityUsbIso extends Activity {
             }
         });
         popup.show();
-    }
-
-    private void startWebRTC() {
-        if (camDevice == null) {
-            try {
-                findCam();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (!usbManager.hasPermission(camDevice)) {
-            usbManager.requestPermission(camDevice, mPermissionIntent);
-            return;
-        }
-        if (runningStream != null) stopTheCameraStreamClickEvent(null);
-        Intent intent = new Intent(this, WebRtc_MainActivity.class);
-        Bundle bundle=new Bundle();
-        bundle.putBoolean("edit", true);
-        bundle.putInt("camStreamingAltSetting",camStreamingAltSetting);
-        bundle.putString("videoformat",videoformat);
-        bundle.putInt("camFormatIndex",camFormatIndex);
-        bundle.putInt("imageWidth",imageWidth);
-        bundle.putInt("imageHeight",imageHeight);
-        bundle.putInt("camFrameIndex",camFrameIndex);
-        bundle.putInt("camFrameInterval",camFrameInterval);
-        bundle.putInt("packetsPerRequest",packetsPerRequest);
-        bundle.putInt("maxPacketSize",maxPacketSize);
-        bundle.putInt("activeUrbs",activeUrbs);
-        bundle.putByte("bUnitID",bUnitID);
-        bundle.putByte("bTerminalID",bTerminalID);
-        bundle.putByteArray("bNumControlTerminal", bNumControlTerminal);
-        bundle.putByteArray("bNumControlUnit", bNumControlUnit);
-        bundle.putByteArray("bcdUVC", bcdUVC);
-        bundle.putByte("bStillCaptureMethod",bStillCaptureMethod);
-        bundle.putBoolean("LIBUSB", LIBUSB);
-        bundle.putBoolean("moveToNative", moveToNative);
-        bundle.putBoolean("bulkMode", bulkMode);
-        intent.putExtra("bun",bundle);
-        startActivity(intent);
-        StartIsoStreamActivityUsbIso.this.finish();
     }
 
     public void returnToConfigScreen() {

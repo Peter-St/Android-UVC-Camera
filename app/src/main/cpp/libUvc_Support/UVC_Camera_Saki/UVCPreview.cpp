@@ -50,38 +50,39 @@
 
 JavaVM* g_VM;
 
-UVCPreview::UVCPreview(uvc_device_handle_t *devh)
-:	mPreviewWindow(NULL),
-	mCaptureWindow(NULL),
-	mDeviceHandle(devh),
-	requestWidth(DEFAULT_PREVIEW_WIDTH),
-	requestHeight(DEFAULT_PREVIEW_HEIGHT),
-	requestMinFps(DEFAULT_PREVIEW_FPS_MIN),
-	requestMaxFps(DEFAULT_PREVIEW_FPS_MAX),
-	requestMode(DEFAULT_PREVIEW_MODE),
-	requestBandwidth(DEFAULT_BANDWIDTH),
-	frameWidth(DEFAULT_PREVIEW_WIDTH),
-	frameHeight(DEFAULT_PREVIEW_HEIGHT),
-	frameBytes(DEFAULT_PREVIEW_WIDTH * DEFAULT_PREVIEW_HEIGHT * 2),	// YUYV
-	frameMode(0),
-	previewBytes(DEFAULT_PREVIEW_WIDTH * DEFAULT_PREVIEW_HEIGHT * PREVIEW_PIXEL_BYTES),
-	previewFormat(WINDOW_FORMAT_RGBA_8888),
-	mIsRunning(false),
-	mIsCapturing(false),
-	captureQueu(NULL),
-	mFrameCallbackObj(NULL),
-	mFrameCallbackFunc(NULL),
-	callbackPixelBytes(2) {
+UVCPreview::UVCPreview(uvc_device_handle_t *devh):
+        mPreviewWindow(NULL),
+        mCaptureWindow(NULL),
+        mDeviceHandle(devh),
+        requestWidth(DEFAULT_PREVIEW_WIDTH),
+        requestHeight(DEFAULT_PREVIEW_HEIGHT),
+        requestMinFps(DEFAULT_PREVIEW_FPS_MIN),
+        requestMaxFps(DEFAULT_PREVIEW_FPS_MAX),
+        requestMode(DEFAULT_PREVIEW_MODE),
+        requestBandwidth(DEFAULT_BANDWIDTH),
+        frameWidth(DEFAULT_PREVIEW_WIDTH),
+        frameHeight(DEFAULT_PREVIEW_HEIGHT),
+        frameBytes(DEFAULT_PREVIEW_WIDTH * DEFAULT_PREVIEW_HEIGHT * 2),	// YUYV
+        frameMode(0),
+        previewBytes(DEFAULT_PREVIEW_WIDTH * DEFAULT_PREVIEW_HEIGHT * PREVIEW_PIXEL_BYTES),
+        previewFormat(WINDOW_FORMAT_RGBA_8888),
+        mIsRunning(false),
+        mIsCapturing(false),
+        mPictureCapturing(false),
+        captureQueu(NULL),
+        mFrameCallbackObj(NULL),
+        mFrameCallbackFunc(NULL),
+        callbackPixelBytes(2) {
 
-	ENTER();
-	pthread_cond_init(&preview_sync, NULL);
-	pthread_mutex_init(&preview_mutex, NULL);
+    ENTER();
+    pthread_cond_init(&preview_sync, NULL);
+    pthread_mutex_init(&preview_mutex, NULL);
 //
-	pthread_cond_init(&capture_sync, NULL);
-	pthread_mutex_init(&capture_mutex, NULL);
-//	
-	pthread_mutex_init(&pool_mutex, NULL);
-	EXIT();
+    pthread_cond_init(&capture_sync, NULL);
+    pthread_mutex_init(&capture_mutex, NULL);
+//
+    pthread_mutex_init(&pool_mutex, NULL);
+    EXIT();
 }
 
 UVCPreview::~UVCPreview() {
@@ -192,7 +193,7 @@ int UVCPreview::setPreviewSize(int width, int height, int min_fps, int max_fps, 
 	RETURN(result, int);
 }
 
-
+/* @Parameter test: 0 = stream | 1 = testrun */
 int UVCPreview::setPreviewSize_random(int width, int height, int min_fps, int max_fps, float bandwidth,
 									  int prev_activeUrbs, int prev_packetsPerRequest, int prev_altset, int prev_maxPacketSize,
 									  int camFormatInde, int camFrameInde, int camFrameInterva, const char* frameForma,
@@ -210,6 +211,7 @@ int UVCPreview::setPreviewSize_random(int width, int height, int min_fps, int ma
 	frameFormat = frameForma;
 	frameWidth = imageWidth;
 	frameHeight = imageHeight;
+	/* @Parameter test: 0 = stream | 1 = testrun */
 	test = tes;
 
 	requestWidth = width;
@@ -240,6 +242,7 @@ int UVCPreview::setPreviewDisplay(ANativeWindow *preview_window) {
 	RETURN(0, int);
 }
 
+// PIXEL_FORMAT defined in UVCPreview.h   0 = raw (yuy2) | 1 = yuv (yuy2) | 2-3 = rgb | 5 = NV21
 int UVCPreview::setFrameCallback(JNIEnv *env, jobject frame_callback_obj, int pixel_format) {
 	
 	ENTER();
@@ -276,61 +279,75 @@ int UVCPreview::setFrameCallback(JNIEnv *env, jobject frame_callback_obj, int pi
 				}
 			}
 		}
-		if (!test) if (frame_callback_obj) {
-				mPixelFormat = pixel_format;
-				callbackPixelFormatChanged();
-			} else {
-
-				if (strcmp(frameFormat, "MJPEG") == 0) {
-					pixel_format = 3;
-				} else if (strcmp(frameFormat, "YUY2") == 0 ||   strcmp(frameFormat, "UYVY") == 0  ) {
-					pixel_format = 1;
-
-				} else if (strcmp(frameFormat, "NV21") == 0) {
-					pixel_format = 5;
-				} else {
-					pixel_format = 0;
-				}
-				mPixelFormat = pixel_format;
-				callbackPixelFormatChanged();
-		}
+		/* @Parameter test: 0 = stream | 1 = testrun */
+		if (!test) {
+            if (frame_callback_obj) {
+                mPixelFormat = pixel_format;
+                callbackPixelFormatChanged();
+            } else {
+                // PIXEL_FORMAT defined in UVCPreview.h   0 = raw (yuy2) | 1 = yuv (yuy2) | 2-3 = rgb | 5 = NV21  | 6 = MJPEG
+                if (strcmp(frameFormat, "MJPEG") == 0) pixel_format = 6;
+                else if (strcmp(frameFormat, "YUY2") == 0 ||   strcmp(frameFormat, "UYVY") == 0 ) pixel_format = 1;
+                else if (strcmp(frameFormat, "NV21") == 0) pixel_format = 5;
+                else pixel_format = 0;
+                mPixelFormat = pixel_format;
+                callbackPixelFormatChanged();
+            }
+        } else {
+            mPixelFormat = pixel_format;
+            /*
+            if (mPixelFormat) callbackPixelFormatChanged();
+            else {
+                if (strcmp(frameFormat, "MJPEG") == 0) pixel_format = 6;
+                else if (strcmp(frameFormat, "YUY2") == 0 ||   strcmp(frameFormat, "UYVY") == 0 ) pixel_format = 1;
+                else if (strcmp(frameFormat, "NV21") == 0) pixel_format = 5;
+                else pixel_format = 0;
+                mPixelFormat = pixel_format;
+                callbackPixelFormatChanged();
+            }
+             */
+        }
 	}
 	pthread_mutex_unlock(&capture_mutex);
 	RETURN(0, int);
 }
 
 void UVCPreview::callbackPixelFormatChanged() {
-	mFrameCallbackFunc = NULL;
-	const size_t sz = requestWidth * requestHeight;
-	switch (mPixelFormat) {
-	  case PIXEL_FORMAT_RAW:
-		LOGI("PIXEL_FORMAT_RAW:");
-		callbackPixelBytes = sz * 2;
-		break;
-	  case PIXEL_FORMAT_YUV:
-		LOGI("PIXEL_FORMAT_YUV:");
-		callbackPixelBytes = sz * 2;
-		break;
-	  case PIXEL_FORMAT_RGB565:
-		LOGI("PIXEL_FORMAT_RGB565:");
-		mFrameCallbackFunc = uvc_any2rgb565;
-		callbackPixelBytes = sz * 2;
-		break;
-	  case PIXEL_FORMAT_RGBX:
-		LOGI("PIXEL_FORMAT_RGBX:");
-		mFrameCallbackFunc = uvc_any2rgbx;
-		callbackPixelBytes = sz * 4;
-		break;
-	  case PIXEL_FORMAT_YUV20SP:
-		LOGI("PIXEL_FORMAT_YUV20SP:");
-		mFrameCallbackFunc = uvc_yuyv2iyuv420SP;
-		callbackPixelBytes = (sz * 3) / 2;
-		break;
-	  case PIXEL_FORMAT_NV21:
-		LOGI("PIXEL_FORMAT_NV21:");
-		mFrameCallbackFunc = uvc_yuyv2yuv420SP;
-		callbackPixelBytes = (sz * 3) / 2;
-		break;
+    mFrameCallbackFunc = NULL;
+    const size_t sz = requestWidth * requestHeight;
+    switch (mPixelFormat) {
+        case PIXEL_FORMAT_RAW:
+            LOGI("PIXEL_FORMAT_RAW:");
+            callbackPixelBytes = sz * 2;
+            break;
+        case PIXEL_FORMAT_YUV:
+            LOGI("PIXEL_FORMAT_YUV:");
+            callbackPixelBytes = sz * 2;
+            break;
+        case PIXEL_FORMAT_RGB565:
+            LOGI("PIXEL_FORMAT_RGB565:");
+            mFrameCallbackFunc = uvc_any2rgb565;
+            callbackPixelBytes = sz * 2;
+            break;
+        case PIXEL_FORMAT_RGBX:
+            LOGI("PIXEL_FORMAT_RGBX:");
+            mFrameCallbackFunc = uvc_any2rgbx;
+            callbackPixelBytes = sz * 4;
+            break;
+        case PIXEL_FORMAT_YUV20SP:
+            LOGI("PIXEL_FORMAT_YUV20SP:");
+            mFrameCallbackFunc = uvc_yuyv2iyuv420SP;
+            callbackPixelBytes = (sz * 3) / 2;
+            break;
+        case PIXEL_FORMAT_NV21:
+            LOGI("PIXEL_FORMAT_NV21:");
+            mFrameCallbackFunc = uvc_yuyv2yuv420SP;
+            callbackPixelBytes = (sz * 3) / 2;
+            break;
+        case PIXEL_FORMAT_MJPEG:
+            LOGI("PIXEL_FORMAT_MJPEG:");
+            callbackPixelBytes = sz * 3;
+            break;
 	}
 }
 
@@ -395,7 +412,6 @@ int UVCPreview::startPreview() {
 			} else {
 				// Test Mode
                 LOGD_P("preview_thread Test Mode");
-
 				result = pthread_create(&preview_thread, NULL, preview_thread_func, (void *)this);
 			}
 
@@ -657,20 +673,24 @@ void UVCPreview::do_preview(uvc_stream_ctrl_t *ctrl) {
 			for ( ; LIKELY(isRunning()) ; ) {
 				frame_mjpeg = waitPreviewFrame();
 				if (LIKELY(frame_mjpeg)) {
-					frame = get_frame(frame_mjpeg->width * frame_mjpeg->height * 2);
+					/* @Parameter test: 0 = stream | 1 = testrun */
 					if (!test) {
+                        frame = get_frame(frame_mjpeg->width * frame_mjpeg->height * 2);
                         result = uvc_mjpeg2yuyv(frame_mjpeg, frame);
-						recycle_frame(frame_mjpeg);
+                        //recycle_frame(frame_mjpeg);
 						if (LIKELY(!result)) {
 							frame = draw_preview_one(frame, &mPreviewWindow, uvc_any2rgbx, 4);
-							addCaptureFrame(frame);
+                            recycle_frame(frame);
+                            // Only store Capture Frame when needed
+							if(mIsCapturing) addCaptureFrame(frame_mjpeg);
+                            else recycle_frame(frame_mjpeg);
 						} else {
 							recycle_frame(frame);
 						}
 					} else {
                         LOGD_P("addCaptureFrame MJPEG mode");
-						addCaptureFrame(frame);
-					}
+                        addCaptureFrame(frame_mjpeg);
+                    }
 				}
 			}
 		} else {
@@ -680,7 +700,9 @@ void UVCPreview::do_preview(uvc_stream_ctrl_t *ctrl) {
 				if (!test) {
 					if (LIKELY(frame)) {
 						frame = draw_preview_one(frame, &mPreviewWindow, uvc_any2rgbx, 4);
-						addCaptureFrame(frame);
+                        // Only store Capture Frame when needed
+                        if(mIsCapturing) addCaptureFrame(frame);
+                        else recycle_frame(frame);
 					}
 				} else {
                     LOGD_P("addCaptureFrame yuyv mode");
@@ -796,9 +818,6 @@ uvc_frame_t *UVCPreview::draw_preview_one(uvc_frame_t *frame, ANativeWindow **wi
 	return frame; //RETURN(frame, uvc_frame_t *);
 }
 
-//======================================================================
-//
-//======================================================================
 inline const bool UVCPreview::isCapturing() const { return mIsCapturing; }
 
 int UVCPreview::setCaptureDisplay(ANativeWindow *capture_window) {
@@ -814,8 +833,7 @@ int UVCPreview::setCaptureDisplay(ANativeWindow *capture_window) {
 		}
 		if (mCaptureWindow != capture_window) {
 			// release current Surface if already assigned.
-			if (UNLIKELY(mCaptureWindow))
-				ANativeWindow_release(mCaptureWindow);
+			if (UNLIKELY(mCaptureWindow)) ANativeWindow_release(mCaptureWindow);
 			mCaptureWindow = capture_window;
 			// if you use Surface came from MediaCodec#createInputSurface
 			// you could not change window format at least when you use
@@ -838,6 +856,7 @@ int UVCPreview::setCaptureDisplay(ANativeWindow *capture_window) {
 }
 
 void UVCPreview::addCaptureFrame(uvc_frame_t *frame) {
+
 	pthread_mutex_lock(&capture_mutex);
 	if (LIKELY(isRunning())) {
 		// keep only latest one
@@ -895,24 +914,6 @@ void *UVCPreview::capture_thread_func(void *vptr_args) {
 	UVCPreview *preview = reinterpret_cast<UVCPreview *>(vptr_args);
 	if (LIKELY(preview)) {
 
-
-		//JavaVM* g_VM;
-		//g_env->GetJavaVM(&jvm);
-		//JavaVM *vm = getVM();
-		//JNIEnv *env;
-		//g_env->GetJavaVM(&g_VM);
-
-		LOGD("javaVM");
-
-
-		// uncomment JavaVM
-		//JavaVM* jvm;
-		//g_env->GetJavaVM(&jvm);
-		//JavaVM *vm = getVM();
-		//
-
-		// attach to JavaVM
-
         LOGD_P("AttachCurrentThread");
 		JNIEnv *env;
 		g_VM->AttachCurrentThread(&env, NULL);
@@ -921,7 +922,6 @@ void *UVCPreview::capture_thread_func(void *vptr_args) {
 		// detach from JavaVM
 		g_VM->DetachCurrentThread();
         LOGD_P("DetachCurrentThread() complete");
-
 
 		MARK("DetachCurrentThread");
 
@@ -940,7 +940,8 @@ void UVCPreview::do_capture(JNIEnv *env) {
 	clearCaptureFrame();
 	callbackPixelFormatChanged();
 	for (; isRunning() ;) {
-		mIsCapturing = true;
+        // switch mIsCapturing only when needed for imagecapture and videorecord
+		//mIsCapturing = true;
 		if (mCaptureWindow) {
 			do_capture_surface(env);
 		} else {
@@ -952,13 +953,13 @@ void UVCPreview::do_capture(JNIEnv *env) {
 }
 
 void UVCPreview::do_capture_idle_loop(JNIEnv *env) {
-	//ENTER();
-    LOGD_P("do_capture_idle_loop");
 	for (; isRunning() && isCapturing() ;) {
 		do_capture_callback(env, waitCaptureFrame());
+        if (mPictureCapturing) {
+            mPictureCapturing = false;
+            mIsCapturing = false;
+        }
 	}
-	
-	//EXIT();
 }
 
 /**
@@ -1011,6 +1012,7 @@ void UVCPreview::do_capture_callback(JNIEnv *env, uvc_frame_t *frame) {
 	if (LIKELY(frame)) {
 		uvc_frame_t *callback_frame = frame;
 		if (mFrameCallbackObj) {
+            // --> mFrameCallbackFunc likely not in use (only for Pixel Format NV21)
 			if (mFrameCallbackFunc) {
 				callback_frame = get_frame(callbackPixelBytes);
 				if (LIKELY(callback_frame)) {
@@ -1026,6 +1028,24 @@ void UVCPreview::do_capture_callback(JNIEnv *env, uvc_frame_t *frame) {
 					goto SKIP;
 				}
 			}
+
+
+            /////////////////////////////////////////////////////////
+            // Changed by Peter St. 14.01.2023
+            // Send arrays with their original length
+            ////////////////////////////////////////////////////////
+
+            jbyteArray retArray = env->NewByteArray(callback_frame->actual_bytes);
+            if(env->GetArrayLength( retArray) != callback_frame->actual_bytes)
+            {
+                env->DeleteLocalRef( retArray);
+                retArray = env->NewByteArray( callback_frame->actual_bytes);
+            }
+            env->SetByteArrayRegion(retArray, 0, callback_frame->actual_bytes, (jbyte*) callback_frame->data);
+            env->CallVoidMethod(mFrameCallbackObj, iframecallback_fields.onFrame, retArray);
+            env->ExceptionClear();
+            env->DeleteLocalRef(retArray);
+            /*
 			jbyteArray retArray = env->NewByteArray(callbackPixelBytes);
 			if(env->GetArrayLength( retArray) != callbackPixelBytes)
 			{
@@ -1036,28 +1056,42 @@ void UVCPreview::do_capture_callback(JNIEnv *env, uvc_frame_t *frame) {
 			env->CallVoidMethod(mFrameCallbackObj, iframecallback_fields.onFrame, retArray);
 			env->ExceptionClear();
 			env->DeleteLocalRef(retArray);
+            */
 		}
- SKIP:
+		SKIP:
 		recycle_frame(callback_frame);
 	}
 	//EXIT();
+
+
 }
 
 
 /**
-* set JavaVM
+ *  set JavaVM
+ *  Disabled by Peter St. because of Errors in higher Android devices
  */
 int UVCPreview::setJavaVM(JNIEnv *env, jobject obj) {
 	ENTER();
-
-
-
-
 	//g_obj = env->NewGlobalRef(obj);
 	//env->GetJavaVM(&g_jvm);
 	//g_env = env;
 	return UVC_SUCCESS;
+}
 
+int UVCPreview::enable_mIsCapturing() {
+    ENTER();
+    int result = EXIT_SUCCESS;
+    mIsCapturing = true;
+    RETURN(result, int);
+}
+
+int UVCPreview::capture_picture() {
+    ENTER();
+    int result = EXIT_SUCCESS;
+    mIsCapturing = true;
+    mPictureCapturing = true;
+    RETURN(result, int);
 }
 
 
@@ -1074,6 +1108,7 @@ int set_preview_size(long preview_pointer, int width, int height, int min_fps, i
     return result;
 }
 
+/* @Parameter test: 0 = stream | 1 = testrun */
 int set_preview_size_random(long preview_pointer, int width, int height, int min_fps, int max_fps, float bandwidth,
 							int activeUrbs, int packetsPerRequest, int altset, int maxPacketSize,
 							int camFormatInde, int camFrameInde, int camFrameInterva, const char* frameForma,
@@ -1104,10 +1139,7 @@ int setFrameCallback(long preview_pointer, JNIEnv *env, jobject frame_callback_o
 int startPreview(long preview_pointer) {
 	int result = EXIT_FAILURE;
 	UVCPreview *camera = reinterpret_cast<UVCPreview *>(preview_pointer);
-
-
 	if (camera) result = camera->startPreview();
-
 	return result;
 }
 
@@ -1131,3 +1163,16 @@ int setJavaVM(long preview_pointer, JNIEnv *env, jobject obj) {
 	return result;
 }
 
+int capturePicture(long preview_pointer) {
+    int result = EXIT_FAILURE;
+    UVCPreview *camera = reinterpret_cast<UVCPreview *>(preview_pointer);
+    if (camera) result = camera->capture_picture();
+    return result;
+}
+
+int enableMIsCapturing(long preview_pointer) {
+    int result = EXIT_FAILURE;
+    UVCPreview *camera = reinterpret_cast<UVCPreview *>(preview_pointer);
+    if (camera) result = camera->enable_mIsCapturing();
+    return result;
+}

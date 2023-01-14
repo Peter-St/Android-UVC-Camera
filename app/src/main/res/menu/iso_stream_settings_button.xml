@@ -32,16 +32,6 @@
         />
 
     <item
-        android:id="@+id/webRTC"
-        android:title="WebRTC"
-        android:icon="@drawable/ic_web_rtc_24dp"
-        app:showAsAction="ifRoom"
-        app:touchGuard="false"
-        android:orderInCategory="3"
-        />
-
-
-    <item
         android:id="@+id/returnToConfigScreen"
         android:icon="@drawable/return_main_screen_24dp"
         android:title="Return To Configuration Sreen"

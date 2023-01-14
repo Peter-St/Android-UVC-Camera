@@ -63,10 +63,11 @@ extern "C" JNIEXPORT void JNICALL Java_humer_UvcCamera_Main_readNativeStruct
 
 }
 
+/////////////////////////////////////////// Stream ///////////////////////////////7
 
 
 extern "C" JNIEXPORT jint JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_PreviewPrepareStream
-        (JNIEnv *env, jobject obj, ID_TYPE mNativePtr, jobject jSurface) {
+        (JNIEnv *env, jobject obj, ID_TYPE mNativePtr, jobject jSurface, jobject jIFrameCallback) {
 
     uvc_camera_t *camera_pointer = reinterpret_cast<uvc_camera_t *>(mNativePtr) ;
 
@@ -90,6 +91,23 @@ extern "C" JNIEXPORT jint JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc
                                camera_pointer->imageWidth, camera_pointer->imageHeight, 0 /* stream bit set */) == 0) {
         result = set_preview_display(camera_pointer->preview_pointer, preview_window);
     }
+    LOGD("Setting Frame Callback");
+
+    jobject frame_callback_obj = env->NewGlobalRef(jIFrameCallback);
+
+    int pixel_format;
+    if (strcmp(camera_pointer->frameFormat, "MJPEG") == 0) pixel_format = 6;
+    else if (strcmp(camera_pointer->frameFormat, "YUY2") == 0 ||   strcmp(camera_pointer->frameFormat, "UYVY") == 0 ) pixel_format = pixel_format;
+    else if (strcmp(camera_pointer->frameFormat, "NV21") == 0) pixel_format = 5;
+    else pixel_format = 0;
+
+    LOGD ("Pixel Format = %d", pixel_format);
+
+    // PIXEL_FORMAT defined in UVCPreview.h   0 = raw (yuy2) | 1 = yuv (yuy2) | 2-3 = rgb | 5 = NV21 | 6 = MJPEG
+    result = setFrameCallback(camera_pointer->preview_pointer, env, frame_callback_obj, pixel_format);
+    LOGD("setFrameCallback returned: %d", result);
+
+
     result = setJavaVM(camera_pointer->preview_pointer, env, obj);
 
     return result;
@@ -104,63 +122,63 @@ extern "C" JNIEXPORT jint JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc
     return result;
 }
 
-
-
 extern "C" JNIEXPORT jint JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_PreviewStopStream
         (JNIEnv *env, jobject obj, ID_TYPE mNativePtr) {
     int result = -1;
     uvc_camera_t *camera_pointer = reinterpret_cast<uvc_camera_t *>(mNativePtr) ;
     result = stopPreview(camera_pointer->preview_pointer);
     return result;
-
 }
 
-
-extern "C" JNIEXPORT jint JNICALL Java_humer_UvcCamera_SetUpTheUsbDeviceUvc_PreviewPrepareTest
-        (JNIEnv *env, jobject obj, ID_TYPE mNativePtr,  jobject jIFrameCallback) {
-
-    uvc_camera_t *camera_pointer = reinterpret_cast<uvc_camera_t *>(mNativePtr) ;
-
-
-    LOGD("camera_pointer->imageWidth = %d", camera_pointer->imageWidth);
-
-
-
-    camera_pointer->preview_pointer = create_UVCPreview(camera_pointer->camera_deviceHandle, camera_pointer->preview_pointer);
+extern "C" JNIEXPORT jint JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_PreviewCapturePicture
+        (JNIEnv *env, jobject obj, ID_TYPE mNativePtr) {
     int result = -1;
-    if(set_preview_size_random(camera_pointer->preview_pointer,  camera_pointer->imageWidth, camera_pointer->imageHeight, 0, 30, 0,
-                               camera_pointer->activeUrbs, camera_pointer->packetsPerRequest, camera_pointer->camStreamingAltSetting, camera_pointer->maxPacketSize,
-                               camera_pointer->camFormatIndex, camera_pointer->camFrameIndex, camera_pointer->camFrameInterval, camera_pointer->frameFormat,
-                               camera_pointer->imageWidth, camera_pointer->imageHeight, 1 /* test bit set */) == 0) {
-        //result = set_preview_display(camera_pointer->preview_pointer, preview_window);
-
-        LOGD("Setting Frame Callback");
-
-        jobject frame_callback_obj = env->NewGlobalRef(jIFrameCallback);
-
-
-        result = setFrameCallback(camera_pointer->preview_pointer, env, frame_callback_obj, 2);
-        LOGD("setFrameCallback returned: %d", result);
-
-
-        result = setJavaVM(camera_pointer->preview_pointer, env, obj);
-        LOGD("setJavaVM returned: %d", result);
-
-
-    }
+    uvc_camera_t *camera_pointer = reinterpret_cast<uvc_camera_t *>(mNativePtr) ;
+    result = capturePicture(camera_pointer->preview_pointer);
     return result;
 }
 
+/////////////////////////////////////////// Testrun ///////////////////////////////7
 
+extern "C" JNIEXPORT jint JNICALL Java_humer_UvcCamera_SetUpTheUsbDeviceUvc_PreviewPrepareTest
+        (JNIEnv *env, jobject obj, ID_TYPE mNativePtr,  jobject jIFrameCallback) {
+    uvc_camera_t *camera_pointer = reinterpret_cast<uvc_camera_t *>(mNativePtr) ;
+    LOGD("camera_pointer->imageWidth = %d", camera_pointer->imageWidth);
+    camera_pointer->preview_pointer = create_UVCPreview(camera_pointer->camera_deviceHandle, camera_pointer->preview_pointer);
+    int result = -1;
+    if(set_preview_size_random(camera_pointer->preview_pointer,  camera_pointer->imageWidth, camera_pointer->imageHeight, 0,
+                               30, 0,camera_pointer->activeUrbs, camera_pointer->packetsPerRequest,
+                               camera_pointer->camStreamingAltSetting, camera_pointer->maxPacketSize,camera_pointer->camFormatIndex,
+                               camera_pointer->camFrameIndex, camera_pointer->camFrameInterval, camera_pointer->frameFormat,
+                               camera_pointer->imageWidth, camera_pointer->imageHeight, 1 /* test bit set */) == 0) {
+        //result = set_preview_display(camera_pointer->preview_pointer, preview_window);
+        LOGD("Setting Frame Callback");
+        jobject frame_callback_obj = env->NewGlobalRef(jIFrameCallback);
+
+        int pixel_format;
+        if (strcmp(camera_pointer->frameFormat, "MJPEG") == 0) pixel_format = 6;
+        else if (strcmp(camera_pointer->frameFormat, "YUY2") == 0 ||   strcmp(camera_pointer->frameFormat, "UYVY") == 0 ) pixel_format = 1;
+        else if (strcmp(camera_pointer->frameFormat, "NV21") == 0) pixel_format = 5;
+        else pixel_format = 0;
+        LOGD ("Pixel Format = %d", pixel_format);
+
+        // PIXEL_FORMAT defined in UVCPreview.h   0 = raw (yuy2) | 1 = yuv (yuy2) | 2-3 = rgb | 5 = NV21 | 6 = MJPEG
+        result = setFrameCallback(camera_pointer->preview_pointer, env, frame_callback_obj, pixel_format);
+        LOGD("setFrameCallback returned: %d", result);
+
+        result = setJavaVM(camera_pointer->preview_pointer, env, obj);
+        LOGD("setJavaVM returned: %d", result);
+    }
+    return result;
+}
 extern "C" JNIEXPORT jint JNICALL Java_humer_UvcCamera_SetUpTheUsbDeviceUvc_PreviewStartTest
         (JNIEnv *env, jobject obj, ID_TYPE mNativePtr) {
     int result = -1;
     uvc_camera_t *camera_pointer = reinterpret_cast<uvc_camera_t *>(mNativePtr) ;
     result = startPreview(camera_pointer->preview_pointer);
+    if (result == 0) enableMIsCapturing(camera_pointer->preview_pointer);
     return result;
 }
-
-
 
 extern "C" JNIEXPORT jint JNICALL Java_humer_UvcCamera_SetUpTheUsbDeviceUvc_PreviewStopTest
         (JNIEnv *env, jobject obj, ID_TYPE mNativePtr) {
@@ -169,6 +187,74 @@ extern "C" JNIEXPORT jint JNICALL Java_humer_UvcCamera_SetUpTheUsbDeviceUvc_Prev
     LOGD("stopping the preview");
     result = stopPreview(camera_pointer->preview_pointer);
     return result;
+}
 
+/////////////////////////////////////////// WebRTC ///////////////////////////////
+
+
+
+extern "C" JNIEXPORT jint JNICALL Java_com_example_androidthings_videortc_UsbCapturer_NativePrepareStreamWebRTC
+        (JNIEnv *env, jobject obj, ID_TYPE mNativePtr, jobject jIFrameCallback) {
+
+    uvc_camera_t *camera_pointer = reinterpret_cast<uvc_camera_t *>(mNativePtr) ;
+
+    LOGD("camera_pointer->imageWidth = %d", camera_pointer->imageWidth);
+
+
+    camera_pointer->preview_pointer = create_UVCPreview(camera_pointer->camera_deviceHandle, camera_pointer->preview_pointer);
+    int result = -1;
+    if(set_preview_size_random(camera_pointer->preview_pointer,  camera_pointer->imageWidth, camera_pointer->imageHeight, 0, 30, 0,
+                               camera_pointer->activeUrbs, camera_pointer->packetsPerRequest, camera_pointer->camStreamingAltSetting, camera_pointer->maxPacketSize,
+                               camera_pointer->camFormatIndex, camera_pointer->camFrameIndex, camera_pointer->camFrameInterval, camera_pointer->frameFormat,
+                               camera_pointer->imageWidth, camera_pointer->imageHeight, 0 /* stream bit set */) == 0) {
+    }
+    LOGD("Setting Frame Callback");
+
+    jobject frame_callback_obj = env->NewGlobalRef(jIFrameCallback);
+
+
+    //////////////////////////////////////////////
+
+    //   FORCE PIXEL NV21                      //
+
+    /////////////////////////////////////////////
+
+    int pixel_format;
+    /*
+    if (strcmp(camera_pointer->frameFormat, "MJPEG") == 0) pixel_format = 6;
+    else if (strcmp(camera_pointer->frameFormat, "YUY2") == 0 ||   strcmp(camera_pointer->frameFormat, "UYVY") == 0 ) pixel_format = pixel_format;
+    else if (strcmp(camera_pointer->frameFormat, "NV21") == 0) pixel_format = 5;
+    else pixel_format = 0;
+    */
+    pixel_format = 5;
+
+    LOGD ("Pixel Format = %d", pixel_format);
+
+    // PIXEL_FORMAT defined in UVCPreview.h   0 = raw (yuy2) | 1 = yuv (yuy2) | 2-3 = rgb | 5 = NV21 | 6 = MJPEG
+    result = setFrameCallback(camera_pointer->preview_pointer, env, frame_callback_obj, pixel_format);
+    LOGD("setFrameCallback returned: %d", result);
+
+
+    result = setJavaVM(camera_pointer->preview_pointer, env, obj);
+
+    return result;
+}
+
+
+extern "C" JNIEXPORT jint JNICALL Java_com_example_androidthings_videortc_UsbCapturer_NativeStartStream
+        (JNIEnv *env, jobject obj, ID_TYPE mNativePtr) {
+    int result = -1;
+    uvc_camera_t *camera_pointer = reinterpret_cast<uvc_camera_t *>(mNativePtr) ;
+    result = startPreview(camera_pointer->preview_pointer);
+    if (result == 0) enableMIsCapturing(camera_pointer->preview_pointer);
+    return result;
+}
+
+extern "C" JNIEXPORT jint JNICALL Java_com_example_androidthings_videortc_UsbCapturer_NativeStopStream
+        (JNIEnv *env, jobject obj, ID_TYPE mNativePtr) {
+    int result = -1;
+    uvc_camera_t *camera_pointer = reinterpret_cast<uvc_camera_t *>(mNativePtr) ;
+    result = stopPreview(camera_pointer->preview_pointer);
+    return result;
 }
 

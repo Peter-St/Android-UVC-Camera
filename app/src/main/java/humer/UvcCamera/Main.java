@@ -81,8 +81,9 @@ public class Main extends AppCompatActivity {
         System.loadLibrary("yuv");
 
         //System.loadLibrary("jpeg-turbo");
-        System.loadLibrary("Uvc_Support");
         System.loadLibrary("uvc");
+        System.loadLibrary("uvc_preview");
+        System.loadLibrary("Uvc_Support");
         isLoaded = true;
     }
 
@@ -269,9 +270,9 @@ public class Main extends AppCompatActivity {
                         "\n" + getResources().getString(R.string.camFormatIndex) + " = " + camFormatIndex + "\n" +
                         " " + getResources().getString(R.string.camFrameIndex) + " = " + camFrameIndex + "\n" + getResources().getString(R.string.imageWidth) + " = " + imageWidth + "\n" + getResources().getString(R.string.imageHeight) + " = " + imageHeight +
                         "\n" + getResources().getString(R.string.camFrameInterval) + " (fps) = " + camFrameInterval + "\nLibUsb = " + LIBUSB);
-        else tv.setText("Hello\n\nThe App should works on Android 9 (PIE) and Android 10 (Q) Devices." +
-                "\n\nYour current Values are:\n\n( - this is a sroll and zoom field - )\n\nPackets Per Request = " + packetsPerRequest +"\nActive Urbs = " + activeUrbs +
-                "\nAltSetting = " + camStreamingAltSetting + "\nMaxPacketSize = " + maxPacketSize + "\nVideoformat = " + videoformat + "\ncamFormatIndex = " + camFormatIndex + "\n" +
+        else tv.setText("Hello"+"\n\nYour current Values are:\n\n( - this is a sroll and zoom field - )\n\nPackets Per Request = "
+                + packetsPerRequest +"\nActive Urbs = " + activeUrbs +                "\nAltSetting = " + camStreamingAltSetting + "\nMaxPacketSize = "
+                + maxPacketSize + "\nVideoformat = " + videoformat + "\ncamFormatIndex = " + camFormatIndex + "\n" +
                 "camFrameIndex = " + camFrameIndex + "\nimageWidth = "+ imageWidth + "\nimageHeight = " + imageHeight + "\ncamFrameInterval (fps) = " +
                 (10000000 / camFrameInterval) + "\nLibUsb = " + LIBUSB  +  "" +
                 "\n\nYou can edit these Settings by clicking on (Set Up The Camera Device).\nYou can then save the values and later restore them.");

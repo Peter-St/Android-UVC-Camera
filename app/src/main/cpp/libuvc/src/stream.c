@@ -393,24 +393,19 @@ static uvc_frame_desc_t *_uvc_find_frame_desc_stream_if(
 	uvc_format_desc_t *format = NULL;
 	uvc_frame_desc_t *frame = NULL;
 
-	LOGDEB("stream_if->format_descs");
-	if (stream_if->format_descs == NULL) LOGDEB("stream_if->format_descs == NULL");
-	else LOGDEB("stream_if->format_descs == EXISTS");
+	//LOGDEB("stream_if->format_descs");
 
-	LOGDEB("stream_if->bEndpointAddress = %d", stream_if->bEndpointAddress);
+	//LOGDEB("stream_if->bEndpointAddress = %d", stream_if->bEndpointAddress);
 
 
 
 	DL_FOREACH(stream_if->format_descs, format)
 	{
-		LOGDEB("format->frame_descs");
+		//LOGDEB("format->frame_descs");
 		if (format->bFormatIndex == format_id) {
-
-
 			DL_FOREACH(format->frame_descs, frame)
 			{
-				LOGDEB("frame->bFrameIndex = %d", frame->bFrameIndex);
-
+				//LOGDEB("frame->bFrameIndex = %d", frame->bFrameIndex);
 				if (frame->bFrameIndex == frame_id)
 					return frame;
 			}

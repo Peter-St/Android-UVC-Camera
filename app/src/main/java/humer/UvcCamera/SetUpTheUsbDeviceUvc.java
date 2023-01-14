@@ -48,7 +48,6 @@ import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.Surface;
 import android.view.View;
 import android.widget.Button;
 import android.widget.PopupMenu;
@@ -62,8 +61,6 @@ import com.serenegiant.usb.IFrameCallback;
 import com.sun.jna.Pointer;
 import com.tomer.fadingtextview.FadingTextView;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1540,9 +1537,6 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                         /////////////////////////////////////////////////////////////////////////////////////////
                         if (!started) {
                             int result = -1;
-
-
-
                             result = PreviewPrepareTest(mNativePtr, new IFrameCallback() {
                                         @Override
                                         public void onFrame(final byte[] frame) {

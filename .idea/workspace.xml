@@ -14,19 +14,43 @@
   <component name="ChangeListManager">
     <list default="true" id="21e59184-7af9-4d66-8ffd-372a084f4c40" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/mapping.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/mapping.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/UVC_Camera_Saki/UVCPreview.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/UVC_Camera_Saki/UVCPreview.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/UVC_Camera_Saki/UVCPreview.h" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/UVC_Camera_Saki/UVCPreview.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/uvc_support.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/cpp/libUvc_Support/uvc_support.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libuvc/src/frame-mjpeg.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/cpp/libuvc/src/frame-mjpeg.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/cpp/libuvc/src/stream.c" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/cpp/libuvc/src/stream.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/videortc/CallActivity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/videortc/InitCapturer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/videortc/UsbCapturer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/videortc/WebRtcService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/videortc/WebRtc_MainActivity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDeviceUvc.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/SetUpTheUsbDeviceUvc.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivityUsbIso.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivityUsbIso.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivityUvc.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/humer/UvcCamera/StartIsoStreamActivityUvc.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/iso_stream_layout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/iso_stream_layout.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/layout_flip_ratio.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/layout_flip_ratio.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/org/appspot/apprtc/AppRTCClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/org/appspot/apprtc/PeerConnectionClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/org/appspot/apprtc/RoomParametersFetcher.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/org/appspot/apprtc/WebSocketChannelClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/org/appspot/apprtc/WebSocketRTCClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/org/appspot/apprtc/util/AppRTCUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/org/appspot/apprtc/util/AsyncHttpURLConnection.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/menu/iso_stream_settings_button.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/menu/iso_stream_settings_button.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proguardTools/mapping-release.txt" beforeDir="false" afterPath="$PROJECT_DIR$/proguardTools/mapping-release.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[192.168.10.184:5555]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -65,6 +89,14 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
@@ -77,6 +109,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ApkExportedModule" value="Android-UVC-Camera.app" />
     <property name="BundleExportedModule" value="Android-UVC-Camera.app" />
     <property name="ExportApk.ApkPath" value="$PROJECT_DIR$/app" />
     <property name="ExportApk.BuildVariants" value="release" />
@@ -86,7 +119,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="cidr.known.project.marker" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="experimental" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
