@@ -26,6 +26,7 @@ package humer.UvcCamera;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -37,9 +38,12 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.LocalBroadcastManager;
@@ -61,11 +65,17 @@ import com.serenegiant.usb.IFrameCallback;
 import com.sun.jna.Pointer;
 import com.tomer.fadingtextview.FadingTextView;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
 import humer.UvcCamera.JNA_I_LibUsb.JNA_I_LibUsb;
@@ -926,6 +936,9 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                 }
             });
 
+            saveDeviceInfoToFile(usbDevice, uvc_device_info);
+
+
 
         } else {
             runOnUiThread(new Runnable() {
@@ -942,7 +955,207 @@ public class SetUpTheUsbDeviceUvc extends Activity {
             });
             log ("DeviceInfo = null   ;-/");
         }
+
     }
+
+    private void saveDeviceInfoToFile(UsbDevice usbDevice, JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info) {
+
+        if (!(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT))  return;
+
+        StringBuilder text = new StringBuilder();
+
+        if (uvc_device_info != null) {
+            text.append("");
+            text.append("libusb_config_descriptor:\n\n");
+            try {
+                text.append("\nbLength = " + uvc_device_info.config.bLength);
+                text.append("\nbDescriptorType = " + uvc_device_info.config.bDescriptorType);
+                text.append("\nwTotalLength = " + uvc_device_info.config.wTotalLength);
+                text.append("\nbNumInterfaces = " + uvc_device_info.config.bNumInterfaces);
+                text.append("\nbConfigurationValue = " + uvc_device_info.config.bConfigurationValue);
+                text.append("\niConfiguration = " + uvc_device_info.config.iConfiguration);
+                text.append("\nbmAttributes = " + uvc_device_info.config.bmAttributes);
+                text.append("\nMaxPower = " + uvc_device_info.config.MaxPower);
+                final JNA_I_LibUsb.libusb_interface[] interfaceArray = (JNA_I_LibUsb.libusb_interface[])uvc_device_info.config.interFace.toArray(uvc_device_info.config.bNumInterfaces)  ;
+                text.append("\ninterfaceArray [" + interfaceArray.length + "]");
+                text.append("\nextra = " + uvc_device_info.config.extra);
+                text.append("\nextra_length = " + uvc_device_info.config.extra_length + "\n");
+            } catch (Exception e) {}
+            text.append("\nuvc_control_interface_t\n\n");
+            try {
+                text.append("\nuvc_input_terminal = " + uvc_device_info.ctrl_if.bcdUVC);
+                text.append("\nbEndpointAddress = " + uvc_device_info.ctrl_if.bEndpointAddress);
+                text.append("\nbInterfaceNumber = " + uvc_device_info.ctrl_if.bcdUVC);
+            } catch (Exception e) {}
+            text.append("  uvc_input_terminal\n\n");
+            try {
+                text.append("\n  bTerminalID = " + checkNull(uvc_device_info.ctrl_if.input_term_descs.bTerminalID));
+                text.append("\n  wTerminalType = " + checkNull(uvc_device_info.ctrl_if.input_term_descs.wTerminalType));
+                text.append("\n  wObjectiveFocalLengthMin = " + checkNull(uvc_device_info.ctrl_if.input_term_descs.wObjectiveFocalLengthMin));
+                text.append("\n  wObjectiveFocalLengthMax = " + checkNull(uvc_device_info.ctrl_if.input_term_descs.wObjectiveFocalLengthMax));
+                text.append("\n  wOcularFocalLength = " + checkNull(uvc_device_info.ctrl_if.input_term_descs.wOcularFocalLength));
+                text.append("\n  bmControls = " + checkNull(uvc_device_info.ctrl_if.input_term_descs.bmControls));
+                text.append("\n  request = " + checkNull(uvc_device_info.ctrl_if.input_term_descs.request));
+            } catch (Exception e) {}
+            text.append("\n\n  uvc_output_terminal");
+            try {
+                text.append("\n  bTerminalID = " + checkNull(uvc_device_info.ctrl_if.output_term_descs.bTerminalID));
+                text.append("\n\n  UVC_EXTENSION_UNIT");
+                text.append("\n  guidExtensionCode = " + Arrays.toString(uvc_device_info.ctrl_if.extension_unit_descs.guidExtensionCode));
+                text.append("\n  bUnitID = " + uvc_device_info.ctrl_if.extension_unit_descs.bUnitID);
+                text.append("\n  bmControls = " + uvc_device_info.ctrl_if.extension_unit_descs.bmControls);
+                text.append("\n  request = " + uvc_device_info.ctrl_if.extension_unit_descs.request);
+            } catch (Exception e) {}
+            JNA_I_LibUsb.uvc_streaming_interface streaming_interface = uvc_device_info.stream_ifs;
+            text.append("\n\nuvc_stream_interface_t\n");
+            try {
+                text.append("bInterfaceNumber = " + uvc_device_info.stream_ifs.bInterfaceNumber);
+                text.append("\nbmaControls = " + uvc_device_info.stream_ifs.bmaControls);
+                text.append("\nbEndpointAddress = " + uvc_device_info.stream_ifs.bEndpointAddress);
+                text.append("\nbTerminalLink = " + uvc_device_info.stream_ifs.bTerminalLink);
+                text.append("\nbmInfo = " + uvc_device_info.stream_ifs.bmInfo);
+                text.append("\nbStillCaptureMethod = " + uvc_device_info.stream_ifs.bStillCaptureMethod);
+                text.append("\nbTriggerSupport = " + uvc_device_info.stream_ifs.bTriggerSupport);
+                text.append("\nbTriggerSupport = " + uvc_device_info.stream_ifs.bTriggerSupport);
+            } catch (Exception e) {}
+
+            JNA_I_LibUsb.uvc_format_desc format =  uvc_device_info.stream_ifs.format_descs;
+
+            do {
+                if (format != null) {
+                    try {
+                        text.append("\n\n\nUVC_FORMAT_DESC:\n");
+                        text.append("\n  bDescriptorSubtype = " + (uvc_device_info.stream_ifs.format_descs.bDescriptorSubtype) );
+                        text.append("\n  bFormatIndex = " + (uvc_device_info.stream_ifs.format_descs.bFormatIndex));
+                        text.append("\n  bNumFrameDescriptors = " + (uvc_device_info.stream_ifs.format_descs.bNumFrameDescriptors));
+                        text.append("\n  guidFormat / fourccFormat = " + (Arrays.toString(uvc_device_info.stream_ifs.format_descs.formatSpecifier.guidFormat)));
+                        text.append("\n  bDefaultFrameIndex = " + (uvc_device_info.stream_ifs.format_descs.bDefaultFrameIndex));
+                    } catch (Exception e) {}
+
+                    JNA_I_LibUsb.uvc_frame_desc frame;
+                    frame = uvc_device_info.stream_ifs.format_descs.frame_descs;
+                    do {
+                        if (frame != null) {
+                            text.append("\n\n    UVC FRAME DESCRIPTOR:");
+                            try {
+                                text.append("\n     bFrameIndex = " + (frame.bFrameIndex));
+                                text.append("\n     wWidth = " + (frame.wWidth));
+                                text.append("\n     wHeight = " + (frame.wHeight));
+                                text.append("\n     dwMaxVideoFrameBufferSize = " + (frame.dwMaxVideoFrameBufferSize));
+                                text.append("\n     dwDefaultFrameInterval = " + (frame.dwDefaultFrameInterval));
+                                text.append("\n     intervals = " + (frame.intervals));
+                            } catch (Exception e) {}
+                        }
+                        JNA_I_LibUsb.uvc_frame_desc frame2 = frame;
+                        frame = frame2.next;
+                    } while(frame != null);
+                    JNA_I_LibUsb.uvc_format_desc format2 = format;
+                    format = format2.next;
+                }
+            } while (format != null);
+
+
+
+
+
+
+
+            text.append("\n\n\nlibusb_interface_descriptor:");
+
+            try {
+                final JNA_I_LibUsb.libusb_interface[] interfaceArray = (JNA_I_LibUsb.libusb_interface[])uvc_device_info.config.interFace.toArray(uvc_device_info.config.bNumInterfaces)  ;
+                // Check if the Device is UVC
+                isochronous = (interfaceArray[uvc_device_info.stream_ifs.bInterfaceNumber].num_altsetting > 1);
+                if (isochronous) {
+                    bulkMode = false;
+                    log("VS interface has multiple altsettings --> isochronous transfer supported");
+                    text.append("  Isochronous transfer supported\n");
+                } else {
+                    bulkMode = true;
+                    log("VS interface has only one altsetting --> isochronous transfer not supported");
+                    text.append(" VS interface has only one altsettings --> isochronous transfer not supported\n");
+                    //return;
+                }
+                bcdUVC_short = uvc_device_info.ctrl_if.bcdUVC;
+                List<Integer> maxPacketSizeArray = new ArrayList<Integer>();
+                for (int intLoop=0; intLoop<uvc_device_info.config.bNumInterfaces; intLoop++) {
+                    log("Interface " + intLoop +  " has " + interfaceArray[intLoop].num_altsetting + " altsettings\n");
+                    text.append("\nInterface " + intLoop +  " has " + interfaceArray[intLoop].num_altsetting + " altsettings\n");
+
+                    final JNA_I_LibUsb.libusb_interface_descriptor[] altsettingArray = (JNA_I_LibUsb.libusb_interface_descriptor[])
+                            interfaceArray[uvc_device_info.stream_ifs.bInterfaceNumber].altsetting.toArray(interfaceArray[uvc_device_info.stream_ifs.bInterfaceNumber].num_altsetting)  ;
+                    //log("altsettingArray obtained");
+                    for (int altLoop=0; altLoop<interfaceArray[intLoop].num_altsetting; altLoop++) {
+                        if(altsettingArray[altLoop].endpoint != null) {
+                            log("Altsetting " + altLoop +  " has a packetSize of: " + returnConvertedValue(altsettingArray[altLoop].endpoint.wMaxPacketSize)  + " \n");
+                            text.append("   Altsetting " + altLoop +  " maxPacketSize: " + returnConvertedValue(altsettingArray[altLoop].endpoint.wMaxPacketSize) + " \n");
+                            if (!isochronous) {
+                                if(intLoop > 0) maxPacketSizeArray.add(returnConvertedValue(altsettingArray[altLoop].endpoint.wMaxPacketSize));
+                            } else maxPacketSizeArray.add(returnConvertedValue(altsettingArray[altLoop].endpoint.wMaxPacketSize));
+                            camStreamingEndpointAdress = altsettingArray[altLoop].endpoint.bEndpointAddress;
+                        } else {
+                            log("Altsetting has no endpoint");
+                            text.append("  Altsetting has no endpoint\n");
+                        }
+                    }
+                }
+            } catch (Exception e) {}
+
+        }
+
+        try {
+            saveFile(getApplicationContext(),new String ("usb_device_info"), text.toString(), new String("txt"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    private Object checkNull(Object obj) {
+        if (obj == null) return new String ("null");
+        else return obj;
+    }
+
+    public void saveFile(Context context, String fileName, String text, String extension) throws IOException{
+
+        String DIRECTORY = "/UVC_Camera/config/";
+
+        OutputStream outputStream;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+
+            ContentValues values = new ContentValues();
+
+            values.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName +"."+ extension);   // file name
+            values.put(MediaStore.MediaColumns.MIME_TYPE, "text/plain");
+            values.put(MediaStore.MediaColumns.RELATIVE_PATH, "Documents" + DIRECTORY);
+
+            Uri extVolumeUri = MediaStore.Files.getContentUri("external");
+            Uri fileUri = context.getContentResolver().insert(extVolumeUri, values);
+
+            outputStream = context.getContentResolver().openOutputStream(fileUri);
+        }
+        else {
+            String rootPath = null;
+
+            rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/config/";
+            log("rootPath = " + rootPath);
+            File file = new File(rootPath);
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+
+
+            file = new File(rootPath, fileName + "." + extension);
+            log( "saveFile: file path - " + file.getAbsolutePath());
+            outputStream = new FileOutputStream(file);
+        }
+
+        byte[] bytes = text.getBytes();
+        outputStream.write(bytes);
+        outputStream.close();
+    }
+
 
     private int returnConvertedValue(int wSize) {
         String st = Integer.toBinaryString(wSize);

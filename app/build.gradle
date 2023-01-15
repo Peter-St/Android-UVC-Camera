@@ -8,8 +8,8 @@ android {
         applicationId "humer.uvc_camera"
         targetSdkVersion 31
         minSdkVersion 15
-        versionCode 118
-        versionName "2.1.6"
+        versionCode 119
+        versionName "2.1.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         ndk.debugSymbolLevel = 'FULL'

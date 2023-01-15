@@ -27,6 +27,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:largeHeap="true"
         android:supportsRtl="true"
+        android:requestLegacyExternalStorage="true"
         >
         <activity android:name="humer.UvcCamera.Main"
             android:exported="true">

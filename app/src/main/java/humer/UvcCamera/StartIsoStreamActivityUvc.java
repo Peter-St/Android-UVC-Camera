@@ -23,9 +23,11 @@ package humer.UvcCamera;
 
 import android.app.Activity;
 
+import android.content.ContentValues;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -77,6 +79,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -2025,11 +2028,21 @@ public class StartIsoStreamActivityUvc extends Activity {
                 log ("file saved");
             } else {
                 Context context = getApplicationContext();
-                String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
+                String fileName = new File(  dateFormat.format(date) + ".jpg").getPath() ;
                 log("fileName = " + fileName);
                 try {
-                    //final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
-                    MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
+                    OutputStream imageOutStream;
+                    ContentValues values = new ContentValues();
+                    values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
+                    values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                    values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/UVC_Camera/");
+                    Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                    imageOutStream = getContentResolver().openOutputStream(uri);
+                    try {
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, imageOutStream);
+                    } finally {
+                        imageOutStream.close();
+                    }
                     ret = 0;
                     log ("MediaStore Save File Complete !!!!");
                 } catch (Exception e) {
@@ -2063,8 +2076,18 @@ public class StartIsoStreamActivityUvc extends Activity {
                 String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
                 log("fileName = " + fileName);
                 try {
-                    //final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
-                    MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
+                    OutputStream imageOutStream;
+                    ContentValues values = new ContentValues();
+                    values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
+                    values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                    values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/UVC_Camera/");
+                    Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                    imageOutStream = getContentResolver().openOutputStream(uri);
+                    try {
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, imageOutStream);
+                    } finally {
+                        imageOutStream.close();
+                    }
                     ret = 0;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -2132,7 +2155,18 @@ public class StartIsoStreamActivityUvc extends Activity {
                 log("fileName = " + fileName);
                 try {
                     final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegFrameData, 0, jpegFrameData.length);
-                    MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
+                    OutputStream imageOutStream;
+                    ContentValues values = new ContentValues();
+                    values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
+                    values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                    values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/UVC_Camera/");
+                    Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                    imageOutStream = getContentResolver().openOutputStream(uri);
+                    try {
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, imageOutStream);
+                    } finally {
+                        imageOutStream.close();
+                    }
                     ret = 0;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -2164,8 +2198,25 @@ public class StartIsoStreamActivityUvc extends Activity {
                 String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
                 log("fileName = " + fileName);
                 try {
-                    final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegFrameData, 0, jpegFrameData.length);
-                    MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, fileName, "Usb_Camera_Picture");
+                    //final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegFrameData, 0, jpegFrameData.length);
+                    OutputStream imageOutStream;
+                    ContentValues values = new ContentValues();
+                    values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
+                    values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                    values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/UVC_Camera/");
+                    Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+                    FileOutputStream stream = new FileOutputStream(uri.getPath());
+                    stream.write(jpegFrameData);
+
+                    //imageOutStream = getContentResolver().openOutputStream(uri);
+
+
+                    try {
+                        //bitmap.compress(Bitmap.CompressFormat.JPEG, 100, imageOutStream);
+                    } finally {
+                        //imageOutStream.close();
+                    }
                     ret = 0;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -2192,6 +2243,7 @@ public class StartIsoStreamActivityUvc extends Activity {
             }
         }
         if (exit == false) {
+            /*
             if (lowerResolution) {
                 BitmapFactory.Options opts = new BitmapFactory.Options();
                 opts.inSampleSize = 4;
@@ -2208,6 +2260,7 @@ public class StartIsoStreamActivityUvc extends Activity {
                 }
             } else {
                 final Bitmap bitmap = BitmapFactory.decodeByteArray(jpegFrameData, 0, jpegFrameData.length);
+
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -2219,7 +2272,9 @@ public class StartIsoStreamActivityUvc extends Activity {
                 if (videorecordApiJellyBeanNup) {
                     bitmapToVideoEncoder.queueFrame(bitmap);
                 }
+
             }
+            */
         }
         return ret;
     }
