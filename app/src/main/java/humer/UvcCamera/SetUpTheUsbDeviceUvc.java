@@ -416,7 +416,12 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                 "You alse can run this program with all kinds of UVC Cameras\n" +
                 "If a camera doesn't work, you can contact the developer of this program for solutions.");
         tv.setTextColor(Color.BLACK);
-        mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            mPermissionIntent = PendingIntent.getBroadcast(this,0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+        } else {
+            mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_UPDATE_CURRENT);
+        }
         IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
         registerReceiver(mUsbReceiver, filter);
         registerReceiver(mUsbDeviceReceiver, new IntentFilter(UsbManager.ACTION_USB_DEVICE_ATTACHED));
@@ -1338,6 +1343,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                 automatic.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        /*      // Auto Method disabled
                         //if (convertedMaxPacketSize == null) listDevice(camDevice);
                         if (!bulkMode) {
                             //displayMessage("Please select the manual Method");
@@ -1356,6 +1362,8 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                                 tv.setTextColor(Color.BLACK);
                             }
                         });
+                        */  // Automatic Method disabled for now
+                        displayMessage("Automatic method not working ;(");
                         alertDialog.dismiss();
                     }
                 });
@@ -1426,15 +1434,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                     }
                 });
 
-
-
-
-
-
-
-
             } else {
-
                 CFAlertDialog alertDialog;
                 CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
                 LayoutInflater li = LayoutInflater.from(this);
@@ -1446,6 +1446,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                 automatic.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        /*   // Automatic Version Disabled for now
                         //if (convertedMaxPacketSize == null) listDevice(camDevice);
                         if (!bulkMode) {
                             //displayMessage("Please select the manual Method");
@@ -1464,6 +1465,8 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                                 tv.setTextColor(Color.BLACK);
                             }
                         });
+                        */  // Automatic Version Disabled for now
+                        displayMessage("Automatic method not working ;(");
                         alertDialog.dismiss();
                     }
                 });
@@ -1848,7 +1851,12 @@ public class SetUpTheUsbDeviceUvc extends Activity {
 
         if (!usbManager.hasPermission(camDevice)) {
             int a;
-            PendingIntent permissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
+            PendingIntent permissionIntent;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                permissionIntent = PendingIntent.getBroadcast(this,0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+            } else {
+                permissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_UPDATE_CURRENT);
+            }
             usbManager.requestPermission(camDevice, permissionIntent);
             while (!usbManager.hasPermission(camDevice)) {
                 long time0 = System.currentTimeMillis();

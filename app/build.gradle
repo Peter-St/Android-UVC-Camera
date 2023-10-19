@@ -3,13 +3,13 @@ import org.apache.tools.ant.taskdefs.condition.Os
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 31
+    compileSdk = 34
     defaultConfig {
         applicationId "humer.uvc_camera"
-        targetSdkVersion 31
+        targetSdkVersion 33
         minSdkVersion 15
-        versionCode 119
-        versionName "2.1.7"
+        versionCode 120
+        versionName "2.1.8"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         ndk.debugSymbolLevel = 'FULL'
@@ -84,7 +84,7 @@ android {
     externalNativeBuild {
         cmake {
             path "src/main/cpp/libUvc_Support/CMakeLists.txt"
-            version "3.10.2"
+            //version "3.10.2"
         }
     }
 
