@@ -4,6 +4,10 @@ release-keystore.properties
 
 *.iml
 .gradle
+.gradle/
+.idea/
+gradle/
+idea/
 /local.properties
 /.idea/workspace.xml
 /.idea/libraries
