@@ -14,8 +14,8 @@
   <component name="ChangeListManager">
     <list default="true" id="21e59184-7af9-4d66-8ffd-372a084f4c40" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/mapping.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/mapping.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fastlane/metadata/android/de-DE/changelogs/120.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/fastlane/metadata/android/en-GB/changelogs/120.txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
