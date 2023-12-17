@@ -1,0 +1,1 @@
+Program til afspilning af et USB-kamera Program til brug af et USB-kamera (UVC)

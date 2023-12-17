@@ -1,0 +1,1 @@
+Program for å spille av et USB-kamera (UVC)

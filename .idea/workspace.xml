@@ -14,7 +14,6 @@
   <component name="ChangeListManager">
     <list default="true" id="21e59184-7af9-4d66-8ffd-372a084f4c40" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,7 +23,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[192.168.10.186:5555]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[/home/peter/.android/avd/Pixel_3a_API_34_extension_level_7_x86_64.avd]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -96,7 +95,7 @@
     "project.structure.last.edited": "Build Variants",
     "project.structure.proportion": "0.17",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "AndroidSdkUpdater"
+    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle"
   },
   "keyToStringList": {
     "ExportApk.BuildVariants": [

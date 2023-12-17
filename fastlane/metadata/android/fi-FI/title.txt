@@ -1,0 +1,1 @@
+usb-kamera (uvc) mukautettu

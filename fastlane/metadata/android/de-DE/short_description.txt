@@ -1,0 +1,2 @@
+Programm zur Wiedergabe einer USB Kamera
+Program for using a USB Camera ( UVC )

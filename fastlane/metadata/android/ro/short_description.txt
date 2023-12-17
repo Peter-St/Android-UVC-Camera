@@ -1,0 +1,1 @@
+Program pentru redarea unei camere USB (UVC)

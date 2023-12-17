@@ -1,0 +1,25 @@
+Dieses Programm dient zum ansteuern einer USB Kamera.
+
+Mittels benutzerdefiniertem Treiber kann eine Videoübertragung auf allen Android Geräten mit unterschiedlichen Chipsätzen erfolgen. Mediathek (MTK) Geräte werden unterstützt, aber auch alle anderen.
+
+Program to test and watch a video stream form an usb uvc camera. It also works on devices with Mediathek (MTK) chips. 
+
+Zur Nutzung einer USB Kamera auf Android Geräten ist ein USB OTG Kabel notwendig. Optional kann ein USB OTG Hub verwendet werden.
+
+Viel Spaß beim testen.
+
+
+
+Eine genauere Beschreibung liegt in der App auf Englisch vor.
+
+Beschreibung zur Nutzung der Usb Kamera App mittels benutzerdefiniertem Treiber:
+
+Der Datenaustausch einer USB Camera erfolgt über einen Isochronen Datentransfer. Für einen funktionierenden Datentransfer zur USB Camera benötigt das Programm die Variablen zur jeweiligen Camera. Wurde die Camera einmal erkannt, so können die Camera Variablen automatisch ausgelesen werden (Set Up With UVC Settings). Danach ist es notwendig, die ausgelesenen Variablen so zu setzen, dass der Datentransfer zur Usb Camera möglichst schnell erfolgt, aber das Android Gerät auch nicht überlastet. Für den Anfang wählt man am besten folgende Daten:
+Maximale Paketgröße:   mittlere Größe
+Packets per Request: zB.: 4
+Active Urbs.: zB.: 4
+
+Die restlichen Eingaben sind entsprechend den Vorgaben zu wählen, sind dann aber erst mal nicht so wichtig.
+Erhält man beim Testdurchlauf dann Frames, kann man den Videostream eigentlich schon starten. Man kann die Einstellungen auch speichern und natürlich auch wiederherstellen, wenn man das Programm neu startet. Es können beliebig viele Speicherungen erstellt werden, aber auch überschrieben werden.
+
+Beim Camera Stream kann man auch Fotos aufnehmen, die im Ordner "UVC_Camera / Pictures" auf der SD Karte gespeicht werden. Hier müssen sie aber vorher der App die Berechtigungen für den Speicher geben.
