@@ -18,7 +18,6 @@ android {
         versionName "2.1.8"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
-        ndk.debugSymbolLevel = 'FULL'
     }
     signingConfigs {
         release {
@@ -34,15 +33,11 @@ android {
         }
         release {
             signingConfig signingConfigs.release
-            externalNativeBuild {
-                ndkBuild {
-                    arguments "BUILD_TYPE=release"
-                }}
             minifyEnabled true
             shrinkResources false
 
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            ndk.debugSymbolLevel = 'FULL'
+            //ndk.debugSymbolLevel = 'FULL'
 
             debuggable false
             jniDebuggable false
@@ -50,11 +45,6 @@ android {
         debug {
             debuggable true
             jniDebuggable true
-            externalNativeBuild {
-                ndkBuild {
-                    cFlags "-DDEBUG=1"
-                }
-            }
         }
     }
     compileOptions {
@@ -62,7 +52,6 @@ android {
         targetCompatibility = '1.8'
     }
     // TODO silences:
-    // [InvalidPackage]: not included in Android: java.awt. Referenced from com.sun.jna.Native.AWT.
     lintOptions {
         abortOnError false
     }
@@ -88,31 +77,11 @@ android {
         resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.2'
     }
 
-/*
-    sourceSets {
-        main {
-            jniLibs.srcDir 'src/main/libs'
-            jni.srcDirs = []
-        }
-    }
-*/
     externalNativeBuild {
         cmake {
             path "src/main/cpp/libUvc_Support/CMakeLists.txt"
-            //version "3.10.2"
         }
     }
-
-/*
-    externalNativeBuild {
-        cmake {
-            path "src/main/c/libjpeg/CMakeLists.txt"
-            version "3.10.2"
-        }
-    }
-*/
-
-
 
     packagingOptions {
         pickFirst 'lib/x86_64/libUvc_Support.so'
@@ -157,6 +126,7 @@ android {
         pickFirst 'lib/armeabi-v7a/libunrooted_android.so'
         pickFirst 'lib/arm64-v8a/libunrooted_android.so'
     }
+    namespace 'humer.UvcCamera'
 
 
 }
