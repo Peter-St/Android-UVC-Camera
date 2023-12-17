@@ -1,3 +1,7 @@
+#files for app signing
+release-keystore.jks
+release-keystore.properties
+
 *.iml
 .gradle
 /local.properties
