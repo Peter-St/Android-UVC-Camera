@@ -30,21 +30,6 @@ platform :android do
     # You can also use other beta testing services here
   end
 
-lane :increment_version_code do
-  version_code = google_play_track_version_codes(
-    package_name: "your package name",  #e.g. com.xyz.app
-    track: "track-name",                #e.g. alpha
-    json_key: "json key file path",
-   )
-   
-   version_code_play_store = version_code[0].to_i
-   update_version_code = version_code_play_store + 1
-   
-   increment_version_code(
-    gradle_file_path: "your gradle file path",
-    version_code: update_version_code.to_i
-   )
-end
 
   desc "Deploy a new version to the Google Play"
   lane :deploy do 
