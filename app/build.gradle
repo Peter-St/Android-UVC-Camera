@@ -151,10 +151,7 @@ dependencies {
     implementation 'com.crowdfire.cfalertdialog:cfalertdialog:1.1.0'
 
     //JNA
-    implementation 'net.java.dev.jna:jna:5.10.0@aar'
-
-    // WebRtc
-    implementation 'org.webrtc:google-webrtc:1.0.22672'
+    implementation 'net.java.dev.jna:jna:5.14.0@aar'
 
     // @ RequiresApi
     implementation 'com.android.support:support-annotations:28.0.0'
