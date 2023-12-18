@@ -1,0 +1,115 @@
+$ fastlane supply
+[✔] 🚀 
+[21:59:41]: fastlane detected a Gemfile in the current directory
+[21:59:41]: However, it seems like you didn't use `bundle exec`
+[21:59:41]: To launch fastlane faster, please use
+[21:59:41]: 
+[21:59:41]: $ bundle exec fastlane supply
+[21:59:41]: 
+[21:59:41]: Get started using a Gemfile for fastlane https://docs.fastlane.tools/getting-started/ios/setup/#use-a-gemfile
+
++-----------------------------------------------------------------------------+
+|                         Summary for supply 2.217.0                          |
++------------------------------------+----------------------------------------+
+| package_name                       | humer.uvc_camera                       |
+| release_status                     | completed                              |
+| track                              | production                             |
+| metadata_path                      | ./fastlane/metadata/android            |
+| json_key                           | /home/peter/Dokumente/F-Droid/webcam-  |
+|                                    | 3cd3a-c7ede7a2f287.json                |
+| skip_upload_apk                    | false                                  |
+| skip_upload_aab                    | false                                  |
+| skip_upload_metadata               | false                                  |
+| skip_upload_changelogs             | false                                  |
+| skip_upload_images                 | false                                  |
+| skip_upload_screenshots            | false                                  |
+| sync_image_upload                  | false                                  |
+| track_promote_release_status       | completed                              |
+| validate_only                      | false                                  |
+| check_superseded_tracks            | false                                  |
+| timeout                            | 300                                    |
+| deactivate_on_promote              | true                                   |
+| changes_not_sent_for_review        | false                                  |
+| rescue_changes_not_sent_for_review | true                                   |
+| ack_bundle_installation_warning    | false                                  |
++------------------------------------+----------------------------------------+
+
+[21:59:45]: Preparing uploads for language 'ar'...
+[21:59:45]: Preparing uploads for language 'da-DK'...
+[21:59:45]: Preparing uploads for language 'de-DE'...
+[21:59:45]: Preparing uploads for language 'el-GR'...
+[21:59:45]: Preparing uploads for language 'en-GB'...
+[21:59:45]: Preparing uploads for language 'fi-FI'...
+[21:59:45]: Preparing uploads for language 'fr-FR'...
+[21:59:45]: Preparing uploads for language 'hr'...
+[21:59:45]: Preparing uploads for language 'is-IS'...
+[21:59:45]: Preparing uploads for language 'it-IT'...
+#<Thread:0x0000560797292300 /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/queue_worker.rb:37 run> terminated with exception (report_on_exception is true):
+/var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/interface.rb:184:in `abort_with_message!': hr - Cannot find changelog because no version code given - please specify :version_code (FastlaneCore::Interface::FastlaneCommonException)
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/ui.rb:17:in `method_missing'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:526:in `rescue in block in create_meta_upload_worker'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:517:in `block in create_meta_upload_worker'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/queue_worker.rb:40:in `block (2 levels) in start'
+/var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/interface.rb:141:in `user_error!': Cannot find changelog because no version code given - please specify :version_code (FastlaneCore::Interface::FastlaneError)
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/ui.rb:17:in `method_missing'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:226:in `upload_changelog'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:523:in `block in create_meta_upload_worker'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/queue_worker.rb:40:in `block (2 levels) in start'
+#<Thread:0x00005607972926c0 /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/queue_worker.rb:37 run> terminated with exception (report_on_exception is true):
+/var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/interface.rb:184:in `abort_with_message!': el-GR - Cannot find changelog because no version code given - please specify :version_code (FastlaneCore::Interface::FastlaneCommonException)
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/ui.rb:17:in `method_missing'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:526:in `rescue in block in create_meta_upload_worker'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:517:in `block in create_meta_upload_worker'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/queue_worker.rb:40:in `block (2 levels) in start'
+/var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/interface.rb:141:in `user_error!': Cannot find changelog because no version code given - please specify :version_code (FastlaneCore::Interface::FastlaneError)
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/ui.rb:17:in `method_missing'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:226:in `upload_changelog'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:523:in `block in create_meta_upload_worker'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/queue_worker.rb:40:in `block (2 levels) in start'
+#<Thread:0x00005607972923f0 /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/queue_worker.rb:37 run> terminated with exception (report_on_exception is true):
+/var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/interface.rb:184:in `abort_with_message!': fi-FI - Cannot find changelog because no version code given - please specify :version_code (FastlaneCore::Interface::FastlaneCommonException)
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/ui.rb:17:in `method_missing'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:526:in `rescue in block in create_meta_upload_worker'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:517:in `block in create_meta_upload_worker'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/queue_worker.rb:40:in `block (2 levels) in start'
+/var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/interface.rb:141:in `user_error!': Cannot find changelog because no version code given - please specify :version_code (FastlaneCore::Interface::FastlaneError)
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/ui.rb:17:in `method_missing'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:226:in `upload_changelog'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:523:in `block in create_meta_upload_worker'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/queue_worker.rb:40:in `block (2 levels) in start'
+#<Thread:0x00005607972924e0 /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/queue_worker.rb:37 run> terminated with exception (report_on_exception is true):
+/var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/interface.rb:184:in `abort_with_message!': fr-FR - Cannot find changelog because no version code given - please specify :version_code (FastlaneCore::Interface::FastlaneCommonException)
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/ui.rb:17:in `method_missing'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:526:in `rescue in block in create_meta_upload_worker'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:517:in `block in create_meta_upload_worker'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/queue_worker.rb:40:in `block (2 levels) in start'
+/var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/interface.rb:141:in `user_error!': Cannot find changelog because no version code given - please specify :version_code (FastlaneCore::Interface::FastlaneError)
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/ui.rb:17:in `method_missing'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:226:in `upload_changelog'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:523:in `block in create_meta_upload_worker'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/queue_worker.rb:40:in `block (2 levels) in start'
+#<Thread:0x0000560797292120 /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/queue_worker.rb:37 run> terminated with exception (report_on_exception is true):
+/var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/interface.rb:184:in `abort_with_message!': it-IT - Cannot find changelog because no version code given - please specify :version_code (FastlaneCore::Interface::FastlaneCommonException)
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/ui.rb:17:in `method_missing'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:526:in `rescue in block in create_meta_upload_worker'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:517:in `block in create_meta_upload_worker'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/queue_worker.rb:40:in `block (2 levels) in start'
+/var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/interface.rb:141:in `user_error!': Cannot find changelog because no version code given - please specify :version_code (FastlaneCore::Interface::FastlaneError)
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/ui.rb:17:in `method_missing'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:226:in `upload_changelog'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:523:in `block in create_meta_upload_worker'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/queue_worker.rb:40:in `block (2 levels) in start'
+#<Thread:0x00005607972929b8 /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/queue_worker.rb:37 run> terminated with exception (report_on_exception is true):
+/var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/interface.rb:184:in `abort_with_message!': ar - Cannot find changelog because no version code given - please specify :version_code (FastlaneCore::Interface::FastlaneCommonException)
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/ui.rb:17:in `method_missing'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:526:in `rescue in block in create_meta_upload_worker'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:517:in `block in create_meta_upload_worker'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/queue_worker.rb:40:in `block (2 levels) in start'
+/var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/interface.rb:141:in `user_error!': Cannot find changelog because no version code given - please specify :version_code (FastlaneCore::Interface::FastlaneError)
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/ui/ui.rb:17:in `method_missing'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:226:in `upload_changelog'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/supply/lib/supply/uploader.rb:523:in `block in create_meta_upload_worker'
+	from /var/lib/gems/3.0.0/gems/fastlane-2.217.0/fastlane_core/lib/fastlane_core/queue_worker.rb:40:in `block (2 levels) in start'
+
+[!] ar - Cannot find changelog because no version code given - please specify :version_code
+
