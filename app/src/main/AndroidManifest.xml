@@ -14,7 +14,7 @@
     <uses-feature android:name="android.hardware.usb.host" />
 
     <uses-sdk
-        tools:overrideLibrary="org.webrtc, com.akexorcist.localizationactivity, com.rafakob.floatingedittext"/>
+        tools:overrideLibrary="com.akexorcist.localizationactivity, com.rafakob.floatingedittext"/>
 
     <application
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
@@ -97,21 +97,6 @@
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.example.androidthings.videortc.CallActivity"
-            android:configChanges="orientation|screenSize"
-            android:hardwareAccelerated="true"
-            android:label="@string/app_name"
-            android:launchMode="singleInstance"
-            android:screenOrientation="fullUser"
-            android:theme="@style/CallActivityTheme"
-            android:exported="true"/>
-        <activity android:name="com.example.androidthings.videortc.WebRtc_MainActivity"
-            android:exported="true">
-        </activity>
-
-
-
     </application>
 
 </manifest>
