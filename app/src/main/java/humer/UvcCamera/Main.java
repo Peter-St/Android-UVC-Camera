@@ -226,10 +226,33 @@ public class Main extends AppCompatActivity {
         }
     }
 
-
     /////  END File Save Buttons
 
+    /////  Permissions 13+
+    // https://stackoverflow.com/questions/73826323/android-api-33-permissions-are-not-granted
+    // TODO: clean this up
+    public static String[] storage_permissions = {
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+    };
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    public static String[] storage_permissions_33 = {
+            Manifest.permission.READ_MEDIA_IMAGES,
+            Manifest.permission.READ_MEDIA_AUDIO,
+            Manifest.permission.READ_MEDIA_VIDEO
+    };
+
+    public static String[] permissions() {
+        String[] p;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            p = storage_permissions_33;
+        } else {
+            p = storage_permissions;
+        }
+        return p;
+    }
+    ///// END Permissions
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -237,7 +260,6 @@ public class Main extends AppCompatActivity {
         setContentView(R.layout.layout_main);
 
         //textView = (EditText) findViewById(R.id.fileText);
-
 
         //// Language Settings
         ImageButton language = findViewById(R.id.language);
@@ -270,12 +292,12 @@ public class Main extends AppCompatActivity {
                         "\n" + getResources().getString(R.string.camFormatIndex) + " = " + camFormatIndex + "\n" +
                         " " + getResources().getString(R.string.camFrameIndex) + " = " + camFrameIndex + "\n" + getResources().getString(R.string.imageWidth) + " = " + imageWidth + "\n" + getResources().getString(R.string.imageHeight) + " = " + imageHeight +
                         "\n" + getResources().getString(R.string.camFrameInterval) + " (fps) = " + camFrameInterval + "\nLibUsb = " + LIBUSB);
-        else tv.setText("Hello"+"\n\nYour current Values are:\n\n( - this is a sroll and zoom field - )\n\nPackets Per Request = "
+        else tv.setText("Hello"+"\n\nYour current Values are:\n\n( - this is a scroll to zoom field - )\n\nPackets Per Request = "
                 + packetsPerRequest +"\nActive Urbs = " + activeUrbs +                "\nAltSetting = " + camStreamingAltSetting + "\nMaxPacketSize = "
                 + maxPacketSize + "\nVideoformat = " + videoformat + "\ncamFormatIndex = " + camFormatIndex + "\n" +
                 "camFrameIndex = " + camFrameIndex + "\nimageWidth = "+ imageWidth + "\nimageHeight = " + imageHeight + "\ncamFrameInterval (fps) = " +
                 (10000000 / camFrameInterval) + "\nLibUsb = " + LIBUSB  +  "" +
-                "\n\nYou can edit these Settings by clicking on (Set Up The Camera Device).\nYou can then save the values and later restore them.");
+                "\n\nYou can edit these settings by clicking on (Set Up The Camera Device).\nYou can then save the values and later restore them.");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             ScrollView scrollView = findViewById(R.id.scrolli);
             scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
@@ -505,6 +527,13 @@ public class Main extends AppCompatActivity {
     }
 
     public void setUpTheUsbDevice(View view){
+        // Permissions test
+        boolean permissions_t;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissions_t = showCameraPermissionCamera();
+        } else {
+            permissions_t = (showStoragePermissionRead() && showStoragePermissionWrite() && showCameraPermissionCamera());
+        }
         log(" * setUpTheUsbDevice * ");
         // if LIBUSB allocate the UVC Camera Pointer:
         if (LIBUSB && mNativePtr == 0) {
@@ -526,10 +555,8 @@ public class Main extends AppCompatActivity {
         // load the libs if needed
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (showStoragePermissionRead() && showStoragePermissionWrite() && showCameraPermissionCamera()) {
+            if (permissions_t) {
                 if (LIBUSB) {
-
-
                     Intent intent = new Intent(this, SetUpTheUsbDeviceUvc.class);
                     Bundle bundle=new Bundle();
                     bundle.putBoolean("edit", true);
@@ -590,9 +617,8 @@ public class Main extends AppCompatActivity {
                 }
             }
         }
-        else if (showStoragePermissionRead() && showStoragePermissionWrite()) {
+        else if (permissions_t) {
             if (LIBUSB) {
-
                 Intent intent = new Intent(this, SetUpTheUsbDeviceUvc.class);
                 Bundle bundle=new Bundle();
                 bundle.putBoolean("edit", true);
@@ -654,7 +680,6 @@ public class Main extends AppCompatActivity {
         }
         else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
             if (LIBUSB) {
-
                 Intent intent = new Intent(this, SetUpTheUsbDeviceUvc.class);
                 Bundle bundle=new Bundle();
                 bundle.putBoolean("edit", true);
@@ -720,8 +745,14 @@ public class Main extends AppCompatActivity {
     }
 
     public void restoreCameraSettings (View view) {
+        boolean permissions_t;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissions_t = showStoragePermissionRead();
+        } else {
+            permissions_t = (showStoragePermissionRead() && showStoragePermissionWrite());
+        }
         log(" * restoreCameraSettings * ");
-        if (showStoragePermissionRead() && showStoragePermissionWrite()) {
+        if (permissions_t) {
             SaveToFile  stf;
             stf = new SaveToFile(this, this);
             stf.restoreValuesFromFile();
@@ -736,6 +767,12 @@ public class Main extends AppCompatActivity {
     }
 
     public void isoStream(View view){
+        boolean permissions_t;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissions_t = showStoragePermissionRead();
+        } else {
+            permissions_t = (showStoragePermissionRead() && showStoragePermissionWrite());
+        }
         log(" * IsoStream * ");
         if (LIBUSB && mNativePtr == 0) {
             mNativePtr = nativeCreate(mNativePtr);
@@ -752,7 +789,7 @@ public class Main extends AppCompatActivity {
             JNA_I_LibUsb.INSTANCE.read_a_value(new Pointer(mNativePtr));
  */
         }
-        if (showStoragePermissionRead() && showStoragePermissionWrite()) {
+        if (permissions_t) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 if(!showCameraPermissionCamera()) return;
             }
@@ -761,8 +798,8 @@ public class Main extends AppCompatActivity {
                     @Override
                     public void run() {
                         tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                        tv.setText("Values for the camera not correctly setted !!\nPlease set up the values for the Camera first.\nTo Set Up the Values press the Settings " +
-                                "Button and click on 'Set up with Uvc Values' or 'Edit / Save / Restor' and 'Edit Save'");
+                        tv.setText("Values for the camera not correctly set !!\nPlease set up the values for the Camera first.\nTo Set Up the Values press the Settings " +
+                                "Button and click on 'Set up with Uvc Values' or 'Edit / Save / Restore' and 'Edit Save'");
                         tv.setTextColor(darker(Color.RED, 100));
                     }
                 });
@@ -828,8 +865,8 @@ public class Main extends AppCompatActivity {
                     @Override
                     public void run() {
                         tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                        tv.setText("Values for the camera not correctly setted !!\nPlease set up the values for the Camera first.\nTo Set Up the " +
-                                "Values press the Settings Button and click on 'Set up with Uvc Values' or 'Edit / Save / Restor' and 'Edit Save'");  }
+                        tv.setText("Values for the camera not correctly set !!\nPlease set up the values for the Camera first.\nTo Set Up the " +
+                                "Values press the Settings Button and click on 'Set up with Uvc Values' or 'Edit / Save / Restore' and 'Edit Save'");  }
                 });
             } else {
                 if (LIBUSB) {
@@ -1083,23 +1120,43 @@ public class Main extends AppCompatActivity {
     }
 
     private boolean showStoragePermissionRead() {
-        int permissionCheck = ContextCompat.checkSelfPermission(
-                this, Manifest.permission.READ_EXTERNAL_STORAGE);
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                showExplanation("Permission Needed:", "Read External Storage", Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_PERMISSION_STORAGE_READ);
-                return false;
-            } else {
-                requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_PERMISSION_STORAGE_READ);
-                return false;
+        int permissionCheck;
+        // We don't need this? app is only storing and viewing its own files.
+        // Gotta clean up the redundant redundancies...
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissionCheck = ContextCompat.checkSelfPermission(this,Manifest.permission.READ_MEDIA_VIDEO);
+            if(permissionCheck != PackageManager.PERMISSION_GRANTED){
+                if(ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.READ_MEDIA_VIDEO)){
+                    showExplanation("Permission Needed:", "Read media video", Manifest.permission.READ_MEDIA_VIDEO, permissionCheck);
+                    return false;
+                } else {
+                    permissions();
+                    return true;
+                }
+            }
+            else {
+                return true;
             }
         } else {
-            //Toast.makeText(Main.this, "Permission (already) Granted!", Toast.LENGTH_SHORT).show();
-            return true;
+            permissionCheck = ContextCompat.checkSelfPermission(
+                    this, Manifest.permission.READ_EXTERNAL_STORAGE);
+            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    showExplanation("Permission Needed:", "Read External Storage", Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_PERMISSION_STORAGE_READ);
+                    return false;
+                } else {
+                    requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_PERMISSION_STORAGE_READ);
+                    return false;
+                }
+            } else {
+                //Toast.makeText(Main.this, "Permission (already) Granted!", Toast.LENGTH_SHORT).show();
+                return true;
+            }
         }
     }
 
+    // Only needed under 13
     private boolean showStoragePermissionWrite() {
         int permissionCheck = ContextCompat.checkSelfPermission(
                 this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
