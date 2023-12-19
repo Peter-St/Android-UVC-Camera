@@ -14,8 +14,8 @@ android {
         applicationId "humer.uvc_camera"
         targetSdkVersion 33
         minSdkVersion 15
-        versionCode 122
-        versionName "2.2.2"
+        versionCode 123
+        versionName "2.2.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
