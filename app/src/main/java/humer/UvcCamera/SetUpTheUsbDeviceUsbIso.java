@@ -1826,8 +1826,12 @@ public class SetUpTheUsbDeviceUsbIso extends Activity {
     private void isoRead5sec() {
         if (!usbManager.hasPermission(camDevice)) {
             int a;
-            PendingIntent permissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
-            usbManager.requestPermission(camDevice, permissionIntent);
+            PendingIntent permissionIntent;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                permissionIntent = PendingIntent.getBroadcast(this,0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+            } else {
+                permissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_UPDATE_CURRENT);
+            }            usbManager.requestPermission(camDevice, permissionIntent);
             while (!usbManager.hasPermission(camDevice)) {
                 long time0 = System.currentTimeMillis();
                 for (a = 0; a < 10; a++) {
@@ -1868,8 +1872,12 @@ public class SetUpTheUsbDeviceUsbIso extends Activity {
         log("VideoProbeCommitControl");
         if (!usbManager.hasPermission(camDevice)) {
             int a;
-            PendingIntent permissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
-            usbManager.requestPermission(camDevice, permissionIntent);
+            PendingIntent permissionIntent;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                permissionIntent = PendingIntent.getBroadcast(this,0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+            } else {
+                permissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_UPDATE_CURRENT);
+            }            usbManager.requestPermission(camDevice, permissionIntent);
             while (!usbManager.hasPermission(camDevice)) {
                 long time0 = System.currentTimeMillis();
                 for (a = 0; a < 10; a++) {
