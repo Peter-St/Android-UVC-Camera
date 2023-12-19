@@ -906,7 +906,7 @@ int initStreamingParms(uvc_camera_t *uvc_camera, int FD) {
         if (uvc_get_device_with_fd(uvc_camera->camera_context, &uvc_camera->camera_device,  &uvc_camera->camera_deviceHandle, FD) == 0) {
             LOGD("Successfully wraped The CameraDevice");
             cameraDevice_is_wraped = 1;
-        } else return NULL;
+        } else return (int) NULL;
     }
     if (!camIsOpen) {
         ret = uvc_open(uvc_camera->camera_device, uvc_camera->camera_deviceHandle);

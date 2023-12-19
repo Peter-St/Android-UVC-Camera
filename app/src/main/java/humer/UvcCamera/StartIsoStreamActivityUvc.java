@@ -773,7 +773,7 @@ public class StartIsoStreamActivityUvc extends Activity {
 
                 if (videoButton.isChecked()==(false))
                 {
-                    // Needs to stand first to prevent double Start with on Ceck Changed listener
+                    // Needs to stand first to prevent double Start with on Check Changed listener
                     longclickVideoRecord = true;
                     // button is unchecked
                     displayMessage("Long Click - Video starts");
@@ -1125,7 +1125,7 @@ public class StartIsoStreamActivityUvc extends Activity {
                             camFrameIndex,  camFrameInterval,  imageWidth,  imageHeight, camStreamingEndpointAdress, 1,
                             videoformat,0, bcdUVC_int, lowAndroid);
                     log("mNativePtr = " + mNativePtr);
-                    // Importand Method for keeping the reference Save !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    // Important Method for keeping the reference Save !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                     JNA_I_LibUsb.INSTANCE.listDeviceUvc(new Pointer(mNativePtr), camDeviceConnection.getFileDescriptor());
                     connected_to_camera = 1;
                 }
@@ -1299,8 +1299,8 @@ public class StartIsoStreamActivityUvc extends Activity {
                         }
                         log("JniSetSurfaceView");
                     }
-                    //log("prepair for streaming ..");
-                    //JniPrepairStreamOverSurfaceUVC();
+                    //log("prepare for streaming ..");
+                    //JniPrepareStreamOverSurfaceUVC();
                     log("Start the stream ..");
                     int result = -1;
                     //result = JNA_I_LibUsb.INSTANCE.JniStreamOverSurfaceUVC(new Pointer(mNativePtr));
