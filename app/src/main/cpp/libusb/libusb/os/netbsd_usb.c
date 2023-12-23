@@ -144,11 +144,11 @@ netbsd_get_device_list(struct libusb_context * ctx,
 		if (dev == NULL) {
 			dev = usbi_alloc_device(ctx, session_id);
 			if (dev == NULL)
-				return (LIBUSB_ERROR_NO_MEM);
+				return LIBUSB_ERROR_NO_MEM;
 
-			dev->bus_number = di.udi_bus;
-			dev->device_address = di.udi_addr;
-			dev->speed = di.udi_speed;
+			dev->bus_number = 1 + di.udi_bus;
+			dev->device_address = 1 + di.udi_addr;
+			dev->speed = di.udi_speed; /* NetBSD #define's happen to match libusb enum */
 
 			dpriv = usbi_get_device_priv(dev);
 			strlcpy(dpriv->devnode, devnode, sizeof(devnode));
@@ -175,12 +175,12 @@ netbsd_get_device_list(struct libusb_context * ctx,
 		close(fd);
 
 		if (discovered_devs_append(*discdevs, dev) == NULL)
-			return (LIBUSB_ERROR_NO_MEM);
+			return LIBUSB_ERROR_NO_MEM;
 
 		libusb_unref_device(dev);
 	}
 
-	return (LIBUSB_SUCCESS);
+	return LIBUSB_SUCCESS;
 
 error:
 	close(fd);
@@ -207,7 +207,7 @@ netbsd_open(struct libusb_device_handle *handle)
 
 	usbi_dbg(HANDLE_CTX(handle), "open %s: fd %d", dpriv->devnode, dpriv->fd);
 
-	return (LIBUSB_SUCCESS);
+	return LIBUSB_SUCCESS;
 }
 
 void
@@ -259,7 +259,7 @@ netbsd_get_config_descriptor(struct libusb_device *dev, uint8_t idx,
 	ufd.ufd_size = len;
 	ufd.ufd_data = buf;
 
-	if ((ioctl(fd, USB_GET_FULL_DESC, &ufd)) < 0) {
+	if (ioctl(fd, USB_GET_FULL_DESC, &ufd) < 0) {
 		err = errno;
 		if (dpriv->fd < 0)
 			close(fd);
@@ -286,7 +286,7 @@ netbsd_get_configuration(struct libusb_device_handle *handle, uint8_t *config)
 	usbi_dbg(HANDLE_CTX(handle), "configuration %d", tmp);
 	*config = (uint8_t)tmp;
 
-	return (LIBUSB_SUCCESS);
+	return LIBUSB_SUCCESS;
 }
 
 int
@@ -313,7 +313,7 @@ netbsd_claim_interface(struct libusb_device_handle *handle, uint8_t iface)
 	for (i = 0; i < USB_MAX_ENDPOINTS; i++)
 		hpriv->endpoints[i] = -1;
 
-	return (LIBUSB_SUCCESS);
+	return LIBUSB_SUCCESS;
 }
 
 int
@@ -328,7 +328,7 @@ netbsd_release_interface(struct libusb_device_handle *handle, uint8_t iface)
 		if (hpriv->endpoints[i] >= 0)
 			close(hpriv->endpoints[i]);
 
-	return (LIBUSB_SUCCESS);
+	return LIBUSB_SUCCESS;
 }
 
 int
@@ -348,7 +348,7 @@ netbsd_set_interface_altsetting(struct libusb_device_handle *handle, uint8_t ifa
 	if (ioctl(dpriv->fd, USB_SET_ALTINTERFACE, &intf) < 0)
 		return _errno_to_libusb(errno);
 
-	return (LIBUSB_SUCCESS);
+	return LIBUSB_SUCCESS;
 }
 
 int
@@ -368,7 +368,7 @@ netbsd_clear_halt(struct libusb_device_handle *handle, unsigned char endpoint)
 	if (ioctl(dpriv->fd, USB_DO_REQUEST, &req) < 0)
 		return _errno_to_libusb(errno);
 
-	return (LIBUSB_SUCCESS);
+	return LIBUSB_SUCCESS;
 }
 
 void
@@ -418,11 +418,11 @@ netbsd_submit_transfer(struct usbi_transfer *itransfer)
 	}
 
 	if (err)
-		return (err);
+		return err;
 
 	usbi_signal_transfer_completion(itransfer);
 
-	return (LIBUSB_SUCCESS);
+	return LIBUSB_SUCCESS;
 }
 
 int
@@ -432,7 +432,7 @@ netbsd_cancel_transfer(struct usbi_transfer *itransfer)
 
 	usbi_dbg(ITRANSFER_CTX(itransfer), " ");
 
-	return (LIBUSB_ERROR_NOT_SUPPORTED);
+	return LIBUSB_ERROR_NOT_SUPPORTED;
 }
 
 int
@@ -446,21 +446,21 @@ _errno_to_libusb(int err)
 {
 	switch (err) {
 	case EIO:
-		return (LIBUSB_ERROR_IO);
+		return LIBUSB_ERROR_IO;
 	case EACCES:
-		return (LIBUSB_ERROR_ACCESS);
+		return LIBUSB_ERROR_ACCESS;
 	case ENOENT:
-		return (LIBUSB_ERROR_NO_DEVICE);
+		return LIBUSB_ERROR_NO_DEVICE;
 	case ENOMEM:
-		return (LIBUSB_ERROR_NO_MEM);
+		return LIBUSB_ERROR_NO_MEM;
 	case EWOULDBLOCK:
 	case ETIMEDOUT:
-		return (LIBUSB_ERROR_TIMEOUT);
+		return LIBUSB_ERROR_TIMEOUT;
 	}
 
-	usbi_dbg(NULL, "error: %s", strerror(err));
+	usbi_dbg(NULL, "error: %s (%d)", strerror(err), err);
 
-	return (LIBUSB_ERROR_OTHER);
+	return LIBUSB_ERROR_OTHER;
 }
 
 int
@@ -476,7 +476,7 @@ _cache_active_config_descriptor(struct libusb_device *dev, int fd)
 
 	ucd.ucd_config_index = USB_CURRENT_CONFIG_INDEX;
 
-	if ((ioctl(fd, USB_GET_CONFIG_DESC, &ucd)) < 0)
+	if (ioctl(fd, USB_GET_CONFIG_DESC, &ucd) < 0)
 		return _errno_to_libusb(errno);
 
 	usbi_dbg(DEVICE_CTX(dev), "active bLength %d", ucd.ucd_desc.bLength);
@@ -484,7 +484,7 @@ _cache_active_config_descriptor(struct libusb_device *dev, int fd)
 	len = UGETW(ucd.ucd_desc.wTotalLength);
 	buf = malloc((size_t)len);
 	if (buf == NULL)
-		return (LIBUSB_ERROR_NO_MEM);
+		return LIBUSB_ERROR_NO_MEM;
 
 	ufd.ufd_config_index = ucd.ucd_config_index;
 	ufd.ufd_size = len;
@@ -492,7 +492,7 @@ _cache_active_config_descriptor(struct libusb_device *dev, int fd)
 
 	usbi_dbg(DEVICE_CTX(dev), "index %d, len %d", ufd.ufd_config_index, len);
 
-	if ((ioctl(fd, USB_GET_FULL_DESC, &ufd)) < 0) {
+	if (ioctl(fd, USB_GET_FULL_DESC, &ufd) < 0) {
 		free(buf);
 		return _errno_to_libusb(errno);
 	}
@@ -501,7 +501,7 @@ _cache_active_config_descriptor(struct libusb_device *dev, int fd)
 		free(dpriv->cdesc);
 	dpriv->cdesc = buf;
 
-	return (0);
+	return 0;
 }
 
 int
@@ -516,7 +516,7 @@ _sync_control_transfer(struct usbi_transfer *itransfer)
 	dpriv = usbi_get_device_priv(transfer->dev_handle->dev);
 	setup = (struct libusb_control_setup *)transfer->buffer;
 
-	usbi_dbg(ITRANSFER_CTX(itransfer), "type %d request %d value %d index %d length %d timeout %d",
+	usbi_dbg(ITRANSFER_CTX(itransfer), "type 0x%x request 0x%x value 0x%x index %d length %d timeout %d",
 	    setup->bmRequestType, setup->bRequest,
 	    libusb_le16_to_cpu(setup->wValue),
 	    libusb_le16_to_cpu(setup->wIndex),
@@ -533,17 +533,17 @@ _sync_control_transfer(struct usbi_transfer *itransfer)
 	if ((transfer->flags & LIBUSB_TRANSFER_SHORT_NOT_OK) == 0)
 		req.ucr_flags = USBD_SHORT_XFER_OK;
 
-	if ((ioctl(dpriv->fd, USB_SET_TIMEOUT, &transfer->timeout)) < 0)
+	if (ioctl(dpriv->fd, USB_SET_TIMEOUT, &transfer->timeout) < 0)
 		return _errno_to_libusb(errno);
 
-	if ((ioctl(dpriv->fd, USB_DO_REQUEST, &req)) < 0)
+	if (ioctl(dpriv->fd, USB_DO_REQUEST, &req) < 0)
 		return _errno_to_libusb(errno);
 
 	itransfer->transferred = req.ucr_actlen;
 
 	usbi_dbg(ITRANSFER_CTX(itransfer), "transferred %d", itransfer->transferred);
 
-	return (0);
+	return 0;
 }
 
 int
@@ -572,12 +572,12 @@ _access_endpoint(struct libusb_transfer *transfer)
 		/* We may need to read/write to the same endpoint later. */
 		if (((fd = open(devnode, O_RDWR)) < 0) && (errno == ENXIO))
 			if ((fd = open(devnode, mode)) < 0)
-				return (-1);
+				return -1;
 
 		hpriv->endpoints[endpt] = fd;
 	}
 
-	return (hpriv->endpoints[endpt]);
+	return hpriv->endpoints[endpt];
 }
 
 int
@@ -595,12 +595,12 @@ _sync_gen_transfer(struct usbi_transfer *itransfer)
 	if ((fd = _access_endpoint(transfer)) < 0)
 		return _errno_to_libusb(errno);
 
-	if ((ioctl(fd, USB_SET_TIMEOUT, &transfer->timeout)) < 0)
+	if (ioctl(fd, USB_SET_TIMEOUT, &transfer->timeout) < 0)
 		return _errno_to_libusb(errno);
 
 	if (IS_XFERIN(transfer)) {
 		if ((transfer->flags & LIBUSB_TRANSFER_SHORT_NOT_OK) == 0)
-			if ((ioctl(fd, USB_SET_SHORT_XFER, &nr)) < 0)
+			if (ioctl(fd, USB_SET_SHORT_XFER, &nr) < 0)
 				return _errno_to_libusb(errno);
 
 		nr = read(fd, transfer->buffer, transfer->length);
@@ -613,5 +613,5 @@ _sync_gen_transfer(struct usbi_transfer *itransfer)
 
 	itransfer->transferred = nr;
 
-	return (0);
+	return 0;
 }

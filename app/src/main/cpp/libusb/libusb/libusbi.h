@@ -128,6 +128,7 @@ typedef atomic_long usbi_atomic_t;
  *   return_type LIBUSB_CALL function_name(params);
  */
 #define API_EXPORTED LIBUSB_CALL DEFAULT_VISIBILITY
+#define API_EXPORTEDV LIBUSB_CALLV DEFAULT_VISIBILITY
 
 #ifdef __cplusplus
 extern "C" {
@@ -321,10 +322,10 @@ void usbi_log(struct libusb_context *ctx, enum libusb_log_level level,
 
 #else /* ENABLE_LOGGING */
 
-#define usbi_err(ctx, ...)	UNUSED(ctx)
-#define usbi_warn(ctx, ...)	UNUSED(ctx)
-#define usbi_info(ctx, ...)	UNUSED(ctx)
-#define usbi_dbg(ctx, ...)	do {} while (0)
+#define usbi_err(ctx, ...)	do { (void)(ctx); } while(0)
+#define usbi_warn(ctx, ...)	do { (void)(ctx); } while(0)
+#define usbi_info(ctx, ...)	do { (void)(ctx); } while(0)
+#define usbi_dbg(ctx, ...)	do { (void)(ctx); } while(0)
 
 #endif /* ENABLE_LOGGING */
 
@@ -533,7 +534,7 @@ static inline void usbi_localize_device_descriptor(struct libusb_device_descript
 	desc->bcdDevice = libusb_le16_to_cpu(desc->bcdDevice);
 }
 
-#ifdef HAVE_CLOCK_GETTIME
+#if defined(HAVE_CLOCK_GETTIME) && !defined(__APPLE__)
 static inline void usbi_get_monotonic_time(struct timespec *tp)
 {
 	ASSERT_EQ(clock_gettime(CLOCK_MONOTONIC, tp), 0);
@@ -813,6 +814,7 @@ struct usbi_option {
   int is_set;
   union {
     int ival;
+    libusb_log_cb log_cbval;
   } arg;
 };
 

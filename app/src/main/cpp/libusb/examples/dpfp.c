@@ -53,7 +53,7 @@ static inline semaphore_t semaphore_create(void)
 	sem_t *semaphore;
 	char name[50];
 
-	sprintf(name, "/org.libusb.example.dpfp_threaded:%d", (int)getpid());
+	snprintf(name, sizeof(name), "/org.libusb.example.dpfp_threaded:%d", (int)getpid());
 	semaphore = sem_open(name, O_CREAT | O_EXCL, 0, 0);
 	if (semaphore == SEM_FAILED)
 		return NULL;
@@ -601,7 +601,7 @@ int main(void)
 {
 	int r;
 
-	r = libusb_init(NULL);
+	r = libusb_init_context(/*ctx=*/NULL, /*options=*/NULL, /*num_options=*/0);
 	if (r < 0) {
 		fprintf(stderr, "failed to initialise libusb %d - %s\n", r, libusb_strerror(r));
 		exit(1);

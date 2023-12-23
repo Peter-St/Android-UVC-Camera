@@ -3,7 +3,10 @@
 set -e
 
 builddir=
+scriptdir=$(dirname $(readlink -f "$0"))
 install=no
+test=yes
+asan=yes
 
 while [ $# -gt 0 ]; do
 	case "$1" in
@@ -17,6 +20,14 @@ while [ $# -gt 0 ]; do
 		;;
 	--install)
 		install=yes
+		shift
+		;;
+	--no-test)
+		test=no
+		shift
+		;;
+	--no-asan)
+		asan=no
 		shift
 		;;
 	--)
@@ -52,13 +63,30 @@ cflags+=" -Wpointer-arith"
 cflags+=" -Wredundant-decls"
 cflags+=" -Wswitch-enum"
 
+# Tell tests that we don't have any devices.
+cflags+=" -DCI_WITHOUT_DEVICES"
+
+# enable address sanitizer
+if [ "${asan}" = "yes" ]; then
+	cflags+=" -fsanitize=address"
+fi
+
 echo ""
 echo "Configuring ..."
-CFLAGS="${cflags}" ../configure --enable-examples-build --enable-tests-build "$@"
+CFLAGS="${cflags}" CXXFLAGS="${cflags}" ../configure --enable-examples-build --enable-tests-build "$@"
 
 echo ""
 echo "Building ..."
 make -j4 -k
+
+if [ "${test}" = "yes" ]; then
+	# Load custom shim for WebUSB tests that simulates Web environment.
+	export NODE_OPTIONS="--require ${scriptdir}/../tests/webusb-test-shim/"
+	if ! make check ; then
+	    cat tests/test-suite.log
+	    exit 1
+	fi
+fi
 
 if [ "${install}" = "yes" ]; then
 	echo ""

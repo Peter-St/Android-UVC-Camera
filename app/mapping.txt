@@ -3,8 +3,8 @@
 # min_api: 15
 # common_typos_disable
 # {"id":"com.android.tools.r8.mapping","version":"2.2"}
-# pg_map_id: 266ea1e
-# pg_map_hash: SHA-256 266ea1ef1d49d44dc8991e2df792040963365a334f100cc1ab4b83920e69d490
+# pg_map_id: e7ad3c7
+# pg_map_hash: SHA-256 e7ad3c7302bb00e85c899e1c8a9f13e2ae07a2abb2c9e477720f8aa6559efb7e
 android.arch.core.internal.FastSafeIterableMap -> a.a:
 # {"id":"sourceFile","fileName":"FastSafeIterableMap.java"}
     java.util.WeakHashMap android.arch.core.internal.SafeIterableMap.mIterators -> a
@@ -4856,74 +4856,74 @@ android.support.design.widget.CoordinatorLayout -> android.support.design.widget
     154:171:boolean android.support.design.widget.CoordinatorLayout$LayoutParams.isBlockingInteractionBelow(android.support.design.widget.CoordinatorLayout,android.view.View):0:0 -> p
     154:171:boolean performIntercept(android.view.MotionEvent,int):0 -> p
     172:175:boolean performIntercept(android.view.MotionEvent,int):0:0 -> p
-    1:1:void android.support.design.widget.DirectedAcyclicGraph.clear():0:0 -> q
-    1:1:void prepareChildren():0 -> q
+    8:11:void android.support.design.widget.DirectedAcyclicGraph.clear():0:0 -> q
+    8:11:void prepareChildren():0 -> q
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
-    2:2:int android.support.v4.util.SimpleArrayMap.size():0:0 -> q
-    2:2:void android.support.design.widget.DirectedAcyclicGraph.clear():0 -> q
+    12:17:int android.support.v4.util.SimpleArrayMap.size():0:0 -> q
+    12:17:void android.support.design.widget.DirectedAcyclicGraph.clear():0 -> q
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
-    2:2:void prepareChildren():0 -> q
-    3:3:void android.support.design.widget.DirectedAcyclicGraph.clear():0:0 -> q
-    3:3:void prepareChildren():0 -> q
-    4:4:void android.support.design.widget.DirectedAcyclicGraph.poolList(java.util.ArrayList):0:0 -> q
-    4:4:void android.support.design.widget.DirectedAcyclicGraph.clear():0 -> q
-    4:4:void prepareChildren():0 -> q
-    5:5:void android.support.design.widget.DirectedAcyclicGraph.clear():0:0 -> q
-    5:5:void prepareChildren():0 -> q
-    6:6:void prepareChildren():0:0 -> q
-    7:7:android.view.View android.support.design.widget.CoordinatorLayout$LayoutParams.findAnchorView(android.support.design.widget.CoordinatorLayout,android.view.View):0:0 -> q
-    7:7:void prepareChildren():0 -> q
-    8:8:boolean android.support.design.widget.CoordinatorLayout$LayoutParams.verifyAnchorView(android.view.View,android.support.design.widget.CoordinatorLayout):0:0 -> q
-    8:8:android.view.View android.support.design.widget.CoordinatorLayout$LayoutParams.findAnchorView(android.support.design.widget.CoordinatorLayout,android.view.View):0 -> q
-    8:8:void prepareChildren():0 -> q
-    9:9:void android.support.design.widget.CoordinatorLayout$LayoutParams.resolveAnchorView(android.view.View,android.support.design.widget.CoordinatorLayout):0:0 -> q
-    9:9:android.view.View android.support.design.widget.CoordinatorLayout$LayoutParams.findAnchorView(android.support.design.widget.CoordinatorLayout,android.view.View):0 -> q
-    9:9:void prepareChildren():0 -> q
-    10:10:void android.support.design.widget.DirectedAcyclicGraph.addNode(java.lang.Object):0:0 -> q
-    10:10:void prepareChildren():0 -> q
-    11:11:void prepareChildren():0:0 -> q
-    12:12:boolean android.support.design.widget.CoordinatorLayout$LayoutParams.dependsOn(android.support.design.widget.CoordinatorLayout,android.view.View,android.view.View):0:0 -> q
-    12:12:void prepareChildren():0 -> q
-    13:13:int android.support.v4.view.ViewCompat.getLayoutDirection(android.view.View):0:0 -> q
-    13:13:boolean android.support.design.widget.CoordinatorLayout$LayoutParams.dependsOn(android.support.design.widget.CoordinatorLayout,android.view.View,android.view.View):0 -> q
-    13:13:void prepareChildren():0 -> q
-    14:14:boolean android.support.design.widget.CoordinatorLayout$LayoutParams.shouldDodge(android.view.View,int):0:0 -> q
-    14:14:boolean android.support.design.widget.CoordinatorLayout$LayoutParams.dependsOn(android.support.design.widget.CoordinatorLayout,android.view.View,android.view.View):0 -> q
-    14:14:void prepareChildren():0 -> q
-    15:15:boolean android.support.design.widget.CoordinatorLayout$LayoutParams.dependsOn(android.support.design.widget.CoordinatorLayout,android.view.View,android.view.View):0:0 -> q
-    15:15:void prepareChildren():0 -> q
-    16:16:boolean android.support.design.widget.DirectedAcyclicGraph.contains(java.lang.Object):0:0 -> q
-    16:16:void prepareChildren():0 -> q
+    12:17:void prepareChildren():0 -> q
+    18:29:void android.support.design.widget.DirectedAcyclicGraph.clear():0:0 -> q
+    18:29:void prepareChildren():0 -> q
+    30:42:void android.support.design.widget.DirectedAcyclicGraph.poolList(java.util.ArrayList):0:0 -> q
+    30:42:void android.support.design.widget.DirectedAcyclicGraph.clear():0 -> q
+    30:42:void prepareChildren():0 -> q
+    43:49:void android.support.design.widget.DirectedAcyclicGraph.clear():0:0 -> q
+    43:49:void prepareChildren():0 -> q
+    50:64:void prepareChildren():0:0 -> q
+    65:80:android.view.View android.support.design.widget.CoordinatorLayout$LayoutParams.findAnchorView(android.support.design.widget.CoordinatorLayout,android.view.View):0:0 -> q
+    65:80:void prepareChildren():0 -> q
+    81:120:boolean android.support.design.widget.CoordinatorLayout$LayoutParams.verifyAnchorView(android.view.View,android.support.design.widget.CoordinatorLayout):0:0 -> q
+    81:120:android.view.View android.support.design.widget.CoordinatorLayout$LayoutParams.findAnchorView(android.support.design.widget.CoordinatorLayout,android.view.View):0 -> q
+    81:120:void prepareChildren():0 -> q
+    121:196:void android.support.design.widget.CoordinatorLayout$LayoutParams.resolveAnchorView(android.view.View,android.support.design.widget.CoordinatorLayout):0:0 -> q
+    121:196:android.view.View android.support.design.widget.CoordinatorLayout$LayoutParams.findAnchorView(android.support.design.widget.CoordinatorLayout,android.view.View):0 -> q
+    121:196:void prepareChildren():0 -> q
+    197:220:void android.support.design.widget.DirectedAcyclicGraph.addNode(java.lang.Object):0:0 -> q
+    197:220:void prepareChildren():0 -> q
+    221:224:void prepareChildren():0:0 -> q
+    225:228:boolean android.support.design.widget.CoordinatorLayout$LayoutParams.dependsOn(android.support.design.widget.CoordinatorLayout,android.view.View,android.view.View):0:0 -> q
+    225:228:void prepareChildren():0 -> q
+    229:234:int android.support.v4.view.ViewCompat.getLayoutDirection(android.view.View):0:0 -> q
+    229:234:boolean android.support.design.widget.CoordinatorLayout$LayoutParams.dependsOn(android.support.design.widget.CoordinatorLayout,android.view.View,android.view.View):0 -> q
+    229:234:void prepareChildren():0 -> q
+    235:258:boolean android.support.design.widget.CoordinatorLayout$LayoutParams.shouldDodge(android.view.View,int):0:0 -> q
+    235:258:boolean android.support.design.widget.CoordinatorLayout$LayoutParams.dependsOn(android.support.design.widget.CoordinatorLayout,android.view.View,android.view.View):0 -> q
+    235:258:void prepareChildren():0 -> q
+    259:268:boolean android.support.design.widget.CoordinatorLayout$LayoutParams.dependsOn(android.support.design.widget.CoordinatorLayout,android.view.View,android.view.View):0:0 -> q
+    259:268:void prepareChildren():0 -> q
+    269:272:boolean android.support.design.widget.DirectedAcyclicGraph.contains(java.lang.Object):0:0 -> q
+    269:272:void prepareChildren():0 -> q
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
-    17:17:boolean android.support.design.widget.DirectedAcyclicGraph.contains(java.lang.Object):0:0 -> q
-    17:17:void prepareChildren():0 -> q
-    18:18:void android.support.design.widget.DirectedAcyclicGraph.addNode(java.lang.Object):0:0 -> q
-    18:18:void prepareChildren():0 -> q
-    19:19:void android.support.design.widget.DirectedAcyclicGraph.addEdge(java.lang.Object,java.lang.Object):0:0 -> q
-    19:19:void prepareChildren():0 -> q
+    273:278:boolean android.support.design.widget.DirectedAcyclicGraph.contains(java.lang.Object):0:0 -> q
+    273:278:void prepareChildren():0 -> q
+    279:295:void android.support.design.widget.DirectedAcyclicGraph.addNode(java.lang.Object):0:0 -> q
+    279:295:void prepareChildren():0 -> q
+    296:299:void android.support.design.widget.DirectedAcyclicGraph.addEdge(java.lang.Object,java.lang.Object):0:0 -> q
+    296:299:void prepareChildren():0 -> q
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
-    20:20:void android.support.design.widget.DirectedAcyclicGraph.addEdge(java.lang.Object,java.lang.Object):0:0 -> q
-    20:20:void prepareChildren():0 -> q
-    21:21:java.util.ArrayList android.support.design.widget.DirectedAcyclicGraph.getEmptyList():0:0 -> q
-    21:21:void android.support.design.widget.DirectedAcyclicGraph.addEdge(java.lang.Object,java.lang.Object):0 -> q
-    21:21:void prepareChildren():0 -> q
-    22:22:void android.support.design.widget.DirectedAcyclicGraph.addEdge(java.lang.Object,java.lang.Object):0:0 -> q
-    22:22:void prepareChildren():0 -> q
-    23:23:void android.support.design.widget.CoordinatorLayout$LayoutParams.resolveAnchorView(android.view.View,android.support.design.widget.CoordinatorLayout):0:0 -> q
-    23:23:android.view.View android.support.design.widget.CoordinatorLayout$LayoutParams.findAnchorView(android.support.design.widget.CoordinatorLayout,android.view.View):0 -> q
-    23:23:void prepareChildren():0 -> q
-    24:24:java.util.ArrayList android.support.design.widget.DirectedAcyclicGraph.getSortedList():0:0 -> q
-    24:24:void prepareChildren():0 -> q
+    300:327:void android.support.design.widget.DirectedAcyclicGraph.addEdge(java.lang.Object,java.lang.Object):0:0 -> q
+    300:327:void prepareChildren():0 -> q
+    328:344:java.util.ArrayList android.support.design.widget.DirectedAcyclicGraph.getEmptyList():0:0 -> q
+    328:344:void android.support.design.widget.DirectedAcyclicGraph.addEdge(java.lang.Object,java.lang.Object):0 -> q
+    328:344:void prepareChildren():0 -> q
+    345:370:void android.support.design.widget.DirectedAcyclicGraph.addEdge(java.lang.Object,java.lang.Object):0:0 -> q
+    345:370:void prepareChildren():0 -> q
+    371:406:void android.support.design.widget.CoordinatorLayout$LayoutParams.resolveAnchorView(android.view.View,android.support.design.widget.CoordinatorLayout):0:0 -> q
+    371:406:android.view.View android.support.design.widget.CoordinatorLayout$LayoutParams.findAnchorView(android.support.design.widget.CoordinatorLayout,android.view.View):0 -> q
+    371:406:void prepareChildren():0 -> q
+    407:410:java.util.ArrayList android.support.design.widget.DirectedAcyclicGraph.getSortedList():0:0 -> q
+    407:410:void prepareChildren():0 -> q
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
-    25:25:java.util.ArrayList android.support.design.widget.DirectedAcyclicGraph.getSortedList():0:0 -> q
-    25:25:void prepareChildren():0 -> q
-    26:26:int android.support.v4.util.SimpleArrayMap.size():0:0 -> q
-    26:26:java.util.ArrayList android.support.design.widget.DirectedAcyclicGraph.getSortedList():0 -> q
+    411:424:java.util.ArrayList android.support.design.widget.DirectedAcyclicGraph.getSortedList():0:0 -> q
+    411:424:void prepareChildren():0 -> q
+    425:428:int android.support.v4.util.SimpleArrayMap.size():0:0 -> q
+    425:428:java.util.ArrayList android.support.design.widget.DirectedAcyclicGraph.getSortedList():0 -> q
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
-    26:26:void prepareChildren():0 -> q
-    27:27:java.util.ArrayList android.support.design.widget.DirectedAcyclicGraph.getSortedList():0:0 -> q
-    27:27:void prepareChildren():0 -> q
-    28:28:void prepareChildren():0:0 -> q
+    425:428:void prepareChildren():0 -> q
+    429:454:java.util.ArrayList android.support.design.widget.DirectedAcyclicGraph.getSortedList():0:0 -> q
+    429:454:void prepareChildren():0 -> q
+    455:461:void prepareChildren():0:0 -> q
     11:14:android.support.design.widget.CoordinatorLayout$Behavior android.support.design.widget.CoordinatorLayout$LayoutParams.getBehavior():0:0 -> r
     11:14:void resetTouchBehaviors():0 -> r
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
@@ -7033,6 +7033,7 @@ android.support.v4.app.ActivityCompat -> android.support.v4.app.f:
       # {"id":"com.android.tools.r8.synthesized"}
     1:1:void requestPermissions(android.app.Activity,java.lang.String[],int):0:0 -> e
       # {"id":"com.android.tools.r8.residualsignature","signature":"(ILandroid/app/Activity;[Ljava/lang/String;)V"}
+    1:1:boolean shouldShowRequestPermissionRationale(android.app.Activity,java.lang.String):0:0 -> f
 android.support.v4.app.ActivityCompat$$ExternalSyntheticApiModelOutline0 -> android.support.v4.app.a:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
@@ -7900,11 +7901,11 @@ android.support.v4.app.Fragment -> android.support.v4.app.t:
     96:96:void setTargetFragment(android.support.v4.app.Fragment,int):0:0 -> setTargetFragment
     33:62:void android.support.v4.app.FragmentManagerImpl.performPendingDeferredStart(android.support.v4.app.Fragment):0:0 -> setUserVisibleHint
     33:62:void setUserVisibleHint(boolean):0 -> setUserVisibleHint
-    8:15:boolean android.support.v4.app.FragmentActivity$HostCallbacks.onShouldShowRequestPermissionRationale(java.lang.String):0:0 -> shouldShowRequestPermissionRationale
-    8:15:boolean shouldShowRequestPermissionRationale(java.lang.String):0 -> shouldShowRequestPermissionRationale
-    16:22:boolean android.support.v4.app.ActivityCompat.shouldShowRequestPermissionRationale(android.app.Activity,java.lang.String):0:0 -> shouldShowRequestPermissionRationale
-    16:22:boolean android.support.v4.app.FragmentActivity$HostCallbacks.onShouldShowRequestPermissionRationale(java.lang.String):0 -> shouldShowRequestPermissionRationale
-    16:22:boolean shouldShowRequestPermissionRationale(java.lang.String):0 -> shouldShowRequestPermissionRationale
+    7:8:boolean android.support.v4.app.FragmentActivity$HostCallbacks.onShouldShowRequestPermissionRationale(java.lang.String):0:0 -> shouldShowRequestPermissionRationale
+    7:8:boolean shouldShowRequestPermissionRationale(java.lang.String):0 -> shouldShowRequestPermissionRationale
+      # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
+    9:15:boolean android.support.v4.app.FragmentActivity$HostCallbacks.onShouldShowRequestPermissionRationale(java.lang.String):0:0 -> shouldShowRequestPermissionRationale
+    9:15:boolean shouldShowRequestPermissionRationale(java.lang.String):0 -> shouldShowRequestPermissionRationale
     1:1:void startActivity(android.content.Intent):0:0 -> startActivity
     2:2:void android.support.v4.app.FragmentActivity$HostCallbacks.onStartActivityFromFragment(android.support.v4.app.Fragment,android.content.Intent,int,android.os.Bundle):0:0 -> startActivity
     2:2:void startActivity(android.content.Intent,android.os.Bundle):0 -> startActivity
@@ -26721,15 +26722,6 @@ humer.UvcCamera.Main -> humer.UvcCamera.Main:
     53:53:java.lang.String getbcdUVC():0:0 -> getbcdUVC
     57:57:java.lang.String getbcdUVC():0:0 -> getbcdUVC
     62:62:java.lang.String getbcdUVC():0:0 -> getbcdUVC
-    18:30:boolean android.support.v4.app.ActivityCompat.shouldShowRequestPermissionRationale(android.app.Activity,java.lang.String):0:0 -> showCameraPermissionCamera
-    18:30:boolean showCameraPermissionCamera():0 -> showCameraPermissionCamera
-    31:40:boolean showCameraPermissionCamera():0:0 -> showCameraPermissionCamera
-    19:30:boolean android.support.v4.app.ActivityCompat.shouldShowRequestPermissionRationale(android.app.Activity,java.lang.String):0:0 -> showStoragePermissionRead
-    19:30:boolean showStoragePermissionRead():0 -> showStoragePermissionRead
-    31:39:boolean showStoragePermissionRead():0:0 -> showStoragePermissionRead
-    18:30:boolean android.support.v4.app.ActivityCompat.shouldShowRequestPermissionRationale(android.app.Activity,java.lang.String):0:0 -> showStoragePermissionWrite
-    18:30:boolean showStoragePermissionWrite():0 -> showStoragePermissionWrite
-    31:40:boolean showStoragePermissionWrite():0:0 -> showStoragePermissionWrite
 humer.UvcCamera.Main$1 -> humer.UvcCamera.Main$1:
 # {"id":"sourceFile","fileName":"Main.java"}
 humer.UvcCamera.Main$2 -> humer.UvcCamera.Main$2:

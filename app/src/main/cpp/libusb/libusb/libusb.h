@@ -3,7 +3,7 @@
  * Copyright © 2001 Johannes Erdfelt <johannes@erdfelt.com>
  * Copyright © 2007-2008 Daniel Drake <dsd@gentoo.org>
  * Copyright © 2012 Pete Batard <pete@akeo.ie>
- * Copyright © 2012-2018 Nathan Hjelm <hjelmn@cs.unm.edu>
+ * Copyright © 2012-2023 Nathan Hjelm <hjelmn@cs.unm.edu>
  * Copyright © 2014-2020 Chris Dickens <christopher.a.dickens@gmail.com>
  * For more information, please visit: http://libusb.info
  *
@@ -74,6 +74,8 @@ typedef SSIZE_T ssize_t;
 #define LIBUSB_DEPRECATED_FOR(f) __attribute__ ((deprecated ("Use " #f " instead")))
 #elif defined(__GNUC__) && (__GNUC__ >= 3)
 #define LIBUSB_DEPRECATED_FOR(f) __attribute__ ((deprecated))
+#elif defined(_MSC_VER)
+#define LIBUSB_DEPRECATED_FOR(f) __declspec(deprecated("Use " #f " instead"))
 #else
 #define LIBUSB_DEPRECATED_FOR(f)
 #endif /* __GNUC__ */
@@ -118,8 +120,10 @@ typedef SSIZE_T ssize_t;
  */
 #if defined(_WIN32) || defined(__CYGWIN__)
 #define LIBUSB_CALL WINAPI
+#define LIBUSB_CALLV WINAPIV
 #else
 #define LIBUSB_CALL
+#define LIBUSB_CALLV
 #endif /* _WIN32 || __CYGWIN__ */
 
 /** \def LIBUSB_API_VERSION
@@ -142,7 +146,7 @@ typedef SSIZE_T ssize_t;
  * Internally, LIBUSB_API_VERSION is defined as follows:
  * (libusb major << 24) | (libusb minor << 16) | (16 bit incremental)
  */
-#define LIBUSB_API_VERSION 0x01000109
+#define LIBUSB_API_VERSION 0x0100010A
 
 /* The following is kept for compatibility, but will be deprecated in the future */
 #define LIBUSBX_API_VERSION LIBUSB_API_VERSION
@@ -265,6 +269,10 @@ enum libusb_descriptor_type {
 	/** Endpoint descriptor. See libusb_endpoint_descriptor. */
 	LIBUSB_DT_ENDPOINT = 0x05,
 
+	/** Interface Association Descriptor.
+	* See libusb_interface_association_descriptor */
+	LIBUSB_DT_INTERFACE_ASSOCIATION = 0x0b,
+
 	/** BOS descriptor */
 	LIBUSB_DT_BOS = 0x0f,
 
@@ -305,6 +313,7 @@ enum libusb_descriptor_type {
 #define LIBUSB_BT_USB_2_0_EXTENSION_SIZE	7
 #define LIBUSB_BT_SS_USB_DEVICE_CAPABILITY_SIZE	10
 #define LIBUSB_BT_CONTAINER_ID_SIZE		20
+#define LIBUSB_BT_PLATFORM_DESCRIPTOR_MIN_SIZE		20
 
 /* We unwrap the BOS => define its max size */
 #define LIBUSB_DT_BOS_MAX_SIZE				\
@@ -523,7 +532,10 @@ enum libusb_bos_type {
 	LIBUSB_BT_SS_USB_DEVICE_CAPABILITY = 0x03,
 
 	/** Container ID type */
-	LIBUSB_BT_CONTAINER_ID = 0x04
+	LIBUSB_BT_CONTAINER_ID = 0x04,
+
+	/** Platform descriptor */
+	LIBUSB_BT_PLATFORM_DESCRIPTOR = 0x05
 };
 
 /** \ingroup libusb_desc
@@ -626,6 +638,65 @@ struct libusb_endpoint_descriptor {
 
 	/** Length of the extra descriptors, in bytes. Must be non-negative. */
 	int extra_length;
+};
+
+/** \ingroup libusb_desc
+ * A structure representing the standard USB interface association descriptor.
+ * This descriptor is documented in section 9.6.4 of the USB 3.0 specification.
+ * All multiple-byte fields are represented in host-endian format.
+ */
+struct libusb_interface_association_descriptor {
+	/** Size of this descriptor (in bytes) */
+	uint8_t  bLength;
+
+	/** Descriptor type. Will have value
+	* \ref libusb_descriptor_type::LIBUSB_DT_INTERFACE_ASSOCIATION
+	* LIBUSB_DT_INTERFACE_ASSOCIATION in this context. */
+	uint8_t  bDescriptorType;
+
+	/** Interface number of the first interface that is associated
+	* with this function */
+	uint8_t  bFirstInterface;
+
+	/** Number of contiguous interfaces that are associated with
+	* this function */
+	uint8_t  bInterfaceCount;
+
+	/** USB-IF class code for this function.
+	* A value of zero is not allowed in this descriptor.
+	* If this field is 0xff, the function class is vendor-specific.
+	* All other values are reserved for assignment by the USB-IF.
+	*/
+	uint8_t  bFunctionClass;
+
+	/** USB-IF subclass code for this function.
+	* If this field is not set to 0xff, all values are reserved
+	* for assignment by the USB-IF
+	*/
+	uint8_t  bFunctionSubClass;
+
+	/** USB-IF protocol code for this function.
+	* These codes are qualified by the values of the bFunctionClass
+	* and bFunctionSubClass fields.
+	*/
+	uint8_t  bFunctionProtocol;
+
+	/** Index of string descriptor describing this function */
+	uint8_t  iFunction;
+};
+
+/** \ingroup libusb_desc
+ * Structure containing an array of 0 or more interface association
+ * descriptors
+ */
+struct libusb_interface_association_descriptor_array {
+	/** Array of interface association descriptors. The size of this array
+	 * is determined by the length field.
+	 */
+	const struct libusb_interface_association_descriptor *iad;
+
+	/** Number of interface association descriptors contained. Read-only. */
+	int length;
 };
 
 /** \ingroup libusb_desc
@@ -908,6 +979,34 @@ struct libusb_container_id_descriptor {
 	uint8_t  ContainerID[16];
 };
 
+/** \ingroup libusb_desc
+ * A structure representing a Platform descriptor.
+ * This descriptor is documented in section 9.6.2.4 of the USB 3.2 specification.
+ */
+struct libusb_platform_descriptor {
+	/** Size of this descriptor (in bytes) */
+	uint8_t  bLength;
+
+	/** Descriptor type. Will have value
+	 * \ref libusb_descriptor_type::LIBUSB_DT_DEVICE_CAPABILITY
+	 * LIBUSB_DT_DEVICE_CAPABILITY in this context. */
+	uint8_t  bDescriptorType;
+
+	/** Capability type. Will have value
+	 * \ref libusb_capability_type::LIBUSB_BT_PLATFORM_DESCRIPTOR
+	 * LIBUSB_BT_CONTAINER_ID in this context. */
+	uint8_t  bDevCapabilityType;
+
+	/** Reserved field */
+	uint8_t  bReserved;
+
+	/** 128 bit UUID */
+	uint8_t  PlatformCapabilityUUID[16];
+
+	/** Capability data (bLength - 20) */
+	uint8_t  CapabilityData[ZERO_SIZED_ARRAY];
+};
+
 /** \ingroup libusb_asyncio
  * Setup packet for control transfers. */
 #if defined(_MSC_VER) || defined(__WATCOMC__)
@@ -1187,7 +1286,8 @@ enum libusb_transfer_flags {
 	 *
 	 * This flag is currently only supported on Linux.
 	 * On other systems, libusb_submit_transfer() will return
-	 * LIBUSB_ERROR_NOT_SUPPORTED for every transfer where this flag is set.
+	 * \ref LIBUSB_ERROR_NOT_SUPPORTED for every transfer where this
+	 * flag is set.
 	 *
 	 * Available since libusb-1.0.9.
 	 */
@@ -1346,6 +1446,76 @@ enum libusb_log_cb_mode {
 };
 
 /** \ingroup libusb_lib
+ * Available option values for libusb_set_option() and libusb_init_context().
+ */
+enum libusb_option {
+	/** Set the log message verbosity.
+	 *
+	 * The default level is LIBUSB_LOG_LEVEL_NONE, which means no messages are ever
+	 * printed. If you choose to increase the message verbosity level, ensure
+	 * that your application does not close the stderr file descriptor.
+	 *
+	 * You are advised to use level LIBUSB_LOG_LEVEL_WARNING. libusb is conservative
+	 * with its message logging and most of the time, will only log messages that
+	 * explain error conditions and other oddities. This will help you debug
+	 * your software.
+	 *
+	 * If the LIBUSB_DEBUG environment variable was set when libusb was
+	 * initialized, this function does nothing: the message verbosity is fixed
+	 * to the value in the environment variable.
+	 *
+	 * If libusb was compiled without any message logging, this function does
+	 * nothing: you'll never get any messages.
+	 *
+	 * If libusb was compiled with verbose debug message logging, this function
+	 * does nothing: you'll always get messages from all levels.
+	 */
+	LIBUSB_OPTION_LOG_LEVEL = 0,
+
+	/** Use the UsbDk backend for a specific context, if available.
+	 *
+	 * This option should be set immediately after calling libusb_init(), or set at
+	 * initialization with libusb_init_context() otherwise unspecified behavior
+	 * may occur.
+	 *
+	 * Only valid on Windows. Ignored on all other platforms.
+	 */
+	LIBUSB_OPTION_USE_USBDK = 1,
+
+	/** Do not scan for devices
+	 *
+	 * With this option set, libusb will skip scanning devices in
+	 * libusb_init_context().
+	 *
+	 * Hotplug functionality will also be deactivated.
+	 *
+	 * The option is useful in combination with libusb_wrap_sys_device(),
+	 * which can access a device directly without prior device scanning.
+	 *
+	 * This is typically needed on Android, where access to USB devices
+	 * is limited.
+	 *
+	 * Only valid on Linux. Ignored on all other platforms.
+	 */
+	LIBUSB_OPTION_NO_DEVICE_DISCOVERY = 2,
+
+#define LIBUSB_OPTION_WEAK_AUTHORITY LIBUSB_OPTION_NO_DEVICE_DISCOVERY
+
+	/** Set the context log callback functon.
+	 *
+	 * Set the log callback function either on a context or globally. This
+	 * option must be provided an argument of type libusb_log_cb. Using this
+	 * option with a NULL context is equivalent to calling libusb_set_log_cb
+	 * with mode LIBUSB_LOG_CB_GLOBAL. Using it with a non-NULL context is
+	 * equivalent to calling libusb_set_log_cb with mode
+	 * LIBUSB_LOG_CB_CONTEXT.
+	 */
+	LIBUSB_OPTION_LOG_CB = 3,
+
+	LIBUSB_OPTION_MAX = 4
+};
+
+/** \ingroup libusb_lib
  * Callback function for handling log messages.
  * \param ctx the context which is related to the log message, or NULL if it
  * is a global log message
@@ -1359,10 +1529,25 @@ enum libusb_log_cb_mode {
 typedef void (LIBUSB_CALL *libusb_log_cb)(libusb_context *ctx,
 	enum libusb_log_level level, const char *str);
 
+/** \ingroup libusb_lib
+ * Structure used for setting options through \ref libusb_init_context.
+ *
+ */
+struct libusb_init_option {
+  /** Which option to set */
+  enum libusb_option option;
+  /** An integer value used by the option (if applicable). */
+  union {
+    int64_t ival;
+    libusb_log_cb log_cbval;
+  } value;
+};
+
 int LIBUSB_CALL libusb_init(libusb_context **ctx);
+int LIBUSB_CALL libusb_init_context(libusb_context **ctx, const struct libusb_init_option options[], int num_options);
 void LIBUSB_CALL libusb_exit(libusb_context *ctx);
-LIBUSB_DEPRECATED_FOR(libusb_set_option)
 void LIBUSB_CALL libusb_set_debug(libusb_context *ctx, int level);
+/* may be deprecated in the future in favor of lubusb_init_context()+libusb_set_option() */
 void LIBUSB_CALL libusb_set_log_cb(libusb_context *ctx, libusb_log_cb cb, int mode);
 const struct libusb_version * LIBUSB_CALL libusb_get_version(void);
 int LIBUSB_CALL libusb_has_capability(uint32_t capability);
@@ -1415,6 +1600,11 @@ int LIBUSB_CALL libusb_get_container_id_descriptor(libusb_context *ctx,
 	struct libusb_container_id_descriptor **container_id);
 void LIBUSB_CALL libusb_free_container_id_descriptor(
 	struct libusb_container_id_descriptor *container_id);
+int LIBUSB_CALL libusb_get_platform_descriptor(libusb_context *ctx,
+	struct libusb_bos_dev_capability_descriptor *dev_cap,
+	struct libusb_platform_descriptor **platform_descriptor);
+void LIBUSB_CALL libusb_free_platform_descriptor(
+	struct libusb_platform_descriptor *platform_descriptor);
 uint8_t LIBUSB_CALL libusb_get_bus_number(libusb_device *dev);
 uint8_t LIBUSB_CALL libusb_get_port_number(libusb_device *dev);
 int LIBUSB_CALL libusb_get_port_numbers(libusb_device *dev, uint8_t *port_numbers, int port_numbers_len);
@@ -1427,6 +1617,15 @@ int LIBUSB_CALL libusb_get_max_packet_size(libusb_device *dev,
 	unsigned char endpoint);
 int LIBUSB_CALL libusb_get_max_iso_packet_size(libusb_device *dev,
 	unsigned char endpoint);
+int LIBUSB_CALL libusb_get_max_alt_packet_size(libusb_device *dev,
+	int interface_number, int alternate_setting, unsigned char endpoint);
+
+int LIBUSB_CALL libusb_get_interface_association_descriptors(libusb_device *dev,
+	uint8_t config_index, struct libusb_interface_association_descriptor_array **iad_array);
+int LIBUSB_CALL libusb_get_active_interface_association_descriptors(libusb_device *dev,
+	struct libusb_interface_association_descriptor_array **iad_array);
+void LIBUSB_CALL libusb_free_interface_association_descriptors(
+	struct libusb_interface_association_descriptor_array *iad_array);
 
 int LIBUSB_CALL libusb_wrap_sys_device(libusb_context *ctx, intptr_t sys_dev, libusb_device_handle **dev_handle);
 int LIBUSB_CALL libusb_open(libusb_device *dev, libusb_device_handle **dev_handle);
@@ -2036,7 +2235,7 @@ typedef int (LIBUSB_CALL *libusb_hotplug_callback_fn)(libusb_context *ctx,
  * \param[in] cb_fn the function to be invoked on a matching event/device
  * \param[in] user_data user data to pass to the callback function
  * \param[out] callback_handle pointer to store the handle of the allocated callback (can be NULL)
- * \returns LIBUSB_SUCCESS on success LIBUSB_ERROR code on failure
+ * \returns \ref LIBUSB_SUCCESS on success LIBUSB_ERROR code on failure
  */
 int LIBUSB_CALL libusb_hotplug_register_callback(libusb_context *ctx,
 	int events, int flags,
@@ -2069,67 +2268,7 @@ void LIBUSB_CALL libusb_hotplug_deregister_callback(libusb_context *ctx,
 void * LIBUSB_CALL libusb_hotplug_get_user_data(libusb_context *ctx,
 	libusb_hotplug_callback_handle callback_handle);
 
-/** \ingroup libusb_lib
- * Available option values for libusb_set_option().
- */
-enum libusb_option {
-	/** Set the log message verbosity.
-	 *
-	 * The default level is LIBUSB_LOG_LEVEL_NONE, which means no messages are ever
-	 * printed. If you choose to increase the message verbosity level, ensure
-	 * that your application does not close the stderr file descriptor.
-	 *
-	 * You are advised to use level LIBUSB_LOG_LEVEL_WARNING. libusb is conservative
-	 * with its message logging and most of the time, will only log messages that
-	 * explain error conditions and other oddities. This will help you debug
-	 * your software.
-	 *
-	 * If the LIBUSB_DEBUG environment variable was set when libusb was
-	 * initialized, this function does nothing: the message verbosity is fixed
-	 * to the value in the environment variable.
-	 *
-	 * If libusb was compiled without any message logging, this function does
-	 * nothing: you'll never get any messages.
-	 *
-	 * If libusb was compiled with verbose debug message logging, this function
-	 * does nothing: you'll always get messages from all levels.
-	 */
-	LIBUSB_OPTION_LOG_LEVEL = 0,
-
-	/** Use the UsbDk backend for a specific context, if available.
-	 *
-	 * This option should be set immediately after calling libusb_init(), otherwise
-	 * unspecified behavior may occur.
-	 *
-	 * Only valid on Windows.
-	 */
-	LIBUSB_OPTION_USE_USBDK = 1,
-
-	/** Do not scan for devices
-	 *
-	 * With this option set, libusb will skip scanning devices in
-	 * libusb_init(). Must be set before calling libusb_init().
-	 *
-	 * Hotplug functionality will also be deactivated.
-	 *
-	 * The option is useful in combination with libusb_wrap_sys_device(),
-	 * which can access a device directly without prior device scanning.
-	 *
-	 * This is typically needed on Android, where access to USB devices
-	 * is limited.
-	 *
-	 * For LIBUSB_API_VERSION 0x01000108 it was called LIBUSB_OPTION_WEAK_AUTHORITY
-	 *
-	 * Only valid on Linux.
-	 */
-	LIBUSB_OPTION_NO_DEVICE_DISCOVERY = 2,
-
-#define LIBUSB_OPTION_WEAK_AUTHORITY LIBUSB_OPTION_NO_DEVICE_DISCOVERY
-
-	LIBUSB_OPTION_MAX = 3
-};
-
-int LIBUSB_CALL libusb_set_option(libusb_context *ctx, enum libusb_option option, ...);
+int LIBUSB_CALLV libusb_set_option(libusb_context *ctx, enum libusb_option option, ...);
 
 #ifdef _MSC_VER
 #pragma warning(pop)

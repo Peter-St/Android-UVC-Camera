@@ -50,6 +50,8 @@ CFLAGS+=" -Wredundant-decls"
 CFLAGS+=" -Wswitch-enum"
 export CFLAGS
 
+export CXXFLAGS="\${CFLAGS}"
+
 echo ""
 echo "Configuring ..."
 /source/configure --enable-examples-build --enable-tests-build
@@ -61,10 +63,5 @@ make -j4 -k
 echo ""
 echo "Running umockdev tests ..."
 tests/umockdev
-
-echo "Running stress tests ..."
-tests/stress
 EOG
 EOF
-
-

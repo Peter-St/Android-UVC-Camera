@@ -83,6 +83,17 @@ case $host in
 	backend=haiku
 	platform=posix
 	;;
+wasm*-emscripten)
+	AC_MSG_RESULT([Emscripten])
+	backend=emscripten
+	platform=posix
+	;;
+wasm*-unknown-none)
+	AC_MSG_ERROR([
+--host=$host_alias is not accepted as it might become ambiguous in the future.
+Please use an explicit --host=$host_cpu-emscripten instead.
+	])
+	;;
 *-linux* | *-uclinux*)
 	dnl on Android Linux, some functions are in different places
 	case $host in
@@ -123,7 +134,7 @@ case $host in
 	backend=windows
 	platform=windows
 	test "x$enable_shared" = xyes && create_import_lib=yes
-	EXTRA_CFLAGS="-mwin32 -fno-omit-frame-pointer"
+	EXTRA_CFLAGS="-fno-omit-frame-pointer"
 	EXTRA_LDFLAGS="-static-libgcc"
 	;;
 *)
@@ -138,7 +149,11 @@ esac
 if test "x$platform" = xposix; then
 	AC_DEFINE([PLATFORM_POSIX], [1], [Define to 1 if compiling for a POSIX platform.])
 	AC_CHECK_TYPES([nfds_t], [], [], [[#include <poll.h>]])
-	AC_CHECK_FUNCS([pipe2])
+	if test "x$backend" != xemscripten; then
+		# pipe2 is detected as present on Emscripten, but it isn't actually ported and always
+		# returns an error. https://github.com/emscripten-core/emscripten/issues/14824
+		AC_CHECK_FUNCS([pipe2])
+	fi
 	dnl Some compilers do not support the '-pthread' option so check for it here
 	saved_CFLAGS="${CFLAGS}"
 	CFLAGS="-Wall -Werror -pthread"
@@ -153,7 +168,21 @@ if test "x$platform" = xposix; then
 	AC_SEARCH_LIBS([pthread_create], [pthread],
 		[test "x$ac_cv_search_pthread_create" != "xnone required" && AC_SUBST(THREAD_LIBS, [-lpthread])],
 		[], [])
-	AC_SEARCH_LIBS([__atomic_fetch_add_4], [atomic])
+	dnl Check for new-style atomic builtins. We first check without linking to -latomic.
+	AC_MSG_CHECKING(whether __atomic_load_n is supported)
+	AC_LINK_IFELSE([AC_LANG_SOURCE([[
+	#include <stdint.h>
+	int main() {
+		struct {
+			uint64_t *v;
+		} x;
+		return (int)__atomic_load_n(x.v, __ATOMIC_ACQUIRE) &
+		       (int)__atomic_add_fetch(x.v, (uint64_t)1, __ATOMIC_ACQ_REL);
+	}]])], GCC_ATOMIC_BUILTINS_SUPPORTED=yes, GCC_ATOMIC_BUILTINS_SUPPORTED=no)
+	AC_MSG_RESULT($GCC_ATOMIC_BUILTINS_SUPPORTED)
+	if test "x$GCC_ATOMIC_BUILTINS_SUPPORTED" != xyes; then
+		AC_SEARCH_LIBS([__atomic_fetch_add_4], [atomic])
+	fi
 elif test "x$platform" = xwindows; then
 	AC_DEFINE([PLATFORM_WINDOWS], [1], [Define to 1 if compiling for a Windows platform.])
 else
@@ -201,7 +230,13 @@ sunos)
 windows)
 	AC_CHECK_TYPES([struct timespec], [], [], [[#include <time.h>]])
 	AC_DEFINE([_WIN32_WINNT], [_WIN32_WINNT_VISTA], [Define to the oldest supported Windows version.])
-	LT_LDFLAGS="${LT_LDFLAGS} -avoid-version -Wl,--add-stdcall-alias"
+	LT_LDFLAGS="${LT_LDFLAGS} -avoid-version"
+	;;
+emscripten)
+	# Note: LT_LDFLAGS is not enough here because we need link flags for executable.
+	EM_LDFLAGS="--bind -s ASYNCIFY"
+	AM_LDFLAGS="${AM_LDFLAGS} ${EM_LDFLAGS} -s ASSERTIONS -s ALLOW_MEMORY_GROWTH"
+	LIBS="${LIBS} ${EM_LDFLAGS}"
 	;;
 *)
 	dnl no special handling required
@@ -211,29 +246,9 @@ esac
 dnl headers not available on all platforms but required on others
 AC_CHECK_HEADERS([sys/time.h])
 
-if test "x$platform" = xposix; then
-	dnl check availability of clock_gettime()
-	if test "x$backend" = xdarwin; then
-		dnl need to verify that OS X target is 10.12 or later for clock_gettime()
-		AC_MSG_CHECKING([whether OS X target version is 10.12 or later])
-		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
-				#include <AvailabilityMacros.h>
-				#if MAC_OS_X_VERSION_MIN_REQUIRED < 101200
-				# error "Target OS X version is too old"
-				#endif
-			], [])],
-			[AC_MSG_RESULT([yes])
-			 osx_10_12_or_later=yes],
-			[AC_MSG_RESULT([no])
-			 osx_10_12_or_later=])
-		if test "x$osx_10_12_or_later" = xyes; then
-			AC_CHECK_FUNCS([clock_gettime], [have_clock_gettime=yes], [have_clock_gettime=])
-		else
-			AC_MSG_NOTICE([clock_gettime() is not available on target OS X version])
-		fi
-	else
-		AC_CHECK_FUNCS([clock_gettime], [have_clock_gettime=yes], [AC_MSG_ERROR([clock_gettime() is required on this platform])])
-	fi
+dnl check availability of clock_gettime(), except don't bother on Darwin, because the result is not used.
+if test "x$platform" = xposix && test "x$backend" != xdarwin; then
+	AC_CHECK_FUNCS([clock_gettime], [have_clock_gettime=yes], [AC_MSG_ERROR([clock_gettime() is required on this platform])])
 
 	if test "x$have_clock_gettime" = xyes; then
 		dnl the clock_gettime() function needs certain clock IDs defined
@@ -378,6 +393,7 @@ AM_CONDITIONAL([OS_NULL], [test "x$backend" = xnull])
 AM_CONDITIONAL([OS_OPENBSD], [test "x$backend" = xopenbsd])
 AM_CONDITIONAL([OS_SUNOS], [test "x$backend" = xsunos])
 AM_CONDITIONAL([OS_WINDOWS], [test "x$backend" = xwindows])
+AM_CONDITIONAL([OS_EMSCRIPTEN], [test "x$backend" = xemscripten])
 AM_CONDITIONAL([PLATFORM_POSIX], [test "x$platform" = xposix])
 AM_CONDITIONAL([PLATFORM_WINDOWS], [test "x$platform" = xwindows])
 AM_CONDITIONAL([USE_UDEV], [test "x$use_udev" = xyes])
@@ -393,6 +409,18 @@ if test "x$backend" = xwindows; then
 	CFLAGS="${saved_CFLAGS}"
 fi
 
+dnl Some linkers do not support the '--add-stdcall-alias' option so check for it here
+if test "x$backend" = xwindows; then
+	saved_CFLAGS="${CFLAGS}"
+	CFLAGS="-Wl,--add-stdcall-alias"
+	AC_MSG_CHECKING([if linker supports --add-stdcall-alias])
+	AC_LINK_IFELSE([AC_LANG_PROGRAM([], [])],
+		[AC_MSG_RESULT([yes])
+		 LT_LDFLAGS="${LT_LDFLAGS} -Wl,--add-stdcall-alias"],
+		[AC_MSG_RESULT([no])])
+	CFLAGS="${saved_CFLAGS}"
+fi
+
 SHARED_CFLAGS="-Wall -Wextra -Wshadow -Wunused -Wwrite-strings -Werror=format-security -Werror=implicit-function-declaration -Werror=implicit-int -Werror=init-self -Werror=missing-prototypes -Werror=strict-prototypes -Werror=undef -Werror=uninitialized"
 
 AM_CPPFLAGS="${EXTRA_CPPFLAGS}"
@@ -405,6 +433,7 @@ AM_CXXFLAGS="-std=${c_dialect}++11 ${EXTRA_CFLAGS} ${SHARED_CFLAGS} -Wmissing-de
 AC_SUBST(AM_CXXFLAGS)
 
 AC_SUBST(LT_LDFLAGS)
+AC_SUBST(AM_LDFLAGS)
 
 AC_SUBST([EXTRA_LDFLAGS])
 

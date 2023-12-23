@@ -544,8 +544,7 @@ uint8_t _uvc_frame_format_matches_guid(enum uvc_frame_format fmt,
 uvc_error_t control_TransferUVC(uvc_stream_ctrl_t *ctrl, uvc_device_handle_t *deviceHandle);
 uvc_error_t uvc_query_stream_ctrl(uvc_device_handle_t *devh,
                                   uvc_stream_ctrl_t *ctrl, uint8_t probe, enum uvc_req_code req);
-
-        uvc_error_t uvc_init(uvc_context_t **ctx, struct libusb_context *usb_ctx);
+uvc_error_t uvc_init(uvc_context_t **ctx, struct libusb_context *usb_ctx);
 uvc_error_t uvc_init2(uvc_context_t **ctx, struct libusb_context *usb_ctx);
 void uvc_exit(uvc_context_t *ctx);
 

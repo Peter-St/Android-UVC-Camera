@@ -40,6 +40,10 @@ EXPORTS
   libusb_free_container_id_descriptor@4 = libusb_free_container_id_descriptor
   libusb_free_device_list
   libusb_free_device_list@8 = libusb_free_device_list
+  libusb_free_interface_association_descriptors
+  libusb_free_interface_association_descriptors@4 = libusb_free_interface_association_descriptors
+  libusb_free_platform_descriptor
+  libusb_free_platform_descriptor@4 = libusb_free_platform_descriptor
   libusb_free_pollfds
   libusb_free_pollfds@4 = libusb_free_pollfds
   libusb_free_ss_endpoint_companion_descriptor
@@ -54,6 +58,8 @@ EXPORTS
   libusb_free_usb_2_0_extension_descriptor@4 = libusb_free_usb_2_0_extension_descriptor
   libusb_get_active_config_descriptor
   libusb_get_active_config_descriptor@8 = libusb_get_active_config_descriptor
+  libusb_get_active_interface_association_descriptors
+  libusb_get_active_interface_association_descriptors@8 = libusb_get_active_interface_association_descriptors
   libusb_get_bos_descriptor
   libusb_get_bos_descriptor@8 = libusb_get_bos_descriptor
   libusb_get_bus_number
@@ -76,6 +82,10 @@ EXPORTS
   libusb_get_device_list@8 = libusb_get_device_list
   libusb_get_device_speed
   libusb_get_device_speed@4 = libusb_get_device_speed
+  libusb_get_interface_association_descriptors
+  libusb_get_interface_association_descriptors@12 = libusb_get_interface_association_descriptors
+  libusb_get_max_alt_packet_size
+  libusb_get_max_alt_packet_size@16 = libusb_get_max_alt_packet_size
   libusb_get_max_iso_packet_size
   libusb_get_max_iso_packet_size@8 = libusb_get_max_iso_packet_size
   libusb_get_max_packet_size
@@ -84,6 +94,8 @@ EXPORTS
   libusb_get_next_timeout@8 = libusb_get_next_timeout
   libusb_get_parent
   libusb_get_parent@4 = libusb_get_parent
+  libusb_get_platform_descriptor
+  libusb_get_platform_descriptor@12 = libusb_get_platform_descriptor
   libusb_get_pollfds
   libusb_get_pollfds@4 = libusb_get_pollfds
   libusb_get_port_number
@@ -122,6 +134,8 @@ EXPORTS
   libusb_hotplug_register_callback@36 = libusb_hotplug_register_callback
   libusb_init
   libusb_init@4 = libusb_init
+  libusb_init_context
+  libusb_init_context@12 = libusb_init_context
   libusb_interrupt_event_handler
   libusb_interrupt_event_handler@4 = libusb_interrupt_event_handler
   libusb_interrupt_transfer
@@ -155,7 +169,6 @@ EXPORTS
   libusb_set_log_cb
   libusb_set_log_cb@12 = libusb_set_log_cb
   libusb_set_option
-  libusb_set_option@8 = libusb_set_option
   libusb_set_pollfd_notifiers
   libusb_set_pollfd_notifiers@16 = libusb_set_pollfd_notifiers
   libusb_setlocale

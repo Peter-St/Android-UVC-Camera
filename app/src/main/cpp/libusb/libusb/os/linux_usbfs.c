@@ -95,9 +95,6 @@ static int sysfs_available = -1;
 /* how many times have we initted (and not exited) ? */
 static int init_count = 0;
 
-/* have no authority to operate usb device directly */
-static int no_enumeration = 0;
-
 /* Serialize scan-devices, event-thread, and poll */
 usbi_mutex_static_t linux_hotplug_lock = USBI_MUTEX_INITIALIZER;
 
@@ -117,6 +114,11 @@ struct kernel_version {
 struct config_descriptor {
 	struct usbi_configuration_descriptor *desc;
 	size_t actual_len;
+};
+
+struct linux_context_priv {
+	/* no enumeration or hot-plug detection */
+	int no_device_discovery;
 };
 
 struct linux_device_priv {
@@ -187,10 +189,10 @@ static int get_usbfs_fd(struct libusb_device *dev, mode_t mode, int silent)
 	int fd;
 
 	if (usbdev_names)
-		sprintf(path, USBDEV_PATH "/usbdev%u.%u",
+		snprintf(path, sizeof(path), USBDEV_PATH "/usbdev%u.%u",
 			dev->bus_number, dev->device_address);
 	else
-		sprintf(path, USB_DEVTMPFS_PATH "/%03u/%03u",
+		snprintf(path, sizeof(path), USB_DEVTMPFS_PATH "/%03u/%03u",
 			dev->bus_number, dev->device_address);
 
 	fd = open(path, mode | O_CLOEXEC);
@@ -354,6 +356,7 @@ static int op_init(struct libusb_context *ctx)
 	struct kernel_version kversion;
 	const char *usbfs_path;
 	int r;
+	struct linux_context_priv *cpriv = usbi_get_context_priv(ctx);
 
 	if (get_kernel_version(ctx, &kversion) < 0)
 		return LIBUSB_ERROR_OTHER;
@@ -397,7 +400,7 @@ static int op_init(struct libusb_context *ctx)
 		}
 	}
 
-	if (no_enumeration) {
+	if (cpriv->no_device_discovery) {
 		return LIBUSB_SUCCESS;
 	}
 
@@ -421,9 +424,9 @@ static int op_init(struct libusb_context *ctx)
 
 static void op_exit(struct libusb_context *ctx)
 {
-	UNUSED(ctx);
+	struct linux_context_priv *cpriv = usbi_get_context_priv(ctx);
 
-	if (no_enumeration) {
+	if (cpriv->no_device_discovery) {
 		return;
 	}
 
@@ -436,12 +439,13 @@ static void op_exit(struct libusb_context *ctx)
 
 static int op_set_option(struct libusb_context *ctx, enum libusb_option option, va_list ap)
 {
-	UNUSED(ctx);
 	UNUSED(ap);
 
 	if (option == LIBUSB_OPTION_NO_DEVICE_DISCOVERY) {
-		usbi_dbg(ctx, "no enumeration will be performed");
-		no_enumeration = 1;
+		struct linux_context_priv *cpriv = usbi_get_context_priv(ctx);
+
+		usbi_dbg(ctx, "no device discovery will be performed");
+		cpriv->no_device_discovery = 1;
 		return LIBUSB_SUCCESS;
 	}
 
@@ -597,7 +601,7 @@ int linux_get_device_address(struct libusb_context *ctx, int detached,
 			char proc_path[32];
 
 			/* try to retrieve the device node from fd */
-			sprintf(proc_path, "/proc/self/fd/%d", fd);
+			snprintf(proc_path, sizeof(proc_path), "/proc/self/fd/%d", fd);
 			r = readlink(proc_path, fd_path, PATH_MAX - 1);
 			if (r > 0) {
 				fd_path[r] = '\0';
@@ -648,13 +652,18 @@ static int seek_to_next_config(struct libusb_context *ctx,
 
 	while (len > 0) {
 		if (len < 2) {
-			usbi_err(ctx, "short descriptor read %zu/2", len);
+			usbi_err(ctx, "remaining descriptor length too small %zu/2", len);
 			return LIBUSB_ERROR_IO;
 		}
 
 		header = (struct usbi_descriptor_header *)buffer;
 		if (header->bDescriptorType == LIBUSB_DT_CONFIG)
 			return offset;
+
+		if (header->bLength < 2) {
+			usbi_err(ctx, "invalid descriptor bLength %hhu", header->bLength);
+			return LIBUSB_ERROR_IO;
+		}
 
 		if (len < header->bLength) {
 			usbi_err(ctx, "bLength overflow by %zu bytes",
@@ -1079,8 +1088,9 @@ retry:
 		goto retry;
 	}
 
-	usbi_dbg(ctx, "dev %p (%s) has parent %p (%s) port %u", dev, sysfs_dir,
-		 dev->parent_dev, parent_sysfs_dir, dev->port_number);
+	usbi_dbg(ctx, "dev %p (%s) has parent %p (%s) port %u",
+		 (void *) dev, sysfs_dir, (void *) dev->parent_dev,
+		 parent_sysfs_dir, dev->port_number);
 
 	free(parent_sysfs_dir);
 
@@ -1188,7 +1198,7 @@ static int usbfs_scan_busdir(struct libusb_context *ctx, uint8_t busnum)
 	struct dirent *entry;
 	int r = LIBUSB_ERROR_IO;
 
-	sprintf(dirpath, USB_DEVTMPFS_PATH "/%03u", busnum);
+	snprintf(dirpath, sizeof(dirpath), USB_DEVTMPFS_PATH "/%03u", busnum);
 	usbi_dbg(ctx, "%s", dirpath);
 	dir = opendir(dirpath);
 	if (!dir) {
@@ -2801,6 +2811,7 @@ const struct usbi_os_backend usbi_backend = {
 
 	.handle_events = op_handle_events,
 
+	.context_priv_size = sizeof(struct linux_context_priv),
 	.device_priv_size = sizeof(struct linux_device_priv),
 	.device_handle_priv_size = sizeof(struct linux_device_handle_priv),
 	.transfer_priv_size = sizeof(struct linux_transfer_priv),
