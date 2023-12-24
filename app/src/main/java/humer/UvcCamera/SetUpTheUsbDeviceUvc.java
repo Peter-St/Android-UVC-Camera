@@ -26,11 +26,13 @@ package humer.UvcCamera;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
@@ -1113,8 +1115,6 @@ public class SetUpTheUsbDeviceUvc extends Activity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
     private Object checkNull(Object obj) {
@@ -1129,18 +1129,61 @@ public class SetUpTheUsbDeviceUvc extends Activity {
         OutputStream outputStream;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 
+            log("ContentValues values = new ContentValues();");
             ContentValues values = new ContentValues();
-
+            log("trying to put some values");
             values.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName +"."+ extension);   // file name
             values.put(MediaStore.MediaColumns.MIME_TYPE, "text/plain");
             values.put(MediaStore.MediaColumns.RELATIVE_PATH, "Documents" + DIRECTORY);
+            log("MediaStore.Files.getContentUri");
 
             Uri extVolumeUri = MediaStore.Files.getContentUri("external");
-            Uri fileUri = context.getContentResolver().insert(extVolumeUri, values);
+            log("context.getContentResolver().insert(extVolumeUri, values);");
 
-            outputStream = context.getContentResolver().openOutputStream(fileUri);
-        }
-        else {
+            ContentResolver cr = getContentResolver();
+            String[] projection = {MediaStore.MediaColumns.DATA};
+            Cursor cur = cr.query(Uri.parse(extVolumeUri.toString()), projection, null, null, null);
+            if (cur != null) {
+                if (cur.moveToFirst()) {
+                    String filePath = cur.getString(0);
+
+                    if (new File(filePath).exists()) {
+                        // do something if it exists
+                        log("lets delete the file");
+                        new File(filePath).delete();
+                        Uri fileUri = context.getContentResolver().insert(extVolumeUri, values);
+
+                        log("outputStream = context.getContentResolver().openOutputStream(fileUri);");
+                        outputStream = context.getContentResolver().openOutputStream(fileUri);
+                        log("save to file complete");
+                    } else {
+                        log("File not here");
+                        // File was not found
+                        Uri fileUri = context.getContentResolver().insert(extVolumeUri, values);
+
+                        log("outputStream = context.getContentResolver().openOutputStream(fileUri);");
+                        outputStream = context.getContentResolver().openOutputStream(fileUri);
+                        log("save to file complete");
+                    }
+                } else {
+                    log("Uri was ok but no entry found.");
+                    // Uri was ok but no entry found.
+                    Uri fileUri = context.getContentResolver().insert(extVolumeUri, values);
+
+                    log("outputStream = context.getContentResolver().openOutputStream(fileUri);");
+                    outputStream = context.getContentResolver().openOutputStream(fileUri);
+                    log("save to file complete");
+                }
+                cur.close();
+            } else {
+                log("content Uri was invalid or some other error occurred");
+                // content Uri was invalid or some other error occurred
+                Uri fileUri = context.getContentResolver().insert(extVolumeUri, values);
+
+                log("outputStream = context.getContentResolver().openOutputStream(fileUri);");
+                outputStream = context.getContentResolver().openOutputStream(fileUri);
+            }
+        } else {
             String rootPath = null;
 
             rootPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/config/";
