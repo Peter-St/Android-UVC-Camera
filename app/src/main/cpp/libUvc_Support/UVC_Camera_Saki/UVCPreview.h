@@ -49,6 +49,7 @@ extern int set_preview_size_random(long preview_pointer, int width, int height, 
 extern int set_preview_display(long preview_pointer, ANativeWindow *preview_window);
 extern int startPreview(long preview_pointer);
 extern int stopPreview(long preview_pointer);
+extern int start_preview_automatic(long preview_pointer, uvc_camera_t *camera_pointer);
 extern int setFrameCallback(long preview_pointer, JNIEnv *env, jobject frame_callback_obj, int pixel_format);
 
 extern int setJavaVM(long preview_pointer, JNIEnv *env, jobject obj);
@@ -104,7 +105,8 @@ private:
 	int camFrameInterval;
 	const char* frameFormat;
 	int test;
-
+    bool automatic;
+    custom_camera_values_t* values;
 
 	uvc_device_handle_t *mDeviceHandle;
 	ANativeWindow *mPreviewWindow;
@@ -149,7 +151,9 @@ private:
 	void clearPreviewFrame();
 	static void *preview_thread_func(void *vptr_args);
 	int prepare_preview(uvc_stream_ctrl_t *ctrl, UVCPreview *preview);
-	void do_preview(uvc_stream_ctrl_t *ctrl);
+    int prepare_preview_automatic(uvc_stream_ctrl_t *ctrl, UVCPreview *preview);
+    void do_preview(uvc_stream_ctrl_t *ctrl);
+    void do_preview_automatic(uvc_stream_ctrl_t *ctrl);
 	uvc_frame_t *draw_preview_one(uvc_frame_t *frame, ANativeWindow **window, convFunc_t func, int pixelBytes);
 //
 	void addCaptureFrame(uvc_frame_t *frame);
@@ -181,6 +185,11 @@ public:
 	// Added by Peter St. 14.01.2023
 	int enable_mIsCapturing();
 	int capture_picture();
+    int set_automatic_true();
+    int set_automatic_false();
+    pthread_t getPreviewThread();
+    void setCustomValues(uvc_camera_t *camera_pointer);
+
 };
 
 

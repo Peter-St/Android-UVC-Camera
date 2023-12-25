@@ -26,6 +26,7 @@ import com.sun.jna.Callback;
 import com.sun.jna.IntegerType;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
+import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.sun.jna.Structure.FieldOrder;
@@ -118,6 +119,7 @@ public interface JNA_I_LibUsb extends Library {
     // LibUsb Methods
     public int initLibUsb();
     public uvc_device_info.ByReference listDeviceUvc(Pointer uvc_camera, int fd);
+    public uvc_struct.ByReference get_uvc_camera_t (Pointer uvc_camera) ;
     public void automaticDetection(Pointer uvc_camera);
 
     // c++ Methods
@@ -682,4 +684,64 @@ public interface JNA_I_LibUsb extends Library {
         public size_t activeUrbs;
     }
 
+
+    @FieldOrder({"preview_pointer", "camera_context", "camera_deviceHandle", "camera_device",
+            "fd", "packetsPerRequest", "maxPacketSize", "activeUrbs",
+            "camStreamingAltSetting", "camFormatIndex", "camFrameIndex", "camFrameInterval",
+            "bmHint", "imageWidth", "imageHeight", "camStreamingEndpoint",
+            "camStreamingInterfaceNum", "frameFormat", "mUsbFs", "productID",
+            "vendorID", "busnum", "devaddr", "low_Android",
+            "streamEndPointAdressOverNative", "valuesSet", "bcdUVC", "initialized",
+            "numberOfAutoFrames", "runningStream", "auto_values_collected"})
+    public static class  uvc_struct extends Structure {
+        public static class ByValue extends uvc_struct implements Structure.ByValue{}
+        public static class ByReference extends uvc_struct implements Structure.ByReference {
+            public ByReference() { }
+            public ByReference(Pointer p) { super(p); read(); }
+        }
+        public uvc_struct() { }
+        public uvc_struct(Pointer p) { super(p); read(); }
+
+        public NativeLong preview_pointer;
+        public Pointer camera_context;
+        public Pointer  camera_deviceHandle;
+        public Pointer  camera_device;
+
+
+        public int fd;
+        public int packetsPerRequest;
+        public int maxPacketSize;
+        public int activeUrbs;
+
+        public int camStreamingAltSetting;
+        public int camFormatIndex;
+        public int camFrameIndex;
+        public int camFrameInterval;
+
+        public int bmHint;
+        public int imageWidth;
+        public int imageHeight;
+        public int camStreamingEndpoint;
+
+        public int camStreamingInterfaceNum;
+        public String frameFormat;
+        public String mUsbFs;
+        public int productID;
+
+        public int vendorID;
+        public int busnum;
+        public int devaddr;
+        public int low_Android;
+
+        public int streamEndPointAdressOverNative;
+        public int valuesSet;
+        public int bcdUVC;
+        public int initialized;
+
+
+        public byte numberOfAutoFrames;
+        public volatile int runningStream;
+        public volatile int auto_values_collected;
+
+    }
 }

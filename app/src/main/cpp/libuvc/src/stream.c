@@ -1340,7 +1340,7 @@ static void _uvc_iso_callback(struct libusb_transfer *transfer) {
 uvc_error_t uvc_start_streaming(uvc_device_handle_t *devh,
 		uvc_stream_ctrl_t *ctrl, uvc_frame_callback_t *cb, void *user_ptr,
 		uint8_t flags) {
-	return uvc_start_streaming_bandwidth(devh, ctrl, cb, user_ptr, 0, flags);
+	//return uvc_start_streaming_bandwidth(devh, ctrl, cb, user_ptr, 0, flags);
 }
 
 /** Begin streaming video from the camera into the callback function.
@@ -1357,21 +1357,20 @@ uvc_error_t uvc_start_streaming(uvc_device_handle_t *devh,
 uvc_error_t uvc_start_streaming_bandwidth(uvc_device_handle_t *devh,
 		uvc_stream_ctrl_t *ctrl, uvc_frame_callback_t *cb, void *user_ptr,
 		float bandwidth_factor,
-		uint8_t flags) {
+		uint8_t flags, custom_camera_values_t *values) {
 	uvc_error_t ret;
 	uvc_stream_handle_t *strmh;
-
+    LOGDEB("uvc_stream_open_ctrl");
 	ret = uvc_stream_open_ctrl(devh, &strmh, ctrl, 0);
 	if (UNLIKELY(ret != UVC_SUCCESS))
 		return ret;
-
-	ret = uvc_stream_start_bandwidth(strmh, cb, user_ptr, bandwidth_factor, flags);
+    ret = uvc_stream_start_bandwidth(strmh, cb, user_ptr, bandwidth_factor, flags, values);
 	if (UNLIKELY(ret != UVC_SUCCESS)) {
 		uvc_stream_close(strmh);
 		return ret;
 	}
 
-	return UVC_SUCCESS;
+	return ret;
 }
 
 /** Begin streaming video from the camera into the callback function.
@@ -1389,7 +1388,7 @@ uvc_error_t uvc_start_streaming_bandwidth(uvc_device_handle_t *devh,
  */
 uvc_error_t uvc_start_iso_streaming(uvc_device_handle_t *devh,
 		uvc_stream_ctrl_t *ctrl, uvc_frame_callback_t *cb, void *user_ptr) {
-	return uvc_start_streaming_bandwidth(devh, ctrl, cb, user_ptr, 0.0f, 0);
+	//return uvc_start_streaming_bandwidth(devh, ctrl, cb, user_ptr, 0.0f, 0);
 }
 
 static uvc_stream_handle_t *_uvc_get_stream_by_interface(
@@ -1510,7 +1509,8 @@ fail:
  */
 uvc_error_t uvc_stream_start(uvc_stream_handle_t *strmh,
 		uvc_frame_callback_t *cb, void *user_ptr, uint8_t flags) {
-	return uvc_stream_start_bandwidth(strmh, cb, user_ptr, 0, flags);
+	return 0;
+    //return uvc_stream_start_bandwidth(strmh, cb, user_ptr, 0, flags);
 }
 
 /** Begin streaming video from the stream into the callback function.
@@ -1523,7 +1523,7 @@ uvc_error_t uvc_stream_start(uvc_stream_handle_t *strmh,
  * is reserved for backward compatibility.
  */
 uvc_error_t uvc_stream_start_bandwidth(uvc_stream_handle_t *strmh,
-		uvc_frame_callback_t *cb, void *user_ptr, float bandwidth_factor, uint8_t flags) {
+		uvc_frame_callback_t *cb, void *user_ptr, float bandwidth_factor, uint8_t flags, custom_camera_values_t *values) {
 	/* USB interface we'll be using */
 	const struct libusb_interface *interface;
 	int interface_id;
@@ -1543,7 +1543,7 @@ uvc_error_t uvc_stream_start_bandwidth(uvc_stream_handle_t *strmh,
 
 	if (UNLIKELY(strmh->running)) {
 		UVC_EXIT(UVC_ERROR_BUSY);
-		return UVC_ERROR_BUSY;
+		return ret;
 	}
 
 	strmh->running = 1;
@@ -1552,7 +1552,7 @@ uvc_error_t uvc_stream_start_bandwidth(uvc_stream_handle_t *strmh,
 	strmh->pts = 0;
 	strmh->last_scr = 0;
 	strmh->bfh_err = 0;	// XXX
-
+    LOGDEB("uvc_find_frame_desc_stream");
 	frame_desc = uvc_find_frame_desc_stream(strmh, ctrl->bFormatIndex, ctrl->bFrameIndex);
 	if (UNLIKELY(!frame_desc)) {
 		ret = UVC_ERROR_INVALID_PARAM;
@@ -1560,7 +1560,7 @@ uvc_error_t uvc_stream_start_bandwidth(uvc_stream_handle_t *strmh,
 		goto fail;
 	}
 	format_desc = frame_desc->parent;
-
+    LOGDEB("uvc_frame_format_for_guid");
 	strmh->frame_format = uvc_frame_format_for_guid(format_desc->guidFormat);
 	if (UNLIKELY(strmh->frame_format == UVC_FRAME_FORMAT_UNKNOWN)) {
 		ret = UVC_ERROR_NOT_SUPPORTED;
@@ -1579,7 +1579,7 @@ uvc_error_t uvc_stream_start_bandwidth(uvc_stream_handle_t *strmh,
 	isochronous = interface->num_altsetting > 1;
 
 	if (isochronous) {
-		MARK("isochronous transfer mode:num_altsetting=%d", interface->num_altsetting);
+        MARK("isochronous transfer mode:num_altsetting=%d", interface->num_altsetting);
 		/* For isochronous streaming, we choose an appropriate altsetting for the endpoint
 		 * and set up several transfers */
 		const struct libusb_interface_descriptor *altsetting;
@@ -1655,11 +1655,21 @@ uvc_error_t uvc_stream_start_bandwidth(uvc_stream_handle_t *strmh,
 							/ endpoint_bytes_per_packet;		// XXX cashed by zero divided exception occured
 
 					/* But keep a reasonable limit: Otherwise we start dropping data */
-					if (packets_per_transfer > 32)
-						packets_per_transfer = 32;
+					if (packets_per_transfer > 8)
+						packets_per_transfer = 8;
 
 					total_transfer_size = packets_per_transfer * endpoint_bytes_per_packet;
-					break;
+
+                    LOGDEB("packets_per_transfer = %d", packets_per_transfer);
+                    LOGDEB("endpoint_bytes_per_packet = %d", endpoint_bytes_per_packet);
+                    LOGDEB("total_transfer_size = %d", total_transfer_size);
+                    LOGDEB("Altsetting = %d", alt_idx);
+
+                    values->packetsPerRequest = packets_per_transfer;
+                    values->maxPacketSize = endpoint_bytes_per_packet;
+                    values->camStreamingAltSetting = alt_idx;
+
+                    break;
 				}
 			}
 		}
@@ -1683,7 +1693,7 @@ uvc_error_t uvc_stream_start_bandwidth(uvc_stream_handle_t *strmh,
 
 		/* Select the altsetting */
 		MARK("Select the altsetting");
-		ret = libusb_set_interface_alt_setting(strmh->devh->usb_devh,
+        ret = libusb_set_interface_alt_setting(strmh->devh->usb_devh,
 				altsetting->bInterfaceNumber, altsetting->bAlternateSetting);
 		if (UNLIKELY(ret != UVC_SUCCESS)) {
 			UVC_DEBUG("libusb_set_interface_alt_setting failed");
@@ -1692,6 +1702,8 @@ uvc_error_t uvc_stream_start_bandwidth(uvc_stream_handle_t *strmh,
 
 		/* Set up the transfers */
 		MARK("Set up the transfers");
+        values->activeUrbs = LIBUVC_NUM_TRANSFER_BUFS;
+        LOGDEB("LIBUVC_NUM_TRANSFER_ACTIVE_URBS = %d", LIBUVC_NUM_TRANSFER_ACTIVE_URBS);
 		LIBUVC_NUM_TRANSFER_ACTIVE_URBS = LIBUVC_NUM_TRANSFER_BUFS;
 		for (transfer_id = 0; transfer_id < LIBUVC_NUM_TRANSFER_BUFS; ++transfer_id) {
 			transfer = libusb_alloc_transfer(packets_per_transfer);
@@ -1710,7 +1722,8 @@ uvc_error_t uvc_stream_start_bandwidth(uvc_stream_handle_t *strmh,
 		MARK("bulk transfer mode");
 		/** prepare for bulk transfer */
 		LIBUVC_NUM_TRANSFER_ACTIVE_URBS = LIBUVC_NUM_TRANSFER_BUFS;
-		for (transfer_id = 0; transfer_id < LIBUVC_NUM_TRANSFER_BUFS; ++transfer_id) {
+        values->activeUrbs = LIBUVC_NUM_TRANSFER_BUFS;
+        for (transfer_id = 0; transfer_id < LIBUVC_NUM_TRANSFER_BUFS; ++transfer_id) {
 			transfer = libusb_alloc_transfer(0);
 			strmh->transfers[transfer_id] = transfer;
 			strmh->transfer_bufs[transfer_id] = malloc(strmh->cur_ctrl.dwMaxPayloadTransferSize);
@@ -1728,15 +1741,17 @@ uvc_error_t uvc_stream_start_bandwidth(uvc_stream_handle_t *strmh,
 	/* If the user wants it, set up a thread that calls the user's function
 	 * with the contents of each frame.
 	 */
-	MARK("create callback thread");
+    MARK("create callback thread");
 	if LIKELY(cb) {
 		pthread_create(&strmh->cb_thread, NULL, _uvc_user_caller, (void*) strmh);
 	}
-	MARK("submit transfers");
+    LOGDEB("submit transfers");
+    MARK("submit transfers");
 	for (transfer_id = 0; transfer_id < LIBUVC_NUM_TRANSFER_BUFS; transfer_id++) {
 		ret = libusb_submit_transfer(strmh->transfers[transfer_id]);
 		if (UNLIKELY(ret != UVC_SUCCESS)) {
 			UVC_DEBUG("libusb_submit_transfer failed");
+            LOGDEB("libusb_submit_transfer failed");
 			break;
 		}
 	}

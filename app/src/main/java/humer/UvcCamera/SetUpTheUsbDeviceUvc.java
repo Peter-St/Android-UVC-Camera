@@ -65,6 +65,7 @@ import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.crowdfire.cfalertdialog.views.CFPushButton;
 import com.serenegiant.usb.IFrameCallback;
 import com.sun.jna.Pointer;
+import com.sun.jna.Structure;
 import com.tomer.fadingtextview.FadingTextView;
 
 import java.io.File;
@@ -265,6 +266,8 @@ public class SetUpTheUsbDeviceUvc extends Activity {
     public native int PreviewPrepareTest(long camer_pointer, final IFrameCallback callback);
     public native int PreviewStartTest(long camer_pointer);
     public native int PreviewStopTest(long camer_pointer);
+
+    public native int automaticMethod(long camer_pointer);
 
     public Handler buttonHandler = null;
     public Runnable myRunnable = new Runnable() {
@@ -1386,15 +1389,6 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                 automatic.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        /*      // Auto Method disabled
-                        //if (convertedMaxPacketSize == null) listDevice(camDevice);
-                        if (!bulkMode) {
-                            //displayMessage("Please select the manual Method");
-                            //return;
-                        }
-                        log("Automatic Button Pressed");
-                        automaticStart = true;
-                        if (convertedMaxPacketSize == null) listDevice(camDevice);
                         ProgressBar progressBar = findViewById(R.id.progressBar);
                         progressBar.setVisibility(View.VISIBLE);
                         runOnUiThread(new Runnable() {
@@ -1405,8 +1399,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                                 tv.setTextColor(Color.BLACK);
                             }
                         });
-                        */  // Automatic Method disabled for now
-                        displayMessage("Automatic method not working ;(");
+                          // Automatic Method disabled for now
                         alertDialog.dismiss();
                     }
                 });
@@ -1429,50 +1422,12 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                         progress = "1% done";
                         if (automaticStart) {
                             // Automatic UVC Detection
-                            final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info = JNA_I_LibUsb.INSTANCE.listDeviceUvc(new Pointer(mNativePtr), camDeviceConnection.getFileDescriptor());
-                            stf.setUpWithUvcValues_libusb(uvc_device_info, convertedMaxPacketSize, true);
-                            if (bcdUVC_short == 0) listDevice(camDevice);
-                            bcdUVC = new byte[2];
-                            bcdUVC[0] = (byte)(bcdUVC_short & 0xff);
-                            bcdUVC[1] = (byte)((bcdUVC_short >> 8) & 0xff);
-                            int bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
-                            if (mUsbFs == null) mUsbFs = getUSBFSName(camDevice);
-                            int framesReceive = 1;
-                            if (fiveFrames) framesReceive = 5;
-                            int lowAndroid = 0;
-                            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                                lowAndroid = 1;
-                            }
-                            JNA_I_LibUsb.INSTANCE.set_the_native_Values(new Pointer(mNativePtr), fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                                    camFrameIndex, camFrameInterval, imageWidth, imageHeight, camStreamingEndpointAdress, 1, videoformat, framesReceive, bcdUVC_int, lowAndroid);
-                            JNA_I_LibUsb.INSTANCE.setCallbackAuto(new JNA_I_LibUsb.eventCallbackAuto() {
-                                public boolean callback(JNA_I_LibUsb.auto_detect_struct.ByReference auto_values) {
-                                    activeUrbs = auto_values.activeUrbs.intValue();
-                                    packetsPerRequest = auto_values.packetsPerRequest.intValue();
-                                    camStreamingAltSetting = auto_values.altsetting.intValue();
-                                    maxPacketSize = auto_values.maxPacketSize.intValue();
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                                            tv.setText("Automatic Transfer Sucessful!");
-                                            tv.setTextColor(Color.BLACK);
-                                        }
-                                    });
-                                    return true;
-                                }
-                            });
-                            JNA_I_LibUsb.INSTANCE.automaticDetection(new Pointer(mNativePtr));
-                            try {
-                                Thread.sleep(300);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            JNA_I_LibUsb.INSTANCE.stopStreaming(new Pointer(mNativePtr));
-                            log("Streaming stopped");
+                            int result = automaticMethod(mNativePtr);
+                            Pointer nativeCam = new Pointer(mNativePtr);
+                            JNA_I_LibUsb.uvc_struct.ByReference camera = JNA_I_LibUsb.INSTANCE.get_uvc_camera_t(new Pointer(mNativePtr));
+                            log("camera.activeUrbs = " + camera.activeUrbs);
                             ProgressBar progressBar = findViewById(R.id.progressBar);
                             progressBar.setVisibility(View.INVISIBLE);
-
                         }
                     }
                 });
@@ -1489,15 +1444,6 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                 automatic.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        /*   // Automatic Version Disabled for now
-                        //if (convertedMaxPacketSize == null) listDevice(camDevice);
-                        if (!bulkMode) {
-                            //displayMessage("Please select the manual Method");
-                            //return;
-                        }
-                        log("Automatic Button Pressed");
-                        automaticStart = true;
-                        if (convertedMaxPacketSize == null) listDevice(camDevice);
                         ProgressBar progressBar = findViewById(R.id.progressBar);
                         progressBar.setVisibility(View.VISIBLE);
                         runOnUiThread(new Runnable() {
@@ -1508,8 +1454,6 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                                 tv.setTextColor(Color.BLACK);
                             }
                         });
-                        */  // Automatic Version Disabled for now
-                        displayMessage("Automatic method not working ;(");
                         alertDialog.dismiss();
                     }
                 });
@@ -1529,59 +1473,42 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                 alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
-                        progress = "1% done";
-                        if (automaticStart) {
-                            // Automatic UVC Detection
-                            final JNA_I_LibUsb.uvc_device_info.ByReference uvc_device_info = JNA_I_LibUsb.INSTANCE.listDeviceUvc(new Pointer(mNativePtr), camDeviceConnection.getFileDescriptor());
-                            stf.setUpWithUvcValues_libusb(uvc_device_info, convertedMaxPacketSize, true);
-                            if (bcdUVC_short == 0) listDevice(camDevice);
-                            bcdUVC = new byte[2];
-                            bcdUVC[0] = (byte)(bcdUVC_short & 0xff);
-                            bcdUVC[1] = (byte)((bcdUVC_short >> 8) & 0xff);
-                            int bcdUVC_int = ((bcdUVC[1] & 0xFF) << 8) | (bcdUVC[0] & 0xFF);
-                            if (mUsbFs == null) mUsbFs = getUSBFSName(camDevice);
-                            int framesReceive = 1;
-                            if (fiveFrames) framesReceive = 5;
-                            int lowAndroid = 0;
-                            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                                lowAndroid = 1;
-                            }
-                            JNA_I_LibUsb.INSTANCE.set_the_native_Values(new Pointer(mNativePtr), fd, packetsPerRequest, maxPacketSize, activeUrbs, camStreamingAltSetting, camFormatIndex,
-                                    camFrameIndex, camFrameInterval, imageWidth, imageHeight, camStreamingEndpointAdress, 1, videoformat, framesReceive, bcdUVC_int, lowAndroid);
-                            JNA_I_LibUsb.INSTANCE.setCallbackAuto(new JNA_I_LibUsb.eventCallbackAuto() {
-                                public boolean callback(JNA_I_LibUsb.auto_detect_struct.ByReference auto_values) {
-                                    activeUrbs = auto_values.activeUrbs.intValue();
-                                    packetsPerRequest = auto_values.packetsPerRequest.intValue();
-                                    camStreamingAltSetting = auto_values.altsetting.intValue();
-                                    maxPacketSize = auto_values.maxPacketSize.intValue();
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                                            tv.setText("Automatic Transfer Sucessful!");
-                                            tv.setTextColor(Color.BLACK);
-                                        }
-                                    });
-                                    return true;
-                                }
-                            });
-                            JNA_I_LibUsb.INSTANCE.automaticDetection(new Pointer(mNativePtr));
-                            try {
-                                Thread.sleep(300);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            JNA_I_LibUsb.INSTANCE.stopStreaming(new Pointer(mNativePtr));
-                            log("Streaming stopped");
-                            ProgressBar progressBar = findViewById(R.id.progressBar);
-                            progressBar.setVisibility(View.INVISIBLE);
+                        int result = automaticMethod(mNativePtr);
+                        //JNA_I_LibUsb.uvc_struct.ByReference camera = new JNA_I_LibUsb.uvc_struct.ByReference(new Pointer(mNativePtr));
+                        JNA_I_LibUsb.uvc_struct.ByReference camera = JNA_I_LibUsb.INSTANCE.get_uvc_camera_t(new Pointer(mNativePtr));
+                        log("camera.activeUrbs = " + camera.activeUrbs);
+                        log("camera.packetsPerRequest = " + camera.packetsPerRequest);
+                        log("camera.maxPacketSize = " + camera.maxPacketSize);
+                        log("camera.imageWidth = " + camera.imageWidth);
+                        log("camera.imageHeight = " + camera.imageHeight);
+                        log("camera.camFrameInterval = " + camera.camFrameInterval);
 
-                        }
+                        takeTheValues(camera);
+                        log("camera.frameFormat = " + camera.frameFormat);
+
+
+
+                        progress = "1% done";
+                        ProgressBar progressBar = findViewById(R.id.progressBar);
+                        progressBar.setVisibility(View.INVISIBLE);
                     }
                 });
 
             }
         }
+    }
+
+    private void takeTheValues(JNA_I_LibUsb.uvc_struct camera){
+        camStreamingAltSetting = camera.camStreamingAltSetting;
+        camFormatIndex = camera.camFormatIndex;
+        camFrameIndex = camera.camFrameIndex;
+        camFrameInterval = camera.camFrameInterval;
+        packetsPerRequest = camera.packetsPerRequest;
+        maxPacketSize = camera.maxPacketSize;
+        imageWidth = camera.imageWidth;
+        imageHeight = camera.imageHeight;
+        activeUrbs = camera.activeUrbs;
+        videoformat = camera.frameFormat;
     }
 
     private void moveToNativeSetUpTheValues() {

@@ -188,3 +188,20 @@ extern "C" JNIEXPORT jint JNICALL Java_humer_UvcCamera_SetUpTheUsbDeviceUvc_Prev
     result = stopPreview(camera_pointer->preview_pointer);
     return result;
 }
+
+
+
+extern "C" JNIEXPORT jint JNICALL Java_humer_UvcCamera_SetUpTheUsbDeviceUvc_automaticMethod(JNIEnv *env, jobject obj, ID_TYPE mNativePtr) {
+
+    uvc_camera_t *camera_pointer = reinterpret_cast<uvc_camera_t *>(mNativePtr) ;
+    camera_pointer->preview_pointer = create_UVCPreview(camera_pointer->camera_deviceHandle, camera_pointer->preview_pointer);
+
+    int result = -1;
+    LOGD("start preview automatic");
+    result = start_preview_automatic(camera_pointer->preview_pointer, camera_pointer);
+
+    LOGD("camera_pointer->frameFormat = %s", camera_pointer->frameFormat);
+    LOGD("preview automatic complete");
+    return result;
+}
+

@@ -798,8 +798,8 @@ public class Main extends AppCompatActivity {
                     @Override
                     public void run() {
                         tv = (ZoomTextView) findViewById(R.id.textDarstellung);
-                        tv.setText("Values for the camera not correctly set !!\nPlease set up the values for the Camera first.\nTo Set Up the Values press the Settings " +
-                                "Button and click on 'Set up with Uvc Values' or 'Edit / Save / Restore' and 'Edit Save'");
+                        tv.setText("Values for the camera not correctly set !!\nPlease set up the values for the Camera first.\nTo Set Up the Values press the " +
+                                "'Set up with Uvc Values' Button or load your values with the 'LOAD VALUES' button");
                         tv.setTextColor(darker(Color.RED, 100));
                     }
                 });

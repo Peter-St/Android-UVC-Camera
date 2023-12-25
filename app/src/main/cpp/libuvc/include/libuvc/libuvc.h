@@ -25,7 +25,27 @@ extern "C" {
  * @ingroup diag
  */
 
-static int LIBUVC_NUM_TRANSFER_ACTIVE_URBS = 10;
+static int LIBUVC_NUM_TRANSFER_ACTIVE_URBS = 8;
+
+struct custom_camera_values;
+/** Custom Camera Values
+ *
+ */
+typedef struct custom_camera_values {
+    int packetsPerRequest;
+    int maxPacketSize;
+    int activeUrbs;
+    int camStreamingAltSetting;
+    int camFormatIndex;
+    int camFrameIndex;
+    int camFrameInterval;
+    int bmHint;
+    int imageWidth;
+    int imageHeight;
+    int camStreamingEndpoint;
+    int camStreamingInterfaceNum;
+    const char* frameFormat;
+} custom_camera_values_t;
 
 typedef enum uvc_error {
 	/** Success (no error) */
@@ -609,7 +629,7 @@ uvc_error_t uvc_start_streaming(uvc_device_handle_t *devh,
 uvc_error_t uvc_start_streaming_bandwidth(uvc_device_handle_t *devh,
 		uvc_stream_ctrl_t *ctrl, uvc_frame_callback_t *cb, void *user_ptr,
 		float bandwidth,
-		uint8_t flags);	// XXX added saki
+		uint8_t flags, custom_camera_values_t *values);	// XXX added saki // modified by Peter-St
 
 uvc_error_t uvc_start_iso_streaming(uvc_device_handle_t *devh,
 		uvc_stream_ctrl_t *ctrl, uvc_frame_callback_t *cb, void *user_ptr);
@@ -627,7 +647,7 @@ uvc_error_t uvc_stream_start_random(uvc_stream_handle_t *strmh, uvc_frame_callba
 uvc_error_t uvc_stream_start_automatic_detection(uvc_stream_handle_t *strmh,
 uvc_frame_callback_t *cb, void *user_ptr, float bandwidth, uint8_t flags);	// XXX added Peter Stoiber
 uvc_error_t uvc_stream_start_bandwidth(uvc_stream_handle_t *strmh,
-		uvc_frame_callback_t *cb, void *user_ptr, float bandwidth, uint8_t flags);	// XXX added saki
+		uvc_frame_callback_t *cb, void *user_ptr, float bandwidth, uint8_t flags, custom_camera_values_t *values);	// XXX added saki // Commited by Peter-St
 uvc_error_t uvc_stream_start_iso(uvc_stream_handle_t *strmh,
 		uvc_frame_callback_t *cb, void *user_ptr);
 uvc_error_t uvc_stream_get_frame(uvc_stream_handle_t *strmh,

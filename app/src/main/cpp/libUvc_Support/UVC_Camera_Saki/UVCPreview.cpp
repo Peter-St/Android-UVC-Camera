@@ -213,6 +213,7 @@ int UVCPreview::setPreviewSize_random(int width, int height, int min_fps, int ma
 	frameHeight = imageHeight;
 	/* @Parameter test: 0 = stream | 1 = testrun */
 	test = tes;
+    automatic = false;
 
 	requestWidth = width;
 	requestHeight = height;
@@ -409,6 +410,9 @@ int UVCPreview::startPreview() {
 					result = pthread_create(&preview_thread, NULL, preview_thread_func, (void *)this);
                     LOGD_P("preview_thread_func result = %d", result);
 				}
+                if (automatic) {
+                    result = pthread_create(&preview_thread, NULL, preview_thread_func, (void *)this);
+                }
 			} else {
 				// Test Mode
                 LOGD_P("preview_thread Test Mode");
@@ -548,14 +552,24 @@ void *UVCPreview::preview_thread_func(void *vptr_args) {
 		uvc_stream_ctrl_t ctrl;
 		memset(&ctrl, 0, sizeof(uvc_stream_ctrl_t));
 		uvc_stream_handle_t strmh;
-        LOGD_P("prepare_preview(&ctrl, preview)");
-
-		result = preview->prepare_preview(&ctrl, preview);
-        LOGD_P("prepare_preview returned %d", result);
-
+        if (preview->automatic)	result = preview->prepare_preview_automatic(&ctrl, preview);
+        else result = preview->prepare_preview(&ctrl, preview);
+        if (preview->automatic) {
+            LOGD("The FrameFormat is == == == %s", preview->frameFormat);
+            preview->values->camFrameInterval = ctrl.dwFrameInterval;
+            preview->values->camFormatIndex = ctrl.bFormatIndex;
+            preview->values->camFrameIndex = ctrl.bFrameIndex;
+            preview->values->bmHint = ctrl.bmHint;
+            LOGD("ctrl.bFormatIndex = %d", ctrl.bFormatIndex);
+            LOGD("ctrl.bInterfaceNumber = %d", ctrl.bInterfaceNumber);
+            LOGD("ctrl.dwFrameInterval = %d", ctrl.dwFrameInterval);
+            LOGD("ctrl.bFrameIndex = %d", ctrl.bFrameIndex);
+            //pthread_exit(NULL);
+        }
 		if (LIKELY(!result)) {
             LOGD_P("do_preview(&ctrl)");
-			preview->do_preview(&ctrl);
+            if (preview->automatic)preview->do_preview_automatic(&ctrl);
+			else preview->do_preview(&ctrl);
 		}
 	}
 	PRE_EXIT();
@@ -609,7 +623,7 @@ int UVCPreview::prepare_preview(uvc_stream_ctrl_t *ctrl, UVCPreview *preview) {
 			//frameWidth = frame_desc->wWidth;
 			//frameHeight = frame_desc->wHeight;
 			if (!test) {
-                LOGD_P("frameSize=(%d,%d)@%s", frameWidth, frameHeight, (!requestMode ? "YUYV" : "MJPEG"));
+                LOGD_P("frameSize=(%d,%d)@%s", frameWidth, frameHeight, (!requestMode ? "YUY2" : "MJPEG"));
 				pthread_mutex_lock(&preview_mutex);
 				if (LIKELY(mPreviewWindow)) {
 					ANativeWindow_setBuffersGeometry(mPreviewWindow,
@@ -629,6 +643,50 @@ int UVCPreview::prepare_preview(uvc_stream_ctrl_t *ctrl, UVCPreview *preview) {
 	}
 	RETURN(result, int);
 }
+
+int UVCPreview::prepare_preview_automatic(uvc_stream_ctrl_t *ctrl, UVCPreview *preview) {
+    uvc_error_t result;
+    automatic = true;
+    ENTER();
+    preview->values = new custom_camera_values_t();
+    result = uvc_get_stream_ctrl_format_size_fps(mDeviceHandle, ctrl,
+                                                 !requestMode ? UVC_FRAME_FORMAT_YUYV : UVC_FRAME_FORMAT_MJPEG,
+                                                 requestWidth, requestHeight, requestMinFps, requestMaxFps
+    );
+    if (LIKELY(!result)) {
+#if LOCAL_DEBUG
+        uvc_print_stream_ctrl(ctrl, stderr);
+#endif
+        LOGD("uvc_get_frame_desc");
+        uvc_frame_desc_t *frame_desc;
+        result = uvc_get_frame_desc(mDeviceHandle, ctrl, &frame_desc);
+        if (LIKELY(!result)) {
+            frameWidth = frame_desc->wWidth;
+            frameHeight = frame_desc->wHeight;
+            preview->values->imageWidth = frameWidth;
+            preview->values->imageHeight = frameHeight;
+            preview->values->frameFormat = (!requestMode ? "YUY2" : "MJPEG");
+            preview->frameFormat = (!requestMode ? "YUY2" : "MJPEG");
+            LOGI("frameSize=(%d,%d)@%s", frameWidth, frameHeight, (!requestMode ? "YUY2" : "MJPEG"));
+            pthread_mutex_lock(&preview_mutex);
+            if (LIKELY(mPreviewWindow)) {
+                ANativeWindow_setBuffersGeometry(mPreviewWindow,
+                                                 frameWidth, frameHeight, previewFormat);
+            }
+            pthread_mutex_unlock(&preview_mutex);
+        } else {
+            frameWidth = requestWidth;
+            frameHeight = requestHeight;
+        }
+        frameMode = requestMode;
+        frameBytes = frameWidth * frameHeight * (!requestMode ? 2 : 4);
+        previewBytes = frameWidth * frameHeight * PREVIEW_PIXEL_BYTES;
+    } else {
+        LOGE("could not negotiate with camera:err=%d", result);
+    }
+    RETURN(result, int);
+}
+
 
 void UVCPreview::do_preview(uvc_stream_ctrl_t *ctrl) {
 	ENTER();
@@ -724,6 +782,42 @@ void UVCPreview::do_preview(uvc_stream_ctrl_t *ctrl) {
 	}
 
 	EXIT();
+}
+
+void UVCPreview::do_preview_automatic(uvc_stream_ctrl_t *ctrl) {
+    ENTER();
+    automatic=false;
+    uvc_frame_t *frame = NULL;
+    uvc_frame_t *frame_mjpeg = NULL;
+
+    LOGD("uvc_start_streaming_bandwidth");
+    LOGD("the frameFormat is ====== = = %s", values->frameFormat);
+    uvc_error_t ret = uvc_start_streaming_bandwidth(
+            mDeviceHandle, ctrl, uvc_preview_frame_callback, (void *)this, requestBandwidth, 0, values);
+    LOGD("the frameFormat is ====== = = %s", values->frameFormat);
+
+    sleep(.1);
+
+#if LOCAL_DEBUG
+        LOGI("Streaming...");
+#endif
+
+
+    LOGD("uvc_stop_streaming");
+
+#if LOCAL_DEBUG
+        LOGI("preview_thread_func:wait for all callbacks complete");
+#endif
+        uvc_stop_streaming(mDeviceHandle);
+#if LOCAL_DEBUG
+        LOGI("Streaming finished");
+#endif
+
+    LOGD("the frameFormat is ====== = = %s", values->frameFormat);
+
+
+
+    EXIT();
 }
 
 static void copyFrame(const uint8_t *src, uint8_t *dest, const int width, int height, const int stride_src, const int stride_dest) {
@@ -1094,6 +1188,43 @@ int UVCPreview::capture_picture() {
     RETURN(result, int);
 }
 
+int UVCPreview::set_automatic_true() {
+    ENTER();
+    int result = EXIT_SUCCESS;
+    automatic = true;
+    RETURN(result, int);
+}
+int UVCPreview::set_automatic_false() {
+    ENTER();
+    int result = EXIT_SUCCESS;
+    automatic = false;
+    RETURN(result, int);
+}
+
+pthread_t UVCPreview::getPreviewThread() {
+    return preview_thread;
+}
+
+void UVCPreview::setCustomValues(uvc_camera_t *camera_pointer) {
+    camera_pointer->bmHint = values->bmHint;
+    camera_pointer->imageWidth = values->imageWidth;
+    camera_pointer->imageHeight = values->imageHeight;
+    camera_pointer->camStreamingInterfaceNum = values->camStreamingInterfaceNum;
+    camera_pointer->camFrameIndex = values->camFrameIndex;
+    camera_pointer->camFormatIndex = values->camFormatIndex;
+    camera_pointer->camFrameInterval = values->camFrameInterval;
+    camera_pointer->frameFormat = values->frameFormat;
+    camera_pointer->activeUrbs = values->activeUrbs;
+    camera_pointer->camStreamingAltSetting = values->camStreamingAltSetting;
+    camera_pointer->maxPacketSize = values->maxPacketSize;
+    camera_pointer->packetsPerRequest = values->packetsPerRequest;
+
+    LOGD("The imageWidth is %d", values->imageWidth);
+    LOGD("The FrameFormat is %s", values->frameFormat);
+
+    free(values);
+
+}
 
 long create_UVCPreview(uvc_device_handle_t *devh, long preview_pointer) {
     UVCPreview *uvcPreview = new UVCPreview(devh);
@@ -1115,6 +1246,7 @@ int set_preview_size_random(long preview_pointer, int width, int height, int min
 							int imageWidth, int imageHeight, int test ) {
     int result = EXIT_FAILURE;
     UVCPreview *camera = reinterpret_cast<UVCPreview *>(preview_pointer);
+    if (camera) result = camera->set_automatic_false();
     if (camera) result = camera->setPreviewSize_random(width, height, min_fps, max_fps, bandwidth, activeUrbs, packetsPerRequest,
 													   altset, maxPacketSize, camFormatInde, camFrameInde, camFrameInterva, frameForma,
 													   imageWidth, imageHeight, test );
@@ -1139,6 +1271,7 @@ int setFrameCallback(long preview_pointer, JNIEnv *env, jobject frame_callback_o
 int startPreview(long preview_pointer) {
 	int result = EXIT_FAILURE;
 	UVCPreview *camera = reinterpret_cast<UVCPreview *>(preview_pointer);
+    if (camera) result = camera->set_automatic_false();
 	if (camera) result = camera->startPreview();
 	return result;
 }
@@ -1173,6 +1306,20 @@ int capturePicture(long preview_pointer) {
 int enableMIsCapturing(long preview_pointer) {
     int result = EXIT_FAILURE;
     UVCPreview *camera = reinterpret_cast<UVCPreview *>(preview_pointer);
+    if (camera) result = camera->set_automatic_false();
     if (camera) result = camera->enable_mIsCapturing();
     return result;
 }
+
+int start_preview_automatic(long preview_pointer, uvc_camera_t *camera_pointer) {
+    int result = EXIT_FAILURE;
+    UVCPreview *camera = reinterpret_cast<UVCPreview *>(preview_pointer);
+    if (camera) result = camera->set_automatic_true();
+    if (camera) result = camera->startPreview();
+    pthread_join(camera->getPreviewThread(), NULL);
+    camera->setCustomValues(camera_pointer);
+    //LOGD("The FrameFormat is %s", camera.values->frameFormat);
+    LOGD("camera_pointer->imageWidth = %d", camera_pointer->imageWidth);
+    return result;
+}
+
