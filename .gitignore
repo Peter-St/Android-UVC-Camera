@@ -3,7 +3,7 @@ release-keystore.jks
 release-keystore.properties
 
 # Built application files
-*.apk
+*.apk 
 *.ap_
 
 # Files for the Dalvik VM
@@ -34,6 +34,15 @@ local.properties
 .externalNativeBuild
 local.properties
 
+# Ignoring directories
+# Both the directory itself and its contents will be ignored.
+app/build/
+app/src/main/obj/
+app/release/
+app/.cxx/
+#bin/
+#gen/
+
 # Lines starting with `#` are comments.
 
 # Ignore files called 'file.ext'
@@ -49,14 +58,7 @@ local.properties
 #dir/otherdir/file.ext
 #otherfile.ext
 
-# Ignoring directories
-# Both the directory itself and its contents will be ignored.
-app/build/
-app/src/main/obj/
-app/release/
-app/.cxx/
-#bin/
-#gen/
+
 
 # Glob pattern can also be used here to ignore paths with certain characters.
 # For example, the below rule will match both build/ and Build/
