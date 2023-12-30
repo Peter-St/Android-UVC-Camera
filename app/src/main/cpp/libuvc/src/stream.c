@@ -553,7 +553,7 @@ static uvc_error_t _uvc_get_stream_ctrl_format(uvc_device_handle_t *devh,
 					ctrl->bFormatIndex = format->bFormatIndex;
 					ctrl->bFrameIndex = frame->bFrameIndex;
 					ctrl->dwFrameInterval = *interval;
-
+                    LOGDEB("ctrl->dwFrameInterval found");
 					goto found;
 				}
 			}
@@ -572,12 +572,13 @@ static uvc_error_t _uvc_get_stream_ctrl_format(uvc_device_handle_t *devh,
 					ctrl->bFormatIndex = format->bFormatIndex;
 					ctrl->bFrameIndex = frame->bFrameIndex;
 					ctrl->dwFrameInterval = interval_100ns;
-
+                    LOGDEB("ctrl->dwFrameInterval found");
 					goto found;
 				}
 			}
 		}
 	}
+
 	result = UVC_ERROR_INVALID_MODE;
 fail:
 	uvc_release_if(devh, ctrl->bInterfaceNumber);

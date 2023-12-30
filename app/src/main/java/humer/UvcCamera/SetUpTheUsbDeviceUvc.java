@@ -1391,6 +1391,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                     public void onClick(View view) {
                         ProgressBar progressBar = findViewById(R.id.progressBar);
                         progressBar.setVisibility(View.VISIBLE);
+                        automaticStart = true;
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -1408,6 +1409,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                     @Override
                     public void onClick(View view) {
                         log("Manual Button Pressed");
+                        automaticStart = false;
                         // Set up from UVC manually
                         if (convertedMaxPacketSize == null) listDevice(camDevice);
                         log("running stf.setUvcSettingsMethod");
@@ -1419,8 +1421,8 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                 alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
-                        progress = "1% done";
                         if (automaticStart) {
+                            progress = "1% done";
                             // Automatic UVC Detection
                             int result = automaticMethod(mNativePtr);
                             Pointer nativeCam = new Pointer(mNativePtr);
@@ -1446,6 +1448,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                     public void onClick(View view) {
                         ProgressBar progressBar = findViewById(R.id.progressBar);
                         progressBar.setVisibility(View.VISIBLE);
+                        automaticStart = true;
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -1462,6 +1465,7 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                     @Override
                     public void onClick(View view) {
                         log("Manual Button Pressed");
+                        automaticStart = false;
                         // Set up from UVC manually
                         if (convertedMaxPacketSize == null) listDevice(camDevice);
                         log("running stf.setUvcSettingsMethod");
@@ -1473,24 +1477,26 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                 alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
-                        int result = automaticMethod(mNativePtr);
-                        //JNA_I_LibUsb.uvc_struct.ByReference camera = new JNA_I_LibUsb.uvc_struct.ByReference(new Pointer(mNativePtr));
-                        JNA_I_LibUsb.uvc_struct.ByReference camera = JNA_I_LibUsb.INSTANCE.get_uvc_camera_t(new Pointer(mNativePtr));
-                        log("camera.activeUrbs = " + camera.activeUrbs);
-                        log("camera.packetsPerRequest = " + camera.packetsPerRequest);
-                        log("camera.maxPacketSize = " + camera.maxPacketSize);
-                        log("camera.imageWidth = " + camera.imageWidth);
-                        log("camera.imageHeight = " + camera.imageHeight);
-                        log("camera.camFrameInterval = " + camera.camFrameInterval);
+                        if (automaticStart) {
+                            int result = automaticMethod(mNativePtr);
+                            //JNA_I_LibUsb.uvc_struct.ByReference camera = new JNA_I_LibUsb.uvc_struct.ByReference(new Pointer(mNativePtr));
+                            JNA_I_LibUsb.uvc_struct.ByReference camera = JNA_I_LibUsb.INSTANCE.get_uvc_camera_t(new Pointer(mNativePtr));
+                            log("camera.activeUrbs = " + camera.activeUrbs);
+                            log("camera.packetsPerRequest = " + camera.packetsPerRequest);
+                            log("camera.maxPacketSize = " + camera.maxPacketSize);
+                            log("camera.imageWidth = " + camera.imageWidth);
+                            log("camera.imageHeight = " + camera.imageHeight);
+                            log("camera.camFrameInterval = " + camera.camFrameInterval);
 
-                        takeTheValues(camera);
-                        log("camera.frameFormat = " + camera.frameFormat);
+                            takeTheValues(camera);
+                            log("camera.frameFormat = " + camera.frameFormat);
 
 
 
-                        progress = "1% done";
-                        ProgressBar progressBar = findViewById(R.id.progressBar);
-                        progressBar.setVisibility(View.INVISIBLE);
+                            progress = "1% done";
+                            ProgressBar progressBar = findViewById(R.id.progressBar);
+                            progressBar.setVisibility(View.INVISIBLE);
+                        }
                     }
                 });
 
