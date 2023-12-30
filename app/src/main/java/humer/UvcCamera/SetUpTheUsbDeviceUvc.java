@@ -1478,8 +1478,8 @@ public class SetUpTheUsbDeviceUvc extends Activity {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
                         if (automaticStart) {
+                            progress = "1% done";
                             int result = automaticMethod(mNativePtr);
-                            //JNA_I_LibUsb.uvc_struct.ByReference camera = new JNA_I_LibUsb.uvc_struct.ByReference(new Pointer(mNativePtr));
                             JNA_I_LibUsb.uvc_struct.ByReference camera = JNA_I_LibUsb.INSTANCE.get_uvc_camera_t(new Pointer(mNativePtr));
                             log("camera.activeUrbs = " + camera.activeUrbs);
                             log("camera.packetsPerRequest = " + camera.packetsPerRequest);
@@ -1490,10 +1490,6 @@ public class SetUpTheUsbDeviceUvc extends Activity {
 
                             takeTheValues(camera);
                             log("camera.frameFormat = " + camera.frameFormat);
-
-
-
-                            progress = "1% done";
                             ProgressBar progressBar = findViewById(R.id.progressBar);
                             progressBar.setVisibility(View.INVISIBLE);
                         }
