@@ -1199,7 +1199,7 @@ public class StartIsoStreamActivityUvc extends Activity {
                     log("stream started (MJPEG) ... ");
 
                     ////////////////////////////////    YUY2   /////////////////////////////
-                } else if (videoformat.equals("YUY2")) {
+                } else if (videoformat.equals("YUY2") || (videoformat.equals("UYVY"))) {
                     ////////////////////////////////    YUY2   /////////////////////////////
 
                     int result = -1;
@@ -1268,7 +1268,7 @@ public class StartIsoStreamActivityUvc extends Activity {
 
 
                     ////////////////////////////////    UYVY   /////////////////////////////
-                } else if (videoformat.equals("UYVY")) {
+                } /* else if (videoformat.equals("UYVY")) {
                     ////////////////////////////////    UYVY   /////////////////////////////
                     // Steam Over SurfaceView
                     // fastest Method
@@ -1320,8 +1320,8 @@ public class StartIsoStreamActivityUvc extends Activity {
                     }
                     libusb_is_initialized = true;
                     log("stream started (UYVY) ... ");
-                } else displayMessage("CAMERA FORMAT NOT SUPPORTED");
-            } else {
+                } */ else displayMessage("CAMERA FORMAT NOT SUPPORTED");
+            }  else {
                 displayMessage("LIBUSB NOT SET ;-(");
             }
         }

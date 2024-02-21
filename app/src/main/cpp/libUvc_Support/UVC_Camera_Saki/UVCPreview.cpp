@@ -287,10 +287,11 @@ int UVCPreview::setFrameCallback(JNIEnv *env, jobject frame_callback_obj, int pi
                 callbackPixelFormatChanged();
             } else {
                 // PIXEL_FORMAT defined in UVCPreview.h   0 = raw (yuy2) | 1 = yuv (yuy2) | 2-3 = rgb | 5 = NV21  | 6 = MJPEG
-                if (strcmp(frameFormat, "MJPEG") == 0) pixel_format = 6;
-                else if (strcmp(frameFormat, "YUY2") == 0 ||   strcmp(frameFormat, "UYVY") == 0 ) pixel_format = 1;
-                else if (strcmp(frameFormat, "NV21") == 0) pixel_format = 5;
-                else pixel_format = 0;
+                if (strcmp(frameFormat, "MJPEG") == 0) pixel_format = PIXEL_FORMAT_MJPEG;
+                else if (strcmp(frameFormat, "YUY2") == 0 ) pixel_format = PIXEL_FORMAT_YUY2;
+                else if (strcmp(frameFormat, "UYVY") == 0 ) pixel_format = PIXEL_FORMAT_UYUY;
+                else if (strcmp(frameFormat, "NV21") == 0) pixel_format = PIXEL_FORMAT_NV21;
+                else pixel_format = PIXEL_FORMAT_RAW;
                 mPixelFormat = pixel_format;
                 callbackPixelFormatChanged();
             }
@@ -321,6 +322,14 @@ void UVCPreview::callbackPixelFormatChanged() {
             LOGI("PIXEL_FORMAT_RAW:");
             callbackPixelBytes = sz * 2;
             break;
+        case PIXEL_FORMAT_YUY2:
+            LOGI("PIXEL_FORMAT_YUY2:");
+            callbackPixelBytes = sz * 2;
+            break;
+        case PIXEL_FORMAT_UYUY:
+            LOGI("PIXEL_FORMAT_UYUY:");
+            callbackPixelBytes = sz * 2;
+            break;
         case PIXEL_FORMAT_YUV:
             LOGI("PIXEL_FORMAT_YUV:");
             callbackPixelBytes = sz * 2;
@@ -348,6 +357,9 @@ void UVCPreview::callbackPixelFormatChanged() {
         case PIXEL_FORMAT_MJPEG:
             LOGI("PIXEL_FORMAT_MJPEG:");
             callbackPixelBytes = sz * 3;
+            break;
+        default:
+            LOGI("PIXEL_FORMAT_ ???:\n mPixelFormat = %d", mPixelFormat);
             break;
 	}
 }
@@ -1105,13 +1117,16 @@ void UVCPreview::do_capture_callback(JNIEnv *env, uvc_frame_t *frame) {
 
 	if (LIKELY(frame)) {
 		uvc_frame_t *callback_frame = frame;
+        LOGI("do_capture_callback");
 		if (mFrameCallbackObj) {
             // --> mFrameCallbackFunc likely not in use (only for Pixel Format NV21)
 			if (mFrameCallbackFunc) {
+                LOGI("mFrameCallbackFunc = %d",mFrameCallbackFunc);
 				callback_frame = get_frame(callbackPixelBytes);
 				if (LIKELY(callback_frame)) {
 					int b = mFrameCallbackFunc(frame, callback_frame);
 					recycle_frame(frame);
+                    LOGI("frame recycled");
 					if (UNLIKELY(b)) {
 						LOGW("failed to convert for callback frame");
 						goto SKIP;

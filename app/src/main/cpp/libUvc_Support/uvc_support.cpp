@@ -96,9 +96,10 @@ extern "C" JNIEXPORT jint JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc
     jobject frame_callback_obj = env->NewGlobalRef(jIFrameCallback);
 
     int pixel_format;
-    if (strcmp(camera_pointer->frameFormat, "MJPEG") == 0) pixel_format = 6;
-    else if (strcmp(camera_pointer->frameFormat, "YUY2") == 0 ||   strcmp(camera_pointer->frameFormat, "UYVY") == 0 ) pixel_format = pixel_format;
-    else if (strcmp(camera_pointer->frameFormat, "NV21") == 0) pixel_format = 5;
+    if (strcmp(camera_pointer->frameFormat, "MJPEG") == 0) pixel_format = PIXEL_FORMAT_MJPEG;
+    else if (strcmp(camera_pointer->frameFormat, "YUY2") == 0) pixel_format = PIXEL_FORMAT_YUY2;
+    else if (strcmp(camera_pointer->frameFormat, "UYVY") == 0 ) pixel_format = PIXEL_FORMAT_UYUY;
+    else if (strcmp(camera_pointer->frameFormat, "NV21") == 0) pixel_format = PIXEL_FORMAT_NV21;
     else pixel_format = 0;
 
     LOGD ("Pixel Format = %d", pixel_format);

@@ -80,13 +80,15 @@ extern int enableMIsCapturing(long preview_pointer);
 
 typedef uvc_error_t (*convFunc_t)(uvc_frame_t *in, uvc_frame_t *out);
 
-#define PIXEL_FORMAT_RAW 0		// same as PIXEL_FORMAT_YUV
-#define PIXEL_FORMAT_YUV 1
+#define PIXEL_FORMAT_RAW 0
+#define PIXEL_FORMAT_YUY2 1
 #define PIXEL_FORMAT_RGB565 2
 #define PIXEL_FORMAT_RGBX 3
 #define PIXEL_FORMAT_YUV20SP 4
 #define PIXEL_FORMAT_NV21 5		// YVU420SemiPlanar
 #define PIXEL_FORMAT_MJPEG 6    // Added by Peter St. 14.01.2023
+#define PIXEL_FORMAT_UYUY 7     // Added by Peter St. 18.02.2024
+#define PIXEL_FORMAT_YUV 8      // Added by Peter St. 18.02.2024
 
 // for callback to Java object
 typedef struct {
