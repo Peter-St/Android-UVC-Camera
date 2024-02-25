@@ -1117,11 +1117,11 @@ void UVCPreview::do_capture_callback(JNIEnv *env, uvc_frame_t *frame) {
 
 	if (LIKELY(frame)) {
 		uvc_frame_t *callback_frame = frame;
-        LOGI("do_capture_callback");
+        //LOGI("do_capture_callback");
 		if (mFrameCallbackObj) {
             // --> mFrameCallbackFunc likely not in use (only for Pixel Format NV21)
 			if (mFrameCallbackFunc) {
-                LOGI("mFrameCallbackFunc = %d",mFrameCallbackFunc);
+                //LOGI("mFrameCallbackFunc = %d",mFrameCallbackFunc);
 				callback_frame = get_frame(callbackPixelBytes);
 				if (LIKELY(callback_frame)) {
 					int b = mFrameCallbackFunc(frame, callback_frame);
@@ -1200,6 +1200,22 @@ int UVCPreview::capture_picture() {
     int result = EXIT_SUCCESS;
     mIsCapturing = true;
     mPictureCapturing = true;
+    RETURN(result, int);
+}
+
+int UVCPreview::capture_movie() {
+    ENTER();
+    int result = EXIT_SUCCESS;
+    mIsCapturing = true;
+    mMovieCapturing = true;
+    RETURN(result, int);
+}
+
+int UVCPreview::exit_capture_movie() {
+    ENTER();
+    int result = EXIT_SUCCESS;
+    mIsCapturing = false;
+    mMovieCapturing = false;
     RETURN(result, int);
 }
 
@@ -1315,6 +1331,20 @@ int capturePicture(long preview_pointer) {
     int result = EXIT_FAILURE;
     UVCPreview *camera = reinterpret_cast<UVCPreview *>(preview_pointer);
     if (camera) result = camera->capture_picture();
+    return result;
+}
+
+int captureMovie(long preview_pointer) {
+    int result = EXIT_FAILURE;
+    UVCPreview *camera = reinterpret_cast<UVCPreview *>(preview_pointer);
+    if (camera) result = camera->capture_movie();
+    return result;
+}
+
+int exitCaptureMovie(long preview_pointer){
+    int result = EXIT_FAILURE;
+    UVCPreview *camera = reinterpret_cast<UVCPreview *>(preview_pointer);
+    if (camera) result = camera->exit_capture_movie();
     return result;
 }
 

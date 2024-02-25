@@ -14,7 +14,7 @@
     <uses-feature android:name="android.hardware.usb.host" />
 
     <uses-sdk
-        tools:overrideLibrary="com.akexorcist.localizationactivity, com.rafakob.floatingedittext"/>
+        tools:overrideLibrary="com.akexorcist.localizationactivity, com.rafakob.floatingedittext, com.arthenica.ffmpegkit"/>
 
     <application
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"

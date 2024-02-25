@@ -77,6 +77,7 @@ import android.widget.ToggleButton;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -99,9 +100,13 @@ import humer.UvcCamera.UsbIso64.usbdevice_fs_util;
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
+import org.apache.commons.io.IOUtils;
+
 import static java.lang.Integer.parseInt;
+import static java.lang.System.out;
 
 public class StartIsoStreamActivityUvc extends Activity {
+
 
     // Native UVC Camera
     private long mNativePtr;
@@ -180,6 +185,7 @@ public class StartIsoStreamActivityUvc extends Activity {
     public StringBuilder stringBuilder;
     private int [] convertedMaxPacketSize;
     private boolean lowerResolution;
+
     public static enum Videoformat {YUV, MJPEG, YUY2, YV12, YUV_422_888, YUV_420_888, NV21, UYVY}
     private boolean aspect_ratio = false;
     private boolean surface_scaled = false;
@@ -208,7 +214,6 @@ public class StartIsoStreamActivityUvc extends Activity {
 
     // Other Classes
     private MJPEGGenerator generator;
-    private BitmapToVideoEncoder bitmapToVideoEncoder;
 
 
     // Camera Configuration Values to adjust Values over Controltransfers
@@ -249,6 +254,12 @@ public class StartIsoStreamActivityUvc extends Activity {
     public native int PreviewStartStream(long camer_pointer);
     public native int PreviewStopStream(long camer_pointer);
     public native int PreviewCapturePicture(long camer_pointer);
+    public native int PreviewCaptureMovie(long camer_pointer);
+    public native int PreviewExitCaptureMovie(long camer_pointer);
+
+
+
+
 
        // Bitmap Method
     public native void YUY2pixeltobmp(byte[] uyvy_data, Bitmap bitmap, int im_width, int im_height);
@@ -261,8 +272,16 @@ public class StartIsoStreamActivityUvc extends Activity {
     //public native void JniProbeCommitControl(int bmHint,int camFormatIndex,int camFrameIndex,int  camFrameInterval);
     private Surface mPreviewSurface;
     private SurfaceView mUVCCameraView;
-
     private static StartIsoStreamActivityUvc instance;
+
+    // Video record variables
+    private BitmapToVideoEncoder bitmapToVideoEncoder;
+    private File saveDir;
+
+
+
+
+
 
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -300,14 +319,6 @@ public class StartIsoStreamActivityUvc extends Activity {
         } catch (Exception e) {
             log("Exception = " + e);
         }
-
-        /*
-        try {
-            unbindService(mConnection);
-        } catch (Exception e) {
-            log("Exception = " + e);
-        }
-        */
     }
 
     @Override
@@ -333,10 +344,7 @@ public class StartIsoStreamActivityUvc extends Activity {
         } else {
             beenden(false);
         }
-
-
     }
-
 
     public static StartIsoStreamActivityUvc getInstance() {
         if (instance == null) {
@@ -344,7 +352,6 @@ public class StartIsoStreamActivityUvc extends Activity {
         }
         return instance;
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -379,7 +386,6 @@ public class StartIsoStreamActivityUvc extends Activity {
         });//closing the setOnClickListener method
         startStream.getBackground().setAlpha(180);  // 25% transparent
         // Settings Button
-
         final Activity a = this;
         FabSpeedDial fabSpeedDial = (FabSpeedDial) findViewById(R.id.settingsButton);
         fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
@@ -442,7 +448,7 @@ public class StartIsoStreamActivityUvc extends Activity {
             @Override
             public void onClick(View view) {
                 mp1.start();
-                BildaufnahmeButtonClickEvent();
+                imageButtonClickEvent();
             }
         });
         photoButton.setEnabled(false);
@@ -450,396 +456,45 @@ public class StartIsoStreamActivityUvc extends Activity {
         stopStreamButton = (Button) findViewById(R.id.stopKameraknopf);
         stopStreamButton.getBackground().setAlpha(20);  // 95% transparent
         stopStreamButton.setEnabled(false);
+
+        bitmapToVideoEncoder = new BitmapToVideoEncoder(new BitmapToVideoEncoder.IBitmapToVideoEncoderCallback() {
+            @Override
+            public void onEncodingComplete(File outputFile) {
+                displayMessage("Encoding complete!");
+            }
+        });
+
+        fetchTheValues();
+
+
         videoButton = (ToggleButton) findViewById(R.id.videoaufnahme);
         videoButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    return;
-                    /*
                     // Button Checked // Short Click
-                    log("long click return; longclick = " + longclickVideoRecord);
-
-                    // Prevent the double Start with longClick
-                    if (longclickVideoRecord) {
-                        return;
-                    }
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                        videorecordApiJellyBeanNup = true;
-                        if (LIBUSB) JNA_I_LibUsb.INSTANCE.startVideoCapture();
-                        lastVideo++;
-                        bitmapToVideoEncoder = new BitmapToVideoEncoder(new BitmapToVideoEncoder.IBitmapToVideoEncoderCallback() {
-                            @Override
-                            public void onEncodingComplete(File outputFile) {
-                                displayMessage("Encoding complete!");
-                            }
-                        });
-                        bitmapToVideoEncoder.setFrameRate((10000000 / camFrameInterval )/ 2);
-                        log("Framerate = "+ ((10000000 / camFrameInterval )/ 2));
-                        date = new Date() ;
-                        dateFormat = new SimpleDateFormat("dd.MM.yyyy___HH_mm_ss") ;
-                        String dirname = "Video";
+                    videorecord = true;
+                    date = new Date() ;
+                    dateFormat = new SimpleDateFormat("dd.MM.yyyy___HH_mm_ss") ;
+                    String fileName = new File(  dateFormat.format(date) + ".mp4").getPath() ;
+                    File directory = getApplicationContext().getCacheDir();
+                    saveDir = new File(directory, fileName);
+                    log("fileName = " + fileName);
+                    bitmapToVideoEncoder.startEncoding(imageWidth, imageHeight, saveDir);
+                    videoButtonClickEvent();
 
 
-                        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
-                            String videoFolderStr = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Video/";
-                            File videoFolder = new File(videoFolderStr);
-                            if (!videoFolder.exists()) {
-                                videoFolder.mkdirs();
-                            }
-                            log ("bitmapToVideoEncoder.startEncoding");
-                            bitmapToVideoEncoder.startEncoding(imageWidth, imageHeight, new File(videoFolder,"usbVideo" + lastVideo +"-" + dateFormat.format(date) + ".mp4"));
-                        } else {
-                            Context context = getApplicationContext();
-                            File directory = context.getFilesDir();
-                            File videoDir = new File(directory, "video");
-                            if (!videoDir.exists()) {
-                                if (!videoDir.mkdirs()) {
-                                    Log.e("TravellerLog :: ", "Problem creating video folder");
-                                }
-                            }
-                            log ("bitmapToVideoEncoder.startEncoding");
-                            bitmapToVideoEncoder.startEncoding(imageWidth, imageHeight, new File(videoDir,"usbVideo" + lastVideo +"-" + dateFormat.format(date) + ".mp4"));
-                        }
-
-                        File sdPath = new File(getExternalFilesDir(null),dirname);
-                        if (!sdPath.exists()) {
-                            sdPath.mkdirs();
-                        }
-                    } else {
-                        // Button Checked // Skip to Long Click
-
-                        // The toggle is enabled
-                        lastPicture = 0;
-                        videorecord = true;
-                        if (LIBUSB) JNA_I_LibUsb.INSTANCE.startVideoCapture();
-
-                        String dirname = "Video";
-
-
-                        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
-                            String videoFolderStr = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Video/";
-                            File videoFolder = new File(videoFolderStr);
-                            if (!videoFolder.exists()) {
-                                videoFolder.mkdirs();
-                            }
-                            File recFolder=new File(videoFolder, "rec");
-                            if (!recFolder.exists()) {
-                                recFolder.mkdirs();
-                            }
-                            if (recFolder.isDirectory()) {
-                                String[] children = recFolder.list();
-                                for (int i = 0; i < children.length; i++) {
-                                    if (children[i].endsWith(".JPG"))
-                                        new File(recFolder, children[i]).delete();
-                                }
-                            }
-                            recFolder.delete();
-                            displayMessage("Record started");
-                            startTime = System.currentTimeMillis();
-                            currentTime = System.currentTimeMillis();
-                            log ("file saved");
-                        } else {
-                            Context context = getApplicationContext();
-                            File directory = context.getFilesDir();
-                            File videoDir = new File(directory, "Video");
-                            if (!videoDir.exists()) {
-                                if (!videoDir.mkdirs()) {
-                                    Log.e("TravellerLog :: ", "Problem creating Video folder");
-                                }
-                            }
-                            File recFolder=new File(videoDir, "rec");
-                            if (!recFolder.exists()) {
-                                recFolder.mkdirs();
-                            }
-                            //recFolder.delete();
-                            displayMessage("Record started");
-                            startTime = System.currentTimeMillis();
-                            currentTime = System.currentTimeMillis();
-                        }
-                    }
                 } else {
-                    return;
-                    // Button not checked // Long Click
-                    if (longclickVideoRecord) {
-                        longclickVideoRecord = false;
-                        // The toggle is disabled
-                        pauseCamera = true;
-                        videorecord = false;
-                        if (LIBUSB) JNA_I_LibUsb.INSTANCE.stopVideoCaptureLongClick();
-                        lastVideo ++;
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
-                        long videotime = (System.currentTimeMillis() - startTime) / 1000;
-                        log ("long videotime = " + videotime);
-                        double a = (double) ( lastPicture / (double) videotime);
-                        log ("Double a = " + a);
-                        int fps = round(a);
-                        log("fps ( Frame per Secound ) = " + fps);
-                        log ( "lastPicture = " + lastPicture);
-                        date = new Date() ;
-                        dateFormat = new SimpleDateFormat("dd.MM.yyyy___HH_mm_ss") ;
-
-                        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
-
-                            String videoFolderStr = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Video/";
-                            File videoFolder = new File(videoFolderStr);
-                            if (!videoFolder.exists()) {
-                                videoFolder.mkdirs();
-                            }
-
-                            File recFolder=new File(videoFolder, "rec");
-                            if (!recFolder.exists()) {
-                                recFolder.mkdirs();
-                            }
-                            File fileVideo = new File(videoFolder, "usbVideo" + lastVideo + "_" + dateFormat.format(date) + ".avi");
-                            try {
-                                generator = new MJPEGGenerator(fileVideo, imageWidth, imageHeight, fps, lastPicture);
-
-                                for (int addpic = 1; addpic <= lastPicture; addpic++) {
-                                    String curjpg = new File(recFolder, addpic + ".JPG").getPath();
-                                    final Bitmap bitmap = BitmapFactory.decodeFile(curjpg);
-                                    generator.addImage(bitmap);
-                                }
-                                generator.finishAVI();
-                            } catch (Exception e) {
-                                displayMessage("Error: " + e);
-                                e.printStackTrace();
-                            }
-                            if (recFolder.isDirectory()) {
-                                String[] children = recFolder.list();
-                                for (int i = 0; i < children.length; i++) {
-                                    if (children[i].endsWith(".JPG"))
-                                        new File(recFolder, children[i]).delete();
-                                }
-                            }
-                            recFolder.delete();
-                            displayMessage("Record stopped");
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            pauseCamera = false;
-                            generator = null;
-                        } else {
-                            Context context = getApplicationContext();
-                            File directory = context.getFilesDir();
-                            File videoFolder = new File(directory, "Video");
-                            if (!videoFolder.exists()) {
-                                if (!videoFolder.mkdirs()) {
-                                    Log.e("TravellerLog :: ", "Problem creating Video folder");
-                                }
-                            }
-                            File recFolder=new File(videoFolder, "rec");
-                            if (!recFolder.exists()) {
-                                recFolder.mkdirs();
-                            }
-                            File fileVideo = new File(videoFolder, "usbVideo" + lastVideo + "_" + dateFormat.format(date) + ".avi");
-                            try {
-                                generator = new MJPEGGenerator(fileVideo, imageWidth, imageHeight, fps, lastPicture);
-
-                                for (int addpic = 1; addpic <= lastPicture; addpic++) {
-                                    String curjpg = new File(recFolder, addpic + ".JPG").getPath();
-                                    final Bitmap bitmap = BitmapFactory.decodeFile(curjpg);
-                                    generator.addImage(bitmap);
-                                }
-                                generator.finishAVI();
-                            } catch (Exception e) {
-                                displayMessage("Error: " + e);
-                                e.printStackTrace();
-                            }
-                            if (recFolder.isDirectory()) {
-                                String[] children = recFolder.list();
-                                for (int i = 0; i < children.length; i++) {
-                                    if (children[i].endsWith(".JPG"))
-                                        new File(recFolder, children[i]).delete();
-                                }
-                            }
-                            recFolder.delete();
-                            displayMessage("Record stopped");
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            pauseCamera = false;
-                            generator = null;
-                        }
-
-                     */
-                    }
                     // Button not checked // Short Click
-                    else {
-                        /*
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                            pauseCamera = true;
-                            try {
-                                Thread.sleep(200);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            videorecordApiJellyBeanNup = false;
-                            if (LIBUSB) JNA_I_LibUsb.INSTANCE.stopVideoCapture();
-                            bitmapToVideoEncoder.stopEncoding();
-                            try {
-                                Thread.sleep(500);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            bitmapToVideoEncoder = null;
-                            try {
-                                Thread.sleep(200);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            pauseCamera = false;
-
-                        } else {
-                            // The toggle is disabled
-                            pauseCamera = true;
-                            videorecord = false;
-                            if (LIBUSB) JNA_I_LibUsb.INSTANCE.stopVideoCapture();
-                            lastVideo ++;
-                            String dirname = "Video";
-
-                            String videoFolderStr = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Video/";
-                            File videoFolder = new File(videoFolderStr);
-                            if (!videoFolder.exists()) {
-                                videoFolder.mkdirs();
-                            }
-
-
-                            long videotime = (System.currentTimeMillis() - startTime) / 1000;
-                            log ("long videotime = " + videotime);
-                            double a = (double) ( lastPicture / (double) videotime);
-                            log ("Double a = " + a);
-                            int fps = round(a);
-                            log("fps ( Frame per Secound ) = " + fps);
-                            log ( "lastPicture = " + lastPicture);
-                            date = new Date() ;
-                            dateFormat = new SimpleDateFormat("dd.MM.yyyy___HH_mm_ss") ;
-                            File fileVideo = new File(videoFolder,"output-" + lastVideo +"-" + dateFormat.format(date) + ".avi");
-                            try {
-                                generator = new MJPEGGenerator(fileVideo, imageWidth, imageHeight, fps, lastPicture);
-                                for (int addpic = 1; addpic <= lastPicture; addpic++) {
-                                    File sub_dir=new File(videoFolder, "rec");
-                                    if (!sub_dir.exists()) {
-                                        sub_dir.mkdirs();
-                                    }
-                                    String curjpg = new File(sub_dir,  addpic + ".JPG" ).getPath();
-                                    final Bitmap bitmap = BitmapFactory.decodeFile(curjpg);
-                                    generator.addImage(bitmap);
-                                }
-                                generator.finishAVI();
-                            } catch (Exception e) {
-                                displayMessage("Error: " + e);
-                                e.printStackTrace();
-                            }
-                            File saveDir=new File(videoFolder, "rec");
-                            if (!saveDir.exists()) {
-                                saveDir.mkdirs();
-                            }
-                            if (saveDir.isDirectory()) {
-                                String[] children = saveDir.list();
-                                for (int i = 0; i < children.length; i++) {
-                                    if (children[i].endsWith(".JPG"))
-                                        new File(saveDir, children[i]).delete();
-                                }}
-                            saveDir.delete();
-                            displayMessage("Record stopped");
-
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            pauseCamera = false;
-                            generator = null;
-                        }
-
+                    bitmapToVideoEncoder.stopEncoding();
+                    videorecord = false;
+                    videoButtonClickEvent();
+                    displayMessage("Record stopped");
                 }
- */
             }
-        }
-    });
-        videoButton.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                // TODO Auto-generated method stub
+        });
 
-                if (videoButton.isChecked()==(false))
-                {
-                    // Needs to stand first to prevent double Start with on Check Changed listener
-                    longclickVideoRecord = true;
-                    // button is unchecked
-                    displayMessage("Long Click - Video starts");
-                    log("Long Click - Video starts");
-                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
-                        String videoFolderStr = Environment.getExternalStorageDirectory().getAbsolutePath() + "/UVC_Camera/Video/";
-                        File videoFolder = new File(videoFolderStr);
-                        if (!videoFolder.exists()) {
-                            videoFolder.mkdirs();
-                        }
-                        videoButton.setChecked(true);
-                        if (LIBUSB) JNA_I_LibUsb.INSTANCE.startVideoCaptureLongClick();
-                        lastPicture = 0;
-                        videorecord = true;
-                        File saveDir=new File(videoFolder, "rec");
-                        if (!saveDir.exists()) {
-                            saveDir.mkdirs();
-                        }
-                        if (saveDir.isDirectory()) {
-                            String[] children = saveDir.list();
-                            for (int i = 0; i < children.length; i++) {
-                                if (children[i].endsWith(".JPG"))
-                                    new File(saveDir, children[i]).delete();
-                            }
-                        }
-                        //saveDir.delete();
-                        displayMessage("Record started");
-                        startTime = System.currentTimeMillis();
-                        currentTime = System.currentTimeMillis();
-                        log("long click method Started!");
-                    } else {
-                        // button is unchecked
-                        videoButton.setChecked(true);
-                        if (LIBUSB) JNA_I_LibUsb.INSTANCE.startVideoCaptureLongClick();
-                        lastPicture = 0;
-                        videorecord = true;
-                        Context context = getApplicationContext();
-                        File directory = context.getFilesDir();
-                        File videoFolder = new File(directory, "Video");
-                        if (!videoFolder.exists()) {
-                            if (!videoFolder.mkdirs()) {
-                                Log.e("TravellerLog :: ", "Problem creating Video folder");
-                            }
-                        }
-                        File saveDir=new File(videoFolder, "rec");
-                        if (!saveDir.exists()) {
-                            saveDir.mkdirs();
-                        }
-                        if (saveDir.isDirectory()) {
-                            String[] children = saveDir.list();
-                            for (int i = 0; i < children.length; i++) {
-                                if (children[i].endsWith(".JPG"))
-                                    new File(saveDir, children[i]).delete();
-                            }
-                        }
-                        //saveDir.delete();
-                        displayMessage("Record started");
-                        startTime = System.currentTimeMillis();
-                        currentTime = System.currentTimeMillis();
-                    }
-                }
-                return true;
-            }});
         videoButton.setEnabled(false);
         videoButton.setAlpha(0); // 100% transparent
-        fetchTheValues();
         log("packetsPerRequest = " + packetsPerRequest);
         log("activeUrbs = " + activeUrbs);
         simpleSeekBar = (SeekBar) findViewById(R.id.simpleSeekBar); simpleSeekBar.setEnabled(false); simpleSeekBar.setAlpha(0); simpleSeekBar = null;
@@ -897,6 +552,11 @@ public class StartIsoStreamActivityUvc extends Activity {
 
     public void beenden(boolean exit) {
         if (LIBUSB) {
+            if(videorecord) {
+                PreviewExitCaptureMovie(mNativePtr);
+                displayMessage("Movie Completed");
+                videorecord = false;
+            }
             if(libusb_is_initialized) {
                 JNA_I_LibUsb.INSTANCE.stopStreaming(new Pointer(mNativePtr));
             }
@@ -1073,10 +733,62 @@ public class StartIsoStreamActivityUvc extends Activity {
         //initBrightnessParms();
     }
 
-    private void BildaufnahmeButtonClickEvent() {
+    private void imageButtonClickEvent() {
         imageCapture = true;
         if (LIBUSB) PreviewCapturePicture(mNativePtr);
         displayMessage("Image saved");
+    }
+
+    private void videoButtonClickEvent() {
+        if(videorecord) {
+            if (LIBUSB) PreviewCaptureMovie(mNativePtr);
+            displayMessage("Movie save started");
+        } else {
+            log("Video Record stop pressed");
+            if (LIBUSB) PreviewExitCaptureMovie(mNativePtr);
+            displayMessage("Movie Completed");
+
+
+            date = new Date() ;
+            dateFormat = new SimpleDateFormat("dd.MM.yyyy___HH_mm_ss") ;
+            String fileName = new File(  dateFormat.format(date) + ".mp4").getPath() ;
+            try {
+                FileInputStream fis = new FileInputStream(saveDir);
+                OutputStream movieOutStream ;
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Video.Media.DISPLAY_NAME, fileName);
+                values.put(MediaStore.Video.Media.MIME_TYPE, "video/avc"); // H.264 Advanced Video Coding
+                values.put(MediaStore.Video.Media.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + "/UVC_Camera/");
+                Uri uri = getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+                movieOutStream = getContentResolver().openOutputStream(uri);
+
+                IOUtils.copy(fis,movieOutStream);
+                fis.close();
+                saveDir.delete();
+
+
+                movieOutStream = getContentResolver().openOutputStream(uri);
+                movieOutStream.close();
+
+
+                //create FileInputStream object
+
+
+
+                log ("MediaStore Save File Complete !!!!");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            log ("file saved");
+
+
+
+
+
+
+
+        }
+
     }
 
     //////////////////// Buttons  ///////////////
@@ -1173,6 +885,7 @@ public class StartIsoStreamActivityUvc extends Activity {
                                 if (ret == 0) log("image  received Mjpeg");
                                 else log("FAILURE !! \n!!   --> Method returned -1\n!!!!!! ");
                             }
+
                         }
                     } );
                     if (result == 0) {
@@ -1232,16 +945,16 @@ public class StartIsoStreamActivityUvc extends Activity {
                     result = PreviewPrepareStream(mNativePtr, mPreviewSurface, new IFrameCallback() {
                         @Override
                         public void onFrame(final byte[] frame) {
+                            log("imageCapture = "+imageCapture +"\nvideorecord = "+ videorecord);
                             if (imageCapture || videorecord || videorecordApiJellyBeanNup) {
                                 int ret = -1;
-                                log ("Frame Callback:\nFramelength = " + frame.length);
+                                //log ("Frame Callback:\nFramelength = " + frame.length);
                                 try {
                                     ret = processReceivedVideoFrameYuv(frame, null);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
-                                if (ret == 0) log("image  received Yuv");
-                                else log("FAILURE !! \n!!   --> Method returned -1\n!!!!!! ");
+                                if (ret != 0) log("FAILURE !! \n!!   --> processReceivedVideoFrameYuv Method returned -1\n!!!!!! ");
                             }
                         }
                     }
@@ -2002,7 +1715,7 @@ public class StartIsoStreamActivityUvc extends Activity {
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             yuvImage.compressToJpeg(new Rect(0, 0, imageWidth, imageHeight), 100, os);
             jpegByteArray = os.toByteArray();
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O_MR1) bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
+            bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
         }
         if (imageCapture) {
             log("image_Capture");
@@ -2031,7 +1744,6 @@ public class StartIsoStreamActivityUvc extends Activity {
                 }
                 log ("file saved");
             } else {
-                Context context = getApplicationContext();
                 String fileName = new File(  dateFormat.format(date) + ".jpg").getPath() ;
                 log("fileName = " + fileName);
                 try {
@@ -2076,7 +1788,6 @@ public class StartIsoStreamActivityUvc extends Activity {
                 }
                 log ("file saved");
             } else {
-                Context context = getApplicationContext();
                 String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
                 log("fileName = " + fileName);
                 try {
@@ -2101,6 +1812,12 @@ public class StartIsoStreamActivityUvc extends Activity {
 
         }
         if (videorecord) {
+            //log("videorecord running");
+            //bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);
+            bitmapToVideoEncoder.queueFrame(bitmap);
+            ret = 0;
+
+            /*
             if (System.currentTimeMillis() - currentTime > 200) {
                 currentTime = System.currentTimeMillis();
                 lastPicture ++;
@@ -2117,6 +1834,7 @@ public class StartIsoStreamActivityUvc extends Activity {
                 writeBytesToFile(fileName, jpegByteArray);
                 ret = 0;
             }
+             */
         }
         return ret;
     }
@@ -2154,7 +1872,6 @@ public class StartIsoStreamActivityUvc extends Activity {
                 }
                 log ("file saved");
             } else {
-                Context context = getApplicationContext();
                 String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
                 log("fileName = " + fileName);
                 try {
@@ -2198,7 +1915,6 @@ public class StartIsoStreamActivityUvc extends Activity {
                 }
                 log("Still Image Save Complete");
             } else {
-                Context context = getApplicationContext();
                 String fileName = new File(  dateFormat.format(date) + ".JPG").getPath() ;
                 log("fileName = " + fileName);
                 try {
@@ -2229,6 +1945,14 @@ public class StartIsoStreamActivityUvc extends Activity {
             }
         }
         if (videorecord) {
+
+            log("videorecord running");
+            bitmapToVideoEncoder.queueFrame(BitmapFactory.decodeByteArray(jpegFrameData, 0, jpegFrameData.length));
+
+
+
+            ret = 0;
+            /*
             if (System.currentTimeMillis() - currentTime > 200) {
                 currentTime = System.currentTimeMillis();
                 lastPicture ++;
@@ -2245,6 +1969,8 @@ public class StartIsoStreamActivityUvc extends Activity {
                 writeBytesToFile(fileName, jpegFrameData);
                 ret = 0;
             }
+
+             */
         }
         if (exit == false) {
             /*
@@ -2610,7 +2336,7 @@ public class StartIsoStreamActivityUvc extends Activity {
             formatter.format("0x%02x ", b);
         }
         String hex = formatter.toString();
-        System.out.println("hex " + hex);
+        out.println("hex " + hex);
     }
 
     private byte[] convert_Yuy2_to_NV21(byte[] YUY2Source) {

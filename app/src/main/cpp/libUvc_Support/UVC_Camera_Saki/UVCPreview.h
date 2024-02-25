@@ -55,6 +55,9 @@ extern int setFrameCallback(long preview_pointer, JNIEnv *env, jobject frame_cal
 extern int setJavaVM(long preview_pointer, JNIEnv *env, jobject obj);
 
 extern int capturePicture(long preview_pointer);
+extern int captureMovie(long preview_pointer);
+extern int exitCaptureMovie(long preview_pointer);
+
 extern int enableMIsCapturing(long preview_pointer);
 
 
@@ -127,7 +130,8 @@ private:
 	size_t previewBytes;
 //
 	volatile bool mIsCapturing;
-	volatile bool mPictureCapturing;
+    volatile bool mPictureCapturing;
+    volatile bool mMovieCapturing;
 	ANativeWindow *mCaptureWindow;
 	pthread_t capture_thread;
 	pthread_mutex_t capture_mutex;
@@ -187,6 +191,8 @@ public:
 	// Added by Peter St. 14.01.2023
 	int enable_mIsCapturing();
 	int capture_picture();
+    int capture_movie();
+    int exit_capture_movie();
     int set_automatic_true();
     int set_automatic_false();
     pthread_t getPreviewThread();

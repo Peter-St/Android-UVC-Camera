@@ -1033,6 +1033,7 @@ public class SaveToFile  {
             save.writeObject(bulkMode);
             //if (bcdUSB[0] == 3) save.writeObject(bcdUSB);
             save.close(); // This also closes saveFile.
+            //saveFile.close();
         } catch (Exception e) { log("Error"); e.printStackTrace();}
         returnToMainLayout(String.format("Values edited and saved\nSavefile = %s", savePath));
     }

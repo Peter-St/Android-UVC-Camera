@@ -164,7 +164,10 @@ dependencies {
 
     // Drop Down Menu
     implementation 'com.github.zzz40500:AndroidSweetSheet:1.1.0'
-
+    // For Video Capture
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    // For OutputStream Copy
+    implementation 'org.apache.directory.studio:org.apache.commons.io:2.4'
 }
 
 

@@ -139,6 +139,22 @@ extern "C" JNIEXPORT jint JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc
     return result;
 }
 
+extern "C" JNIEXPORT jint JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_PreviewCaptureMovie
+        (JNIEnv *env, jobject obj, ID_TYPE mNativePtr) {
+    int result = -1;
+    uvc_camera_t *camera_pointer = reinterpret_cast<uvc_camera_t *>(mNativePtr) ;
+    result = captureMovie(camera_pointer->preview_pointer);
+    return result;
+}
+
+extern "C" JNIEXPORT jint JNICALL Java_humer_UvcCamera_StartIsoStreamActivityUvc_PreviewExitCaptureMovie
+        (JNIEnv *env, jobject obj, ID_TYPE mNativePtr) {
+    int result = -1;
+    uvc_camera_t *camera_pointer = reinterpret_cast<uvc_camera_t *>(mNativePtr) ;
+    result = exitCaptureMovie(camera_pointer->preview_pointer);
+    return result;
+}
+
 /////////////////////////////////////////// Testrun ///////////////////////////////7
 
 extern "C" JNIEXPORT jint JNICALL Java_humer_UvcCamera_SetUpTheUsbDeviceUvc_PreviewPrepareTest

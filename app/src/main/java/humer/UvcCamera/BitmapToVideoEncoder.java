@@ -59,7 +59,8 @@ public class BitmapToVideoEncoder {
     private static final String MIME_TYPE = "video/avc"; // H.264 Advanced Video Coding
     private static int mWidth;
     private static int mHeight;
-    private static final int BIT_RATE = 16000000;
+    //private static final int BIT_RATE = 16000000;
+    private static final int BIT_RATE = 8000000;
     private static int FRAME_RATE = 10; // Frames per second
 
     private static final int I_FRAME_INTERVAL = 1;
@@ -113,12 +114,15 @@ public class BitmapToVideoEncoder {
             int colorFormat;
             try {
                 colorFormat = selectColorFormat(codecInfo, MIME_TYPE);
+                Log.d(TAG, "colorFormat =  " + colorFormat);
+
             } catch (Exception e) {
                 colorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar;
             }
 
+
             try {
-                mediaCodec = MediaCodec.createByCodecName(codecInfo.getName());
+                mediaCodec = MediaCodec.createEncoderByType(MIME_TYPE);
             } catch (IOException e) {
                 Log.e(TAG, "Unable to create MediaCodec " + e.getMessage());
                 return;
