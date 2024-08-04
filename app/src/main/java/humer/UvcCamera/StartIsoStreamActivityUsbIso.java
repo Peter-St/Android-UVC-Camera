@@ -455,7 +455,7 @@ public class StartIsoStreamActivityUsbIso extends Activity {
                     if (longclickVideoRecord) {
                         return;
                     }
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                         videorecordApiJellyBeanNup = true;
                         if (LIBUSB) JNA_I_LibUsb.INSTANCE.startVideoCapture();
                         lastVideo++;
@@ -663,7 +663,7 @@ public class StartIsoStreamActivityUsbIso extends Activity {
                     }
                     // Button not checked // Short Click
                     else {
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                             pauseCamera = true;
                             try {
                                 Thread.sleep(200);
@@ -829,12 +829,14 @@ public class StartIsoStreamActivityUsbIso extends Activity {
         switchAuto = (Switch) findViewById(R.id.switchAuto); switchAuto.setEnabled(false); switchAuto.setVisibility(View.GONE); switchAuto = null;
         usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            mPermissionIntent = PendingIntent.getBroadcast(this,0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+            mPermissionIntent = PendingIntent.getBroadcast(this,0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_ALLOW_UNSAFE_IMPLICIT_INTENT);
         } else {
             mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_UPDATE_CURRENT);
         }
         IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
-        registerReceiver(mUsbReceiver, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            registerReceiver(mUsbReceiver, filter, RECEIVER_NOT_EXPORTED);
+        } else registerReceiver(mUsbReceiver, filter);
         //LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(StartIsoStreamService.NOTIFICATION));
         if (LIBUSB) {
             mUVCCameraView = (SurfaceView)findViewById(R.id.surfaceView);

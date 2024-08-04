@@ -502,12 +502,16 @@ public class StartIsoStreamActivityUvc extends Activity {
         switchAuto = (Switch) findViewById(R.id.switchAuto); switchAuto.setEnabled(false); switchAuto.setVisibility(View.GONE); switchAuto = null;
         usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            mPermissionIntent = PendingIntent.getBroadcast(this,0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+            mPermissionIntent = PendingIntent.getBroadcast(this,0, new Intent(ACTION_USB_PERMISSION),
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_ALLOW_UNSAFE_IMPLICIT_INTENT);
         } else {
             mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_UPDATE_CURRENT);
         }
         IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
-        registerReceiver(mUsbReceiver, filter);
+        // RECEIVER_NOT_EXPORTED - To register a broadcast receiver that does not receive broadcasts from other apps, including system apps
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            registerReceiver(mUsbReceiver, filter, RECEIVER_NOT_EXPORTED);
+        } else registerReceiver(mUsbReceiver, filter);
 
 
 

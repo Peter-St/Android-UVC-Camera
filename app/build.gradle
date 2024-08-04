@@ -9,10 +9,10 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    compileSdk 34
+    compileSdk 35
     defaultConfig {
         applicationId "humer.uvc_camera"
-        targetSdkVersion 33
+        targetSdkVersion 35
         minSdkVersion 15
         versionCode 125
         versionName "2.2.5"
