@@ -14,8 +14,8 @@ android {
         applicationId "humer.uvc_camera"
         targetSdkVersion 35
         minSdkVersion 15
-        versionCode 125
-        versionName "2.2.5"
+        versionCode 127
+        versionName "2.2.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -167,7 +167,8 @@ dependencies {
     // For Video Capture
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
     // For OutputStream Copy
-    implementation 'org.apache.directory.studio:org.apache.commons.io:2.4'
+    //implementation 'org.apache.directory.studio:org.apache.commons.io:2.4'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
 }
 
 

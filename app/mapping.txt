@@ -3,8 +3,8 @@
 # min_api: 15
 # common_typos_disable
 # {"id":"com.android.tools.r8.mapping","version":"2.2"}
-# pg_map_id: e8510a1
-# pg_map_hash: SHA-256 e8510a1ffc39518336c8848f433dd0d271b4da9e5c8756a29fc6a02002fbf845
+# pg_map_id: 1ff2b13
+# pg_map_hash: SHA-256 1ff2b13ce52e4da5ff6df13b439efbb02979c6c467e82c188cd05db5bbc13314
 android.arch.core.internal.FastSafeIterableMap -> a.a:
 # {"id":"sourceFile","fileName":"FastSafeIterableMap.java"}
     java.util.WeakHashMap android.arch.core.internal.SafeIterableMap.mIterators -> a
@@ -7262,17 +7262,17 @@ android.support.v4.app.AppOpsManagerCompat$$ExternalSyntheticApiModelOutline1 ->
       # {"id":"com.android.tools.r8.synthesized"}
     1:1:android.transition.TransitionSet m(java.lang.Object):0:0 -> i
       # {"id":"com.android.tools.r8.synthesized"}
-    1:1:android.view.accessibility.AccessibilityNodeInfo$CollectionInfo m(int,int):0:0 -> j
+    1:1:java.lang.Class m():0:0 -> j
       # {"id":"com.android.tools.r8.synthesized"}
-    1:1:java.lang.Class m():0:0 -> k
+    1:1:java.lang.String m():0:0 -> k
       # {"id":"com.android.tools.r8.synthesized"}
-    1:1:java.lang.String m():0:0 -> l
+    1:1:java.nio.charset.Charset m():0:0 -> l
       # {"id":"com.android.tools.r8.synthesized"}
-    1:1:java.nio.charset.Charset m():0:0 -> m
+    1:1:java.util.List m(android.transition.Transition):0:0 -> m
       # {"id":"com.android.tools.r8.synthesized"}
-    1:1:java.util.List m(android.transition.Transition):0:0 -> n
+    1:1:java.util.List m(android.transition.TransitionSet):0:0 -> n
       # {"id":"com.android.tools.r8.synthesized"}
-    1:1:java.util.List m(android.transition.TransitionSet):0:0 -> o
+    1:1:void m():0:0 -> o
       # {"id":"com.android.tools.r8.synthesized"}
     1:1:void m(android.graphics.drawable.Drawable,boolean):0:0 -> p
       # {"id":"com.android.tools.r8.synthesized"}
@@ -12109,16 +12109,18 @@ android.support.v4.view.accessibility.AccessibilityNodeInfoCompat$AccessibilityN
     1:8:void setCollectionInfo(android.view.accessibility.AccessibilityNodeInfo,java.lang.Object):0:0 -> Q
     1:4:void setContentInvalid(android.view.accessibility.AccessibilityNodeInfo,boolean):0:0 -> T
       # {"id":"com.android.tools.r8.residualsignature","signature":"(Landroid/view/accessibility/AccessibilityNodeInfo;)V"}
-android.support.v4.view.accessibility.AccessibilityNodeInfoCompat$AccessibilityNodeInfoApi19Impl$$ExternalSyntheticApiModelOutline1 -> v.g:
+android.support.v4.view.accessibility.AccessibilityNodeInfoCompat$AccessibilityNodeInfoApi19Impl$$ExternalSyntheticApiModelOutline0 -> v.g:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
-    1:1:android.view.accessibility.AccessibilityNodeInfo$CollectionInfo v.AccessibilityNodeInfoCompat$AccessibilityNodeInfoApi19Impl$$ExternalSyntheticApiModelOutline1.m(java.lang.Object):0:0 -> a
+    1:1:android.view.accessibility.AccessibilityNodeInfo$CollectionInfo v.AccessibilityNodeInfoCompat$AccessibilityNodeInfoApi19Impl$$ExternalSyntheticApiModelOutline0.m(int,int):0:0 -> a
       # {"id":"com.android.tools.r8.synthesized"}
-    1:1:void v.AccessibilityNodeInfoCompat$AccessibilityNodeInfoApi19Impl$$ExternalSyntheticApiModelOutline1.m(android.view.accessibility.AccessibilityNodeInfo):0:0 -> b
+    1:1:android.view.accessibility.AccessibilityNodeInfo$CollectionInfo v.AccessibilityNodeInfoCompat$AccessibilityNodeInfoApi19Impl$$ExternalSyntheticApiModelOutline0.m(java.lang.Object):0:0 -> b
       # {"id":"com.android.tools.r8.synthesized"}
-    1:1:void v.AccessibilityNodeInfoCompat$AccessibilityNodeInfoApi19Impl$$ExternalSyntheticApiModelOutline1.m(android.view.accessibility.AccessibilityNodeInfo,android.view.accessibility.AccessibilityNodeInfo$CollectionInfo):0:0 -> c
+    1:1:void v.AccessibilityNodeInfoCompat$AccessibilityNodeInfoApi19Impl$$ExternalSyntheticApiModelOutline0.m(android.view.accessibility.AccessibilityNodeInfo):0:0 -> c
       # {"id":"com.android.tools.r8.synthesized"}
-    1:1:void v.AccessibilityNodeInfoCompat$AccessibilityNodeInfoApi19Impl$$ExternalSyntheticApiModelOutline1.m(android.widget.ListView,int):0:0 -> d
+    1:1:void v.AccessibilityNodeInfoCompat$AccessibilityNodeInfoApi19Impl$$ExternalSyntheticApiModelOutline0.m(android.view.accessibility.AccessibilityNodeInfo,android.view.accessibility.AccessibilityNodeInfo$CollectionInfo):0:0 -> d
+      # {"id":"com.android.tools.r8.synthesized"}
+    1:1:void v.AccessibilityNodeInfoCompat$AccessibilityNodeInfoApi19Impl$$ExternalSyntheticApiModelOutline0.m(android.widget.ListView,int):0:0 -> e
       # {"id":"com.android.tools.r8.synthesized"}
 android.support.v4.view.accessibility.AccessibilityNodeInfoCompat$AccessibilityNodeInfoApi21Impl -> v.i:
 # {"id":"sourceFile","fileName":"AccessibilityNodeInfoCompat.java"}
@@ -15392,12 +15394,18 @@ android.support.v7.view.WindowCallbackWrapper$$ExternalSyntheticApiModelOutline1
       # {"id":"com.android.tools.r8.synthesized"}
     1:1:void f0.WindowCallbackWrapper$$ExternalSyntheticApiModelOutline1.m(java.lang.CharSequence,android.view.View):0:0 -> n
       # {"id":"com.android.tools.r8.synthesized"}
-    1:1:float f0.WindowCallbackWrapper$$ExternalSyntheticApiModelOutline1.m$1(android.view.ViewConfiguration):0:0 -> o
+    1:1:void f0.WindowCallbackWrapper$$ExternalSyntheticApiModelOutline1.m(m1.IOUtils$$ExternalSyntheticLambda3):0:0 -> o
       # {"id":"com.android.tools.r8.synthesized"}
-    1:1:void f0.WindowCallbackWrapper$$ExternalSyntheticApiModelOutline1.m$1(android.view.MenuItem,char,int):0:0 -> p
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lm1/a;)V"}
+    1:1:float f0.WindowCallbackWrapper$$ExternalSyntheticApiModelOutline1.m$1(android.view.ViewConfiguration):0:0 -> p
       # {"id":"com.android.tools.r8.synthesized"}
-    1:1:void f0.WindowCallbackWrapper$$ExternalSyntheticApiModelOutline1.m$1(android.view.MenuItem,java.lang.CharSequence):0:0 -> q
+    1:1:void f0.WindowCallbackWrapper$$ExternalSyntheticApiModelOutline1.m$1(android.view.MenuItem,char,int):0:0 -> q
       # {"id":"com.android.tools.r8.synthesized"}
+    1:1:void f0.WindowCallbackWrapper$$ExternalSyntheticApiModelOutline1.m$1(android.view.MenuItem,java.lang.CharSequence):0:0 -> r
+      # {"id":"com.android.tools.r8.synthesized"}
+    1:1:void f0.WindowCallbackWrapper$$ExternalSyntheticApiModelOutline1.m$1(m1.IOUtils$$ExternalSyntheticLambda3):0:0 -> s
+      # {"id":"com.android.tools.r8.synthesized"}
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lm1/a;)V"}
 android.support.v7.view.menu.ActionMenuItem -> g0.a:
 # {"id":"sourceFile","fileName":"ActionMenuItem.java"}
     java.lang.CharSequence mTitle -> a
@@ -29237,14 +29245,24 @@ humer.UvcCamera.StartIsoStreamActivityUvc -> humer.UvcCamera.StartIsoStreamActiv
     290:290:void showAdjustValuesUnitMenu(android.view.View):0:0 -> showAdjustValuesUnitMenu
     292:292:void showAdjustValuesUnitMenu(android.view.View):0:0 -> showAdjustValuesUnitMenu
     295:295:void showAdjustValuesUnitMenu(android.view.View):0:0 -> showAdjustValuesUnitMenu
-    160:161:long org.apache.commons.io.IOUtils.copyLarge(java.io.InputStream,java.io.OutputStream):0:0 -> videoButtonClickEvent
-    160:161:int org.apache.commons.io.IOUtils.copy(java.io.InputStream,java.io.OutputStream):0 -> videoButtonClickEvent
-    160:161:void videoButtonClickEvent():0 -> videoButtonClickEvent
-    162:173:long org.apache.commons.io.IOUtils.copyLarge(java.io.InputStream,java.io.OutputStream,byte[]):0:0 -> videoButtonClickEvent
-    162:173:long org.apache.commons.io.IOUtils.copyLarge(java.io.InputStream,java.io.OutputStream):0 -> videoButtonClickEvent
-    162:173:int org.apache.commons.io.IOUtils.copy(java.io.InputStream,java.io.OutputStream):0 -> videoButtonClickEvent
-    162:173:void videoButtonClickEvent():0 -> videoButtonClickEvent
-    174:208:void videoButtonClickEvent():0:0 -> videoButtonClickEvent
+    160:163:byte[] org.apache.commons.io.IOUtils.byteArray(int):0:0 -> videoButtonClickEvent
+    160:163:long org.apache.commons.io.IOUtils.copy(java.io.InputStream,java.io.OutputStream,int):0 -> videoButtonClickEvent
+    160:163:long org.apache.commons.io.IOUtils.copyLarge(java.io.InputStream,java.io.OutputStream):0 -> videoButtonClickEvent
+    160:163:int org.apache.commons.io.IOUtils.copy(java.io.InputStream,java.io.OutputStream):0 -> videoButtonClickEvent
+    160:163:void videoButtonClickEvent():0 -> videoButtonClickEvent
+    164:175:long org.apache.commons.io.IOUtils.copyLarge(java.io.InputStream,java.io.OutputStream,byte[]):0:0 -> videoButtonClickEvent
+    164:175:long org.apache.commons.io.IOUtils.copy(java.io.InputStream,java.io.OutputStream,int):0 -> videoButtonClickEvent
+    164:175:long org.apache.commons.io.IOUtils.copyLarge(java.io.InputStream,java.io.OutputStream):0 -> videoButtonClickEvent
+    164:175:int org.apache.commons.io.IOUtils.copy(java.io.InputStream,java.io.OutputStream):0 -> videoButtonClickEvent
+    164:175:void videoButtonClickEvent():0 -> videoButtonClickEvent
+    176:202:void videoButtonClickEvent():0:0 -> videoButtonClickEvent
+    203:210:java.lang.Object java.util.Objects.requireNonNull(java.lang.Object,java.lang.String):0:0 -> videoButtonClickEvent
+    203:210:long org.apache.commons.io.IOUtils.copyLarge(java.io.InputStream,java.io.OutputStream,byte[]):0 -> videoButtonClickEvent
+    203:210:long org.apache.commons.io.IOUtils.copy(java.io.InputStream,java.io.OutputStream,int):0 -> videoButtonClickEvent
+    203:210:long org.apache.commons.io.IOUtils.copyLarge(java.io.InputStream,java.io.OutputStream):0 -> videoButtonClickEvent
+    203:210:int org.apache.commons.io.IOUtils.copy(java.io.InputStream,java.io.OutputStream):0 -> videoButtonClickEvent
+    203:210:void videoButtonClickEvent():0 -> videoButtonClickEvent
+    211:219:void videoButtonClickEvent():0:0 -> videoButtonClickEvent
 humer.UvcCamera.StartIsoStreamActivityUvc$1 -> humer.UvcCamera.StartIsoStreamActivityUvc$1:
 # {"id":"sourceFile","fileName":"StartIsoStreamActivityUvc.java"}
 humer.UvcCamera.StartIsoStreamActivityUvc$10 -> humer.UvcCamera.StartIsoStreamActivityUvc$10:
@@ -30635,27 +30653,34 @@ noman.zoomtextview.ZoomTextView$ScaleListener -> noman.zoomtextview.ZoomTextView
 # {"id":"sourceFile","fileName":"ZoomTextView.java"}
     1:1:void <init>(noman.zoomtextview.ZoomTextView):0:0 -> <init>
     2:2:void <init>(noman.zoomtextview.ZoomTextView,noman.zoomtextview.ZoomTextView$1):0:0 -> <init>
-org.apache.commons.io.IOUtils -> m1.a:
+org.apache.commons.io.IOUtils -> m1.b:
 # {"id":"sourceFile","fileName":"IOUtils.java"}
     int $r8$clinit -> a
       # {"id":"com.android.tools.r8.synthesized"}
-    1:22:void <clinit>():0:0 -> <clinit>
-org.apache.commons.io.output.StringBuilderWriter -> n1.a:
-# {"id":"sourceFile","fileName":"StringBuilderWriter.java"}
-    java.lang.StringBuilder builder -> a
-    1:12:void <init>(int):0:0 -> <init>
-      # {"id":"com.android.tools.r8.residualsignature","signature":"()V"}
-    1:1:java.io.Writer append(char):0:0 -> append
-    2:2:java.io.Writer append(java.lang.CharSequence):0:0 -> append
-    3:3:java.io.Writer append(java.lang.CharSequence,int,int):0:0 -> append
-    4:4:java.io.Writer append(char):0:0 -> append
-    4:4:java.lang.Appendable append(char):0 -> append
-    5:5:java.io.Writer append(java.lang.CharSequence):0:0 -> append
-    5:5:java.lang.Appendable append(java.lang.CharSequence):0 -> append
-    6:6:java.io.Writer append(java.lang.CharSequence,int,int):0:0 -> append
-    6:6:java.lang.Appendable append(java.lang.CharSequence,int,int):0 -> append
-    1:1:void close():0:0 -> close
-    1:1:void flush():0:0 -> flush
-    1:7:java.lang.String toString():0:0 -> toString
-    1:1:void write(java.lang.String):0:0 -> write
-    2:2:void write(char[],int,int):0:0 -> write
+    1:34:void <clinit>():0:0 -> <clinit>
+org.apache.commons.io.IOUtils$$ExternalSyntheticLambda3 -> m1.a:
+# {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
+# {"id":"com.android.tools.r8.synthesized"}
+    int m1.IOUtils$$ExternalSyntheticLambda3.$r8$classId -> a
+      # {"id":"com.android.tools.r8.synthesized"}
+    1:1:void m1.IOUtils$$ExternalSyntheticLambda3.<init>(int):0:0 -> <init>
+      # {"id":"com.android.tools.r8.synthesized"}
+    8:12:char[] org.apache.commons.io.IOUtils.charArray(int):0:0 -> get
+    8:12:char[] org.apache.commons.io.IOUtils.charArray():0 -> get
+      # {"id":"com.android.tools.r8.residualsignature","signature":"()Ljava/lang/Object;"}
+    13:16:byte[] org.apache.commons.io.IOUtils.byteArray(int):0:0 -> get
+    13:16:byte[] org.apache.commons.io.IOUtils.byteArray():0 -> get
+org.apache.commons.io.StandardLineSeparator -> m1.c:
+# {"id":"sourceFile","fileName":"StandardLineSeparator.java"}
+    org.apache.commons.io.StandardLineSeparator CRLF -> a
+      # {"id":"com.android.tools.r8.residualsignature","signature":"Lm1/c;"}
+    org.apache.commons.io.StandardLineSeparator LF -> b
+      # {"id":"com.android.tools.r8.residualsignature","signature":"Lm1/c;"}
+    org.apache.commons.io.StandardLineSeparator[] $VALUES -> c
+      # {"id":"com.android.tools.r8.residualsignature","signature":"[Lm1/c;"}
+    1:46:void <clinit>():0:0 -> <clinit>
+    1:4:void <init>(java.lang.String,int,java.lang.String):0:0 -> <init>
+    1:9:org.apache.commons.io.StandardLineSeparator valueOf(java.lang.String):0:0 -> valueOf
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Ljava/lang/String;)Lm1/c;"}
+    1:9:org.apache.commons.io.StandardLineSeparator[] values():0:0 -> values
+      # {"id":"com.android.tools.r8.residualsignature","signature":"()[Lm1/c;"}
