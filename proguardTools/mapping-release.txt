@@ -1,10 +1,10 @@
 # compiler: R8
-# compiler_version: 8.2.33
+# compiler_version: 8.2.47
 # min_api: 15
 # common_typos_disable
 # {"id":"com.android.tools.r8.mapping","version":"2.2"}
-# pg_map_id: e7ad3c7
-# pg_map_hash: SHA-256 e7ad3c7302bb00e85c899e1c8a9f13e2ae07a2abb2c9e477720f8aa6559efb7e
+# pg_map_id: 7b0d588
+# pg_map_hash: SHA-256 7b0d5888e586bc8621e6e4dd8046e9240722ed7432da3e53e053f2060a3d001c
 android.arch.core.internal.FastSafeIterableMap -> a.a:
 # {"id":"sourceFile","fileName":"FastSafeIterableMap.java"}
     java.util.WeakHashMap android.arch.core.internal.SafeIterableMap.mIterators -> a
@@ -26553,34 +26553,34 @@ humer.UvcCamera.BitmapToVideoEncoder -> humer.UvcCamera.BitmapToVideoEncoder:
 # {"id":"sourceFile","fileName":"BitmapToVideoEncoder.java"}
     1:1:void $r8$lambda$nnbgNRM8GSQyXRjT_IIlFNNIfaY(humer.UvcCamera.BitmapToVideoEncoder):0:0 -> a
       # {"id":"com.android.tools.r8.synthesized"}
-    138:142:io.reactivex.Completable io.reactivex.Completable.fromAction(io.reactivex.functions.Action):0:0 -> startEncoding
-    138:142:void startEncoding(int,int,java.io.File):0 -> startEncoding
-    143:146:io.reactivex.Scheduler io.reactivex.schedulers.Schedulers.io():0:0 -> startEncoding
-    143:146:void startEncoding(int,int,java.io.File):0 -> startEncoding
-    147:151:io.reactivex.Completable io.reactivex.Completable.subscribeOn(io.reactivex.Scheduler):0:0 -> startEncoding
-    147:151:void startEncoding(int,int,java.io.File):0 -> startEncoding
-    152:155:io.reactivex.Scheduler io.reactivex.android.plugins.RxAndroidPlugins.onMainThreadScheduler(io.reactivex.Scheduler):0:0 -> startEncoding
-    152:155:io.reactivex.Scheduler io.reactivex.android.schedulers.AndroidSchedulers.mainThread():0 -> startEncoding
-    152:155:void startEncoding(int,int,java.io.File):0 -> startEncoding
-    156:160:io.reactivex.Completable io.reactivex.Completable.observeOn(io.reactivex.Scheduler):0:0 -> startEncoding
-    156:160:void startEncoding(int,int,java.io.File):0 -> startEncoding
-    161:169:io.reactivex.disposables.Disposable io.reactivex.Completable.subscribe():0:0 -> startEncoding
-    161:169:void startEncoding(int,int,java.io.File):0 -> startEncoding
-    170:177:io.reactivex.Scheduler io.reactivex.android.plugins.RxAndroidPlugins.onMainThreadScheduler(io.reactivex.Scheduler):0:0 -> startEncoding
-    170:177:io.reactivex.Scheduler io.reactivex.android.schedulers.AndroidSchedulers.mainThread():0 -> startEncoding
-    170:177:void startEncoding(int,int,java.io.File):0 -> startEncoding
-    178:188:java.lang.Object io.reactivex.internal.functions.ObjectHelper.requireNonNull(java.lang.Object,java.lang.String):0:0 -> startEncoding
-    178:188:io.reactivex.Completable io.reactivex.Completable.subscribeOn(io.reactivex.Scheduler):0 -> startEncoding
-    178:188:void startEncoding(int,int,java.io.File):0 -> startEncoding
-    189:255:void startEncoding(int,int,java.io.File):0:0 -> startEncoding
+    151:155:io.reactivex.Completable io.reactivex.Completable.fromAction(io.reactivex.functions.Action):0:0 -> startEncoding
+    151:155:void startEncoding(int,int,java.io.File):0 -> startEncoding
+    156:159:io.reactivex.Scheduler io.reactivex.schedulers.Schedulers.io():0:0 -> startEncoding
+    156:159:void startEncoding(int,int,java.io.File):0 -> startEncoding
+    160:164:io.reactivex.Completable io.reactivex.Completable.subscribeOn(io.reactivex.Scheduler):0:0 -> startEncoding
+    160:164:void startEncoding(int,int,java.io.File):0 -> startEncoding
+    165:168:io.reactivex.Scheduler io.reactivex.android.plugins.RxAndroidPlugins.onMainThreadScheduler(io.reactivex.Scheduler):0:0 -> startEncoding
+    165:168:io.reactivex.Scheduler io.reactivex.android.schedulers.AndroidSchedulers.mainThread():0 -> startEncoding
+    165:168:void startEncoding(int,int,java.io.File):0 -> startEncoding
+    169:173:io.reactivex.Completable io.reactivex.Completable.observeOn(io.reactivex.Scheduler):0:0 -> startEncoding
+    169:173:void startEncoding(int,int,java.io.File):0 -> startEncoding
+    174:182:io.reactivex.disposables.Disposable io.reactivex.Completable.subscribe():0:0 -> startEncoding
+    174:182:void startEncoding(int,int,java.io.File):0 -> startEncoding
+    183:190:io.reactivex.Scheduler io.reactivex.android.plugins.RxAndroidPlugins.onMainThreadScheduler(io.reactivex.Scheduler):0:0 -> startEncoding
+    183:190:io.reactivex.Scheduler io.reactivex.android.schedulers.AndroidSchedulers.mainThread():0 -> startEncoding
+    183:190:void startEncoding(int,int,java.io.File):0 -> startEncoding
+    191:201:java.lang.Object io.reactivex.internal.functions.ObjectHelper.requireNonNull(java.lang.Object,java.lang.String):0:0 -> startEncoding
+    191:201:io.reactivex.Completable io.reactivex.Completable.subscribeOn(io.reactivex.Scheduler):0 -> startEncoding
+    191:201:void startEncoding(int,int,java.io.File):0 -> startEncoding
+    202:268:void startEncoding(int,int,java.io.File):0:0 -> startEncoding
 humer.UvcCamera.BitmapToVideoEncoder$$ExternalSyntheticLambda13 -> humer.UvcCamera.a:
 # {"id":"sourceFile","fileName":"R8$$SyntheticClass"}
 # {"id":"com.android.tools.r8.synthesized"}
-    humer.UvcCamera.BitmapToVideoEncoder humer.UvcCamera.BitmapToVideoEncoder$$InternalSyntheticLambda$1$3c0de99717c29312c76ebe3ef6555aa0b3089cbc9fceaebf5d921c4dc634af82$10.f$0 -> a
+    humer.UvcCamera.BitmapToVideoEncoder humer.UvcCamera.BitmapToVideoEncoder$$InternalSyntheticLambda$1$3c0de99717c29312c76ebe3ef6555aa0b3089cbc9fceaebf5d921c4dc634af82$9.f$0 -> a
       # {"id":"com.android.tools.r8.synthesized"}
-    1:1:void humer.UvcCamera.BitmapToVideoEncoder$$InternalSyntheticLambda$1$3c0de99717c29312c76ebe3ef6555aa0b3089cbc9fceaebf5d921c4dc634af82$10.<init>(humer.UvcCamera.BitmapToVideoEncoder):0:0 -> <init>
+    1:1:void humer.UvcCamera.BitmapToVideoEncoder$$InternalSyntheticLambda$1$3c0de99717c29312c76ebe3ef6555aa0b3089cbc9fceaebf5d921c4dc634af82$9.<init>(humer.UvcCamera.BitmapToVideoEncoder):0:0 -> <init>
       # {"id":"com.android.tools.r8.synthesized"}
-    1:1:void humer.UvcCamera.BitmapToVideoEncoder$$InternalSyntheticLambda$1$3c0de99717c29312c76ebe3ef6555aa0b3089cbc9fceaebf5d921c4dc634af82$10.run():0:0 -> run
+    1:1:void humer.UvcCamera.BitmapToVideoEncoder$$InternalSyntheticLambda$1$3c0de99717c29312c76ebe3ef6555aa0b3089cbc9fceaebf5d921c4dc634af82$9.run():0:0 -> run
       # {"id":"com.android.tools.r8.synthesized"}
 humer.UvcCamera.BitmapToVideoEncoder$IBitmapToVideoEncoderCallback -> humer.UvcCamera.BitmapToVideoEncoder$IBitmapToVideoEncoderCallback:
 # {"id":"sourceFile","fileName":"BitmapToVideoEncoder.java"}
@@ -26708,6 +26708,14 @@ humer.UvcCamera.JNA_I_LibUsb.JNA_I_LibUsb$uvc_streaming_interface -> humer.UvcCa
 humer.UvcCamera.JNA_I_LibUsb.JNA_I_LibUsb$uvc_streaming_interface$ByReference -> humer.UvcCamera.JNA_I_LibUsb.JNA_I_LibUsb$uvc_streaming_interface$ByReference:
 # {"id":"sourceFile","fileName":"JNA_I_LibUsb.java"}
 humer.UvcCamera.JNA_I_LibUsb.JNA_I_LibUsb$uvc_streaming_interface$ByValue -> humer.UvcCamera.JNA_I_LibUsb.JNA_I_LibUsb$uvc_streaming_interface$ByValue:
+# {"id":"sourceFile","fileName":"JNA_I_LibUsb.java"}
+humer.UvcCamera.JNA_I_LibUsb.JNA_I_LibUsb$uvc_struct -> humer.UvcCamera.JNA_I_LibUsb.JNA_I_LibUsb$uvc_struct:
+# {"id":"sourceFile","fileName":"JNA_I_LibUsb.java"}
+    1:1:void <init>(com.sun.jna.Pointer):0:0 -> <init>
+humer.UvcCamera.JNA_I_LibUsb.JNA_I_LibUsb$uvc_struct$ByReference -> humer.UvcCamera.JNA_I_LibUsb.JNA_I_LibUsb$uvc_struct$ByReference:
+# {"id":"sourceFile","fileName":"JNA_I_LibUsb.java"}
+    1:1:void <init>(com.sun.jna.Pointer):0:0 -> <init>
+humer.UvcCamera.JNA_I_LibUsb.JNA_I_LibUsb$uvc_struct$ByValue -> humer.UvcCamera.JNA_I_LibUsb.JNA_I_LibUsb$uvc_struct$ByValue:
 # {"id":"sourceFile","fileName":"JNA_I_LibUsb.java"}
 humer.UvcCamera.JNA_I_LibUsb.JNA_I_LibUsb$uvc_vs_desc_subtype -> humer.UvcCamera.JNA_I_LibUsb.JNA_I_LibUsb$uvc_vs_desc_subtype:
 # {"id":"sourceFile","fileName":"JNA_I_LibUsb.java"}
@@ -27394,12 +27402,12 @@ humer.UvcCamera.SetUpTheUsbDeviceUvc -> humer.UvcCamera.SetUpTheUsbDeviceUvc:
     18:24:void com.crowdfire.cfalertdialog.CFAlertDialog$Builder.<init>(android.content.Context):0:0 -> moveToNativeSetUpTheValues
     18:24:void moveToNativeSetUpTheValues():0 -> moveToNativeSetUpTheValues
     25:51:void moveToNativeSetUpTheValues():0:0 -> moveToNativeSetUpTheValues
-    52:72:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0:0 -> moveToNativeSetUpTheValues
-    52:72:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> moveToNativeSetUpTheValues
-    52:72:void moveToNativeSetUpTheValues():0 -> moveToNativeSetUpTheValues
-    73:78:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0:0 -> moveToNativeSetUpTheValues
-    73:78:void moveToNativeSetUpTheValues():0 -> moveToNativeSetUpTheValues
-    79:93:void moveToNativeSetUpTheValues():0:0 -> moveToNativeSetUpTheValues
+    52:73:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.create():0:0 -> moveToNativeSetUpTheValues
+    52:73:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0 -> moveToNativeSetUpTheValues
+    52:73:void moveToNativeSetUpTheValues():0 -> moveToNativeSetUpTheValues
+    74:79:com.crowdfire.cfalertdialog.CFAlertDialog com.crowdfire.cfalertdialog.CFAlertDialog$Builder.show():0:0 -> moveToNativeSetUpTheValues
+    74:79:void moveToNativeSetUpTheValues():0 -> moveToNativeSetUpTheValues
+    80:94:void moveToNativeSetUpTheValues():0:0 -> moveToNativeSetUpTheValues
     26:52:android.support.v4.content.LocalBroadcastManager android.support.v4.content.LocalBroadcastManager.getInstance(android.content.Context):0:0 -> onCreate
     26:52:void onCreate(android.os.Bundle):0 -> onCreate
     53:274:void onCreate(android.os.Bundle):0:0 -> onCreate
@@ -27463,6 +27471,8 @@ humer.UvcCamera.SetUpTheUsbDeviceUvc$22 -> humer.UvcCamera.SetUpTheUsbDeviceUvc$
       # {"id":"com.android.tools.r8.residualsignature","signature":"Li0/g;"}
     1:1:void <init>(humer.UvcCamera.SetUpTheUsbDeviceUvc,com.crowdfire.cfalertdialog.CFAlertDialog):0:0 -> <init>
       # {"id":"com.android.tools.r8.residualsignature","signature":"(Lhumer/UvcCamera/SetUpTheUsbDeviceUvc;Li0/g;)V"}
+humer.UvcCamera.SetUpTheUsbDeviceUvc$22$1 -> humer.UvcCamera.SetUpTheUsbDeviceUvc$22$1:
+# {"id":"sourceFile","fileName":"SetUpTheUsbDeviceUvc.java"}
 humer.UvcCamera.SetUpTheUsbDeviceUvc$23 -> humer.UvcCamera.SetUpTheUsbDeviceUvc$23:
 # {"id":"sourceFile","fileName":"SetUpTheUsbDeviceUvc.java"}
     com.crowdfire.cfalertdialog.CFAlertDialog val$alertDialog -> val$alertDialog
@@ -27471,16 +27481,14 @@ humer.UvcCamera.SetUpTheUsbDeviceUvc$23 -> humer.UvcCamera.SetUpTheUsbDeviceUvc$
       # {"id":"com.android.tools.r8.residualsignature","signature":"(Lhumer/UvcCamera/SetUpTheUsbDeviceUvc;Li0/g;)V"}
 humer.UvcCamera.SetUpTheUsbDeviceUvc$24 -> humer.UvcCamera.SetUpTheUsbDeviceUvc$24:
 # {"id":"sourceFile","fileName":"SetUpTheUsbDeviceUvc.java"}
-humer.UvcCamera.SetUpTheUsbDeviceUvc$24$1 -> humer.UvcCamera.SetUpTheUsbDeviceUvc$24$1:
-# {"id":"sourceFile","fileName":"SetUpTheUsbDeviceUvc.java"}
-humer.UvcCamera.SetUpTheUsbDeviceUvc$24$1$1 -> humer.UvcCamera.SetUpTheUsbDeviceUvc$24$1$1:
-# {"id":"sourceFile","fileName":"SetUpTheUsbDeviceUvc.java"}
 humer.UvcCamera.SetUpTheUsbDeviceUvc$25 -> humer.UvcCamera.SetUpTheUsbDeviceUvc$25:
 # {"id":"sourceFile","fileName":"SetUpTheUsbDeviceUvc.java"}
     com.crowdfire.cfalertdialog.CFAlertDialog val$alertDialog -> val$alertDialog
       # {"id":"com.android.tools.r8.residualsignature","signature":"Li0/g;"}
     1:1:void <init>(humer.UvcCamera.SetUpTheUsbDeviceUvc,com.crowdfire.cfalertdialog.CFAlertDialog):0:0 -> <init>
       # {"id":"com.android.tools.r8.residualsignature","signature":"(Lhumer/UvcCamera/SetUpTheUsbDeviceUvc;Li0/g;)V"}
+humer.UvcCamera.SetUpTheUsbDeviceUvc$25$1 -> humer.UvcCamera.SetUpTheUsbDeviceUvc$25$1:
+# {"id":"sourceFile","fileName":"SetUpTheUsbDeviceUvc.java"}
 humer.UvcCamera.SetUpTheUsbDeviceUvc$26 -> humer.UvcCamera.SetUpTheUsbDeviceUvc$26:
 # {"id":"sourceFile","fileName":"SetUpTheUsbDeviceUvc.java"}
     com.crowdfire.cfalertdialog.CFAlertDialog val$alertDialog -> val$alertDialog
@@ -27488,10 +27496,6 @@ humer.UvcCamera.SetUpTheUsbDeviceUvc$26 -> humer.UvcCamera.SetUpTheUsbDeviceUvc$
     1:1:void <init>(humer.UvcCamera.SetUpTheUsbDeviceUvc,com.crowdfire.cfalertdialog.CFAlertDialog):0:0 -> <init>
       # {"id":"com.android.tools.r8.residualsignature","signature":"(Lhumer/UvcCamera/SetUpTheUsbDeviceUvc;Li0/g;)V"}
 humer.UvcCamera.SetUpTheUsbDeviceUvc$27 -> humer.UvcCamera.SetUpTheUsbDeviceUvc$27:
-# {"id":"sourceFile","fileName":"SetUpTheUsbDeviceUvc.java"}
-humer.UvcCamera.SetUpTheUsbDeviceUvc$27$1 -> humer.UvcCamera.SetUpTheUsbDeviceUvc$27$1:
-# {"id":"sourceFile","fileName":"SetUpTheUsbDeviceUvc.java"}
-humer.UvcCamera.SetUpTheUsbDeviceUvc$27$1$1 -> humer.UvcCamera.SetUpTheUsbDeviceUvc$27$1$1:
 # {"id":"sourceFile","fileName":"SetUpTheUsbDeviceUvc.java"}
 humer.UvcCamera.SetUpTheUsbDeviceUvc$28 -> humer.UvcCamera.SetUpTheUsbDeviceUvc$28:
 # {"id":"sourceFile","fileName":"SetUpTheUsbDeviceUvc.java"}
@@ -27823,6 +27827,11 @@ humer.UvcCamera.StartIsoStreamActivityUvc -> humer.UvcCamera.StartIsoStreamActiv
     290:290:void showAdjustValuesUnitMenu(android.view.View):0:0 -> showAdjustValuesUnitMenu
     292:292:void showAdjustValuesUnitMenu(android.view.View):0:0 -> showAdjustValuesUnitMenu
     295:295:void showAdjustValuesUnitMenu(android.view.View):0:0 -> showAdjustValuesUnitMenu
+    162:173:long org.apache.commons.io.IOUtils.copyLarge(java.io.InputStream,java.io.OutputStream,byte[]):0:0 -> videoButtonClickEvent
+    162:173:long org.apache.commons.io.IOUtils.copyLarge(java.io.InputStream,java.io.OutputStream):0 -> videoButtonClickEvent
+    162:173:int org.apache.commons.io.IOUtils.copy(java.io.InputStream,java.io.OutputStream):0 -> videoButtonClickEvent
+    162:173:void videoButtonClickEvent():0 -> videoButtonClickEvent
+    174:208:void videoButtonClickEvent():0:0 -> videoButtonClickEvent
 humer.UvcCamera.StartIsoStreamActivityUvc$1 -> humer.UvcCamera.StartIsoStreamActivityUvc$1:
 # {"id":"sourceFile","fileName":"StartIsoStreamActivityUvc.java"}
 humer.UvcCamera.StartIsoStreamActivityUvc$10 -> humer.UvcCamera.StartIsoStreamActivityUvc$10:
@@ -29253,3 +29262,27 @@ noman.zoomtextview.ZoomTextView$ScaleListener -> noman.zoomtextview.ZoomTextView
 # {"id":"sourceFile","fileName":"ZoomTextView.java"}
     1:1:void <init>(noman.zoomtextview.ZoomTextView):0:0 -> <init>
     2:2:void <init>(noman.zoomtextview.ZoomTextView,noman.zoomtextview.ZoomTextView$1):0:0 -> <init>
+org.apache.commons.io.IOUtils -> l1.a:
+# {"id":"sourceFile","fileName":"IOUtils.java"}
+    int $r8$clinit -> a
+      # {"id":"com.android.tools.r8.synthesized"}
+    1:1:void <clinit>():0:0 -> <clinit>
+org.apache.commons.io.output.StringBuilderWriter -> m1.a:
+# {"id":"sourceFile","fileName":"StringBuilderWriter.java"}
+    java.lang.StringBuilder builder -> a
+    1:1:void <init>(int):0:0 -> <init>
+      # {"id":"com.android.tools.r8.residualsignature","signature":"()V"}
+    1:1:java.io.Writer append(char):0:0 -> append
+    2:2:java.io.Writer append(java.lang.CharSequence):0:0 -> append
+    3:3:java.io.Writer append(java.lang.CharSequence,int,int):0:0 -> append
+    4:4:java.io.Writer org.apache.commons.io.output.StringBuilderWriter.append(char):0:0 -> append
+    4:4:java.lang.Appendable append(char):0 -> append
+    5:5:java.io.Writer org.apache.commons.io.output.StringBuilderWriter.append(java.lang.CharSequence):0:0 -> append
+    5:5:java.lang.Appendable append(java.lang.CharSequence):0 -> append
+    6:6:java.io.Writer org.apache.commons.io.output.StringBuilderWriter.append(java.lang.CharSequence,int,int):0:0 -> append
+    6:6:java.lang.Appendable append(java.lang.CharSequence,int,int):0 -> append
+    1:1:void close():0:0 -> close
+    1:1:void flush():0:0 -> flush
+    1:1:java.lang.String toString():0:0 -> toString
+    1:1:void write(java.lang.String):0:0 -> write
+    2:2:void write(char[],int,int):0:0 -> write
