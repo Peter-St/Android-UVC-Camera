@@ -3,8 +3,8 @@
 # min_api: 15
 # common_typos_disable
 # {"id":"com.android.tools.r8.mapping","version":"2.2"}
-# pg_map_id: 1ff2b13
-# pg_map_hash: SHA-256 1ff2b13ce52e4da5ff6df13b439efbb02979c6c467e82c188cd05db5bbc13314
+# pg_map_id: dc71b88
+# pg_map_hash: SHA-256 dc71b8851204f13d15a647c8aac4f28884633c2459646b81ee2a20dc7520c8b1
 android.arch.core.internal.FastSafeIterableMap -> a.a:
 # {"id":"sourceFile","fileName":"FastSafeIterableMap.java"}
     java.util.WeakHashMap android.arch.core.internal.SafeIterableMap.mIterators -> a
@@ -27946,23 +27946,23 @@ humer.UvcCamera.SaveToFile$1$2 -> humer.UvcCamera.SaveToFile$1$2:
 # {"id":"sourceFile","fileName":"SaveToFile.java"}
 humer.UvcCamera.SaveToFile$10 -> humer.UvcCamera.SaveToFile$10:
 # {"id":"sourceFile","fileName":"SaveToFile.java"}
-    304:307:void onClick(android.content.DialogInterface,int):0:0 -> onClick
-      # {"id":"com.android.tools.r8.outlineCallsite","positions":{"1":599,"3":601,"6":604,"9":608,"12":613},"outline":"Landroid/support/v4/app/o;c(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"}
-    308:311:void onClick(android.content.DialogInterface,int):0:0 -> onClick
-      # {"id":"com.android.tools.r8.outlineCallsite","positions":{"1":614,"3":616,"6":619},"outline":"Landroid/support/v4/app/o;e(Ljava/lang/String;)Ljava/lang/StringBuilder;"}
-    312:322:void onClick(android.content.DialogInterface,int):0:0 -> onClick
-    323:326:void onClick(android.content.DialogInterface,int):0:0 -> onClick
-    327:458:void onClick(android.content.DialogInterface,int):0:0 -> onClick
-    459:462:void onClick(android.content.DialogInterface,int):0:0 -> onClick
-    463:598:void onClick(android.content.DialogInterface,int):0:0 -> onClick
+    295:298:void onClick(android.content.DialogInterface,int):0:0 -> onClick
+      # {"id":"com.android.tools.r8.outlineCallsite","positions":{"1":582,"3":584,"6":587,"9":591,"12":596},"outline":"Landroid/support/v4/app/o;c(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"}
+    299:302:void onClick(android.content.DialogInterface,int):0:0 -> onClick
+      # {"id":"com.android.tools.r8.outlineCallsite","positions":{"1":597,"3":599,"6":602},"outline":"Landroid/support/v4/app/o;e(Ljava/lang/String;)Ljava/lang/StringBuilder;"}
+    303:313:void onClick(android.content.DialogInterface,int):0:0 -> onClick
+    314:317:void onClick(android.content.DialogInterface,int):0:0 -> onClick
+    318:441:void onClick(android.content.DialogInterface,int):0:0 -> onClick
+    442:445:void onClick(android.content.DialogInterface,int):0:0 -> onClick
+    446:581:void onClick(android.content.DialogInterface,int):0:0 -> onClick
+    582:582:void onClick(android.content.DialogInterface,int):0:0 -> onClick
+    584:584:void onClick(android.content.DialogInterface,int):0:0 -> onClick
+    587:587:void onClick(android.content.DialogInterface,int):0:0 -> onClick
+    591:591:void onClick(android.content.DialogInterface,int):0:0 -> onClick
+    596:596:void onClick(android.content.DialogInterface,int):0:0 -> onClick
+    597:597:void onClick(android.content.DialogInterface,int):0:0 -> onClick
     599:599:void onClick(android.content.DialogInterface,int):0:0 -> onClick
-    601:601:void onClick(android.content.DialogInterface,int):0:0 -> onClick
-    604:604:void onClick(android.content.DialogInterface,int):0:0 -> onClick
-    608:608:void onClick(android.content.DialogInterface,int):0:0 -> onClick
-    613:613:void onClick(android.content.DialogInterface,int):0:0 -> onClick
-    614:614:void onClick(android.content.DialogInterface,int):0:0 -> onClick
-    616:616:void onClick(android.content.DialogInterface,int):0:0 -> onClick
-    619:619:void onClick(android.content.DialogInterface,int):0:0 -> onClick
+    602:602:void onClick(android.content.DialogInterface,int):0:0 -> onClick
 humer.UvcCamera.SaveToFile$11 -> humer.UvcCamera.SaveToFile$11:
 # {"id":"sourceFile","fileName":"SaveToFile.java"}
 humer.UvcCamera.SaveToFile$12 -> humer.UvcCamera.SaveToFile$12:
@@ -28214,8 +28214,6 @@ humer.UvcCamera.SaveToFile$57 -> humer.UvcCamera.SaveToFile$57:
 # {"id":"sourceFile","fileName":"SaveToFile.java"}
 humer.UvcCamera.SaveToFile$58 -> humer.UvcCamera.SaveToFile$58:
 # {"id":"sourceFile","fileName":"SaveToFile.java"}
-humer.UvcCamera.SaveToFile$59 -> humer.UvcCamera.SaveToFile$59:
-# {"id":"sourceFile","fileName":"SaveToFile.java"}
 humer.UvcCamera.SaveToFile$6 -> humer.UvcCamera.SaveToFile$6:
 # {"id":"sourceFile","fileName":"SaveToFile.java"}
 humer.UvcCamera.SaveToFile$7 -> humer.UvcCamera.SaveToFile$7:
@@ -28252,8 +28250,6 @@ humer.UvcCamera.SetCameraVariables -> humer.UvcCamera.SetCameraVariables:
     172:172:java.lang.String dumpStreamingParms(byte[]):0:0 -> dumpStreamingParms
     176:176:java.lang.String dumpStreamingParms(byte[]):0:0 -> dumpStreamingParms
     181:181:java.lang.String dumpStreamingParms(byte[]):0:0 -> dumpStreamingParms
-humer.UvcCamera.SetCameraVariables$1 -> humer.UvcCamera.SetCameraVariables$1:
-# {"id":"sourceFile","fileName":"SetCameraVariables.java"}
 humer.UvcCamera.SetCameraVariables$CameraFunction -> humer.UvcCamera.SetCameraVariables$CameraFunction:
 # {"id":"sourceFile","fileName":"SetCameraVariables.java"}
 humer.UvcCamera.SetCameraVariables$CameraFunctionSetting -> humer.UvcCamera.SetCameraVariables$CameraFunctionSetting:

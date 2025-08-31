@@ -90,10 +90,9 @@
                 android:id="@+id/stopKameraknopf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/Bildaufnahme"
                 android:layout_alignEnd="@+id/settingsButton"
                 android:layout_alignRight="@+id/settingsButton"
-                android:layout_marginTop="0dp"
+                android:layout_alignParentBottom="true"
                 android:background="@drawable/bg_button_stop"
                 android:onClick="stopTheCameraStreamClickEvent"
                 android:text="Stop !" />
