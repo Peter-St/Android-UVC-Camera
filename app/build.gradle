@@ -14,8 +14,8 @@ android {
         applicationId "humer.uvc_camera"
         targetSdkVersion 36
         minSdkVersion 15
-        versionCode 127
-        versionName "2.2.8"
+        versionCode 128
+        versionName "2.2.9"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -148,7 +148,7 @@ dependencies {
     implementation 'io.github.yavski:fab-speed-dial:1.0.7'
 
     //AlertDialog
-    implementation 'com.crowdfire.cfalertdialog:cfalertdialog:1.1.0'
+    implementation 'com.crowdfire.cfalertdialog:cfalertdialog:1.3.1'
 
     //JNA
     implementation 'net.java.dev.jna:jna:5.14.0@aar'
