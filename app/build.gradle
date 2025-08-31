@@ -9,13 +9,13 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    compileSdk 35
+    compileSdk = 36
     defaultConfig {
         applicationId "humer.uvc_camera"
-        targetSdkVersion 35
+        targetSdkVersion 36
         minSdkVersion 15
         versionCode 127
-        versionName "2.2.7"
+        versionName "2.2.8"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
