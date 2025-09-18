@@ -141,7 +141,6 @@ repositories {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'net.java.dev.jna:jna:5.10.0@aar'
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
     testImplementation 'junit:junit:4.13.1'
@@ -151,10 +150,12 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
 
     //FabSpeedDial Button
+    //implementation 'com.github.kobakei:MaterialFabSpeedDial:2.0.0'
     implementation 'io.github.yavski:fab-speed-dial:1.0.7'
 
     //AlertDialog
-    implementation 'com.crowdfire.cfalertdialog:cfalertdialog:1.1.0'
+    implementation(name:'cfalertdialog-1.1.0', ext:'aar')
+    //implementation 'com.crowdfire.cfalertdialog:cfalertdialog:1.1.0'
 
     //JNA
     implementation 'net.java.dev.jna:jna:5.14.0@aar'
@@ -163,10 +164,12 @@ dependencies {
     implementation 'com.android.support:support-annotations:28.0.0'
 
     // TextInputLayout
-    implementation 'com.rafakob:floatingedittext:1.0.5'
+    implementation 'com.rafakob:floatingedittext:1.0.5@aar'
 
     //fading TextView
-    implementation 'com.tomer:fadingtextview:2.6'
+    implementation 'com.github.rosenpin:fading-text-view:v2.6'
+    //implementation 'com.github.rosenpin:fading-text-view:3.3'
+    //implementation 'com.tomer:fadingtextview:2.6'
 
     // Drop Down Menu
     implementation 'com.github.zzz40500:AndroidSweetSheet:1.1.0'
